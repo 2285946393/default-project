@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鲸鱼娘干饭中 · 圆滚滚的蓝鲸娘吃米饭</title>
+<style>
+  :root{--pink:#ff7ad9;--purple:#a78bfa;--blue:#3aa0ff;--deep:#0f4c9e;--gold:#ffd54a;--bg1:#122042;--bg2:#080e1e;--panel:#131c38;--line:#263052;--text:#eaf4ff;--muted:#8aa6c8;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:radial-gradient(1200px 800px at 50% 0%,#15264a,#080e1e 65%);color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center}
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .stars i{position:absolute;background:#fff;border-radius:50%;animation:tw 3s infinite}
+  @keyframes tw{0%,100%{opacity:.08}50%{opacity:.85}}
+  header{padding:22px 16px 10px;text-align:center;position:relative;z-index:2;width:100%}
+  header h1{font-size:26px;font-weight:800;letter-spacing:2px;background:linear-gradient(90deg,#41f0e0,#3aa0ff,#ff7ad9);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 12px rgba(58,160,255,.35))}
+  header .sub{color:var(--muted);font-size:12.5px;margin-top:6px;letter-spacing:1px}
+  .main{max-width:880px;width:100%;margin:0 auto;padding:0 16px 30px;position:relative;z-index:2;flex:1;display:flex;flex-direction:column}
+
+  /* 舞台：让 SVG 内容严格居中 */
+  .stage{position:relative;width:100%;max-width:820px;margin:0 auto;flex:1;min-height:0;background:
+    radial-gradient(120% 90% at 50% 110%,rgba(58,160,255,.10),transparent 60%),
+    linear-gradient(180deg,#101a38,#0b1228);
+    border:1px solid rgba(110,231,255,.18);border-radius:22px;overflow:hidden;
+    box-shadow:0 0 80px rgba(58,160,255,.10), inset 0 0 120px rgba(0,0,0,.35);
+    display:flex;align-items:center;justify-content:center}
+  .stage svg{display:block;width:100%;height:100%;max-height:560px}
+  /* 水光 */
+  .water{position:absolute;left:0;right:0;bottom:0;height:120px;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(65,240,224,0),rgba(58,160,255,.10) 60%,rgba(20,40,80,.35));
+    border-top:1px solid rgba(110,231,255,.08)}
+
+  .controls{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:820px;width:100%;margin-left:auto;margin-right:auto}
+  @media(max-width:600px){.controls{grid-template-columns:1fr}}
+  .panel{background:rgba(19,28,56,.7);border:1px solid var(--line);border-radius:16px;padding:14px;backdrop-filter:blur(4px)}
+  .panel .title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px}
+  .seg{display:flex;gap:8px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:90px;padding:10px;border-radius:12px;border:1px solid var(--line);background:rgba(20,30,60,.5);color:var(--muted);cursor:pointer;font-size:13px;transition:.15s}
+  .seg button:hover{color:var(--text);border-color:var(--blue);transform:translateY(-1px)}
+  .seg button.active{background:linear-gradient(135deg,#3aa0ff,#1f6fe0);color:#fff;border-color:#5aa8ff;font-weight:700;box-shadow:0 4px 18px rgba(58,160,255,.3)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .big{flex:1;min-width:160px;padding:11px;border-radius:12px;border:1px solid var(--line);background:rgba(20,30,60,.5);color:var(--text);cursor:pointer;font-size:15px;transition:.15s}
+  .big:hover{border-color:var(--teal);color:var(--teal)}
+  .big.primary{background:linear-gradient(135deg,#41f0e0,#2a8fe8);color:#04121c;font-weight:700;border:none;box-shadow:0 4px 20px rgba(65,240,224,.25)}
+  .big.primary:hover{filter:brightness(1.08)}
+  .kpi{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.9}
+  .kpi b{color:var(--text)}
+  .kpi .eaten{color:var(--gold)}
+  .kpi .rate{color:var(--teal)}
+  .kpi .size{color:var(--pink)}
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(16,26,48,.95);border:1px solid var(--teal);padding:12px 26px;border-radius:30px;font-size:14px;z-index:60;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<header>
+  <h1>鲸鱼娘干饭中</h1>
+  <div class="sub">圆滚滚的蓝鲸娘 · 坐在碗中央，一口一口吃米饭</div>
+</header>
+
+<div class="main">
+  <div class="stage" id="stage">
+    <div class="water"></div>
+    <svg id="scene" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="圆滚滚的蓝色鲸鱼娘坐在碗中央吃米饭">
+      <defs>
+        <radialGradient id="whaleBody" cx="42%" cy="30%">
+          <stop offset="0%" stop-color="#8fd8ff"/>
+          <stop offset="30%" stop-color="#3aa0ff"/>
+          <stop offset="75%" stop-color="#1a6fc0"/>
+          <stop offset="100%" stop-color="#0f4c9e"/>
+        </radialGradient>
+        <radialGradient id="bellyGrad" cx="50%" cy="30%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="60%" stop-color="#e3f6ff"/>
+          <stop offset="100%" stop-color="#a8dcff"/>
+        </radialGradient>
+        <radialGradient id="bowlGrad" cx="50%" cy="20%">
+          <stop offset="0%" stop-color="#ffe6b8"/>
+          <stop offset="55%" stop-color="#f2b96e"/>
+          <stop offset="100%" stop-color="#d9963f"/>
+        </radialGradient>
+        <radialGradient id="bowlInner" cx="50%" cy="20%">
+          <stop offset="0%" stop-color="#fff8e8"/>
+          <stop offset="100%" stop-color="#eecf96"/>
+        </radialGradient>
+        <radialGradient id="bowlShadowGrad" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#000" stop-opacity="0.45"/>
+          <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="tableGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a2c52"/>
+          <stop offset="100%" stop-color="#0d1730"/>
+        </linearGradient>
+        <radialGradient id="eyeGrad" cx="35%" cy="30%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#d6e8f5"/>
+        </radialGradient>
+        <radialGradient id="pupilGrad" cx="40%" cy="35%">
+          <stop offset="0%" stop-color="#2a4a6a"/>
+          <stop offset="100%" stop-color="#0a1626"/>
+        </radialGradient>
+        <!-- 质感滤镜：柔光投影 -->
+        <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.45"/>
+        </filter>
+        <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="3" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="shadowBlur" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="10"/>
+        </filter>
+      </defs>
+
+      <!-- 桌面 -->
+      <ellipse cx="400" cy="488" rx="360" ry="26" fill="url(#tableGrad)" opacity="0.55"/>
+
+      <!-- 主场景分组：居中整体 -->
+      <g transform="translate(400 395)">
+        <!-- 碗 -->
+        <g id="bowlGroup">
+          <g id="bowlScale" transform="scale(1)">
+            <ellipse id="bowlShadow" cx="0" cy="140" rx="190" ry="22" fill="url(#bowlShadowGrad)" filter="url(#shadowBlur)"/>
+            <path id="bowlBody" d="M-185 30 Q0 175 185 30 Z" fill="url(#bowlGrad)" stroke="#c9823e" stroke-width="5" filter="url(#softShadow)"/>
+            <ellipse id="bowlRim" cx="0" cy="30" rx="185" ry="36" fill="url(#bowlInner)" stroke="#c9823e" stroke-width="5"/>
+            <ellipse id="bowlRimTop" cx="0" cy="28" rx="160" ry="28" fill="none" stroke="#fff" stroke-width="2" opacity="0.25"/>
+            <g id="riceGroup"></g>
+          </g>
+        </g>
+
+        <!-- 鲸鱼娘（坐在碗中央） -->
+        <g id="whaleGroup" filter="url(#softShadow)">
+          <!-- 尾巴(碗后) -->
+          <g id="tailGroup">
+            <path id="tailL" d="M-60 -85 Q-135 -125 -130 -165 Q-95 -145 -85 -100 Z" fill="#145ca8" stroke="#0f4c9e" stroke-width="2"/>
+            <path id="tailR" d="M-60 -70 Q-140 -45 -145 -90 Q-110 -85 -90 -55 Z" fill="#145ca8" stroke="#0f4c9e" stroke-width="2"/>
+          </g>
+          <!-- 背鳍 -->
+          <path id="dorsalFin" d="M-15 -180 Q-55 -235 -5 -248 Q30 -215 18 -180 Z" fill="#2a8fe8" stroke="#1a6fc0" stroke-width="2"/>
+          <!-- 身体 -->
+          <g id="bodyGroup">
+            <ellipse id="body" cx="0" cy="-95" rx="150" ry="135" fill="url(#whaleBody)" stroke="#135a9f" stroke-width="3"/>
+            <!-- 身体高光 -->
+            <ellipse cx="-45" cy="-170" rx="70" ry="35" fill="#a8e0ff" opacity="0.5" transform="rotate(-18 -45 -170)"/>
+            <ellipse id="belly" cx="0" cy="-35" rx="130" ry="95" fill="url(#bellyGrad)" opacity="0.92"/>
+            <!-- 眼睛 -->
+            <g id="eyeL"><circle cx="-62" cy="-140" r="17" fill="url(#eyeGrad)"/><circle id="pupilL" cx="-54" cy="-140" r="8.5" fill="url(#pupilGrad)"/><circle cx="-50" cy="-144" r="3" fill="#fff"/></g>
+            <g id="eyeR"><circle cx="62" cy="-140" r="17" fill="url(#eyeGrad)"/><circle id="pupilR" cx="70" cy="-140" r="8.5" fill="url(#pupilGrad)"/><circle cx="74" cy="-144" r="3" fill="#fff"/></g>
+            <!-- 腮红 -->
+            <ellipse id="blushL" cx="-90" cy="-92" rx="17" ry="12" fill="#ff8fb0" opacity="0.55"/>
+            <ellipse id="blushR" cx="90" cy="-92" rx="17" ry="12" fill="#ff8fb0" opacity="0.55"/>
+            <!-- 嘴 -->
+            <path id="mouth" d="M-24 -78 Q0 -56 24 -78" stroke="#0a4a80" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <!-- 喷水孔 -->
+            <ellipse id="blowhole" cx="0" cy="-228" rx="12" ry="7" fill="#145ca8"/>
+            <!-- 小胸鳍 -->
+            <path id="finL" d="M-115 -55 Q-180 -35 -170 0 Q-140 5 -105 -25 Z" fill="#2a8fe8" opacity="0.9"/>
+            <path id="finR" d="M115 -55 Q180 -35 170 0 Q140 5 105 -25 Z" fill="#2a8fe8" opacity="0.9"/>
+          </g>
+          <!-- 飞动的米饭 -->
+          <g id="flyingRice"></g>
+          <!-- 心情泡 -->
+          <g id="happyStar" opacity="0"><text x="0" y="-270" font-size="52" text-anchor="middle" filter="url(#glow)">🌟</text></g>
+          <g id="fullStar" opacity="0"><text x="100" y="-290" font-size="36" text-anchor="middle" filter="url(#glow)">💤</text></g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div class="panel">
+      <div class="title">🥣 碗的大小</div>
+      <div class="seg" id="sizeSeg">
+        <button data-size="0.6">小碗</button>
+        <button data-size="1" class="active">中碗</button>
+        <button data-size="1.6">大碗</button>
+      </div>
+      <div class="kpi">当前 <span class="size" id="sizeLabel">中碗</span> · 碗里米饭 <b class="eaten" id="riceCount">40</b> 粒</div>
+    </div>
+    <div class="panel">
+      <div class="title">🎮 控制</div>
+      <div class="row">
+        <button class="big primary" id="playBtn">⏸ 暂停</button>
+        <button class="big" id="feedBtn">🍚 加饭</button>
+      </div>
+      <div class="kpi">已吃 <b class="eaten" id="eatenCount">0</b> 粒 · 速度 <span class="rate" id="speedLabel">×1</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const scene = $('scene');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let playing = !reducedMotion.matches;
+let speed = 1;
+let elapsed = 0;
+let lastFrame = 0;
+let frameId = 0;
+const tau = Math.PI * 2;
+const deg = 180 / Math.PI;
+const round = (n) => Number(n.toFixed(3));
+const tr = (id, v) => document.getElementById(id).setAttribute('transform', v);
+
+const N = {
+  body: $('body'), belly: $('belly'), eyeL: $('eyeL'), eyeR: $('eyeR'),
+  pupilL: $('pupilL'), pupilR: $('pupilR'), mouth: $('mouth'),
+  blushL: $('blushL'), blushR: $('blushR'), tailL: $('tailL'), tailR: $('tailR'),
+  dorsalFin: $('dorsalFin'), finL: $('finL'), finR: $('finR'),
+  happyStar: $('happyStar'), fullStar: $('fullStar'),
+  riceGroup: $('riceGroup'), flyingRice: $('flyingRice'),
+  bowlScale: $('bowlScale'), whaleGroup: $('whaleGroup'),
+};
+
+let bowlSize = 1;
+let riceInBowl = 40;
+let eatenCount = 0;
+let fishes = [];
+const loopLength = 6;
+
+(function () {
+  const starBox = document.getElementById('stars');
+  for (let i = 0; i < 45; i++) {
+    const s = document.createElement('i');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    const sz = Math.random() * 2 + 1;
+    s.style.width = s.style.height = sz + 'px';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    s.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    starBox.appendChild(s);
+  }
+})();
+
+function makeRice() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const el = document.createElementNS(ns, 'ellipse');
+  el.setAttribute('rx', 6);
+  el.setAttribute('ry', 4.5);
+  el.setAttribute('fill', '#fffdf0');
+  el.setAttribute('stroke', '#e8d0a0');
+  el.setAttribute('stroke-width', '1.2');
+  return el;
+}
+
+function layoutRice() {
+  const g = N.riceGroup;
+  g.innerHTML = '';
+  const count = Math.min(riceInBowl, 90);
+  for (let i = 0; i < count; i++) {
+    const ang = Math.random() * tau;
+    const rad = Math.sqrt(Math.random()) * 165;
+    const x = Math.cos(ang) * rad;
+    const y = 12 - Math.random() * 26;
+    const el = makeRice();
+    el.setAttribute('cx', x);
+    el.setAttribute('cy', y);
+    el.setAttribute('transform', 'rotate(' + Math.floor(Math.random() * 90) + ')');
+    g.appendChild(el);
+  }
+}
+
+function tossRice() {
+  if (!playing) return;
+  const startX = (Math.random() - 0.5) * 280;
+  const startY = 40 - Math.random() * 26;
+  const endX = 0;
+  const endY = -80;
+  const dur = 0.55 + Math.random() * 0.3;
+  const arc = 100 + Math.random() * 70;
+  fishes.push({ sx: startX, sy: startY, ex: endX, ey: endY, dur, arc, age: 0 });
+  if (riceInBowl > 0) {
+    riceInBowl--;
+    layoutRice();
+    $('riceCount').textContent = riceInBowl;
+  }
+}
+
+function updateFlying(dt) {
+  const g = N.flyingRice;
+  g.innerHTML = '';
+  for (let i = fishes.length - 1; i >= 0; i--) {
+    const f = fishes[i];
+    f.age += dt;
+    const t = Math.min(1, f.age / f.dur);
+    const x = f.sx + (f.ex - f.sx) * t;
+    const y = f.sy + (f.ey - f.sy) * t - f.arc * 4 * t * (1 - t);
+    const el = makeRice();
+    el.setAttribute('transform', 'translate(' + round(x) + ' ' + round(y) + ') rotate(' + (t * 300) + ')');
+    g.appendChild(el);
+    if (t >= 1) {
+      fishes.splice(i, 1);
+      eatenCount++;
+      $('eatenCount').textContent = eatenCount;
+      N.happyStar.setAttribute('opacity', '1');
+      setTimeout(() => { if (N.happyStar) N.happyStar.setAttribute('opacity', '0'); }, 300);
+      if (eatenCount % 20 === 0) {
+        N.fullStar.setAttribute('opacity', '1');
+        setTimeout(() => { if (N.fullStar) N.fullStar.setAttribute('opacity', '0'); }, 900);
+      }
+    }
+  }
+}
+
+function render() {
+  const t = elapsed % loopLength;
+  const phase = (t / loopLength) * tau;
+  const bob = Math.sin(phase * 2) * 4;
+  tr('bodyGroup', 'translate(0 ' + round(bob) + ')');
+  tr('tailL', 'rotate(' + round(Math.sin(phase * 4) * 13) + ')');
+  tr('tailR', 'rotate(' + round(Math.sin(phase * 4 + 1) * 11) + ')');
+  tr('dorsalFin', 'rotate(' + round(Math.sin(phase * 4 + 0.5) * 7) + ')');
+  tr('finL', 'rotate(' + round(Math.sin(phase * 3) * 11 + 8) + ')');
+  tr('finR', 'rotate(' + round(Math.sin(phase * 3 + 1) * 11 - 8) + ')');
+  const blink = t > 2.3 && t < 2.4 ? Math.max(0.1, Math.abs(t - 2.35) / 0.05) : 1;
+  tr('eyeL', 'scale(1 ' + round(blink) + ')');
+  tr('eyeR', 'scale(1 ' + round(blink) + ')');
+  const eating = t < 2 ? 1 : (t > 4.5 ? 0.3 : 0);
+  tr('mouth', 'scale(1 ' + (1 - eating * 0.45) + ')');
+  N.blushL.setAttribute('opacity', 0.45 + Math.sin(phase * 2) * 0.2);
+  N.blushR.setAttribute('opacity', 0.45 + Math.sin(phase * 2) * 0.2);
+  tr('bowlScale', 'scale(' + bowlSize + ')');
+  const shift = (bowlSize - 1) * -22;
+  tr('whaleGroup', 'translate(' + round(shift) + ' 0)');
+}
+
+function tick(timestamp) {
+  frameId = 0;
+  if (!playing || document.hidden) { lastFrame = 0; return; }
+  if (lastFrame) {
+    const dt = Math.min((timestamp - lastFrame) / 1000, 0.1) * speed;
+    const prevT = elapsed % loopLength;
+    elapsed = (elapsed + dt) % loopLength;
+    const t = elapsed % loopLength;
+    if (t < 0.3 && prevT >= t) tossRice();
+    updateFlying(dt);
+  }
+  lastFrame = timestamp;
+  render();
+  frameId = requestAnimationFrame(tick);
+}
+
+function setPlaying(v) {
+  playing = v;
+  lastFrame = 0;
+  $('playBtn').textContent = playing ? '⏸ 暂停' : '▶ 继续';
+  if (playing) schedule();
+  else { cancelAnimationFrame(frameId); frameId = 0; }
+}
+function schedule() {
+  if (playing && !document.hidden && !frameId) frameId = requestAnimationFrame(tick);
+}
+$('playBtn').onclick = () => setPlaying(!playing);
+document.addEventListener('visibilitychange', () => {
+  lastFrame = 0;
+  if (document.hidden) { cancelAnimationFrame(frameId); frameId = 0; }
+  else schedule();
+});
+
+document.querySelectorAll('#sizeSeg button').forEach((b) => {
+  b.onclick = () => {
+    const size = Number(b.dataset.size);
+    bowlSize = size;
+    document.querySelectorAll('#sizeSeg button').forEach((x) => x.classList.toggle('active', x === b));
+    $('sizeLabel').textContent = size === 0.6 ? '小碗' : size === 1.6 ? '大碗' : '中碗';
+    toast('切换碗：' + $('sizeLabel').textContent);
+  };
+});
+
+$('feedBtn').onclick = () => { riceInBowl += 20; layoutRice(); $('riceCount').textContent = riceInBowl; toast('🍚 加饭啦！碗里+20粒'); };
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); setPlaying(!playing); }
+});
+
+let toastTimer;
+function toast(t) {
+  const o = $('toast');
+  o.textContent = t;
+  o.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => o.classList.remove('show'), 2000);
+}
+
+layoutRice();
+render();
+setPlaying(playing);
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

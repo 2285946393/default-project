@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>次元召唤 · 二次元抽卡机</title>
+<style>
+  :root{--bg1:#1a1030;--bg2:#0d0a1e;--pink:#ff6bbf;--purple:#a78bfa;--cyan:#6ee7ff;--gold:#ffd54a;--ur:#ff9d5c;--ssr:#ffd54a;--sr:#a78bfa;--r:#6ee7ff;--text:#f0ecff;--muted:#b9aed6;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1200px 800px at 20% 0%,var(--bg1),var(--bg2));color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden}
+  .bg-stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .bg-stars i{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
+  @keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.9}}
+  header{padding:22px 26px;text-align:center;position:relative;z-index:2}
+  header h1{font-size:30px;font-weight:800;letter-spacing:3px;background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(167,139,250,.3)}
+  header .sub{color:var(--muted);font-size:13px;margin-top:6px;letter-spacing:1px}
+  .main{max-width:920px;margin:0 auto;padding:0 20px 40px;position:relative;z-index:2}
+
+  /* 抽卡区 */
+  .gacha{text-align:center;padding:30px 20px;background:rgba(20,15,45,.5);border:1px solid rgba(167,139,250,.25);border-radius:20px;backdrop-filter:blur(6px);box-shadow:0 0 60px rgba(255,107,191,.1)}
+  .card-stage{position:relative;height:340px;margin:10px auto 20px;max-width:420px;perspective:900px}
+  .card-slot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:200px;height:300px;transition:transform .5s ease}
+  .card-front{width:100%;height:100%;border-radius:16px;position:relative;overflow:hidden;transition:.4s;box-shadow:0 10px 40px rgba(0,0,0,.5);background:linear-gradient(160deg,#2a2050,#120d2e)}
+  .card-front::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.15),transparent 60%)}
+  .card-back{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:200px;height:300px;border-radius:16px;background:repeating-linear-gradient(45deg,#241a4a,#241a4a 8px,#1c1340 8px,#1c1340 16px);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:60px;color:var(--purple);box-shadow:0 10px 40px rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+  .card-back .star{text-shadow:0 0 20px var(--purple)}
+  .card-front .rar{position:absolute;top:10px;left:10px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px}
+  .card-front .avatar{position:absolute;top:40px;left:50%;transform:translateX(-50%);width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:56px;border:3px solid rgba(255,255,255,.3);background:radial-gradient(circle,#332a66,#1a1240)}
+  .card-front .name{position:absolute;top:170px;left:0;right:0;text-align:center;font-size:17px;font-weight:700}
+  .card-front .role{position:absolute;top:200px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted)}
+  .card-front .hp{position:absolute;top:225px;left:14px;right:14px;font-size:12px;color:var(--muted)}
+  .card-front .hp b{color:var(--cyan)}
+
+  .btn-gacha{font-size:20px;font-weight:800;padding:14px 46px;border:none;border-radius:40px;cursor:pointer;color:#1a1030;background:linear-gradient(90deg,var(--pink),var(--purple));box-shadow:0 8px 30px rgba(255,107,191,.4);transition:.2s;letter-spacing:2px}
+  .btn-gacha:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 40px rgba(255,107,191,.55)}
+  .btn-gacha:active{transform:scale(.97)}
+  .btn-ten{background:linear-gradient(90deg,var(--purple),var(--cyan));margin-left:12px;color:#0d0a1e;box-shadow:0 8px 30px rgba(110,231,255,.3)}
+  .msg{margin-top:16px;font-size:15px;min-height:24px;color:var(--muted)}
+  .msg b{font-weight:700}
+  .result-line{font-size:14px;margin-top:6px;color:var(--purple)}
+
+  /* 出货特效 */
+  .burst{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none;z-index:5}
+  .burst span{position:absolute;width:8px;height:8px;border-radius:50%;animation:boom 1s ease-out forwards}
+  @keyframes boom{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+  .shake{animation:shake .5s}
+  @keyframes shake{0%,100%{transform:translate(-50%,-50%)}20%,60%{transform:translate(-50%,-50%) translateX(-6px)}40%,80%{transform:translate(-50%,-50%) translateX(6px)}}
+  .card-slot.flip .card-front{transform:rotateY(360deg)}
+
+  /* 图鉴区 */
+  .section-title{font-size:19px;font-weight:700;margin:34px 0 16px;display:flex;align-items:center;gap:10px;color:var(--pink)}
+  .filter{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .filter button{padding:7px 18px;border-radius:20px;border:1px solid rgba(167,139,250,.4);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;transition:.2s}
+  .filter button:hover{color:var(--text);border-color:var(--purple)}
+  .filter button.active{background:linear-gradient(90deg,var(--pink),var(--purple));color:#1a1030;font-weight:700;border:none}
+  .collection{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+  .coll-card{background:rgba(20,15,45,.5);border:1px solid rgba(167,139,250,.2);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+  .coll-card:hover{transform:translateY(-4px);border-color:var(--purple)}
+  .coll-card .emo{font-size:40px}
+  .coll-card .nm{font-size:13px;font-weight:600;margin-top:6px}
+  .coll-card .rl{font-size:11px;color:var(--muted);margin-top:2px}
+  .coll-card .rr{position:absolute;top:8px;right:8px;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700}
+  .coll-card.new{animation:pop .6s ease}
+  @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .rar-UR{background:var(--ur);color:#2a1200}.rar-SSR{background:var(--ssr);color:#2a2400}.rar-SR{background:var(--sr);color:#1a1240}.rar-R{background:var(--r);color:#0d1a2a}
+  .empty{color:var(--muted);text-align:center;padding:30px;font-size:14px}
+
+  /* 弹窗 */
+  .modal{position:fixed;inset:0;background:rgba(5,3,15,.8);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(4px)}
+  .modal.show{display:flex}
+  .modal-box{background:linear-gradient(160deg,#2a2050,#150f36);border:1px solid var(--purple);border-radius:18px;padding:28px;text-align:center;max-width:340px;width:90%}
+  .modal-box .big-emo{font-size:90px;animation:bounce 1s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .modal-box .big-name{font-size:22px;font-weight:800;margin:10px 0 4px}
+  .modal-box .big-role{color:var(--muted);font-size:14px}
+  .modal-box .big-desc{margin:12px 0;font-size:13px;color:var(--text);line-height:1.8}
+  .modal-box button{margin-top:8px;padding:10px 34px;border:none;border-radius:24px;background:linear-gradient(90deg,var(--pink),var(--purple));color:#1a1030;font-weight:700;cursor:pointer;font-size:15px}
+  .confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:40;display:none}
+  .confetti span{position:absolute;top:-10px;width:8px;height:14px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(30,20,60,.95);border:1px solid var(--pink);padding:12px 26px;border-radius:30px;font-size:14px;z-index:60;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+  .stats{display:flex;gap:20px;justify-content:center;margin-top:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+  .stats span b{color:var(--gold);font-size:15px}
+</style>
+</head>
+<body>
+<div class="bg-stars" id="stars"></div>
+
+<header>
+  <h1>✦ 次元召唤 ✦</h1>
+  <div class="sub">二次元抽卡机 · 收集属于你的幻想角色</div>
+</header>
+
+<div class="main">
+  <!-- 抽卡区 -->
+  <div class="gacha">
+    <div class="card-stage" id="stage">
+      <div class="card-back"><span class="star">✧</span></div>
+      <div class="card-slot" id="slot"><div class="card-front" id="curCard"></div></div>
+    </div>
+    <button class="btn-gacha" onclick="draw(1)">⚡ 召唤 ×1</button>
+    <button class="btn-ten" onclick="draw(10)">✨ 召唤 ×10</button>
+    <div class="msg" id="msg">点击召唤，邂逅你的角色~</div>
+    <div class="result-line" id="resultLine"></div>
+    <div class="stats">
+      <span>UR <b id="cUR">0</b></span>
+      <span>SSR <b id="cSSR">0</b></span>
+      <span>SR <b id="cSR">0</b></span>
+      <span>R <b id="cR">0</b></span>
+    </div>
+  </div>
+
+  <!-- 图鉴区 -->
+  <div class="section-title">📖 角色图鉴 <span style="font-size:13px;color:var(--muted);font-weight:400">已收集 <b id="totalColl" style="color:var(--gold)">0</b> / <span id="totalAll"></span></span></div>
+  <div class="filter" id="filter">
+    <button data-f="all" class="active">全部</button>
+    <button data-f="UR">UR</button>
+    <button data-f="SSR">SSR</button>
+    <button data-f="SR">SR</button>
+    <button data-f="R">R</button>
+  </div>
+  <div class="collection" id="collection"></div>
+  <div class="empty" id="empty" style="display:none">还没有角色，快去召唤吧！</div>
+</div>
+
+<!-- 角色详情弹窗 -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="big-emo" id="mEmo">🌸</div>
+    <div class="big-name" id="mName"></div>
+    <div class="big-role" id="mRole"></div>
+    <div class="big-desc" id="mDesc"></div>
+    <button onclick="closeModal()">收下啦 ✨</button>
+  </div>
+</div>
+<div class="confetti" id="confetti"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============ 角色库 ============ */
+const RAR_RANK = {UR:4,SSR:3,SR:2,R:1};
+const ROLES = [
+  // UR
+  {name:"星野 · 苍月的歌姬", emo:"🌸", role:"UR · 歌姬", rar:"UR", hp:3200, desc:"来自月之国的最后一位歌姬，她的歌声能让枯萎的星辰重新闪烁。"},
+  {name:"墨璃 · 紫电的剑姬", emo:"⚔️", role:"UR · 剑士", rar:"UR", hp:2850, desc:"手持紫电之刃的剑士，剑尖划过之处，连空间都会被斩裂。"},
+  {name:"苍雷 · 雾都的猎手", emo:"🐉", role:"UR · 龙裔", rar:"UR", hp:3500, desc:"身上流淌着远古龙之血，雾都的深夜是他的狩猎场。"},
+  // SSR
+  {name:"铃音 · 樱庭学园偶像", emo:"🎤", role:"SSR · 偶像", rar:"SSR", hp:2200, desc:"樱庭学园的当红偶像，笑容能治愈一切烦恼，粉丝遍布全校。"},
+  {name:"影刹 · 夜的暗行者", emo:"🥷", role:"SSR · 忍者", rar:"SSR", hp:2400, desc:"来无影去无踪的暗夜忍者，据说从没人见过他的真面目。"},
+  {name:"琉夏 · 海边的守护者", emo:"🌊", role:"SSR · 骑士", rar:"SSR", hp:2600, desc:"守护着海之国的骑士，湛蓝的铠甲如同永不褪色的海浪。"},
+  {name:"织火 · 炼金工坊少女", emo:"🔮", role:"SSR · 炼金师", rar:"SSR", hp:2050, desc:"小小的炼金工坊里，她熬制着能实现愿望的奇妙药剂。"},
+  // SR
+  {name:"小桃 · 森林妖精", emo:"🍑", role:"SR · 妖精", rar:"SR", hp:1500, desc:"住在森林深处的小妖精，最喜欢收集闪闪发光的小东西。"},
+  {name:"赤羽 · 火焰魔女", emo:"🔥", role:"SR · 魔女", rar:"SR", hp:1700, desc:"脾气火爆的见习魔女，正在为考试不及格发愁。"},
+  {name:"白露 · 见习医师", emo:"💊", role:"SR · 医师", rar:"SR", hp:1300, desc:"温柔的见习医师，随身携带一整个医药箱的温柔。"},
+  {name:"疾风 · 剑道少年", emo:"🌪️", role:"SR · 剑客", rar:"SR", hp:1600, desc:"立志成为最强剑客的少年，挥剑的速度比风还快。"},
+  {name:"灵犀 · 占卜馆猫娘", emo:"🐱", role:"SR · 占卜师", rar:"SR", hp:1400, desc:"经营着一家神秘占卜馆的猫娘，据说她的预言从不出错。"},
+  // R
+  {name:"小满 · 面包店学徒", emo:"🍞", role:"R · 店员", rar:"R", hp:900, desc:"清晨第一炉面包的香气，就是她最得意的作品。"},
+  {name:"阿澈 · 学生会长", emo:"📚", role:"R · 学生", rar:"R", hp:800, desc:"一丝不苟的学生会长，其实私下里是个游戏高手。"},
+  {name:"花音 · 园艺社社员", emo:"🌻", role:"R · 园丁", rar:"R", hp:850, desc:"能把任何枯萎的花草都养得生机勃勃的园艺少女。"},
+  {name:"卡卡 · 街头滑板少年", emo:"🛹", role:"R · 少年", rar:"R", hp:880, desc:"爱在黄昏的街头滑板，耳机里永远放着热血的歌。"},
+  {name:"小雪 · 便利店店员", emo:"🍡", role:"R · 店员", rar:"R", hp:820, desc:"全年无休的便利店店员，深夜总是她最清醒。"},
+];
+
+/* 抽卡概率 */
+const PROB = {UR:0.01, SSR:0.09, SR:0.30, R:0.60};
+const COLLECTED = {};   // name -> true
+let filter = 'all';
+
+/* ============ 背景星星 ============ */
+(function(){
+  const s=document.getElementById('stars');
+  for(let i=0;i<70;i++){
+    const e=document.createElement('i');
+    e.style.left=Math.random()*100+'%';
+    e.style.top=Math.random()*100+'%';
+    const sz=Math.random()*2.5+1;
+    e.style.width=e.style.height=sz+'px';
+    e.style.animationDelay=(Math.random()*3)+'s';
+    e.style.animationDuration=(Math.random()*2+2)+'s';
+    s.appendChild(e);
+  }
+})();
+
+/* ============ 抽卡逻辑 ============ */
+const $ = id=>document.getElementById(id);
+
+function pickRarity(){
+  const r=Math.random();
+  let acc=0;
+  for(const [rar,p] of Object.entries(PROB)){
+    acc+=p;
+    if(r<acc) return rar;
+  }
+  return 'R';
+}
+function pickChar(rar){
+  const pool=ROLES.filter(c=>c.rar===rar);
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+let lastShown = null;  // 最近展示的角色名
+
+function draw(count){
+  const btn=document.querySelector('.btn-gacha');
+  // 单抽或十连
+  let results=[];
+  if(count===1){
+    results=[drawOne()];
+  } else {
+    // 十连保底：至少1个SSR及以上
+    let hasHigh=false;
+    for(let i=0;i<10;i++){
+      const r=drawOne();
+      results.push(r);
+      if(r.rar==='SSR'||r.rar==='UR')hasHigh=true;
+    }
+    if(!hasHigh){ results[9]=drawOne('SSR'); }
+  }
+  showResults(results);
+}
+
+function drawOne(forceRar){
+  let rar = forceRar || pickRarity();
+  return pickChar(rar);
+}
+
+function showResults(results){
+  // 显示最新一张在卡槽
+  const last=results[results.length-1];
+  lastShown=last;
+  displayCard(last);
+  burst(last.rar);
+  // 消息
+  const best=results.reduce((a,b)=>RAR_RANK[a.rar]>RAR_RANK[b.rar]?a:b);
+  const isNew=results.filter(c=>!COLLECTED[c.name]).length;
+  const names=results.map(c=>c.name);
+  $('msg').innerHTML=isNew>0 ? `🎉 收获 <b style="color:var(--gold)">${isNew}</b> 位新角色！` : (results.length===10?`✨ 十连召唤完成`:`🌙 召唤完成`);
+  $('resultLine').innerHTML=results.length===1
+    ? `<b style="color:var(--${last.rar==='UR'?'ur':last.rar==='SSR'?'ssr':last.rar==='SR'?'sr':'r'})">${last.name}</b> <span style="color:var(--muted)">${last.rar}</span>`
+    : results.slice(0,10).map(c=>`<span style="color:var(--${c.rar==='UR'?'ur':c.rar==='SSR'?'ssr':c.rar==='SR'?'sr':'r'})">${c.name.split('·')[0]}</span>`).join(' · ');
+  // 记录收集 & 渲染图鉴
+  results.forEach(c=>COLLECTED[c.name]=true);
+  renderCollection();
+  updateStats();
+  // 如果是UR/SSR且新 触发彩带
+  if((last.rar==='UR'||last.rar==='SSR') && (results.filter(c=>c.rar==='UR'||c.rar==='SSR').length>=1)){
+    confetti();
+    toast(`✦ 稀有角色出现！`);
+  }
+  // 高稀有弹窗
+  if(last.rar==='UR'||last.rar==='SSR'){
+    setTimeout(()=>openModal(last), 800);
+  }
+  // 卡槽动画
+  const slot=$('slot');
+  slot.classList.add('flip');
+  setTimeout(()=>slot.classList.remove('flip'),600);
+}
+
+function displayCard(c){
+  const f=$('curCard');
+  const color={UR:'var(--ur)',SSR:'var(--ssr)',SR:'var(--sr)',R:'var(--r)'}[c.rar];
+  f.innerHTML=`
+    <div class="rar" style="background:${color};color:${c.rar==='SR'?'#1a1240':c.rar==='R'?'#0d1a2a':'#1a1030'}">${c.rar}</div>
+    <div class="avatar" style="border-color:${color}">${c.emo}</div>
+    <div class="name" style="color:${color}">${c.name.split('·')[0]}</div>
+    <div class="role">${c.role} · ${c.name.split('·')[1]||''}</div>
+    <div class="hp"><b>HP</b> ${c.hp} · ${c.rar==='UR'?'神话':c.rar==='SSR'?'史诗':c.rar==='SR'?'稀有':'普通'}</div>`;
+}
+
+function burst(rar){
+  const stage=$('stage');
+  const colors={UR:['#ffd54a','#ff9d5c','#ff6bbf'],SSR:['#ffd54a','#ffec9e'],SR:['#a78bfa'],R:['#6ee7ff']}[rar];
+  const n=rar==='UR'?34:rar==='SSR'?26:rar==='SR'?16:8;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span');
+    s.style.background=colors[Math.floor(Math.random()*colors.length)];
+    s.style.left='50%';s.style.top='50%';
+    const ang=Math.random()*Math.PI*2, dist=Math.random()*120+50;
+    s.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+    s.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+    s.style.width=s.style.height=(Math.random()*4+2)+'px';
+    stage.appendChild(s);
+    setTimeout(()=>s.remove(),1000);
+  }
+}
+
+/* ============ 统计 ============ */
+function updateStats(){
+  const all=ROLES.length;
+  const got=Object.keys(COLLECTED).length;
+  $('totalColl').textContent=got;
+  const byRar={UR:0,SSR:0,SR:0,R:0};
+  for(const k in COLLECTED){
+    const c=ROLES.find(x=>x.name===k);
+    if(c)byRar[c.rar]++;
+  }
+  $('cUR').textContent=byRar.UR+'/'+ROLES.filter(c=>c.rar==='UR').length;
+  $('cSSR').textContent=byRar.SSR+'/'+ROLES.filter(c=>c.rar==='SSR').length;
+  $('cSR').textContent=byRar.SR+'/'+ROLES.filter(c=>c.rar==='SR').length;
+  $('cR').textContent=byRar.R+'/'+ROLES.filter(c=>c.rar==='R').length;
+  $('totalAll').textContent=all;
+}
+
+/* ============ 图鉴渲染 ============ */
+function renderCollection(){
+  const box=$('collection');
+  let list=ROLES.filter(c=>COLLECTED[c.name]);
+  if(filter!=='all') list=list.filter(c=>c.rar===filter);
+  box.innerHTML='';
+  if(list.length===0){
+    $('empty').style.display='block';
+    box.style.display='none';
+    return;
+  }
+  $('empty').style.display='none';
+  box.style.display='grid';
+  const color={UR:'var(--ur)',SSR:'var(--ssr)',SR:'var(--sr)',R:'var(--r)'};
+  list.forEach(c=>{
+    const d=document.createElement('div');
+    d.className='coll-card';
+    d.innerHTML=`<div class="rr rar-${c.rar}">${c.rar}</div><div class="emo">${c.emo}</div><div class="nm">${c.name.split('·')[0]}</div><div class="rl">${c.role.split(' · ')[0]}</div>`;
+    d.onclick=()=>openModal(c);
+    box.appendChild(d);
+  });
+}
+
+/* ============ 弹窗 ============ */
+function openModal(c){
+  $('mEmo').textContent=c.emo;
+  $('mName').textContent=c.name;
+  $('mRole').textContent=`${c.role} · HP ${c.hp}`;
+  $('mDesc').textContent=c.desc;
+  $('modal').classList.add('show');
+}
+function closeModal(){$('modal').classList.remove('show');}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
+/* ============ 彩带 ============ */
+function confetti(){
+  const box=$('confetti');
+  box.style.display='block';
+  box.innerHTML='';
+  const colors=['#ff6bbf','#a78bfa','#6ee7ff','#ffd54a','#ff9d5c'];
+  for(let i=0;i<70;i++){
+    const s=document.createElement('span');
+    s.style.left=Math.random()*100+'%';
+    s.style.background=colors[Math.floor(Math.random()*colors.length)];
+    const dur=Math.random()*2+2;
+    s.style.animationDuration=dur+'s';
+    s.style.width=(Math.random()*8+4)+'px';
+    s.style.height=(Math.random()*12+6)+'px';
+    box.appendChild(s);
+    setTimeout(()=>s.remove(),dur*1000);
+  }
+  setTimeout(()=>{box.style.display='none';},3000);
+}
+
+/* ============ 提示 ============ */
+let toastTimer;
+function toast(t){const o=$('toast');o.textContent=t;o.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>o.classList.remove('show'),2500);}
+
+/* ============ 筛选 ============ */
+document.querySelectorAll('#filter button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('#filter button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    filter=b.dataset.f;
+    renderCollection();
+  };
+});
+
+/* 初始化 */
+renderCollection();
+updateStats();
+// 默认显示一张示例
+displayCard(ROLES[1]);
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

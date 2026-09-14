@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>节奏抽卡 · 二次元音游</title>
+<style>
+  :root{--pink:#ff6bc1;--purple:#a78bfa;--cyan:#6ee7ff;--gold:#ffd54a;--green:#4ade80;--red:#fb7185;--bg1:#150f2e;--bg2:#0d0a1e;--panel:#1b1540;--line:#2c2460;--text:#f0ecff;--muted:#b9aed6;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1200px 800px at 30% 0%,var(--bg1),var(--bg2));color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden}
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .stars i{position:absolute;background:#fff;border-radius:50%;animation:tw 3s infinite}
+  @keyframes tw{0%,100%{opacity:.1}50%{opacity:.9}}
+  header{padding:20px;text-align:center;position:relative;z-index:2}
+  header h1{font-size:30px;font-weight:800;letter-spacing:3px;background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+  header .sub{color:var(--muted);font-size:13px;margin-top:6px}
+  .main{max-width:960px;margin:0 auto;padding:0 16px 40px;position:relative;z-index:2}
+
+  /* 顶部信息条 */
+  .topbar{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 18px;margin-bottom:16px}
+  .coin{font-size:16px;font-weight:700;color:var(--gold)}
+  .coin span{color:var(--muted);font-size:12px;font-weight:400}
+  .combo{font-size:16px;font-weight:700;color:var(--cyan)}
+  .best{font-size:13px;color:var(--muted)}
+
+  /* 舞台 */
+  .stage{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;height:440px;box-shadow:0 0 50px rgba(167,139,250,.1)}
+  .bg{position:absolute;inset:0;background:linear-gradient(180deg,#1e1850,#0d0a22);display:flex;align-items:center;justify-content:center;font-size:90px;opacity:.25}
+  .lanes{position:absolute;inset:0;display:flex}
+  .lane{flex:1;border-right:1px solid rgba(110,231,255,.12);position:relative}
+  .lane:last-child{border-right:none}
+  .judge-line{position:absolute;bottom:70px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pink),var(--purple));box-shadow:0 0 20px rgba(255,107,193,.6)}
+  .note{position:absolute;width:44px;height:44px;left:50%;margin-left:-22px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .08s;border:2px solid transparent}
+  .note.hit{transform:scale(1.3);border-color:var(--gold);box-shadow:0 0 20px var(--gold)}
+  .note.miss{opacity:.2;transform:scale(.5)}
+
+  /* 打击区 */
+  .keys{display:flex;gap:8px;margin:14px 0}
+  .key{flex:1;padding:16px;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;cursor:pointer;font-size:20px;color:var(--muted);transition:.1s;user-select:none;font-weight:700}
+  .key:active,.key.pressed{background:var(--purple);color:#0d0a1e;transform:scale(.97);border-color:var(--purple)}
+
+  /* 反馈 */
+  .feedback{position:absolute;left:50%;top:40%;transform:translateX(-50%);font-size:26px;font-weight:800;opacity:0;pointer-events:none;text-shadow:0 0 20px currentColor;z-index:5}
+  .feedback.show{animation:popfb .4s forwards}
+  @keyframes popfb{0%{opacity:0;transform:translateX(-50%) scale(.5)}30%{opacity:1;transform:translateX(-50%) scale(1.2)}100%{opacity:0;transform:translateX(-50%) scale(1)}}
+
+  /* 结算面板 */
+  .overlay{position:fixed;inset:0;background:rgba(5,3,15,.85);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(4px)}
+  .overlay.show{display:flex}
+  .result{background:linear-gradient(160deg,#2a2050,#150f36);border:1px solid var(--purple);border-radius:18px;padding:30px;text-align:center;max-width:380px;width:92%}
+  .result .rank{font-size:60px}
+  .result .title{font-size:24px;font-weight:800;margin:8px 0}
+  .result .grade{font-size:22px;font-weight:800;color:var(--gold);margin-bottom:10px}
+  .result .rows{font-size:14px;line-height:2;color:var(--muted);text-align:left;margin:12px auto;max-width:220px}
+  .result .rows b{color:var(--text)}
+  .result button{margin:6px;padding:10px 26px;border:none;border-radius:24px;background:linear-gradient(90deg,var(--pink),var(--purple));color:#0d0a1e;font-weight:700;cursor:pointer;font-size:15px}
+  .result button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+
+  /* 歌单 */
+  .songs{margin-top:20px}
+  .stitle{font-size:16px;font-weight:700;color:var(--muted);margin-bottom:10px}
+  .song{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;cursor:pointer;border:1px solid transparent;margin-bottom:6px}
+  .song:hover{background:rgba(167,139,250,.08);border-color:var(--line)}
+  .song.active{background:rgba(110,231,255,.1);border-color:var(--cyan)}
+  .song .emo{font-size:24px}
+  .song .info{flex:1}
+  .song .nm{font-size:14px;font-weight:600}
+  .song .ar{font-size:12px;color:var(--muted)}
+  .song .diff{font-size:11px;padding:2px 10px;border-radius:12px;background:var(--panel)}
+  .song .best{font-size:12px;color:var(--gold)}
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(20,12,40,.95);border:1px solid var(--pink);padding:12px 26px;border-radius:30px;font-size:14px;z-index:60;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<header>
+  <h1>✦ 节奏抽卡 ✦</h1>
+  <div class="sub">二次元节奏音游 · 跟着节拍打击 · 收集角色</div>
+</header>
+
+<div class="main">
+  <div class="topbar">
+    <div class="coin">★ <span id="coins">0</span> 音符币</div>
+    <div class="combo">连击 <span id="combo">0</span>x</div>
+    <div class="best">最高 <span id="bestScore">0</span></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="bg" id="stageEmo">🎤</div>
+    <div class="lanes" id="lanes"></div>
+    <div class="judge-line"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <div class="keys" id="keys"></div>
+
+  <div class="songs">
+    <div class="stitle">🎵 曲库</div>
+    <div id="songList"></div>
+  </div>
+</div>
+
+<!-- 结算 -->
+<div class="overlay" id="overlay">
+  <div class="result">
+    <div class="rank" id="rEmo">🎤</div>
+    <div class="title" id="rTitle">歌曲名</div>
+    <div class="grade" id="rGrade">S</div>
+    <div class="rows" id="rRows"></div>
+    <button id="btnRetry">🔁 再来一次</button>
+    <button class="ghost" id="btnClose">收下奖励 ✨</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+
+/* ============ 曲库 ============ */
+const SONGS=[
+  {name:"洗脑 · 电子脉冲",art:"Neuron★",emo:"🎤",diff:"Normal",bpm:130,reward:5,beatNotes:6,length:40},
+  {name:"星屑都市",art:"Stellar★",emo:"🌃",diff:"Hard",bpm:160,reward:8,beatNotes:8,length:36},
+  {name:"深海恋歌",art:"Marine★",emo:"🌊",diff:"Normal",bpm:100,reward:5,beatNotes:5,length:44},
+  {name:"电波狂想曲",art:"Radio★",emo:"📡",diff:"Extreme",bpm:190,reward:12,beatNotes:9,length:32},
+  {name:"樱花流星",art:"Sakura★",emo:"🌸",diff:"Hard",bpm:150,reward:8,beatNotes:7,length:38},
+  {name:"次元穿越",art:"Hyper★",emo:"✨",diff:"Extreme",bpm:200,reward:12,beatNotes:10,length:30},
+];
+/* 奖励卡池 */
+const CARDS=[
+  {emo:"🎀",name:"星野 · 歌姬",rar:"UR"},
+  {emo:"⚔️",name:"墨璃 · 剑姬",rar:"UR"},
+  {emo:"🐉",name:"苍雷 · 龙裔",rar:"UR"},
+  {emo:"🎤",name:"铃音 · 偶像",rar:"SSR"},
+  {emo:"🌊",name:"琉夏 · 骑士",rar:"SSR"},
+  {emo:"🔮",name:"织火 · 炼金师",rar:"SSR"},
+  {emo:"🐱",name:"灵犀 · 猫娘",rar:"SR"},
+  {emo:"🍑",name:"小桃 · 妖精",rar:"SR"},
+  {emo:"🔥",name:"赤羽 · 魔女",rar:"SR"},
+  {emo:"🌻",name:"花音 · 园丁",rar:"R"},
+  {emo:"🍞",name:"小满 · 学徒",rar:"R"},
+  {emo:"🛹",name:"卡卡 · 少年",rar:"R"},
+];
+let coins=0, bestScore=0;
+
+/* ============ 核心状态 ============ */
+let song=SONGS[0], playing=false, raf=null;
+let noteTimer=0, notes=[], combo=0, score=0, perfect=0, good=0, missCount=0, hitCount=0;
+let laneCount=0, lastSpawn=0, spawnInt=0;
+
+/* ============ 初始化 ============ */
+function fitLanes(){
+  const lanesEl=$('lanes'); lanesEl.innerHTML='';
+  for(let i=0;i<laneCount;i++){const d=document.createElement('div');d.className='lane';lanesEl.appendChild(d);}
+}
+function initLanes(n){
+  laneCount=n;
+  const labels=['A','S','D','F','G','H','J','K','L'];
+  const keys=$('keys'); keys.innerHTML='';
+  for(let i=0;i<n;i++){
+    const k=document.createElement('div');k.className='key';
+    k.textContent=labels[i];k.dataset.idx=i;
+    k.onclick=()=>tapNote(i);
+    keys.appendChild(k);
+  }
+  fitLanes();
+}
+/* 舞台点击打击 */
+const stage=$('stage');
+stage.addEventListener('pointerdown',e=>{
+  const rect=stage.getBoundingClientRect();
+  const x=e.clientX-rect.left;
+  const lane=Math.floor(x/rect.width*laneCount);
+  if(lane>=0&&lane<laneCount) tapNote(lane);
+});
+
+/* ============ 音符生成 & 下落 ============ */
+function spawnNote(){
+  const lane=Math.floor(Math.random()*laneCount);
+  const el=document.createElement('div');
+  el.className='note';
+  const emojis=['✦','★','✧','❤','💫','🎵'];
+  el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  const st=$('stage');
+  st.appendChild(el);
+  notes.push({el,lane,y:0,speed:130,hit:false});
+}
+function resetNotes(){notes.forEach(n=>n.el.remove());notes=[];}
+
+/* ============ 主循环 ============ */
+function start(){
+  if(playing)return;
+  playing=true;
+  resetNotes();
+  combo=0;score=0;perfect=0;good=0;missCount=0;hitCount=0;
+  updateHUD();
+  noteTimer=0;lastSpawn=0;
+  spawnInt=(60/song.bpm);
+  $('stageEmo').textContent=song.emo;
+  let last=performance.now();
+  function loop(now){
+    if(!playing)return;
+    const dt=(now-last)/1000; last=now;
+    noteTimer+=dt;
+    // 生成音符
+    if(noteTimer-lastSpawn>=spawnInt && song.length>0){
+      spawnNote(); lastSpawn=noteTimer;
+    }
+    // 下落
+    const st=$('stage'); const H=st.clientHeight;
+    const judgeY=H-70;
+    for(let i=notes.length-1;i>=0;i--){
+      const n=notes[i];
+      n.y+=n.speed*dt;
+      n.el.style.top=n.y+'px';
+      if(n.y>judgeY+50 && !n.hit){
+        // 判定miss
+        n.hit=true; n.missed=true;
+        miss(); n.el.remove(); notes.splice(i,1);
+      }
+    }
+    raf=requestAnimationFrame(loop);
+  }
+  raf=requestAnimationFrame(loop);
+}
+function stop(){
+  playing=false;
+  if(raf)cancelAnimationFrame(raf);
+}
+
+/* ============ 打击判定 ============ */
+function tapNote(lane){
+  if(!playing){return;}
+  const judgeY=$('stage').clientHeight-70;
+  // 找该lane最近的未hit音符
+  let best=null, bestDist=999;
+  for(const n of notes){
+    if(n.lane===lane && !n.hit){
+      const dist=Math.abs(n.y-judgeY);
+      if(dist<bestDist){bestDist=dist;best=n;}
+    }
+  }
+  if(!best){ miss(); return; }
+  best.hit=true;
+  if(bestDist<=20){ perfect++; combo++; score+=100; feedback('PERFECT','var(--gold)'); }
+  else if(bestDist<=50){ good++; combo++; score+=60; feedback('GOOD','var(--green)'); }
+  else { miss(); return; }
+  hitCount++;
+  best.el.classList.add('hit');
+  best.el.style.top=(judgeY-22)+'px';
+  setTimeout(()=>{best.el.remove();},120);
+  const idx=notes.indexOf(best); if(idx>-1)notes.splice(idx,1);
+  updateHUD();
+  if(combo%10===0) feedback(combo+' COMBO','var(--cyan)');
+}
+function miss(){
+  missCount++; combo=0; updateHUD(); feedback('MISS','var(--red)');
+}
+function feedback(txt,color){
+  const f=$('feedback'); f.textContent=txt; f.style.color=color;
+  f.classList.remove('show'); void f.offsetWidth; f.classList.add('show');
+}
+function updateHUD(){
+  $('combo').textContent=combo;
+  $('coins').textContent=coins;
+}
+
+/* ============ 结算 ============ */
+function finish(){
+  playing=false; if(raf)cancelAnimationFrame(raf);
+  resetNotes();
+  // 评级
+  const acc=perfect+good+missCount>0 ? (perfect+good)/(perfect+good+missCount) : 0;
+  let grade='D';
+  if(acc>=0.95)grade='S'; else if(acc>=0.85)grade='A'; else if(acc>=0.7)grade='B'; else if(acc>=0.5)grade='C';
+  // 奖励
+  const reward=Math.max(1,Math.round(song.reward*(0.5+acc)));
+  coins+=reward;
+  if(score>bestScore){bestScore=score; $('bestScore').textContent=bestScore;}
+  // 抽卡机会
+  let cardResult='';
+  if(acc>=0.6){
+    const c=drawCard();
+    cardResult='<div style="margin:8px 0"><div style="font-size:40px">'+c.emo+'</div><div style="color:var(--gold);font-weight:700">获得 '+c.name+' ('+c.rar+')</div></div>';
+  }
+  $('rEmo').textContent=song.emo;
+  $('rTitle').textContent=song.name;
+  $('rGrade').textContent='评级 '+grade;
+  $('rRows').innerHTML=
+    'perfect <b style="color:var(--gold)">'+perfect+'</b><br>'+
+    'good <b style="color:var(--green)">'+good+'</b><br>'+
+    'miss <b style="color:var(--red)">'+missCount+'</b><br>'+
+    '得分 <b style="color:var(--cyan)">'+score+'</b><br>'+
+    '音符币 +<b style="color:var(--gold)">'+reward+'</b>'+cardResult;
+  updateHUD();
+  $('overlay').classList.add('show');
+}
+function drawCard(){
+  const r=Math.random();
+  let pool;
+  if(r<0.05)pool=CARDS.filter(c=>c.rar==='UR');
+  else if(r<0.25)pool=CARDS.filter(c=>c.rar==='SSR');
+  else if(r<0.6)pool=CARDS.filter(c=>c.rar==='SR');
+  else pool=CARDS.filter(c=>c.rar==='R');
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+/* ============ 曲库渲染 ============ */
+function renderSongs(){
+  const box=$('songList'); box.innerHTML='';
+  SONGS.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='song'+(i===0?' active':'');
+    d.innerHTML='<div class="emo">'+s.emo+'</div><div class="info"><div class="nm">'+s.name+'</div><div class="ar">'+s.art+'</div></div><div class="diff">'+s.diff+'</div>';
+    d.onclick=()=>{ song=s; start(); renderSongs(); };
+    box.appendChild(d);
+  });
+}
+
+/* ============ 结算按钮 ============ */
+$('btnRetry').onclick=()=>{ $('overlay').classList.remove('show'); start(); };
+$('btnClose').onclick=()=>{ $('overlay').classList.remove('show'); };
+
+/* ============ 键盘 ============ */
+document.addEventListener('keydown',e=>{
+  const labels=['a','s','d','f','g','h','j','k','l'];
+  const i=labels.indexOf(e.key.toLowerCase());
+  if(i>=0 && i<laneCount){ tapNote(i); const k=document.querySelectorAll('.key')[i]; if(k){k.classList.add('pressed');setTimeout(()=>k.classList.remove('pressed'),100);} }
+  if(e.key===' ')e.preventDefault();
+});
+
+/* ============ 星星 ============ */
+(function(){const s=$('stars');for(let i=0;i<50;i++){const e=document.createElement('i');e.style.left=Math.random()*100+'%';e.style.top=Math.random()*100+'%';const sz=Math.random()*2.5+1;e.style.width=e.style.height=sz+'px';e.style.animationDelay=(Math.random()*3)+'s';e.style.animationDuration=(Math.random()*2+2)+'s';s.appendChild(e);}})();
+
+/* ============ 提示 ============ */
+let toastTimer;
+function toast(t){const o=$('toast');o.textContent=t;o.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>o.classList.remove('show'),2500);}
+
+/* ============ 初始化 ============ */
+initLanes(5);
+renderSongs();
+toast('✦ 点击打击区或按 A-S-D-F-G 键 · 等节拍!');
+// 自动结束（曲长限制，用音符计数简化——这里演示用固定时长）
+let songEndTimer=null;
+// 重写start加入自动结算：用歌曲长度(秒)
+// 补一个自动结束
+const origStart=start;
+start=function(){ if(playing)return; origStart(); clearTimeout(songEndTimer); songEndTimer=setTimeout(()=>{ if(playing) finish(); }, song.length*1000); };
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

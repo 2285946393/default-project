@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#05070c" />
+<title>反应扩散 · Reaction-Diffusion Lab</title>
+<!--
+  反应扩散实验室 Reaction-Diffusion Lab（中文单文件离线版）
+  基于 Gray-Scott 反应扩散模型（图灵形态发生），参考 Karl Sims / jasonwebb / piellardj
+  的成熟参数组与交互设计实现：9点拉普拉斯、多预设形态、鼠标绘画播种、多套配色、零依赖。
+  双击即可离线运行。
+-->
+<style>
+  :root{
+    --ink:#eaf2ff; --dim:#8b99b4; --line:rgba(150,175,220,.14);
+    --glass:rgba(11,15,24,.62); --glass-solid:rgba(9,12,20,.94);
+    --accent:#ff6ad5; --accent2:#6ad5ff;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;background:#04060b;color:var(--ink);font-family:var(--font);user-select:none;}
+  #stage{position:fixed;inset:0;display:block;cursor:crosshair;touch-action:none;}
+
+  .glass{background:var(--glass);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+    border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 60px rgba(0,0,0,.5);}
+
+  .masthead{position:fixed;top:20px;left:24px;z-index:10;pointer-events:none;text-shadow:0 2px 14px #000;}
+  .wordmark{font-size:19px;font-weight:600;letter-spacing:.14em;}
+  .wordmark b{color:var(--accent);font-weight:700;}
+  .tagline{margin-top:5px;font-size:12px;color:var(--dim);letter-spacing:.06em;}
+
+  .panel{position:fixed;top:18px;right:18px;width:268px;max-height:calc(100vh - 36px);overflow-y:auto;
+    padding:14px 14px 15px;z-index:15;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;}
+  .panel::-webkit-scrollbar{width:7px;}.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:6px;}
+  .panel.hidden{opacity:0;transform:translateX(24px);pointer-events:none;}
+  .panel h2{font-size:12px;letter-spacing:.22em;color:var(--dim);font-weight:600;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .panel h2 b{color:var(--accent);letter-spacing:.08em;font-weight:600;}
+  .sec{border-top:1px solid var(--line);padding-top:11px;margin-top:11px;}
+  .sec-title{font-size:11px;letter-spacing:.18em;color:var(--dim);margin-bottom:8px;}
+
+  .preset-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}
+  .preset-btn{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:var(--font);
+    font-size:11px;padding:8px 4px;border-radius:8px;cursor:pointer;transition:.15s;}
+  .preset-btn:hover{background:rgba(255,106,213,.12);border-color:rgba(255,106,213,.3);}
+  .preset-btn.on{background:linear-gradient(180deg,rgba(255,106,213,.22),rgba(255,106,213,.08));border-color:rgba(255,106,213,.4);color:var(--accent);}
+
+  .theme-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .theme-btn{width:30px;height:30px;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:.15s;position:relative;}
+  .theme-btn:hover{transform:scale(1.1);}
+  .theme-btn.on{border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.4);}
+
+  .btnrow{display:flex;gap:6px;margin-top:8px;}
+  .btn{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font-family:var(--font);
+    font-size:12px;padding:7px 6px;border-radius:9px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .btn:hover{background:rgba(255,106,213,.12);border-color:rgba(255,106,213,.3);}
+  .btn.primary{background:linear-gradient(180deg,rgba(255,106,213,.22),rgba(255,106,213,.08));border-color:rgba(255,106,213,.34);color:var(--accent);}
+
+  .row{margin:8px 0;}
+  .row .lab{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-bottom:5px;}
+  .row .lab output{color:var(--ink);font-family:var(--mono);}
+  input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:rgba(255,255,255,.12);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff,var(--accent));cursor:pointer;box-shadow:0 0 8px rgba(255,106,213,.6);border:0;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:var(--accent);cursor:pointer;}
+
+  .chkrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim);margin:7px 0;cursor:pointer;}
+  .chkrow input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;}
+
+  .stats{position:fixed;left:22px;bottom:18px;z-index:10;font-family:var(--mono);font-size:11.5px;color:var(--dim);
+    line-height:1.7;text-shadow:0 1px 8px #000;pointer-events:none;}
+  .stats b{color:var(--ink);font-weight:600;}
+
+  .toolbar{position:fixed;right:18px;bottom:18px;z-index:14;display:flex;gap:7px;padding:7px;border-radius:13px;}
+  .iconbtn{width:36px;height:34px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+    color:var(--ink);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .iconbtn:hover{background:rgba(255,106,213,.14);border-color:rgba(255,106,213,.3);}
+
+  .veil{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;padding:20px;padding-right:300px;
+    background:radial-gradient(ellipse at center,rgba(4,6,11,.25),rgba(4,6,11,.82));transition:opacity .8s ease;cursor:pointer;}
+  .veil.gone{opacity:0;pointer-events:none;}
+  .veil .big{font-size:clamp(30px,7vw,72px);font-weight:200;letter-spacing:.24em;padding-left:.24em;
+    background:linear-gradient(180deg,#fff,#ffb3e8 55%,var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .veil .sub{margin-top:16px;color:var(--dim);font-size:clamp(12px,2.1vw,15px);line-height:1.8;max-width:520px;letter-spacing:.05em;}
+  .veil .hint{margin-top:24px;font-size:11px;letter-spacing:.2em;color:#5a6785;text-transform:uppercase;animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
+
+  .brush-cursor{position:fixed;pointer-events:none;z-index:20;border:1.5px solid rgba(255,255,255,.5);border-radius:50%;
+    transform:translate(-50%,-50%);mix-blend-mode:difference;display:none;}
+
+  @media (max-width:760px){
+    .panel{width:230px;right:10px;top:10px;}
+    .veil{padding:20px;}
+    .tagline{display:none;}
+  }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<div class="brush-cursor" id="brushCursor"></div>
+
+<div class="masthead">
+  <div class="wordmark">反应扩散 · <b>REACTION</b></div>
+  <div class="tagline">画一笔，看两种化学物质长出整片珊瑚与斑纹</div>
+</div>
+
+<div class="panel glass" id="panel"></div>
+<div class="stats" id="stats"></div>
+
+<div class="toolbar glass">
+  <button class="iconbtn" id="tbPause" title="暂停 / 继续（空格）">⏸</button>
+  <button class="iconbtn" id="tbClear" title="清空（C）">🗑</button>
+  <button class="iconbtn" id="tbRandom" title="随机参数（R）">🎲</button>
+  <button class="iconbtn" id="tbSave" title="保存图片（P）">📷</button>
+  <button class="iconbtn" id="tbPanel" title="隐藏 / 显示面板（G）">⚙</button>
+</div>
+
+<div class="veil" id="veil">
+  <div>
+    <div class="big">反应扩散</div>
+    <div class="sub">两种化学物质在画布上反应、扩散，自发长出珊瑚、豹纹、条纹、迷宫。<br>按下拖动就是播种，调两个参数，整片世界瞬间换一种活法。</div>
+    <div class="hint">点击任意处开始 · 左键拖动绘画播种 · 滚轮调笔刷 · R 随机参数</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   Gray-Scott 反应扩散模型
+   dU/dt = Du*∇²U - U*V² + f*(1-U)
+   dV/dt = Dv*∇²V + U*V² - (k+f)*V
+============================================================ */
+const params = {
+  Du: 0.16, Dv: 0.08,
+  f: 0.0367, k: 0.0649,
+  dt: 0.6,
+  steps: 18,       // 每帧迭代次数
+  brush: 14,       // 笔刷半径（格）
+  glow: true,
+  paused: false,
+};
+
+// 成熟预设参数组（Karl Sims / jasonwebb / Liesegang）
+const PRESETS = {
+  "斑点":   {f:0.0367, k:0.0649},
+  "条纹":   {f:0.022,  k:0.051},
+  "迷宫":   {f:0.029,  k:0.057},
+  "珊瑚":   {f:0.0545, k:0.062},
+  "波浪":   {f:0.014,  k:0.045},
+  "分裂":   {f:0.03,   k:0.063},
+  "孔洞":   {f:0.039,  k:0.058},
+};
+let curPreset = "斑点";
+
+// 配色主题：V 浓度 0→1 的渐变（多段）
+const THEMES = {
+  "霓虹":  [[0,8,20],[20,20,80],[120,40,180],[80,200,255],[255,255,255]],
+  "熔岩":  [[10,2,0],[80,10,5],[200,60,10],[255,160,30],[255,240,180]],
+  "极光":  [[0,12,10],[0,60,50],[20,160,120],[140,255,180],[240,255,240]],
+  "赛博":  [[10,0,20],[60,10,100],[200,40,160],[80,220,255],[255,255,255]],
+  "珊瑚":  [[12,6,4],[80,30,20],[200,90,50],[255,160,140],[255,230,220]],
+  "金墨":  [[4,4,6],[40,30,15],[140,100,40],[230,190,90],[255,245,210]],
+};
+let curTheme = "霓虹";
+let palette = null; // 256*[r,g,b]
+
+function buildPalette(theme){
+  const stops=THEMES[theme];
+  const out=new Uint8ClampedArray(256*3);
+  for(let i=0;i<256;i++){
+    const t=i/255*(stops.length-1);
+    const idx=Math.min(stops.length-2,Math.floor(t));
+    const f=t-idx;
+    const a=stops[idx],b=stops[idx+1];
+    out[i*3]=a[0]+(b[0]-a[0])*f;
+    out[i*3+1]=a[1]+(b[1]-a[1])*f;
+    out[i*3+2]=a[2]+(b[2]-a[2])*f;
+  }
+  return out;
+}
+
+/* ============================================================
+   网格
+============================================================ */
+let gridW=0,gridH=0,cellSize=4;
+let U,V,nU,nV;
+const canvas=document.getElementById("stage");
+const ctx=canvas.getContext("2d");
+let offCanvas,offCtx,imgData;
+let W=0,H=0,dpr=1;
+
+function initGrid(){
+  cellSize = W<800?3:4;
+  gridW=Math.max(80,Math.floor(W/cellSize));
+  gridH=Math.max(60,Math.floor(H/cellSize));
+  const n=gridW*gridH;
+  U=new Float32Array(n); V=new Float32Array(n);
+  nU=new Float32Array(n); nV=new Float32Array(n);
+  U.fill(1); V.fill(0);
+  // 中心区域随机噪声（更快演化出图案）
+  noiseSeed();
+  // 离屏 canvas
+  offCanvas=document.createElement("canvas");
+  offCanvas.width=gridW;offCanvas.height=gridH;
+  offCtx=offCanvas.getContext("2d");
+  imgData=offCtx.createImageData(gridW,gridH);
+}
+
+function seed(cx,cy,r){
+  r=Math.max(2,r);
+  for(let y=-r;y<=r;y++)for(let x=-r;x<=r;x++){
+    if(x*x+y*y>r*r)continue;
+    const gx=((cx+x)|0), gy=((cy+y)|0);
+    if(gx<0||gy<0||gx>=gridW||gy>=gridH)continue;
+    const i=gy*gridW+gx;
+    V[i]=1;
+  }
+}
+
+function noiseSeed(){
+  // 中心区域随机噪声（周围 U=1 可补充，避免全局耗尽）
+  const cx=gridW/2, cy=gridH/2;
+  const r=Math.min(gridW,gridH)*0.2;
+  for(let y=0;y<gridH;y++)for(let x=0;x<gridW;x++){
+    const dx=x-cx, dy=y-cy;
+    if(dx*dx+dy*dy<r*r && Math.random()<0.5){
+      V[y*gridW+x]=1;
+    }
+  }
+}
+
+function resize(){
+  dpr=Math.min(window.devicePixelRatio||1,1.6);
+  W=window.innerWidth;H=window.innerHeight;
+  canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);
+  canvas.style.width=W+"px";canvas.style.height=H+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  initGrid();
+}
+window.addEventListener("resize",resize);
+
+/* ============================================================
+   物理迭代
+============================================================ */
+function step(){
+  const w=gridW,h=gridH;
+  const Du=params.Du,Dv=params.Dv,f=params.f,k=params.k,dt=params.dt;
+  for(let y=0;y<h;y++){
+    const yu=((y-1+h)%h)*w, yd=((y+1)%h)*w, yc=y*w;
+    const xl=(w-1), xr=0; // 占位
+    for(let x=0;x<w;x++){
+      const i=yc+x;
+      const xm=(x-1+w)%w, xp=(x+1)%w;
+      // 9点拉普拉斯：中心 -1，上下左右 0.2，四角 0.05
+      const lapU = U[i]*(-1)
+        + (U[yu+x]+U[yd+x]+U[yc+xm]+U[yc+xp])*0.2
+        + (U[yu+xm]+U[yu+xp]+U[yd+xm]+U[yd+xp])*0.05;
+      const lapV = V[i]*(-1)
+        + (V[yu+x]+V[yd+x]+V[yc+xm]+V[yc+xp])*0.2
+        + (V[yu+xm]+V[yu+xp]+V[yd+xm]+V[yd+xp])*0.05;
+      const uvv=U[i]*V[i]*V[i];
+      let nu=U[i]+(Du*lapU-uvv+f*(1-U[i]))*dt;
+      let nv=V[i]+(Dv*lapV+uvv-(k+f)*V[i])*dt;
+      if(nu<0)nu=0;else if(nu>1)nu=1;
+      if(nv<0)nv=0;else if(nv>1)nv=1;
+      nU[i]=nu;nV[i]=nv;
+    }
+  }
+  // swap
+  const tU=U;U=nU;nU=tU;
+  const tV=V;V=nV;nV=tV;
+}
+
+/* ============================================================
+   渲染
+============================================================ */
+function render(){
+  const data=imgData.data;
+  const n=gridW*gridH;
+  for(let i=0;i<n;i++){
+    let v=V[i];
+    // 拉伸对比度，让中等浓度更亮
+    v=Math.min(1, v*2.4);
+    v=v*v*(3-2*v); // smoothstep
+    const c=(v*255)|0;
+    const j=i*4;
+    data[j]=palette[c*3];
+    data[j+1]=palette[c*3+1];
+    data[j+2]=palette[c*3+2];
+    data[j+3]=255;
+  }
+  offCtx.putImageData(imgData,0,0);
+  // 放大到主 canvas
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality="high";
+  if(params.glow){
+    // 发光：先画一次模糊放大（additive），再画清晰
+    ctx.globalAlpha=0.5;
+    ctx.filter="blur(6px)";
+    ctx.drawImage(offCanvas,0,0,W,H);
+    ctx.filter="none";
+    ctx.globalAlpha=1;
+    ctx.drawImage(offCanvas,0,0,W,H);
+  }else{
+    ctx.drawImage(offCanvas,0,0,W,H);
+  }
+}
+
+/* ============================================================
+   绘画交互
+============================================================ */
+let painting=false, lastPaint={x:0,y:0};
+const brushCursor=document.getElementById("brushCursor");
+
+function screenToGrid(sx,sy){
+  return{x:Math.floor(sx/cellSize),y:Math.floor(sy/cellSize)};
+}
+function paintAt(gx,gy){
+  const r=params.brush;
+  for(let y=-r;y<=r;y++)for(let x=-r;x<=r;x++){
+    if(x*x+y*y>r*r)continue;
+    const px=gx+x,py=gy+y;
+    if(px<0||py<0||px>=gridW||py>=gridH)continue;
+    const i=py*gridW+px;
+    V[i]=1;
+  }
+}
+function paintLine(x0,y0,x1,y1){
+  const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0);
+  const steps=Math.max(1,Math.max(dx,dy));
+  for(let s=0;s<=steps;s++){
+    const t=s/steps;
+    paintAt(Math.round(x0+(x1-x0)*t),Math.round(y0+(y1-y0)*t));
+  }
+}
+
+canvas.addEventListener("pointerdown",e=>{
+  if(e.button!==0)return;
+  painting=true;
+  const g=screenToGrid(e.clientX,e.clientY);
+  lastPaint=g;
+  paintAt(g.x,g.y);
+});
+canvas.addEventListener("pointermove",e=>{
+  // 笔刷光标
+  brushCursor.style.display="block";
+  brushCursor.style.left=e.clientX+"px";
+  brushCursor.style.top=e.clientY+"px";
+  brushCursor.style.width=brushCursor.style.height=(params.brush*cellSize*2)+"px";
+  if(painting){
+    const g=screenToGrid(e.clientX,e.clientY);
+    paintLine(lastPaint.x,lastPaint.y,g.x,g.y);
+    lastPaint=g;
+  }
+});
+window.addEventListener("pointerup",()=>{painting=false;});
+canvas.addEventListener("pointerleave",()=>{brushCursor.style.display="none";painting=false;});
+canvas.addEventListener("wheel",e=>{
+  e.preventDefault();
+  params.brush=Math.max(3,Math.min(60,params.brush+(e.deltaY>0?-2:2)));
+  updateBrushLabel();
+},{passive:false});
+
+/* ============================================================
+   UI
+============================================================ */
+const panel=document.getElementById("panel");
+function buildPanel(){
+  panel.innerHTML="";
+  panel.append(el("h2",{},"反应扩散控制台",el("b",{id:"presetLabel",textContent:curPreset})));
+
+  // 预设形态
+  const s1=el("div",{class:"sec"});
+  s1.append(el("div",{class:"sec-title"},"预设形态（f / k 参数）"));
+  const pg=el("div",{class:"preset-grid"});
+  Object.keys(PRESETS).forEach(name=>{
+    const b=el("button",{class:"preset-btn"+(name===curPreset?" on":""),textContent:name});
+    b.onclick=()=>{applyPreset(name);[...pg.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");};
+    pg.append(b);
+  });
+  s1.append(pg);
+  panel.append(s1);
+
+  // 参数
+  const s2=el("div",{class:"sec"});
+  s2.append(el("div",{class:"sec-title"},"世界参数"));
+  s2.append(slider("喂养率 f",params.f,0.005,0.08,0.001,v=>{params.f=v;curPreset="自定义";updatePresetLabel();},""));
+  s2.append(slider("死亡率 k",params.k,0.03,0.08,0.001,v=>{params.k=v;curPreset="自定义";updatePresetLabel();},""));
+  s2.append(slider("笔刷大小",params.brush,3,60,1,v=>{params.brush=v|0;updateBrushLabel();},"格"));
+  s2.append(slider("演化速度",params.steps,2,30,1,v=>{params.steps=v|0;},"次/帧"));
+  panel.append(s2);
+
+  // 配色
+  const s3=el("div",{class:"sec"});
+  s3.append(el("div",{class:"sec-title"},"配色主题"));
+  const tr=el("div",{class:"theme-row"});
+  Object.keys(THEMES).forEach(name=>{
+    const stops=THEMES[name];
+    const grad=`linear-gradient(90deg,${stops.map((c,i)=>`rgb(${c[0]},${c[1]},${c[2]}) ${(i/(stops.length-1)*100).toFixed(0)}%`).join(",")})`;
+    const b=el("div",{class:"theme-btn"+(name===curTheme?" on":""),style:{background:grad},title:name});
+    b.onclick=()=>{curTheme=name;palette=buildPalette(name);[...tr.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");};
+    tr.append(b);
+  });
+  s3.append(tr);
+  s3.append(el("label",{class:"chkrow"},
+    el("input",{type:"checkbox",checked:params.glow,onchange:e=>params.glow=e.target.checked}),
+    el("span",{textContent:"发光效果"})
+  ));
+  panel.append(s3);
+
+  // 操作
+  const s4=el("div",{class:"sec"});
+  s4.append(el("div",{class:"btnrow"},btn("⏸ 暂停",()=>togglePause(),true)));
+  s4.append(el("div",{class:"btnrow"},
+    btn("🗑 清空",()=>{clearAll();}),
+    btn("🎲 随机参数",()=>{randomParams();}),
+  ));
+  panel.append(s4);
+}
+
+function applyPreset(name){
+  const p=PRESETS[name];
+  params.f=p.f;params.k=p.k;curPreset=name;
+  updatePresetLabel();
+  // 同步滑块
+  const sliders=panel.querySelectorAll("input[type=range]");
+  if(sliders[0]){sliders[0].value=p.f;sliders[0].parentElement.querySelector("output").textContent=p.f.toFixed(3);}
+  if(sliders[1]){sliders[1].value=p.k;sliders[1].parentElement.querySelector("output").textContent=p.k.toFixed(3);}
+}
+function randomParams(){
+  // 在已知能产生图案的范围内随机
+  params.f=0.01+Math.random()*0.05;
+  params.k=0.04+Math.random()*0.03;
+  curPreset="随机";
+  updatePresetLabel();
+  const sliders=panel.querySelectorAll("input[type=range]");
+  if(sliders[0]){sliders[0].value=params.f;sliders[0].parentElement.querySelector("output").textContent=params.f.toFixed(3);}
+  if(sliders[1]){sliders[1].value=params.k;sliders[1].parentElement.querySelector("output").textContent=params.k.toFixed(3);}
+  [...panel.querySelectorAll(".preset-btn")].forEach(x=>x.classList.remove("on"));
+}
+function updatePresetLabel(){const e=document.getElementById("presetLabel");if(e)e.textContent=curPreset;}
+function updateBrushLabel(){/* 笔刷大小在滑块 output 里已同步 */}
+
+function clearAll(){
+  U.fill(1);V.fill(0);
+  noiseSeed();
+}
+
+function el(tag,attrs,...kids){
+  const e=document.createElement(tag);
+  attrs=attrs||{};
+  for(const k in attrs){
+    if(k==="class")e.className=attrs[k];
+    else if(k==="html")e.innerHTML=attrs[k];
+    else if(k==="style"&&typeof attrs[k]==="object")Object.assign(e.style,attrs[k]);
+    else if(k==="dataset")Object.assign(e.dataset,attrs[k]);
+    else e[k]=attrs[k];
+  }
+  for(const kid of kids){if(kid!=null)e.append(kid);}
+  return e;
+}
+function slider(label,val,min,max,step,fn,suffix){
+  const out=el("output",{textContent:fmt(val)+(suffix||"")});
+  const inp=el("input",{type:"range",min,max,step,value:val});
+  inp.oninput=()=>{const v=parseFloat(inp.value);out.textContent=fmt(v)+(suffix||"");fn(v);};
+  return el("div",{class:"row"},el("div",{class:"lab"},el("span",{textContent:label}),out),inp);
+}
+function fmt(v){return Number.isInteger(v)?(""+v):(""+Math.round(v*10000)/10000);}
+function btn(text,fn,primary){return el("button",{class:"btn"+(primary?" primary":""),textContent:text,onclick:fn});}
+
+function togglePause(){
+  params.paused=!params.paused;
+  document.getElementById("tbPause").textContent=params.paused?"▶":"⏸";
+}
+
+/* ============================================================
+   工具栏 & 快捷键
+============================================================ */
+document.getElementById("tbPause").onclick=togglePause;
+document.getElementById("tbClear").onclick=()=>clearAll();
+document.getElementById("tbRandom").onclick=()=>randomParams();
+document.getElementById("tbSave").onclick=savePNG;
+document.getElementById("tbPanel").onclick=()=>panel.classList.toggle("hidden");
+function savePNG(){
+  const a=document.createElement("a");
+  a.download=`反应扩散_${Date.now()}.png`;
+  a.href=canvas.toDataURL("image/png");
+  a.click();
+}
+
+window.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT")return;
+  switch(e.key.toLowerCase()){
+    case " ":e.preventDefault();togglePause();break;
+    case "g":panel.classList.toggle("hidden");break;
+    case "p":savePNG();break;
+    case "c":clearAll();break;
+    case "r":randomParams();break;
+    case "[":params.brush=Math.max(3,params.brush-2);break;
+    case "]":params.brush=Math.min(60,params.brush+2);break;
+  }
+});
+
+/* ============================================================
+   开场遮罩
+============================================================ */
+const veil=document.getElementById("veil");
+veil.addEventListener("click",()=>{
+  veil.classList.add("gone");
+  setTimeout(()=>{veil.style.display="none";},900);
+});
+
+/* ============================================================
+   主循环
+============================================================ */
+const statsEl=document.getElementById("stats");
+let last=performance.now(),fps=0;
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(dt>0)fps=fps*0.92+(1/dt)*0.08;
+  if(!params.paused){
+    for(let i=0;i<params.steps;i++)step();
+  }
+  render();
+  statsEl.innerHTML=`网格 <b>${gridW}×${gridH}</b> · 迭代 <b>${params.steps}</b>/帧<br>帧率 <b>${fps.toFixed(0)}</b> fps · f=<b>${params.f.toFixed(4)}</b> k=<b>${params.k.toFixed(4)}</b>`;
+}
+
+/* ============================================================
+   启动
+============================================================ */
+palette=buildPalette(curTheme);
+resize();
+buildPanel();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

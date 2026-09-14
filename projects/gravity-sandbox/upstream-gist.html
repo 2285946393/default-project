@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador Orbital Pro - Gravidade e Escala</title>
+    <style>
+        body { margin: 0; background: #050508; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        canvas { display: block; cursor: crosshair; }
+        
+        #ui { position: absolute; top: 10px; left: 10px; background: rgba(15, 15, 25, 0.9); padding: 15px; border-radius: 10px; border: 1px solid #334; width: 240px; pointer-events: auto; }
+        h3 { margin: 0 0 10px 0; font-size: 14px; color: #00d4ff; letter-spacing: 1px; }
+        .group { margin-bottom: 12px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        label { display: block; font-size: 11px; margin-bottom: 4px; color: #888; }
+        select, button { width: 100%; padding: 6px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; cursor: pointer; margin-bottom: 4px; font-size: 12px; }
+        button:hover { background: #333; border-color: #00d4ff; }
+        
+        input[type=range] { width: 100%; margin: 5px 0; cursor: pointer; }
+        .val-display { float: right; color: #00d4ff; font-weight: bold; }
+
+        #stats { position: absolute; bottom: 10px; right: 10px; font-family: monospace; background: rgba(0,0,0,0.6); padding: 8px; font-size: 12px; border-radius: 5px; }
+        .controls-hint { font-size: 10px; color: #555; margin-top: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <h3>COMANDO ESTELAR</h3>
+    
+    <div class="group">
+        <label>VELOCIDADE DO TEMPO: <span id="speed-val" class="val-display">1.0x</span></label>
+        <input type="range" id="speed-slider" min="0" max="10" step="0.1" value="1">
+        <label>TEMPO: <span id="day-count">0</span> dias</label>
+        <button id="btn-pause">Pausar Simulação</button>
+    </div>
+
+    <div class="group">
+        <label>CÂMERA E ZOOM</label>
+        <div style="display:flex; gap: 5px;">
+            <button onclick="changeZoom(1.2)">+</button>
+            <button onclick="changeZoom(0.8)">-</button>
+            <button onclick="resetCamera()">Reset</button>
+        </div>
+        <label style="margin-top:8px;">Focar em:</label>
+        <select id="select-track" onchange="updateTracking()">
+            <option value="-1">Câmera Livre</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <label>INSERIR OBJETO</label>
+        <select id="select-type">
+            <option value="moon">Lua (Massa: 1)</option>
+            <option value="earth">Terra (Massa: 10)</option>
+            <option value="jupiter">Júpiter (Massa: 50)</option>
+            <option value="sun">Sol (Massa: 1500)</option>
+            <option value="uyscuti">UY Scuti (Massa: 8000)</option>
+            <option value="blackhole">Buraco Negro (Massa: 30000)</option>
+            <option value="asteroid">Asteroide (Massa: 0.1)</option>
+        </select>
+        <button onclick="clearAll()" style="color: #ff4444;">Limpar Espaço</button>
+        <button onclick="initSolarSystem()">Resetar Sist. Solar</button>
+    </div>
+    <div class="controls-hint">Use o Scroll para Zoom</div>
+</div>
+
+<div id="stats">
+    Zoom: <span id="zoom-val">1.0</span>x | 
+    Corpos: <span id="obj-count">0</span>
+</div>
+
+<canvas id="sim"></canvas>
+
+<script>
+/**
+ * LÓGICA DE FÍSICA E RENDERIZAÇÃO
+ */
+const canvas = document.getElementById('sim');
+const ctx = canvas.getContext('2d');
+
+let bodies = [];
+let particles = [];
+let isPaused = false;
+let days = 0;
+let timeStep = 1.0; // Multiplicador de velocidade
+
+// Configurações de Câmera
+let cam = { x: 0, y: 0, zoom: 0.8, targetIdx: 0 };
+const G = 0.8; 
+
+const Types = {
+    asteroid: { m: 0.1, r: 2, color: '#999', name: 'Asteroide' },
+    moon:     { m: 1, r: 3, color: '#ccc', name: 'Lua' },
+    earth:    { m: 10, r: 7, color: '#30a0ff', name: 'Terra' },
+    jupiter:  { m: 60, r: 15, color: '#ffcc88', name: 'Júpiter' },
+    sun:      { m: 1500, r: 35, color: '#fff000', name: 'Sol' },
+    uyscuti:  { m: 8000, r: 85, color: '#ff4400', name: 'UY Scuti' },
+    blackhole:{ m: 30000, r: 15, color: '#000', stroke: '#fff', name: 'Buraco Negro' }
+};
+
+class Body {
+    constructor(x, y, vx, vy, type, customName) {
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.m = type.m;
+        this.r = type.r;
+        this.color = type.color;
+        this.name = customName || type.name;
+        this.stroke = type.stroke || null;
+        this.trail = [];
+    }
+
+    draw() {
+        if (this.trail.length > 2) {
+            ctx.beginPath();
+            ctx.strokeStyle = this.color + '33';
+            ctx.moveTo(this.trail[0].x, this.trail[0].y);
+            for(let p of this.trail) ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        if (this.stroke) {
+            ctx.strokeStyle = this.stroke;
+            ctx.lineWidth = 2 / cam.zoom;
+            ctx.stroke();
+        }
+
+        ctx.fillStyle = "#fff";
+        ctx.font = `${12 / cam.zoom}px Arial`;
+        ctx.fillText(this.name, this.x + this.r + 5, this.y);
+    }
+}
+
+class Particle {
+    constructor(x, y, color) {
+        this.x = x; this.y = y;
+        this.vx = (Math.random() - 0.5) * 5;
+        this.vy = (Math.random() - 0.5) * 5;
+        this.life = 1.0;
+        this.color = color;
+    }
+    update() { 
+        this.x += this.vx * timeStep; 
+        this.y += this.vy * timeStep; 
+        this.life -= 0.02 * timeStep; 
+    }
+    draw() {
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, 2, 2);
+        ctx.globalAlpha = 1;
+    }
+}
+
+function initSolarSystem() {
+    clearAll();
+    const cx = 0;
+    const cy = 0;
+
+    bodies.push(new Body(cx, cy, 0, 0, Types.sun));
+
+    const addOrbit = (dist, type, name, color) => {
+        const v = Math.sqrt((G * Types.sun.m) / dist);
+        const b = new Body(cx + dist, cy, 0, v, type, name);
+        if (color) b.color = color;
+        bodies.push(b);
+    };
+
+    addOrbit(100, Types.asteroid, "Mercúrio", "#aaa");
+    addOrbit(160, Types.earth, "Vênus", "#e3bb76");
+    addOrbit(230, Types.earth, "Terra");
+    addOrbit(310, Types.asteroid, "Marte", "#ff5533");
+    addOrbit(480, Types.jupiter, "Júpiter");
+    addOrbit(650, Types.jupiter, "Saturno", "#ead6b8");
+
+    updateSelectMenu();
+    resetCamera();
+}
+
+function solvePhysics() {
+    // Aplicamos o timeStep na física
+    const dt = timeStep;
+
+    for (let i = 0; i < bodies.length; i++) {
+        let a = bodies[i];
+        for (let j = i + 1; j < bodies.length; j++) {
+            let b = bodies[j];
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let d2 = dx*dx + dy*dy;
+            let d = Math.sqrt(d2);
+
+            if (d < a.r + b.r) {
+                createExplosion(a.x + dx/2, a.y + dy/2, a.color);
+                if (a.m >= b.m) {
+                    a.m += b.m * 0.3;
+                    bodies.splice(j, 1);
+                    j--;
+                    updateSelectMenu();
+                } else {
+                    b.m += a.m * 0.3;
+                    bodies.splice(i, 1);
+                    i--;
+                    updateSelectMenu();
+                    break;
+                }
+                continue;
+            }
+
+            let f = (G * a.m * b.m) / d2;
+            a.vx += ((f * dx / d) / a.m) * dt;
+            a.vy += ((f * dy / d) / a.m) * dt;
+            b.vx -= ((f * dx / d) / b.m) * dt;
+            b.vy -= ((f * dy / d) / b.m) * dt;
+        }
+    }
+
+    bodies.forEach(b => {
+        b.x += b.vx * dt; 
+        b.y += b.vy * dt;
+        b.trail.push({x: b.x, y: b.y});
+        if (b.trail.length > 100) b.trail.shift();
+    });
+
+    particles.forEach(p => p.update());
+    particles = particles.filter(p => p.life > 0);
+}
+
+function draw() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = '#050508';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (cam.targetIdx !== -1 && bodies[cam.targetIdx]) {
+        cam.x = bodies[cam.targetIdx].x;
+        cam.y = bodies[cam.targetIdx].y;
+    }
+
+    ctx.translate(canvas.width/2, canvas.height/2);
+    ctx.scale(cam.zoom, cam.zoom);
+    ctx.translate(-cam.x, -cam.y);
+
+    particles.forEach(p => p.draw());
+    bodies.forEach(b => b.draw());
+
+    if (!isPaused) {
+        solvePhysics();
+        days += 0.2 * timeStep;
+        document.getElementById('day-count').innerText = Math.floor(days);
+    }
+
+    document.getElementById('obj-count').innerText = bodies.length;
+    requestAnimationFrame(draw);
+}
+
+function createExplosion(x, y, color) {
+    for(let i=0; i<30; i++) particles.push(new Particle(x, y, color));
+    for(let i=0; i<15; i++) particles.push(new Particle(x, y, "#ff6600"));
+}
+
+function updateSelectMenu() {
+    const sel = document.getElementById('select-track');
+    const currentVal = sel.value;
+    sel.innerHTML = '<option value="-1">Câmera Livre</option>';
+    bodies.forEach((b, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.text = b.name;
+        sel.add(opt);
+    });
+    sel.value = currentVal;
+}
+
+function updateTracking() {
+    cam.targetIdx = parseInt(document.getElementById('select-track').value);
+}
+
+function changeZoom(factor) {
+    cam.zoom *= factor;
+    cam.zoom = Math.max(0.01, Math.min(cam.zoom, 10));
+    document.getElementById('zoom-val').innerText = cam.zoom.toFixed(2);
+}
+
+function resetCamera() { cam.x = 0; cam.y = 0; cam.zoom = 0.8; cam.targetIdx = 0; document.getElementById('select-track').value = 0; }
+function clearAll() { bodies = []; particles = []; days = 0; updateSelectMenu(); }
+
+document.getElementById('speed-slider').oninput = function() {
+    timeStep = parseFloat(this.value);
+    document.getElementById('speed-val').innerText = timeStep.toFixed(1) + 'x';
+};
+
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    changeZoom(e.deltaY > 0 ? 0.9 : 1.1);
+}, {passive: false});
+
+canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left - canvas.width/2) / cam.zoom + cam.x;
+    const mouseY = (e.clientY - rect.top - canvas.height/2) / cam.zoom + cam.y;
+    
+    const typeKey = document.getElementById('select-type').value;
+    const dist = Math.sqrt(mouseX*mouseX + mouseY*mouseY);
+    const v = Math.sqrt((G * 1500) / dist) || 2;
+    
+    bodies.push(new Body(mouseX, mouseY, 0, v, Types[typeKey]));
+    updateSelectMenu();
+});
+
+window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+document.getElementById('btn-pause').onclick = () => {
+    isPaused = !isPaused;
+    document.getElementById('btn-pause').innerText = isPaused ? "Retomar" : "Pausar Simulação";
+};
+
+window.onresize();
+initSolarSystem();
+draw();
+
+</script>
+</body>
+</html>

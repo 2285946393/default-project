@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通信调制仿真实验室 CommMod Lab</title>
+<style>
+  :root{--bg:#0b0f17;--panel:#141b28;--panel2:#1a2334;--line:#273349;--text:#e8eef7;--muted:#8aa0bd;--cyan:#4fd1ff;--green:#4ade80;--yellow:#fbbf24;--pink:#f472b6;--red:#fb7185;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;min-height:100vh;line-height:1.6}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;background:linear-gradient(180deg,#101827,#0b0f17)}
+  header h1{font-size:20px;font-weight:700;letter-spacing:.5px}
+  header h1 span{color:var(--cyan)}
+  header .tag{font-size:12.5px;color:var(--muted)}
+  .tabs{display:flex;gap:6px;padding:12px 24px 0;flex-wrap:wrap}
+  .tabs button{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;transition:.15s}
+  .tabs button:hover{color:var(--text)}
+  .tabs button.active{background:var(--panel2);color:var(--cyan);border-color:var(--line);border-bottom-color:var(--panel2);font-weight:600}
+  .view{display:none;padding:18px 24px 30px}
+  .view.active{display:block}
+  .wrap{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+  @media(max-width:940px){.wrap{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .card h2{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px;letter-spacing:.4px}
+  canvas{width:100%;background:#070b12;border:1px solid var(--line);border-radius:6px;display:block}
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-top:12px}
+  .ctl{display:flex;flex-direction:column;gap:5px}
+  .ctl label{font-size:11.5px;color:var(--muted)}
+  .ctl input[type=range]{width:100%;accent-color:var(--cyan)}
+  .ctl .val{font-size:13px;font-variant-numeric:tabular-nums;color:var(--text)}
+  select{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-size:13px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  button{border:none;cursor:pointer;border-radius:6px;padding:8px 14px;font-size:13px;background:var(--panel2);border:1px solid var(--line);color:var(--text);transition:.15s}
+  button:hover{border-color:var(--cyan);color:var(--cyan)}
+  button.active{background:var(--cyan);color:#04121a;border-color:var(--cyan);font-weight:600}
+  .legend{display:flex;gap:16px;margin-top:8px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .legend span::before{content:"";display:inline-block;width:11px;height:11px;margin-right:6px;border-radius:2px;vertical-align:-1px}
+  .stat{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.8}
+  .stat b{color:var(--text);font-weight:600}
+  .help{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px;font-size:12.5px;line-height:1.9;color:var(--muted);margin-top:14px}
+  .help h3{color:var(--text);font-size:13px;margin-bottom:6px}
+  .help code{color:var(--cyan);font-family:Consolas,monospace;background:#0d1420;padding:1px 5px;border-radius:4px}
+  .help b{color:var(--text)}
+  .note{color:var(--yellow)}
+  .harm-row{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+  .harm-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--cyan)}
+  .harm-row .amp{flex:1}
+  .harm-row .amp input{width:100%;accent-color:var(--green)}
+  .harm-row .n{width:34px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);margin-right:6px}
+  .eyebrow{color:var(--cyan);font-size:12px;margin-top:14px;margin-bottom:4px;font-weight:600;letter-spacing:.4px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>通信调制仿真实验室 <span>CommMod Lab</span></h1>
+  <span class="tag">AM·FM·PM·ASK·FSK·PSK·QAM + 傅里叶谐波合成 · 通信原理 / 信号处理 交互可视化</span>
+</header>
+
+<div class="tabs">
+  <button class="active" data-tab="mod">🔁 调制仿真</button>
+  <button data-tab="fourier">🔬 傅里叶谐波合成</button>
+</div>
+
+<!-- ============ 调制仿真 ============ -->
+<div class="view active" id="view-mod">
+  <div class="wrap">
+    <div class="card">
+      <h2>已调信号波形 (Modulated Signal)</h2>
+      <canvas id="modScope" height="280"></canvas>
+      <div class="legend">
+        <span style="color:#4ade80"><span style="background:#4ade80"></span>调制信号</span>
+        <span style="color:#4fd1ff"><span style="background:#4fd1ff"></span>已调波形</span>
+        <span style="color:#fbbf24"><span style="background:#fbbf24"></span>载波/包络</span>
+      </div>
+      <div class="stat">
+        <b>调制方式:</b> <span id="mMod">-</span> &nbsp;
+        <b>载波频率 f<sub>c</sub>:</b> <span id="mFc">-</span> Hz &nbsp;
+        <b>信号频率 f<sub>m</sub>:</b> <span id="mFm">-</span> Hz &nbsp;
+        <b>调制指数/深度:</b> <span id="mIdx">-</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>控制面板</h2>
+      <div class="controls">
+        <div class="ctl">
+          <label>调制方式</label>
+          <select id="mScheme">
+            <option value="AM">AM 幅度调制</option>
+            <option value="DSB">DSB 双边带抑制载波</option>
+            <option value="FM">FM 频率调制</option>
+            <option value="PM">PM 相位调制</option>
+            <option value="ASK">ASK 幅移键控</option>
+            <option value="FSK">FSK 频移键控</option>
+            <option value="PSK">PSK 相移键控</option>
+            <option value="QAM">QAM 正交幅度调制</option>
+          </select>
+        </div>
+        <div class="ctl">
+          <label>载波频率 <span class="val" id="fcOut">50 Hz</span></label>
+          <input type="range" id="fc" min="20" max="200" value="50">
+        </div>
+        <div class="ctl">
+          <label>信号频率 <span class="val" id="fmOut">4 Hz</span></label>
+          <input type="range" id="fm" min="1" max="20" value="4">
+        </div>
+        <div class="ctl">
+          <label>调制指数 m <span class="val" id="mOut">0.8</span></label>
+          <input type="range" id="mIdxS" min="0.1" max="2" step="0.05" value="0.8">
+        </div>
+      </div>
+      <div class="row">
+        <button id="mRun" class="active">暂停</button>
+        <button id="mSpeed">速度 ×1</button>
+      </div>
+      <div class="help">
+        <h3>调制方式速览</h3>
+        <p><b>AM</b>：载波幅度随信号变化，有载波分量。信号 s(t)=(1+m·cosω<sub>m</sub>t)·cosω<sub>c</sub>t</p>
+        <p><b>DSB</b>：抑制载波，只保留双边带，s(t)=m(t)·cosω<sub>c</sub>t</p>
+        <p><b>FM</b>：瞬时频率随信号变化，s(t)=cos(ω<sub>c</sub>t + β·sinω<sub>m</sub>t)</p>
+        <p><b>PM</b>：瞬时相位随信号变化，s(t)=cos(ω<sub>c</sub>t + m<sub>p</sub>·cosω<sub>m</sub>t)</p>
+        <p><b>ASK/FSK/PSK</b>：数字调制，用二进制序列切换载波幅度/频率/相位</p>
+        <p><b>QAM</b>：同相I与正交Q两路幅度调制叠加，s(t)=I(t)cosω<sub>c</sub>t − Q(t)sinω<sub>c</sub>t</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 傅里叶谐波合成 ============ -->
+<div class="view" id="view-fourier">
+  <div class="wrap">
+    <div class="card">
+      <h2>谐波合成 vs 目标波形</h2>
+      <canvas id="fScope" height="300"></canvas>
+      <div class="legend">
+        <span style="color:#4ade80"><span style="background:#4ade80"></span>合成波形</span>
+        <span style="color:#fb7185"><span style="background:#fb7185"></span>目标波形(方波)</span>
+        <span style="color:#fbbf24"><span style="background:#fbbf24"></span>谐波分量</span>
+      </div>
+      <div class="stat">
+        <b>谐波数:</b> <span id="fHarm">-</span> &nbsp;
+        <b>当前谐波:</b> <span id="fCur">-</span> &nbsp;
+        <b>最大误差:</b> <span id="fErr">-</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>谐波控制</h2>
+      <div class="eyebrow">谐波开关与幅度</div>
+      <div id="harmList"></div>
+      <div class="controls">
+        <div class="ctl">
+          <label>目标波形</label>
+          <select id="fTarget">
+            <option value="square">方波</option>
+            <option value="saw">锯齿波</option>
+            <option value="tri">三角波</option>
+          </select>
+        </div>
+        <div class="ctl">
+          <label>最大谐波数 <span class="val" id="fMaxOut">9</span></label>
+          <input type="range" id="fMax" min="3" max="31" step="2" value="9">
+        </div>
+      </div>
+      <div class="row">
+        <button id="fRun" class="active">暂停</button>
+        <button id="fAdd">+ 增加谐波</button>
+      </div>
+      <div class="help">
+        <h3>傅里叶级数原理</h3>
+        <p>任意周期信号都可以分解为一系列不同频率的正弦/余弦谐波之和。</p>
+        <p><b>方波</b>：f(t) = <span style="font-family:Consolas">4/π·Σ sin(n·ωt)/n</span>，n为奇数。谐波越取越多，波形越接近方波，边缘出现<b class="note">吉布斯现象</b>(过冲)。</p>
+        <p>观察：只有前几个谐波时波形"圆润"，加上高频谐波后边缘变陡——这正是傅里叶变换的本质：<b>信号 = 频率成分的叠加</b>。</p>
+        <p class="note">提示：拖动滑块到 31 个谐波，看看方波边缘的过冲(约9%)，这就是吉布斯现象。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ================= 调制仿真 ================= */
+const SAMPLE = 1000, N = SAMPLE;   // 每屏采样点数
+const mc = document.getElementById('modScope');
+const mctx = mc.getContext('2d');
+let mScheme = 'AM', fc=50, fm=4, mIdx=0.8;
+let mRunning = true, mSpeed=1;
+let mTime = 0;
+
+function mSignal(t){
+  const wc = 2*Math.PI*fc, wm = 2*Math.PI*fm;
+  const msg = Math.sin(wm*t);                 // 调制信号
+  const msg2 = Math.cos(wm*t);
+  switch(mScheme){
+    case 'AM':  return (1 + mIdx*msg)*Math.cos(wc*t);
+    case 'DSB': return msg*Math.cos(wc*t);
+    case 'FM':  return Math.cos(wc*t + mIdx*Math.sin(wm*t));      // mIdx=β 频偏指数
+    case 'PM':  return Math.cos(wc*t + mIdx*Math.cos(wm*t));      // mIdx 相偏
+    case 'ASK': { const b = msg>=0?1:0; return (b>0.5 ? (1+mIdx) : (1-mIdx*0.2)) * Math.cos(wc*t); }
+    case 'FSK': { const b = msg>=0?1:0; const dev = mIdx*fm; return Math.cos(wc*t + (b?1:-1)*dev*2*Math.PI*t); }
+    case 'PSK': { const b = msg>=0?1:0; return Math.cos(wc*t + (b?Math.PI:0)); }
+    case 'QAM': { const I = Math.sin(wm*t), Q = Math.cos(wm*t); return I*Math.cos(wc*t) - Q*Math.sin(wc*t); }
+    default: return Math.cos(wc*t);
+  }
+}
+
+function drawMod(){
+  const W=mc.width, H=mc.height;
+  mctx.clearRect(0,0,W,H);
+  mctx.strokeStyle='rgba(138,160,189,0.08)';
+  mctx.lineWidth=1;
+  for(let i=1;i<6;i++){const y=H*i/6;mctx.beginPath();mctx.moveTo(0,y);mctx.lineTo(W,y);mctx.stroke();}
+
+  // 采集
+  const xs=new Float32Array(N), ys=new Float32Array(N), env=new Float32Array(N);
+  const wc=2*Math.PI*fc, wm=2*Math.PI*fm;
+  const dt = mSpeed*0.0008;
+  for(let i=0;i<N;i++){
+    const t = mTime + i*dt;
+    xs[i]=i/(N-1)*W;
+    ys[i]=H/2 - mSignal(t)*(H/2-10);
+    env[i]=H/2 - ((1 + mIdx*Math.sin(wm*t))*0.95)*(H/2-10);  // 包络
+  }
+  mTime += N*dt;
+
+  // 载波(灰色细线) - 仅模拟调制显示
+  if(['AM','DSB','FM','PM','QAM'].includes(mScheme)){
+    mctx.strokeStyle='rgba(75,90,110,0.35)';
+    mctx.lineWidth=1;
+    mctx.beginPath();
+    for(let i=0;i<N;i++){
+      const t=mTime-N*dt+i*dt;
+      const y=H/2 - Math.cos(wc*t)*(H/2-10);
+      i===0?mctx.moveTo(xs[i],y):mctx.lineTo(xs[i],y);
+    }
+    mctx.stroke();
+  }
+
+  // 已调波形
+  mctx.strokeStyle='#4fd1ff';
+  mctx.lineWidth=1.8;
+  mctx.beginPath();
+  for(let i=0;i<N;i++) i===0?mctx.moveTo(xs[i],ys[i]):mctx.lineTo(xs[i],ys[i]);
+  mctx.stroke();
+
+  // 调制信号(绿色)
+  mctx.strokeStyle='#4ade80';
+  mctx.lineWidth=1.6;
+  mctx.beginPath();
+  for(let i=0;i<N;i++){
+    const t=mTime-N*dt+i*dt;
+    const y=H/2 - Math.sin(wm*t)*(H/2-10)*0.8;
+    i===0?mctx.moveTo(xs[i],y):mctx.lineTo(xs[i],y);
+  }
+  mctx.stroke();
+
+  // AM 包络
+  if(mScheme==='AM'){
+    mctx.strokeStyle='#fbbf24';
+    mctx.lineWidth=1.2;
+    mctx.setLineDash([4,4]);
+    mctx.beginPath();
+    for(let i=0;i<N;i++) i===0?mctx.moveTo(xs[i],env[i]):mctx.lineTo(xs[i],env[i]);
+    mctx.stroke();
+    mctx.setLineDash([]);
+  }
+
+  // 状态
+  document.getElementById('mMod').textContent = mScheme;
+  document.getElementById('mFc').textContent = fc;
+  document.getElementById('mFm').textContent = fm;
+  document.getElementById('mIdx').textContent = (mScheme==='FM'||mScheme==='PM'? mIdx.toFixed(1)+' (β/mp)' : mIdx.toFixed(2));
+  if(mRunning) requestAnimationFrame(drawMod);
+}
+
+/* 调制控件 */
+const $ = id => document.getElementById(id);
+$('mScheme').onchange = e => mScheme = e.target.value;
+$('fc').oninput = e => { fc=+e.target.value; $('fcOut').textContent = fc+' Hz'; };
+$('fm').oninput = e => { fm=+e.target.value; $('fmOut').textContent = fm+' Hz'; };
+$('mIdxS').oninput = e => { mIdx=+e.target.value; $('mOut').textContent = mIdx.toFixed(2); };
+$('mRun').onclick = () => { mRunning=!mRunning; $('mRun').textContent=mRunning?'暂停':'继续'; $('mRun').classList.toggle('active',mRunning); if(mRunning) drawMod(); };
+$('mSpeed').onclick = () => { mSpeed = mSpeed===1?4:1; $('mSpeed').textContent = '速度 ×'+mSpeed; };
+
+/* ================= 傅里叶谐波合成 ================= */
+const fc2 = document.getElementById('fScope');
+const fctx = fc2.getContext('2d');
+let fTarget='square', fMax=9, fRunning=true;
+let fPhase=0;
+const harms = [];  // {n, amp, on}
+
+function buildHarmonics(){
+  harms.length=0;
+  for(let n=1;n<=fMax;n+=2){   // 只奇数谐波(方波/锯齿/三角都奇数)
+    let amp;
+    if(fTarget==='square') amp = 4/(Math.PI*n);
+    else if(fTarget==='saw') amp = 2/(Math.PI*n)*(-1);
+    else amp = 8/(Math.PI*Math.PI*n*n)*((n%4===1)?1:-1);
+    harms.push({n, amp, on:true});
+  }
+  renderHarmUI();
+}
+
+function renderHarmUI(){
+  const list=$('harmList');
+  list.innerHTML='';
+  harms.forEach((h,i)=>{
+    const row=document.createElement('div');
+    row.className='harm-row';
+    row.innerHTML=`<span class="n">n=${h.n}</span>
+      <input type="checkbox" ${h.on?'checked':''} title="开关谐波">
+      <span class="amp"><input type="range" min="0" max="1.5" step="0.01" value="${Math.min(1.5,Math.abs(h.amp))}"></span>
+      <span class="amp-val" style="width:44px;text-align:right;color:#8aa0bd;font-size:11px">${h.amp.toFixed(2)}</span>`;
+    const cb=row.querySelector('input[type=checkbox]');
+    const ampIn=row.querySelector('input[type=range]');
+    cb.onchange=()=>{h.on=cb.checked;};
+    ampIn.oninput=()=>{ const sign = h.amp<0?-1:1; h.amp=sign*Math.abs(+ampIn.value); };
+    list.appendChild(row);
+  });
+  $('fHarm').textContent = fMax;
+  $('fCur').textContent = harms.length + ' 个';
+}
+
+function fWave(t){   // 目标波形
+  const p = (t*2*Math.PI*1) % (2*Math.PI*2) / (2*Math.PI*2); // 用1Hz基频,周期2
+  let v;
+  if(fTarget==='square') v = (t*2%2 < 1 ? 1 : -1);
+  else if(fTarget==='saw') v = 2*((t*2)%2) - 1;
+  else { const p2 = (t*2)%2; v = p2<1 ? (4*p2-1) : (3-4*p2); }
+  return v;
+}
+
+function drawFourier(){
+  const W=fc2.width, H=fc2.height;
+  fctx.clearRect(0,0,W,H);
+  const Np=600;
+  const dt=0.002;   // 每样本时间步
+  const base=1*2*Math.PI;  // 基频ω=2π
+  fPhase += 0.02;
+
+  const xs=new Float32Array(Np), sy=new Float32Array(Np), ty=new Float32Array(Np);
+  let maxErr=0, firstPoint=true;
+  for(let i=0;i<Np;i++){
+    const t=i*dt;
+    const w0=base;
+    let s=0;
+    for(const h of harms){
+      if(!h.on) continue;
+      const hn=h.n;
+      s += h.amp*Math.sin(hn*w0*t + fPhase);
+    }
+    xs[i]=i/(Np-1)*W;
+    sy[i]=H/2 - s*(H/2-10)*0.5;
+    ty[i]=H/2 - fWave(t)*(H/2-10)*0.5;
+    const err=Math.abs(s*0.5 - fWave(t)*0.5);
+    if(err>maxErr) maxErr=err;
+  }
+
+  // 目标
+  fctx.strokeStyle='#fb7185';
+  fctx.lineWidth=2;
+  fctx.beginPath();
+  for(let i=0;i<Np;i++) i===0?fctx.moveTo(xs[i],ty[i]):fctx.lineTo(xs[i],ty[i]);
+  fctx.stroke();
+
+  // 谐波分量(淡)
+  fctx.strokeStyle='rgba(251,191,36,0.55)';
+  fctx.lineWidth=1.2;
+  for(const h of harms){
+    if(!h.on) continue;
+    fctx.beginPath();
+    for(let i=0;i<Np;i++){
+      const t=i*dt;
+      const y=H/2 - h.amp*Math.sin(h.n*base*t + fPhase)*(H/2-10)*0.5;
+      i===0?fctx.moveTo(xs[i],y):fctx.lineTo(xs[i],y);
+    }
+    fctx.stroke();
+  }
+
+  // 合成
+  fctx.strokeStyle='#4ade80';
+  fctx.lineWidth=2.2;
+  fctx.beginPath();
+  for(let i=0;i<Np;i++) i===0?fctx.moveTo(xs[i],sy[i]):fctx.lineTo(xs[i],sy[i]);
+  fctx.stroke();
+
+  $('fErr').textContent = (maxErr).toFixed(3);
+  if(fRunning) requestAnimationFrame(drawFourier);
+}
+
+$('fTarget').onchange = e => { fTarget=e.target.value; buildHarmonics(); };
+$('fMax').oninput = e => { fMax=+e.target.value; $('fMaxOut').textContent=fMax; buildHarmonics(); };
+$('fRun').onclick = () => { fRunning=!fRunning; $('fRun').textContent=fRunning?'暂停':'继续'; $('fRun').classList.toggle('active',fRunning); if(fRunning) drawFourier(); };
+$('fAdd').onclick = () => { if(fMax<31){ fMax+=2; $('fMax').value=fMax; $('fMaxOut').textContent=fMax; buildHarmonics(); } };
+
+/* 画布自适应 */
+function fit(){
+  [[mc,mctx],[fc2,fctx]].forEach(([cv,ctx])=>{
+    const r=cv.getBoundingClientRect();
+    cv.width=r.width; cv.height=r.height||280;
+  });
+}
+window.addEventListener('resize', fit);
+fit();
+
+/* Tab 切换 */
+document.querySelectorAll('.tabs button').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    $('view-'+btn.dataset.tab).classList.add('active');
+    setTimeout(fit, 20);   // 切tab后重算canvas尺寸, 否则隐藏的canvas宽度为0不绘制
+  };
+});
+
+/* 启动 */
+buildHarmonics();
+drawMod();
+drawFourier();
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

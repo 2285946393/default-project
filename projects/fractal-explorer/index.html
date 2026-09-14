@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BULB — a raymarched fractal instrument</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="A Mandelbulb fractal rendered live in the browser via WebGL raymarching — no polygons, just a signed distance field evaluated per pixel.">
+<meta property="og:title" content="Bulb — a raymarched fractal instrument">
+<meta property="og:description" content="A Mandelbulb fractal rendered live in the browser via WebGL raymarching.">
+<meta property="og:image" content="preview.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="style.css?v=4">
+<style>
+/* ===== 沉浸增强版自定义样式 ===== */
+#telemetry { display: none !important; }
+#deck { display: none !important; }
+#hint { display: none !important; }
+#title { display: none !important; }
+
+/* 自定义极简控制面板 */
+#fractal-panel {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(12, 8, 20, 0.65);
+  border: 1px solid rgba(201, 144, 63, 0.25);
+  border-radius: 50px;
+  padding: 10px 18px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  z-index: 15;
+  transition: opacity 0.4s ease;
+}
+#fractal-panel:hover { opacity: 1; }
+.preset-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15);
+  cursor: pointer; transition: all 0.2s ease;
+  position: relative;
+}
+.preset-dot:hover { transform: scale(1.15); border-color: rgba(255,255,255,0.4); }
+.preset-dot.active { border-color: var(--brass); box-shadow: 0 0 12px rgba(201,144,63,0.6); }
+.preset-dot::after {
+  content: attr(data-name);
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); white-space: nowrap; opacity: 0;
+  transition: opacity 0.2s; pointer-events: none;
+}
+.preset-dot:hover::after { opacity: 1; }
+.panel-divider {
+  width: 1px; height: 24px; background: rgba(201,144,63,0.2); margin: 0 6px;
+}
+.panel-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  background: transparent; border: 1px solid rgba(201,144,63,0.2);
+  color: var(--muted); padding: 7px 14px; border-radius: 20px;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.panel-btn:hover { color: var(--text); border-color: var(--brass-dim); }
+.panel-btn.active { color: var(--void); background: var(--brass); border-color: var(--brass); }
+
+/* 右上角极简标题 */
+#fractal-brand {
+  position: fixed; top: 24px; right: 28px;
+  text-align: right; pointer-events: none; user-select: none; z-index: 15;
+}
+#fractal-brand .name {
+  font-family: Georgia, serif; font-size: 22px; font-style: italic;
+  color: var(--text); letter-spacing: 0.04em;
+  text-shadow: 0 0 20px rgba(201,144,63,0.3);
+}
+#fractal-brand .sub {
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--brass-dim); margin-top: 3px;
+}
+
+/* 操作提示（淡入淡出） */
+#fractal-tip {
+  position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%);
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); pointer-events: none; user-select: none;
+  opacity: 0; transition: opacity 1s ease; z-index: 14;
+  text-align: center; line-height: 2;
+}
+#fractal-tip.show { opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<canvas id="gl"></canvas>
+
+<div id="boot"><div class="m">calibrating aperture&hellip;</div></div>
+<div id="err"></div>
+<div id="toast"></div>
+
+<div id="title">
+  <div class="eyebrow">Signed-distance instrument No. 1</div>
+  <h1>Bulb</h1>
+  <div class="sub">A Mandelbulb, rendered by sphere-tracing a signed distance field — no polygons, no mesh, just a distance function evaluated per pixel on the GPU.</div>
+</div>
+
+<div id="telemetry">
+  <div><span class="lbl">rays/frame</span><span id="tRays">—</span></div>
+  <div><span class="lbl">march avg</span><span id="tSteps">—</span> steps</div>
+  <div><span class="lbl">frame</span><span id="tFps">—</span> ms</div>
+  <div><span class="lbl">render scale</span><span id="tScale">—</span>x</div>
+  <div><span class="lbl">audio</span><span id="tAudio">off</span></div>
+</div>
+
+<div id="deck">
+  <div class="dial">
+    <label>Power <span class="v" id="vPower">8.0</span></label>
+    <input type="range" id="power" min="2" max="16" step="0.1" value="8">
+  </div>
+  <div class="dial">
+    <label>Depth <span class="v" id="vIter">9</span></label>
+    <input type="range" id="iter" min="4" max="14" step="1" value="9">
+  </div>
+  <div class="dial">
+    <label>Hue <span class="v" id="vHue">0.62</span></label>
+    <input type="range" id="hue" min="0" max="1" step="0.01" value="0.62">
+  </div>
+  <div class="dial">
+    <label>Bloom <span class="v" id="vBloom">0.60</span></label>
+    <input type="range" id="bloom" min="0" max="2" step="0.01" value="0.6">
+  </div>
+  <div class="dial">
+    <label>Depth of Field <span class="v" id="vDof">0.35</span></label>
+    <input type="range" id="dof" min="0" max="1" step="0.01" value="0.35">
+  </div>
+  <div class="dial">
+    <label>Preset</label>
+    <select id="presetSelect" class="preset-select">
+      <option value="">Custom</option>
+      <option value="classicGold">Classic Gold</option>
+      <option value="cosmicBlue">Cosmic Blue</option>
+      <option value="alienVenom">Alien Venom</option>
+      <option value="emberCore">Ember Core</option>
+      <option value="voidCrystal">Void Crystal</option>
+      <option value="magmaBox">Magma Box</option>
+    </select>
+  </div>
+  <div class="dial" id="juliaDial" style="display:none">
+    <label>Julia C.x <span class="v" id="vJx">0.35</span></label>
+    <input type="range" id="jx" min="-1.2" max="1.2" step="0.01" value="0.35">
+    <label style="margin-top:8px">Julia C.y <span class="v" id="vJy">0.05</span></label>
+    <input type="range" id="jy" min="-1.2" max="1.2" step="0.01" value="0.05">
+  </div>
+  <div class="dial">
+    <label>&nbsp;</label>
+    <div class="toggles">
+      <button class="toggle-btn active" id="spinBtn">Drift</button>
+      <button class="toggle-btn" id="resetBtn">Reset</button>
+      <button class="toggle-btn" id="saveBtn">Save</button>
+    </div>
+    <div class="toggles" style="margin-top:6px">
+      <button class="toggle-btn" id="modeBtn">Bulb</button>
+      <button class="toggle-btn" id="micBtn">Mic</button>
+      <button class="toggle-btn" id="shareBtn">Share</button>
+    </div>
+  </div>
+</div>
+
+<div id="hint">drag to orbit &middot; scroll to zoom &middot; <b>power</b> reshapes the fractal &middot; <b>depth</b> trades detail for speed &middot; <b>mode</b> swaps fractal formula &middot; <b>Space</b> toggles drift &middot; <b>R</b> reset</div>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main(){
+  v_uv = a_pos * 0.5 + 0.5;
+  gl_Position = vec4(a_pos, 0.0, 1.0);
+}
+</script>
+
+<!-- ===================== PASS 1: scene (fractal + orbit-trap color + depth in alpha) ===================== -->
+<script id="fs-scene" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 v_uv;
+
+uniform vec2 u_resolution;
+uniform vec3 u_camPos;
+uniform vec3 u_camRight;
+uniform vec3 u_camUp;
+uniform vec3 u_camFwd;
+uniform float u_power;
+uniform int u_iter;
+uniform float u_hue;
+uniform float u_time;
+uniform int u_mode;       // 0 = Mandelbulb, 1 = Julia, 2 = Mandelbox
+uniform vec3 u_juliaC;
+
+const int MAX_ITER = 14;
+const int MAX_STEPS = 110;
+const float MAX_DIST = 16.0;
+const float SURF_EPS = 0.0009;
+
+// Orbit-trap accumulator: distance to origin (trap.x), distance to the
+// nearest coordinate plane (trap.y), and distance to a fixed point (trap.z).
+// Combining these gives much richer, structure-following color than a
+// single scalar ever could.
+vec3 trapAccum(vec3 z, vec3 trap){
+  trap.x = min(trap.x, length(z));
+  trap.y = min(trap.y, min(abs(z.x), min(abs(z.y), abs(z.z))));
+  trap.z = min(trap.z, length(z - vec3(0.55, 0.35, -0.2)));
+  return trap;
+}
+
+float mandelbulbDE(vec3 pos, out vec3 trapOut){
+  vec3 z = pos;
+  float dr = 1.0;
+  float r = 0.0;
+  vec3 trap = vec3(1e9);
+  for (int i = 0; i < MAX_ITER; i++){
+    if (i >= u_iter) break;
+    r = length(z);
+    if (r > 2.2) break;
+    trap = trapAccum(z, trap);
+
+    float theta = acos(clamp(z.z / max(r, 0.0001), -1.0, 1.0));
+    float phi = atan(z.y, z.x);
+    float zr = pow(r, u_power);
+    dr = pow(r, u_power - 1.0) * u_power * dr + 1.0;
+
+    theta *= u_power;
+    phi *= u_power;
+
+    z = zr * vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+    z += pos;
+  }
+  trapOut = trap;
+  return 0.5 * log(max(r, 1.0001)) * r / max(dr, 0.0001);
+}
+
+// Julia variant: same spherical-power iteration, but the additive
+// constant is a fixed point in space rather than the sample position —
+// that's what turns a Mandelbulb-style map into a Julia set.
+float juliaDE(vec3 pos, out vec3 trapOut){
+  vec3 z = pos;
+  float dr = 1.0;
+  float r = 0.0;
+  vec3 trap = vec3(1e9);
+  for (int i = 0; i < MAX_ITER; i++){
+    if (i >= u_iter) break;
+    r = length(z);
+    if (r > 2.2) break;
+    trap = trapAccum(z, trap);
+
+    float theta = acos(clamp(z.z / max(r, 0.0001), -1.0, 1.0));
+    float phi = atan(z.y, z.x);
+    float zr = pow(r, u_power);
+    dr = pow(r, u_power - 1.0) * u_power * dr + 1.0;
+
+    theta *= u_power;
+    phi *= u_power;
+
+    z = zr * vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+    z += u_juliaC;
+  }
+  trapOut = trap;
+  return 0.5 * log(max(r, 1.0001)) * r / max(dr, 0.0001);
+}
+
+// Classic Mandelbox: box-fold + sphere-fold + scale, iterated.
+float mandelboxDE(vec3 pos, out vec3 trapOut){
+  vec4 z = vec4(pos, 1.0);
+  vec3 trap = vec3(1e9);
+  float scale = mix(1.6, 3.2, clamp((u_power - 2.0) / 14.0, 0.0, 1.0));
+  for (int i = 0; i < MAX_ITER; i++){
+    if (i >= u_iter) break;
+    z.xyz = clamp(z.xyz, -1.0, 1.0) * 2.0 - z.xyz;
+    float r2 = dot(z.xyz, z.xyz);
+    if (r2 < 0.25){
+      z *= 4.0;
+    } else if (r2 < 1.0){
+      z /= r2;
+    }
+    z.xyz = scale * z.xyz + pos;
+    z.w = scale * z.w + 1.0;
+    trap = trapAccum(z.xyz * 0.35, trap);
+  }
+  trapOut = trap;
+  return length(z.xyz) / abs(z.w);
+}
+
+// Power-2 Mandelbulb: identical iteration to the main bulb, but the
+// exponent is locked to 2 for the classic smooth, rounder "torus-lobed"
+// look rather than the sharper power-8 default.
+float bulb2DE(vec3 pos, out vec3 trapOut){
+  vec3 z = pos;
+  float dr = 1.0;
+  float r = 0.0;
+  vec3 trap = vec3(1e9);
+  const float p2 = 2.0;
+  for (int i = 0; i < MAX_ITER; i++){
+    if (i >= u_iter) break;
+    r = length(z);
+    if (r > 2.2) break;
+    trap = trapAccum(z, trap);
+
+    float theta = acos(clamp(z.z / max(r, 0.0001), -1.0, 1.0)) * p2;
+    float phi = atan(z.y, z.x) * p2;
+    float zr = pow(r, p2);
+    dr = pow(r, p2 - 1.0) * p2 * dr + 1.0;
+
+    z = zr * vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+    z += pos;
+  }
+  trapOut = trap;
+  return 0.5 * log(max(r, 1.0001)) * r / max(dr, 0.0001);
+}
+
+float sdBox(vec3 p, vec3 b){
+  vec3 d = abs(p) - b;
+  return min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0));
+}
+
+// Menger Sponge: repeatedly carve cross-shaped notches out of a cube at
+// increasing scale, folding space with mod() so one carve pass stands in
+// for infinitely many copies.
+float mengerDE(vec3 pos, out vec3 trapOut){
+  vec3 trap = vec3(1e9);
+  float d = sdBox(pos, vec3(1.0));
+  float s = 1.0;
+  int depth = int(clamp(float(u_iter - 5), 2.0, 7.0));
+  for (int m = 0; m < 7; m++){
+    if (m >= depth) break;
+    vec3 a = mod(pos * s, 2.0) - 1.0;
+    s *= 3.0;
+    vec3 r = abs(1.0 - 3.0 * abs(a));
+    float da = max(r.x, r.y);
+    float db = max(r.y, r.z);
+    float dc = max(r.z, r.x);
+    float c = (min(da, min(db, dc)) - 1.0) / s;
+    d = max(d, c);
+    trap = trapAccum(a, trap);
+  }
+  trapOut = trap;
+  return d;
+}
+
+// Kaleidoscopic IFS: fold space into a single wedge with abs()/swap, then
+// scale-and-translate away from an offset corner. A handful of these
+// folds stacked together produces intricate, alien lattice structures.
+float kifsDE(vec3 pos, out vec3 trapOut){
+  vec3 p = pos;
+  vec3 trap = vec3(1e9);
+  float scale = mix(1.5, 2.3, clamp((u_power - 2.0) / 14.0, 0.0, 1.0));
+  vec3 offset = vec3(1.0, 1.0, 0.6);
+  int depth = int(clamp(float(u_iter), 4.0, 10.0));
+  float totalScale = 1.0;
+  for (int i = 0; i < 10; i++){
+    if (i >= depth) break;
+    p = abs(p);
+    if (p.x < p.y) p.xy = p.yx;
+    if (p.x < p.z) p.xz = p.zx;
+    if (p.y < p.z) p.yz = p.zy;
+    p = scale * p - offset * (scale - 1.0);
+    totalScale *= scale;
+    trap = trapAccum(p * 0.4, trap);
+  }
+  trapOut = trap;
+  return length(p) / totalScale;
+}
+
+float mapDE(vec3 pos, out vec3 trapOut){
+  if (u_mode == 1) return juliaDE(pos, trapOut);
+  if (u_mode == 2) return mandelboxDE(pos, trapOut);
+  if (u_mode == 3) return bulb2DE(pos, trapOut);
+  if (u_mode == 4) return mengerDE(pos, trapOut);
+  if (u_mode == 5) return kifsDE(pos, trapOut);
+  return mandelbulbDE(pos, trapOut);
+}
+
+float mapD(vec3 p){
+  vec3 t;
+  return mapDE(p, t);
+}
+
+vec3 calcNormal(vec3 p){
+  vec2 e = vec2(0.0016, 0.0);
+  return normalize(vec3(
+    mapD(p + e.xyy) - mapD(p - e.xyy),
+    mapD(p + e.yxy) - mapD(p - e.yxy),
+    mapD(p + e.yyx) - mapD(p - e.yyx)
+  ));
+}
+
+float calcAO(vec3 p, vec3 n){
+  float occ = 0.0;
+  float sca = 1.0;
+  for (int i = 0; i < 5; i++){
+    float h = 0.02 + 0.10 * float(i) / 4.0;
+    float d = mapD(p + n * h);
+    occ += (h - d) * sca;
+    sca *= 0.7;
+  }
+  return clamp(1.0 - 1.4 * occ, 0.0, 1.0);
+}
+
+float softShadow(vec3 ro, vec3 rd, float mint, float maxt, float k){
+  float res = 1.0;
+  float t = mint;
+  for (int i = 0; i < 40; i++){
+    if (t > maxt) break;
+    float h = mapD(ro + rd * t);
+    if (h < 0.0008) return 0.0;
+    res = min(res, k * h / t);
+    t += clamp(h, 0.01, 0.2);
+  }
+  return clamp(res, 0.0, 1.0);
+}
+
+// Orbit-trap driven palette: three trap channels each pick a hue lane,
+// so color follows the fractal's internal structure instead of a flat
+// distance ramp.
+vec3 palette(vec3 trap, float hueShift){
+  vec3 a = vec3(0.10, 0.09, 0.14);
+  vec3 warmA = vec3(0.85, 0.62, 0.35);
+  vec3 coolA = vec3(0.55, 0.75, 0.78);
+  vec3 accent = vec3(0.78, 0.35, 0.55);
+
+  float t1 = clamp(1.0 - trap.x, 0.0, 1.0);
+  float t2 = clamp(1.0 - trap.y * 2.2, 0.0, 1.0);
+  float t3 = clamp(1.0 - trap.z * 1.4, 0.0, 1.0);
+
+  vec3 warm = mix(a, warmA, t1 * 1.4);
+  vec3 cool = mix(a, coolA, t1 * 1.4);
+  vec3 base = mix(warm, cool, fract(hueShift));
+  base = mix(base, accent, t2 * 0.45);
+  base += accent * t3 * 0.25;
+  return base;
+}
+
+void main(){
+  vec2 uv = (v_uv * u_resolution - 0.5 * u_resolution) / u_resolution.y;
+
+  vec3 ro = u_camPos;
+  vec3 rd = normalize(uv.x * u_camRight + uv.y * u_camUp + 1.7 * u_camFwd);
+
+  float t = 0.0;
+  vec3 trap = vec3(1e9);
+  bool hit = false;
+  vec3 p;
+
+  for (int i = 0; i < MAX_STEPS; i++){
+    p = ro + rd * t;
+    vec3 tt;
+    float d = mapDE(p, tt);
+    if (d < SURF_EPS){ hit = true; trap = tt; break; }
+    t += d * 0.92;
+    if (t > MAX_DIST) break;
+  }
+
+  vec3 col;
+  vec3 voidCol = vec3(0.035, 0.024, 0.055) * (1.0 - 0.4*length(uv));
+  float depthNorm = 1.0;
+
+  if (hit){
+    vec3 n = calcNormal(p);
+    vec3 lightDir = normalize(vec3(0.6, 0.8, 0.4));
+    float diff = clamp(dot(n, lightDir), 0.0, 1.0);
+    float sh = softShadow(p + n * 0.002, lightDir, 0.01, 4.0, 12.0);
+    float ao = calcAO(p, n);
+    float fres = pow(1.0 - clamp(dot(n, -rd), 0.0, 1.0), 3.0);
+
+    vec3 base = palette(trap, u_hue);
+    vec3 ambient = base * 0.25 * ao;
+    vec3 direct = base * diff * sh * 1.15;
+    vec3 rim = vec3(0.9, 0.85, 0.7) * fres * 0.35 * ao;
+
+    col = ambient + direct + rim;
+    col = pow(col, vec3(0.85));
+    float fog = smoothstep(6.0, 14.0, t);
+    col = mix(col, voidCol, fog);
+    depthNorm = clamp(t / MAX_DIST, 0.0, 1.0);
+  } else {
+    col = voidCol + vec3(0.02,0.015,0.03) * smoothstep(1.0, 0.0, length(uv));
+  }
+
+  gl_FragColor = vec4(col, depthNorm);
+}
+</script>
+
+<!-- ===================== PASS 2: bright-pass + horizontal blur (bloom, low-res) ===================== -->
+<script id="fs-bloomh" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_tex;
+uniform vec2 u_srcTexel;
+
+vec3 sampleBright(vec2 uv){
+  vec3 c = texture2D(u_tex, clamp(uv, 0.0, 1.0)).rgb;
+  float lum = dot(c, vec3(0.299, 0.587, 0.114));
+  return c * smoothstep(0.55, 0.9, lum);
+}
+
+void main(){
+  vec2 step = vec2(u_srcTexel.x * 2.0, 0.0);
+  vec3 sum = sampleBright(v_uv) * 0.227027;
+  sum += sampleBright(v_uv + step) * 0.1945946;
+  sum += sampleBright(v_uv - step) * 0.1945946;
+  sum += sampleBright(v_uv + step * 2.0) * 0.1216216;
+  sum += sampleBright(v_uv - step * 2.0) * 0.1216216;
+  sum += sampleBright(v_uv + step * 3.0) * 0.054054;
+  sum += sampleBright(v_uv - step * 3.0) * 0.054054;
+  sum += sampleBright(v_uv + step * 4.0) * 0.016216;
+  sum += sampleBright(v_uv - step * 4.0) * 0.016216;
+  gl_FragColor = vec4(sum, 1.0);
+}
+</script>
+
+<!-- ===================== PASS 3: vertical blur (bloom, low-res) ===================== -->
+<script id="fs-bloomv" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_tex;
+uniform vec2 u_srcTexel;
+
+vec3 sampleC(vec2 uv){ return texture2D(u_tex, clamp(uv, 0.0, 1.0)).rgb; }
+
+void main(){
+  vec2 step = vec2(0.0, u_srcTexel.y * 2.0);
+  vec3 sum = sampleC(v_uv) * 0.227027;
+  sum += sampleC(v_uv + step) * 0.1945946;
+  sum += sampleC(v_uv - step) * 0.1945946;
+  sum += sampleC(v_uv + step * 2.0) * 0.1216216;
+  sum += sampleC(v_uv - step * 2.0) * 0.1216216;
+  sum += sampleC(v_uv + step * 3.0) * 0.054054;
+  sum += sampleC(v_uv - step * 3.0) * 0.054054;
+  sum += sampleC(v_uv + step * 4.0) * 0.016216;
+  sum += sampleC(v_uv - step * 4.0) * 0.016216;
+  gl_FragColor = vec4(sum, 1.0);
+}
+</script>
+
+<!-- ===================== PASS 4: composite — depth-of-field resolve + bloom add + tonemap ===================== -->
+<script id="fs-composite" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 v_uv;
+uniform sampler2D u_scene;
+uniform sampler2D u_bloom;
+uniform vec2 u_sceneTexel;
+uniform float u_focus;
+uniform float u_dofStrength;
+uniform float u_bloomStrength;
+
+void main(){
+  vec4 center = texture2D(u_scene, v_uv);
+  float depth = center.a;
+  float coc = clamp(abs(depth - u_focus) * u_dofStrength * 40.0, 0.0, 6.0);
+
+  vec3 col;
+  if (coc < 0.4 || u_dofStrength <= 0.001){
+    col = center.rgb;
+  } else {
+    vec3 sum = center.rgb;
+    float wsum = 1.0;
+    for (int i = 0; i < 8; i++){
+      float ang = float(i) * 0.7853981634;
+      vec2 off = vec2(cos(ang), sin(ang)) * u_sceneTexel * coc;
+      sum += texture2D(u_scene, clamp(v_uv + off, 0.0, 1.0)).rgb;
+      wsum += 1.0;
+    }
+    col = sum / wsum;
+  }
+
+  vec3 bloom = texture2D(u_bloom, v_uv).rgb * u_bloomStrength;
+  col += bloom;
+  col = col / (col + vec3(1.0));
+  col = pow(col, vec3(0.9));
+  gl_FragColor = vec4(col, 1.0);
+}
+</script>
+
+<script src="script.js?v=4"></script>
+
+<!-- ===== 沉浸增强版自定义 UI ===== -->
+<div id="fractal-brand">
+  <div class="name">分形</div>
+  <div class="sub">Fractal Explorer</div>
+</div>
+
+<div id="fractal-tip">拖动旋转 · 滚轮缩放 · 空格自动漫游</div>
+
+<div id="fractal-panel">
+  <div class="preset-dot active" data-preset="classicGold" data-name="经典金" style="background: linear-gradient(135deg, #c9903f, #8b6914);"></div>
+  <div class="preset-dot" data-preset="cosmicBlue" data-name="宇宙蓝" style="background: linear-gradient(135deg, #4a90d9, #1a3a5c);"></div>
+  <div class="preset-dot" data-preset="alienVenom" data-name="异星毒" style="background: linear-gradient(135deg, #6abf4b, #2d5a1e);"></div>
+  <div class="preset-dot" data-preset="emberCore" data-name="余烬核" style="background: linear-gradient(135deg, #e85d3a, #8b2500);"></div>
+  <div class="preset-dot" data-preset="voidCrystal" data-name="虚空晶" style="background: linear-gradient(135deg, #9b6bd9, #3d1a5c);"></div>
+  <div class="preset-dot" data-preset="magmaBox" data-name="岩浆盒" style="background: linear-gradient(135deg, #d94a2b, #5c1a0a);"></div>
+  <div class="panel-divider"></div>
+  <button class="panel-btn" id="btnDrift">漫游</button>
+  <button class="panel-btn" id="btnMode">形态</button>
+  <button class="panel-btn" id="btnReset">重置</button>
+  <button class="panel-btn" id="btnSave">截图</button>
+</div>
+
+<script>
+(function(){
+  // 等待 script.js 初始化完成
+  function waitForInit(cb){
+    if (typeof applyPreset === 'function' || document.getElementById('spinBtn')) {
+      cb();
+    } else {
+      setTimeout(() => waitForInit(cb), 100);
+    }
+  }
+
+  waitForInit(function(){
+    // 预设按钮
+    var dots = document.querySelectorAll('.preset-dot');
+    dots.forEach(function(dot){
+      dot.addEventListener('click', function(){
+        var preset = dot.dataset.preset;
+        // 触发原有的 presetSelect change 事件
+        var select = document.getElementById('presetSelect');
+        select.value = preset;
+        select.dispatchEvent(new Event('change'));
+        // 更新 active 状态
+        dots.forEach(function(d){ d.classList.remove('active'); });
+        dot.classList.add('active');
+      });
+    });
+
+    // 漫游按钮
+    var btnDrift = document.getElementById('btnDrift');
+    btnDrift.addEventListener('click', function(){
+      document.getElementById('spinBtn').click();
+      var active = document.getElementById('spinBtn').classList.contains('active');
+      btnDrift.classList.toggle('active', active);
+      btnDrift.textContent = active ? '漫游中' : '漫游';
+    });
+
+    // 形态按钮（切换分形模式）
+    document.getElementById('btnMode').addEventListener('click', function(){
+      document.getElementById('modeBtn').click();
+      dots.forEach(function(d){ d.classList.remove('active'); });
+    });
+
+    // 重置按钮
+    document.getElementById('btnReset').addEventListener('click', function(){
+      document.getElementById('resetBtn').click();
+      dots.forEach(function(d){ d.classList.remove('active'); });
+      document.querySelector('.preset-dot[data-preset="classicGold"]').classList.add('active');
+      var driftBtn = document.getElementById('btnDrift');
+      driftBtn.classList.remove('active');
+      driftBtn.textContent = '漫游';
+    });
+
+    // 截图按钮
+    document.getElementById('btnSave').addEventListener('click', function(){
+      document.getElementById('saveBtn').click();
+    });
+
+    // 键盘快捷键
+    document.addEventListener('keydown', function(e){
+      if (e.code === 'Space') {
+        e.preventDefault();
+        document.getElementById('spinBtn').click();
+        var active = document.getElementById('spinBtn').classList.contains('active');
+        var btnDrift = document.getElementById('btnDrift');
+        btnDrift.classList.toggle('active', active);
+        btnDrift.textContent = active ? '漫游中' : '漫游';
+      }
+      if (e.code === 'KeyR') {
+        document.getElementById('resetBtn').click();
+      }
+      // 1-6 切换预设
+      var num = parseInt(e.key);
+      if (num >= 1 && num <= 6) {
+        var presets = ['classicGold','cosmicBlue','alienVenom','emberCore','voidCrystal','magmaBox'];
+        var dot = document.querySelector('.preset-dot[data-preset="' + presets[num-1] + '"]');
+        if (dot) dot.click();
+      }
+    });
+
+    // 显示操作提示，3秒后淡出
+    var tip = document.getElementById('fractal-tip');
+    setTimeout(function(){ tip.classList.add('show'); }, 500);
+    setTimeout(function(){ tip.classList.remove('show'); }, 4000);
+
+    // 默认开启自动漫游
+    setTimeout(function(){
+      if (!document.getElementById('spinBtn').classList.contains('active')) {
+        document.getElementById('spinBtn').click();
+        document.getElementById('btnDrift').classList.add('active');
+        document.getElementById('btnDrift').textContent = '漫游中';
+      }
+    }, 2000);
+  });
+})();
+</script>
+
+</body>
+</html>

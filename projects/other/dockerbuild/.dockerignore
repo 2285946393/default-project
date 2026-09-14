@@ -1,0 +1,24 @@
+# 版本控制与 IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# 构建产物
+bin
+*.log
+*.pid
+*.zip
+
+# 本地配置与脚本（不写入镜像）
+# config/ 仅作为宿主机挂载卷目录存在（compose 挂载 ./config:/config），
+# 避免账号密码等敏感信息进入镜像
+config
+config.toml
+start.sh
+stop.sh
+restart.sh
+Makefile
+
+# 部署说明文档（不进入镜像）
+README.md

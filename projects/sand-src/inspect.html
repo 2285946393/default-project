@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>wasm inspect</title></head>
+<body>
+<div id="out">loading...</div>
+<script>
+fetch('/sand-src/game.wasm').then(r => r.arrayBuffer()).then(buf =>
+  WebAssembly.compile(buf)
+).then(mod => {
+  const imports = WebAssembly.Module.imports(mod);
+  const exports = WebAssembly.Module.exports(mod);
+  document.getElementById('out').textContent = 'ok';
+  window.__imports = imports;
+  window.__exports = exports;
+  console.log('IMPORTS', imports.map(i => `${i.module}.${i.name} (${i.kind})`).join('\n'));
+  console.log('EXPORTS', exports.map(e => `${e.name} (${e.kind})`).join('\n'));
+}).catch(e => {
+  document.getElementById('out').textContent = 'ERR: ' + e.message;
+  console.error(e);
+});
+</script>
+</body>
+</html>

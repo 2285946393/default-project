@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#05070c" />
+    <title>菌丝 Mycelia · 输入一个词，长出一只活物</title>
+    <meta
+      name="description"
+      content="A living generative organism grown from a word. One million GPU agents self-organize into breathing, bioluminescent networks. Same seed, same creature, forever."
+    />
+    <meta property="og:title" content="Mycelia" />
+    <meta property="og:description" content="Type a word. Grow a one-million-agent living organism on your GPU. Share the seed — anyone regrows the exact same creature." />
+    <meta property="og:type" content="website" />
+    <script type="module" crossorigin>var K=Object.defineProperty;var j=(t,e,i)=>e in t?K(t,e,{enumerable:!0,configurable:!0,writable:!0,value:i}):t[e]=i;var u=(t,e,i)=>j(t,typeof e!="symbol"?e+"":e,i);(function(){const e=document.createElement("link").relList;if(e&&e.supports&&e.supports("modulepreload"))return;for(const a of document.querySelectorAll('link[rel="modulepreload"]'))s(a);new MutationObserver(a=>{for(const o of a)if(o.type==="childList")for(const l of o.addedNodes)l.tagName==="LINK"&&l.rel==="modulepreload"&&s(l)}).observe(document,{childList:!0,subtree:!0});function i(a){const o={};return a.integrity&&(o.integrity=a.integrity),a.referrerPolicy&&(o.referrerPolicy=a.referrerPolicy),a.crossOrigin==="use-credentials"?o.credentials="include":a.crossOrigin==="anonymous"?o.credentials="omit":o.credentials="same-origin",o}function s(a){if(a.ep)return;a.ep=!0;const o=i(a);fetch(a.href,o)}})();function Q(t){const e=t.getContext("webgl2",{antialias:!1,depth:!1,stencil:!1,alpha:!1,premultipliedAlpha:!1,preserveDrawingBuffer:!0,powerPreference:"high-performance"});if(!e)throw new Error("当前浏览器不支持 WebGL2。");if(!e.getExtension("EXT_color_buffer_float"))throw new Error("不支持浮点颜色缓冲（EXT_color_buffer_float），无法运行模拟。");return e.getExtension("OES_texture_float_linear"),e.getExtension("OES_texture_half_float_linear"),e}function W(t,e,i){const s=t.createShader(e);if(!s)throw new Error("Failed to allocate shader.");if(t.shaderSource(s,i),t.compileShader(s),!t.getShaderParameter(s,t.COMPILE_STATUS)){const a=t.getShaderInfoLog(s)??"unknown error",o=e===t.VERTEX_SHADER?"vertex":"fragment";throw t.deleteShader(s),new Error(`${o} shader compile error:
+${a}`)}return s}function _(t,e,i){const s=W(t,t.VERTEX_SHADER,e),a=W(t,t.FRAGMENT_SHADER,i),o=t.createProgram();if(!o)throw new Error("Failed to allocate program.");if(t.attachShader(o,s),t.attachShader(o,a),t.linkProgram(o),!t.getProgramParameter(o,t.LINK_STATUS)){const l=t.getProgramInfoLog(o)??"unknown error";throw t.deleteProgram(o),new Error(`Program link error:
+${l}`)}return t.deleteShader(s),t.deleteShader(a),o}function O(t,e,i,s=null,a=t.NEAREST){const o=t.createTexture();if(!o)throw new Error("Failed to allocate texture.");t.bindTexture(t.TEXTURE_2D,o),t.texImage2D(t.TEXTURE_2D,0,t.RGBA16F,e,i,0,t.RGBA,t.FLOAT,s),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_MIN_FILTER,a),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_MAG_FILTER,a),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_WRAP_S,t.CLAMP_TO_EDGE),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_WRAP_T,t.CLAMP_TO_EDGE);const l=t.createFramebuffer();if(!l)throw new Error("Failed to allocate framebuffer.");t.bindFramebuffer(t.FRAMEBUFFER,l),t.framebufferTexture2D(t.FRAMEBUFFER,t.COLOR_ATTACHMENT0,t.TEXTURE_2D,o,0);const T=t.checkFramebufferStatus(t.FRAMEBUFFER);if(T!==t.FRAMEBUFFER_COMPLETE)throw new Error(`Incomplete framebuffer (0x${T.toString(16)}).`);return t.bindFramebuffer(t.FRAMEBUFFER,null),{tex:o,fbo:l,width:e,height:i}}function H(t,e,i,s){const a=t.createTexture();if(!a)throw new Error("Failed to allocate agent texture.");t.bindTexture(t.TEXTURE_2D,a),t.texImage2D(t.TEXTURE_2D,0,t.RGBA32F,e,i,0,t.RGBA,t.FLOAT,s),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_MIN_FILTER,t.NEAREST),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_MAG_FILTER,t.NEAREST),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_WRAP_S,t.CLAMP_TO_EDGE),t.texParameteri(t.TEXTURE_2D,t.TEXTURE_WRAP_T,t.CLAMP_TO_EDGE);const o=t.createFramebuffer();if(!o)throw new Error("Failed to allocate agent framebuffer.");if(t.bindFramebuffer(t.FRAMEBUFFER,o),t.framebufferTexture2D(t.FRAMEBUFFER,t.COLOR_ATTACHMENT0,t.TEXTURE_2D,a,0),t.checkFramebufferStatus(t.FRAMEBUFFER)!==t.FRAMEBUFFER_COMPLETE)throw new Error("Incomplete agent framebuffer.");return t.bindFramebuffer(t.FRAMEBUFFER,null),{tex:a,fbo:o,width:e,height:i}}function U(t,e){t.deleteTexture(e.tex),t.deleteFramebuffer(e.fbo)}function J(t){const e=t.createVertexArray();if(!e)throw new Error("Failed to allocate VAO.");t.bindVertexArray(e);const i=t.createBuffer();return t.bindBuffer(t.ARRAY_BUFFER,i),t.bufferData(t.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),t.STATIC_DRAW),t.enableVertexAttribArray(0),t.vertexAttribPointer(0,2,t.FLOAT,!1,0,0),t.bindVertexArray(null),e}class k{constructor(e,i){u(this,"map",new Map);this.gl=e,this.prog=i}loc(e){let i=this.map.get(e);return i===void 0&&(i=this.gl.getUniformLocation(this.prog,e),this.map.set(e,i)),i}}const B=`#version 300 es
+layout(location = 0) in vec2 aPos;
+out vec2 vUv;
+void main() {
+  vUv = aPos * 0.5 + 0.5;
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}`,Z=`#version 300 es
+precision highp float;
+precision highp int;
+
+uniform sampler2D uAgents;
+uniform sampler2D uTrail;
+uniform vec2 uResolution;
+uniform float uSensorAngle;
+uniform float uSensorDist;
+uniform float uTurn;
+uniform float uStep;
+uniform float uWander;
+uniform float uCross;
+uniform float uFrame;
+uniform vec2  uMouse;      // px
+uniform float uMouseMode;  // 0 none, 1 attract, 2 repel
+uniform float uMouseRadius;
+
+out vec4 frag;
+
+float hash21(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+vec3 speciesMask(float sp) {
+  float m0 = step(sp, 0.5);
+  float m1 = step(0.5, sp) * step(sp, 1.5);
+  float m2 = step(1.5, sp);
+  return vec3(m0, m1, m2);
+}
+
+float senseAt(vec2 pos, float ang, vec3 mask) {
+  vec2 p = pos + vec2(cos(ang), sin(ang)) * uSensorDist;
+  vec3 t = texture(uTrail, fract(p / uResolution)).rgb;
+  float own = dot(t, mask);
+  float others = (t.r + t.g + t.b) - own;
+  return own + uCross * others;
+}
+
+void main() {
+  ivec2 texel = ivec2(gl_FragCoord.xy);
+  vec4 a = texelFetch(uAgents, texel, 0);
+  vec2 pos = a.xy;
+  float heading = a.z;
+  float sp = a.w;
+  vec3 mask = speciesMask(sp);
+
+  float c = senseAt(pos, heading, mask);
+  float l = senseAt(pos, heading + uSensorAngle, mask);
+  float r = senseAt(pos, heading - uSensorAngle, mask);
+
+  float rnd = hash21(gl_FragCoord.xy + uFrame * 0.61803);
+
+  if (c > l && c > r) {
+    // straight ahead is best — hold course
+  } else if (c < l && c < r) {
+    heading += (rnd - 0.5) * 2.0 * uTurn; // trapped: random escape
+  } else if (r > l) {
+    heading -= uTurn;
+  } else if (l > r) {
+    heading += uTurn;
+  }
+
+  heading += (hash21(gl_FragCoord.yx + uFrame * 0.31) - 0.5) * uWander;
+
+  // Cursor as food (attract) or predator (repel).
+  if (uMouseMode > 0.5) {
+    vec2 toM = uMouse - pos;
+    float d = length(toM);
+    if (d < uMouseRadius && d > 0.001) {
+      float desired = atan(toM.y, toM.x);
+      if (uMouseMode > 1.5) desired += 3.14159265;
+      float diff = atan(sin(desired - heading), cos(desired - heading));
+      heading += clamp(diff, -uTurn, uTurn) * (1.0 - d / uMouseRadius) * 0.9;
+    }
+  }
+
+  pos += vec2(cos(heading), sin(heading)) * uStep;
+  pos = mod(pos, uResolution);
+
+  frag = vec4(pos, heading, sp);
+}`,ee=`#version 300 es
+precision highp float;
+uniform sampler2D uAgents;
+uniform vec2 uResolution;
+uniform int uAgentTexW;
+flat out float vSpecies;
+void main() {
+  int id = gl_VertexID;
+  int x = id % uAgentTexW;
+  int y = id / uAgentTexW;
+  vec4 a = texelFetch(uAgents, ivec2(x, y), 0);
+  vec2 p = a.xy / uResolution;
+  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+  gl_PointSize = 1.0;
+  vSpecies = a.w;
+}`,te=`#version 300 es
+precision highp float;
+flat in float vSpecies;
+uniform float uDeposit;
+out vec4 frag;
+void main() {
+  float sp = vSpecies;
+  float m0 = step(sp, 0.5);
+  float m1 = step(0.5, sp) * step(sp, 1.5);
+  float m2 = step(1.5, sp);
+  frag = vec4(vec3(m0, m1, m2) * uDeposit, 0.0);
+}`,se=`#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTrail;
+uniform vec2 uTexel;
+uniform float uDecay;
+uniform float uDiffuse;
+uniform vec2 uFeedPos;    // uv
+uniform float uFeedRadius; // uv
+uniform float uFeedAmt;
+out vec4 frag;
+void main() {
+  vec3 c = texture(uTrail, vUv).rgb;
+  vec3 sum = vec3(0.0);
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      sum += texture(uTrail, fract(vUv + vec2(float(x), float(y)) * uTexel)).rgb;
+    }
+  }
+  sum /= 9.0;
+  vec3 outc = mix(c, sum, uDiffuse) * uDecay;
+
+  if (uFeedAmt > 0.0) {
+    float d = distance(vUv, uFeedPos) / uFeedRadius;
+    outc += exp(-d * d * 4.0) * uFeedAmt;
+  }
+
+  frag = vec4(outc, 1.0);
+}`,ie=`#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTrail;
+uniform vec2 uTexel;
+uniform vec3 uBg;
+uniform vec3 uCol0;
+uniform vec3 uCol1;
+uniform vec3 uCol2;
+uniform float uExposure;
+uniform float uHueShift;
+uniform float uRef; // per-genome equilibrium level = deposit / (1 - decay)
+uniform float uTime;
+out vec4 frag;
+
+vec3 hueRotate(vec3 col, float a) {
+  const vec3 k = vec3(0.57735026);
+  float cosA = cos(a);
+  return col * cosA + cross(k, col) * sin(a) + k * dot(k, col) * (1.0 - cosA);
+}
+
+// Narkowicz ACES filmic approximation.
+vec3 aces(vec3 x) {
+  const float a = 2.51, b = 0.03, c = 2.43, d = 0.59, e = 0.14;
+  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
+
+vec3 sampleField(vec2 uv) {
+  return texture(uTrail, uv).rgb;
+}
+
+void main() {
+  vec3 f = sampleField(vUv);
+
+  // Cheap bloom: a few wide taps of the brightest energy.
+  vec3 bloom = vec3(0.0);
+  for (int i = 0; i < 8; i++) {
+    float ang = float(i) * 0.7853982;
+    vec2 o = vec2(cos(ang), sin(ang)) * uTexel * 3.0;
+    bloom += sampleField(vUv + o);
+  }
+  f += bloom * 0.06;
+
+  // Normalised emission (Reinhard) per species channel. Dividing by the
+  // genome's own equilibrium level makes gaps read dark, ridges read bright,
+  // and mid-density paths land at ~0.6 — so structure shows for EVERY seed
+  // regardless of its absolute field magnitude. Exposure is pure brightness.
+  vec3 e = f / (f + uRef * 0.55);
+  vec3 emissive = (uCol0 * e.r + uCol1 * e.g + uCol2 * e.b) * uExposure;
+  emissive = hueRotate(emissive, uHueShift * 6.2831853);
+
+  vec3 col = uBg + emissive;
+  col = aces(col * 1.05);
+
+  // Vignette.
+  vec2 q = vUv - 0.5;
+  col *= 1.0 - dot(q, q) * 0.85;
+
+  // Film grain.
+  float g = fract(sin(dot(gl_FragCoord.xy + uTime, vec2(12.9898, 78.233))) * 43758.5453);
+  col += (g - 0.5) * 0.025;
+
+  frag = vec4(col, 1.0);
+}`,G={medium:{label:"Balanced",agentTex:768},high:{label:"Dense",agentTex:1024}};function C(t){return{sensorAngle:t.sensorAngle,sensorDistance:t.sensorDistance,turnSpeed:t.turnSpeed,stepSize:t.stepSize,decay:t.decay,diffuse:t.diffuse,deposit:t.deposit,species:t.species,crossAttraction:t.crossAttraction,wander:t.wander,exposure:t.exposure,hueShift:t.hueShift}}function V(t,e){return{read:t,write:e,swap(){const i=this.read;this.read=this.write,this.write=i}}}class ae{constructor(e,i,s){u(this,"gl");u(this,"vao");u(this,"updateProg");u(this,"depositProg");u(this,"diffuseProg");u(this,"displayProg");u(this,"uU");u(this,"uDep");u(this,"uDif");u(this,"uDis");u(this,"agents");u(this,"trail");u(this,"agentTex",1024);u(this,"simW",1);u(this,"simH",1);u(this,"trailFilter");u(this,"params");u(this,"palette");u(this,"spawn");u(this,"seed");u(this,"frame",0);u(this,"time",0);u(this,"mouse",{x:0,y:0,inside:!1,pressing:!1,repel:!1});u(this,"paused",!1);this.gl=e,this.vao=J(e),this.updateProg=_(e,B,Z),this.depositProg=_(e,ee,te),this.diffuseProg=_(e,B,se),this.displayProg=_(e,B,ie),this.uU=new k(e,this.updateProg),this.uDep=new k(e,this.depositProg),this.uDif=new k(e,this.diffuseProg),this.uDis=new k(e,this.displayProg),this.params=C(i),this.palette=i.palette,this.spawn=i.spawn,this.seed=i.seed,this.agentTex=s.agentTex,this.trailFilter=e.getExtension("OES_texture_half_float_linear")?e.LINEAR:e.NEAREST}get agentCount(){return this.agentTex*this.agentTex}get effectiveDeposit(){return this.params.deposit*Math.max(1,Math.round(this.params.species))}get paletteName(){return this.palette.name}resize(e,i){const s=this.gl;this.simW=Math.max(2,Math.floor(e)),this.simH=Math.max(2,Math.floor(i)),this.trail&&(U(s,this.trail.read),U(s,this.trail.write));const a=new Float32Array(this.simW*this.simH*4);this.trail=V(O(s,this.simW,this.simH,a,this.trailFilter),O(s,this.simW,this.simH,a,this.trailFilter)),this.reseed()}setQuality(e){this.agentTex=e.agentTex,this.reseed()}applyGenome(e){this.params=C(e),this.palette=e.palette,this.spawn=e.spawn,this.seed=e.seed,this.reseed()}setParams(e,i=!0){const s=this.params.species;this.params={...this.params,...e},i&&e.species!==void 0&&e.species!==s&&this.reseed()}setPalette(e){this.palette=e}setSpawn(e){this.spawn=e,this.reseed()}clearField(){const e=this.gl,i=new Float32Array(this.simW*this.simH*4);for(const s of[this.trail.read,this.trail.write])e.bindTexture(e.TEXTURE_2D,s.tex),e.texImage2D(e.TEXTURE_2D,0,e.RGBA16F,this.simW,this.simH,0,e.RGBA,e.FLOAT,i)}regrow(){this.clearField(),this.reseed()}reseed(){const e=this.gl,i=this.agentCount,s=new Float32Array(i*4),a=this.simW*.5,o=this.simH*.5,l=Math.min(this.simW,this.simH)*.5,T=Math.max(1,Math.min(3,Math.round(this.params.species)));for(let c=0;c<i;c++){const x=c*4;let g,w;const f=Math.random()*Math.PI*2;switch(this.spawn){case"ring":{const E=l*(.62+Math.random()*.12);g=a+Math.cos(f)*E,w=o+Math.sin(f)*E;break}case"core":{const E=l*.14*Math.sqrt(Math.random());g=a+Math.cos(f)*E,w=o+Math.sin(f)*E;break}case"orbit":{const E=l*(.2+Math.random()*.6);g=a+Math.cos(f)*E,w=o+Math.sin(f)*E;break}default:g=Math.random()*this.simW,w=Math.random()*this.simH}s[x]=g,s[x+1]=w,s[x+2]=this.spawn==="orbit"?f+Math.PI*.5:this.spawn==="scatter"?Math.random()*Math.PI*2:f,s[x+3]=c%T}this.agents&&(U(e,this.agents.read),U(e,this.agents.write)),this.agents=V(H(e,this.agentTex,this.agentTex,s),H(e,this.agentTex,this.agentTex,new Float32Array(i*4))),this.frame=0}mousePx(){const e=this.gl.canvas,i=this.simW/e.clientWidth,s=this.simH/e.clientHeight;return{x:this.mouse.x*i,y:this.simH-this.mouse.y*s}}step(){if(this.paused)return;const e=this.gl;this.frame++,this.time+=.016;const i=this.params;let s=0;this.mouse.inside&&this.mouse.pressing&&(s=this.mouse.repel?2:1);const a=this.mousePx(),o=this.mouse.inside&&this.mouse.pressing&&!this.mouse.repel;e.disable(e.BLEND),e.bindVertexArray(this.vao),e.useProgram(this.updateProg),e.viewport(0,0,this.agentTex,this.agentTex),e.bindFramebuffer(e.FRAMEBUFFER,this.agents.write.fbo),e.activeTexture(e.TEXTURE0),e.bindTexture(e.TEXTURE_2D,this.agents.read.tex),e.uniform1i(this.uU.loc("uAgents"),0),e.activeTexture(e.TEXTURE1),e.bindTexture(e.TEXTURE_2D,this.trail.read.tex),e.uniform1i(this.uU.loc("uTrail"),1),e.uniform2f(this.uU.loc("uResolution"),this.simW,this.simH),e.uniform1f(this.uU.loc("uSensorAngle"),i.sensorAngle),e.uniform1f(this.uU.loc("uSensorDist"),i.sensorDistance),e.uniform1f(this.uU.loc("uTurn"),i.turnSpeed),e.uniform1f(this.uU.loc("uStep"),i.stepSize),e.uniform1f(this.uU.loc("uWander"),i.wander),e.uniform1f(this.uU.loc("uCross"),i.crossAttraction),e.uniform1f(this.uU.loc("uFrame"),this.frame),e.uniform2f(this.uU.loc("uMouse"),a.x,a.y),e.uniform1f(this.uU.loc("uMouseMode"),s),e.uniform1f(this.uU.loc("uMouseRadius"),Math.min(this.simW,this.simH)*.18),e.drawArrays(e.TRIANGLES,0,3),this.agents.swap(),e.useProgram(this.diffuseProg),e.viewport(0,0,this.simW,this.simH),e.bindFramebuffer(e.FRAMEBUFFER,this.trail.write.fbo),e.activeTexture(e.TEXTURE0),e.bindTexture(e.TEXTURE_2D,this.trail.read.tex),e.uniform1i(this.uDif.loc("uTrail"),0),e.uniform2f(this.uDif.loc("uTexel"),1/this.simW,1/this.simH),e.uniform1f(this.uDif.loc("uDecay"),i.decay),e.uniform1f(this.uDif.loc("uDiffuse"),i.diffuse),e.uniform2f(this.uDif.loc("uFeedPos"),a.x/this.simW,a.y/this.simH),e.uniform1f(this.uDif.loc("uFeedRadius"),.14),e.uniform1f(this.uDif.loc("uFeedAmt"),o?this.effectiveDeposit*2.2:0),e.drawArrays(e.TRIANGLES,0,3),e.useProgram(this.depositProg),e.enable(e.BLEND),e.blendFunc(e.ONE,e.ONE),e.bindFramebuffer(e.FRAMEBUFFER,this.trail.write.fbo),e.activeTexture(e.TEXTURE0),e.bindTexture(e.TEXTURE_2D,this.agents.read.tex),e.uniform1i(this.uDep.loc("uAgents"),0),e.uniform2f(this.uDep.loc("uResolution"),this.simW,this.simH),e.uniform1i(this.uDep.loc("uAgentTexW"),this.agentTex),e.uniform1f(this.uDep.loc("uDeposit"),this.effectiveDeposit),e.bindVertexArray(null),e.drawArrays(e.POINTS,0,this.agentCount),e.disable(e.BLEND),this.trail.swap()}draw(){const e=this.gl,i=e.canvas;e.bindFramebuffer(e.FRAMEBUFFER,null),e.viewport(0,0,i.width,i.height),e.useProgram(this.displayProg),e.bindVertexArray(this.vao),e.activeTexture(e.TEXTURE0),e.bindTexture(e.TEXTURE_2D,this.trail.read.tex),e.uniform1i(this.uDis.loc("uTrail"),0),e.uniform2f(this.uDis.loc("uTexel"),1/this.simW,1/this.simH);const s=this.palette.background,[a,o,l]=this.palette.species;e.uniform3f(this.uDis.loc("uBg"),s[0],s[1],s[2]),e.uniform3f(this.uDis.loc("uCol0"),a[0],a[1],a[2]),e.uniform3f(this.uDis.loc("uCol1"),o[0],o[1],o[2]),e.uniform3f(this.uDis.loc("uCol2"),l[0],l[1],l[2]),e.uniform1f(this.uDis.loc("uExposure"),this.params.exposure),e.uniform1f(this.uDis.loc("uHueShift"),this.params.hueShift),e.uniform1f(this.uDis.loc("uRef"),this.effectiveDeposit/Math.max(.01,1-this.params.decay)),e.uniform1f(this.uDis.loc("uTime"),this.time),e.drawArrays(e.TRIANGLES,0,3),e.bindVertexArray(null)}}const d=t=>{const e=parseInt(t.replace("#",""),16);return[(e>>16&255)/255,(e>>8&255)/255,(e&255)/255]},p=[{name:"深渊",background:d("#04060b"),species:[d("#37f5c4"),d("#3a7bd5"),d("#b06bff")]},{name:"余烬",background:d("#0a0503"),species:[d("#ff7a3c"),d("#ffd166"),d("#ff3b6b")]},{name:"孢子",background:d("#060a07"),species:[d("#9dff5a"),d("#2ad6a1"),d("#e8ff9c")]},{name:"星云",background:d("#07040c"),species:[d("#c56bff"),d("#ff5ea8"),d("#5ac8ff")]},{name:"象牙",background:d("#0b0a08"),species:[d("#fef3e2"),d("#f5c06b"),d("#c98a4b")]},{name:"青腐",background:d("#03080a"),species:[d("#18e0e0"),d("#7cf0ff"),d("#0f8f8f")]},{name:"岩浆",background:d("#0b0402"),species:[d("#ffcf5c"),d("#ff5722"),d("#8b1e3f")]},{name:"霜雪",background:d("#060910"),species:[d("#bfe9ff"),d("#6aa9ff"),d("#e6f7ff")]}];function oe(t){let e=1779033703^t.length;for(let i=0;i<t.length;i++)e=Math.imul(e^t.charCodeAt(i),3432918353),e=e<<13|e>>>19;return()=>(e=Math.imul(e^e>>>16,2246822507),e=Math.imul(e^e>>>13,3266489909),e^=e>>>16,e>>>0)}function ne(t){return()=>{t|=0,t=t+1831565813|0;let e=Math.imul(t^t>>>15,1|t);return e=e+Math.imul(e^e>>>7,61|e)^e,((e^e>>>14)>>>0)/4294967296}}const y=["scatter","ring","core","orbit"];function b(t,e,i){return t+(e-t)*i}function z(t){const e=t.trim()===""?"mycelia":t,i=oe(e)(),s=ne(i),a=s(),o=a<.18?1:a<.62?2:3,l=p[Math.floor(s()*p.length)%p.length],T=y[Math.floor(s()*y.length)%y.length];return{seed:e,sensorAngle:b(.4,.9,s()),sensorDistance:b(12,22,s()),turnSpeed:b(.4,.9,s()),stepSize:b(.8,1.3,s()),decay:b(.86,.93,s()),diffuse:b(.3,.62,s()),deposit:b(4,6,s()),species:o,crossAttraction:b(-1,-.2,s()),wander:b(0,.1,s()),spawn:T,palette:l,hueShift:b(-.08,.08,s()),exposure:b(1,1.6,s())}}const $=["aurora","cinder","halcyon","verdant","obsidian","seraph","nimbus","vellum","quartz","umbra","tundra","solace","ember","cortex","gossamer","lattice","meridian","hollow","prism","vesper","koi","marrow","fathom","zephyr","cobalt","murmur","thorn","glyph"];function q(){const t=$[Math.floor(Math.random()*$.length)],e=Math.floor(Math.random()*900+100);return`${t}-${e}`}const Y=[{key:"sensorAngle",label:"感知角度",min:.1,max:1.6,step:.01,format:t=>`${Math.round(t*180/Math.PI)}°`},{key:"sensorDistance",label:"感知距离",min:3,max:30,step:.5,format:t=>`${t.toFixed(1)}px`},{key:"turnSpeed",label:"转向速度",min:.1,max:1.6,step:.01,format:t=>t.toFixed(2)},{key:"stepSize",label:"移动步长",min:.3,max:2.2,step:.02,format:t=>t.toFixed(2)},{key:"decay",label:"痕迹留存",min:.85,max:.99,step:.002,format:t=>t.toFixed(3)},{key:"diffuse",label:"扩散程度",min:0,max:.9,step:.01,format:t=>t.toFixed(2)},{key:"crossAttraction",label:"异种牵引",min:-1,max:.4,step:.02,format:t=>t.toFixed(2)},{key:"exposure",label:"辉光强度",min:.5,max:1.8,step:.02,format:t=>t.toFixed(2)}],re={scatter:"散播",ring:"环形",core:"聚核",orbit:"轨道"};function r(t,e={},...i){const s=document.createElement(t);Object.assign(s,e);for(const a of i)s.append(a);return s}class ce{constructor(e,i,s){u(this,"seedInput");u(this,"panel");u(this,"sliderEls",new Map);u(this,"speciesBtns",[]);u(this,"spawnBtns",new Map);u(this,"pauseBtn");u(this,"paletteReadout");u(this,"statFps");u(this,"statAgents");u(this,"toastEl");u(this,"veil");u(this,"toastTimer",0);e.append(r("div",{className:"masthead"},r("div",{className:"wordmark"},"菌丝 · Mycelia"),r("div",{className:"tagline"},"输入一个词，长出一只专属活物"))),this.seedInput=r("input",{className:"seed-input",value:i,spellcheck:!1,autocomplete:"off"}),this.seedInput.setAttribute("aria-label","种子词"),this.seedInput.addEventListener("keydown",h=>{h.key==="Enter"&&s.onGrow(this.seedInput.value)});const a=r("button",{className:"primary"},"生长 ↵");a.onclick=()=>s.onGrow(this.seedInput.value);const o=r("button",{className:"icon",title:"随机种子"},"⚄");o.onclick=()=>s.onRandom(),e.append(r("div",{className:"seedbar"},r("span",{className:"seed-label"},"种子"),this.seedInput,o,a)),this.paletteReadout=r("b",{},"—");const l=[r("h2",{},"基因组",this.paletteReadout)];for(const h of Y){const v=r("span",{},""),R=r("input",{type:"range",min:String(h.min),max:String(h.max),step:String(h.step)});R.addEventListener("input",()=>{const S=parseFloat(R.value);v.textContent=h.format(S),s.onParam(h.key,S)}),this.sliderEls.set(h.key,{input:R,val:v}),l.push(r("div",{className:"row"},r("div",{className:"rlabel"},r("span",{},h.label),v),R))}l.push(r("div",{className:"divider"}));const T=r("div",{className:"seg"});for(let h=1;h<=3;h++){const v=r("button",{},String(h));v.onclick=()=>s.onSpecies(h),this.speciesBtns.push(v),T.append(v)}l.push(r("div",{className:"row"},r("div",{className:"rlabel"},r("span",{},"菌落数量"),r("span",{},"")),T));const c=r("div",{className:"seg"});for(const h of y){const v=r("button",{},re[h]);v.onclick=()=>s.onSpawn(h),this.spawnBtns.set(h,v),c.append(v)}l.push(r("div",{className:"row"},r("div",{className:"rlabel"},r("span",{},"萌发形态"),r("span",{},"")),c));const x=r("div",{className:"seg"}),g=r("button",{},"‹ 配色");g.onclick=()=>s.onPaletteCycle(-1);const w=r("button",{},"配色 ›");w.onclick=()=>s.onPaletteCycle(1),x.append(g,w),l.push(r("div",{className:"row"},x)),this.panel=r("div",{className:"panel"},...l),e.append(this.panel),this.statFps=r("b",{},"—"),this.statAgents=r("b",{},"—"),e.append(r("div",{className:"stats"},r("span",{},"个体 ",this.statAgents),r("span",{},this.statFps," fps"))),this.pauseBtn=r("button",{className:"icon",title:"暂停 / 播放（空格）"},"⏸"),this.pauseBtn.onclick=()=>s.onPauseToggle();const f=r("button",{className:"icon",title:"重新生长（R）"},"↻");f.onclick=()=>s.onReset();const E=r("button",{title:"保存为 PNG（S）"},"保存");E.onclick=()=>s.onSave();const P=r("button",{title:"复制分享链接"},"分享");P.onclick=()=>s.onShare();const M=r("button",{className:"icon",title:"开关基因组面板（G）"},"⚙");M.onclick=()=>s.onTogglePanel(),e.append(r("div",{className:"toolbar"},this.pauseBtn,f,E,P,M)),this.toastEl=r("div",{className:"toast"}),e.append(this.toastEl),this.veil=r("div",{className:"veil"},r("div",{},r("div",{className:"big"},"菌 丝"),r("div",{className:"sub"},"百万只微小个体循着自己留下的化学气息，自组织成一张会呼吸的生命网络。每个词都长出不同的生物——而同一个词，永远长出同一只。"),r("div",{className:"hint"},"点击任意处开始 · 按住拖动喂食，Shift+拖动驱散"))),e.append(this.veil)}onVeilDismiss(e){this.veil.addEventListener("click",e,{once:!0})}dismissVeil(){this.veil.classList.add("gone"),this.veil.style.pointerEvents="none",window.setTimeout(()=>this.veil.remove(),950)}togglePanel(){this.panel.classList.toggle("hidden")}setSeed(e){this.seedInput.value=e}setPaused(e){this.pauseBtn.textContent=e?"▶":"⏸"}syncParams(e){for(const[s,{input:a,val:o}]of this.sliderEls){const l=Y.find(T=>T.key===s);a.value=String(e[s]),o.textContent=l.format(e[s])}const i=Math.round(e.species);this.speciesBtns.forEach((s,a)=>s.classList.toggle("on",a+1===i))}setSpawn(e){for(const[i,s]of this.spawnBtns)s.classList.toggle("on",i===e)}setStats(e,i,s){this.statFps.textContent=String(Math.round(e)),this.statAgents.textContent=i>=1e6?`${(i/1e6).toFixed(2)}M`:`${(i/1e3).toFixed(0)}K`,this.paletteReadout.textContent=s}toast(e){this.toastEl.textContent=e,this.toastEl.classList.add("show"),window.clearTimeout(this.toastTimer),this.toastTimer=window.setTimeout(()=>this.toastEl.classList.remove("show"),1900)}}const I=["sensorAngle","sensorDistance","turnSpeed","stepSize","decay","diffuse","deposit","species","crossAttraction","wander","exposure","hueShift"];function ue(t){return I.map(e=>Number(t[e]).toFixed(4)).join("_")}function le(t){const e=t.split("_").map(Number),i={};return I.forEach((s,a)=>{a<e.length&&Number.isFinite(e[a])&&(i[s]=e[a])}),i}function fe(t){const e=document.getElementById("ui-root");e.innerHTML="";const i=document.createElement("div");i.style.cssText="position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:30px;color:#eaf2ff;font-family:system-ui,sans-serif",i.innerHTML=`<div><div style="font-size:22px;letter-spacing:.2em;margin-bottom:14px">菌丝 · MYCELIA</div>
+    <div style="color:#8593ab;max-width:440px;line-height:1.6">${t}</div>
+    <div style="color:#56617a;margin-top:16px;font-size:12px">需要支持 WebGL2 与浮点渲染目标的浏览器（Chrome、Edge、Firefox、Safari 15+）。</div></div>`,e.append(i)}function de(){const t=document.getElementById("stage");let e;try{e=Q(t)}catch(n){fe(n.message);return}const i=new URL(window.location.href),s=i.searchParams.get("seed")??q();let a=z(s),o=p.indexOf(a.palette),l=a.spawn;const T=window.innerWidth<820?G.medium:G.high,c=new ae(e,a,T),x=1024;function g(){const n=Math.min(window.devicePixelRatio||1,2),m=window.innerWidth||1280,A=window.innerHeight||720;t.width=Math.max(2,Math.min(2560,Math.floor(m*n))),t.height=Math.max(2,Math.min(1600,Math.floor(A*n)));const D=m/A;let F,N;D>=1?(F=x,N=Math.max(2,Math.round(x/D))):(N=x,F=Math.max(2,Math.round(x*D))),c.resize(F,N)}g();const w=i.searchParams.get("p");if(w){c.setParams(le(w));const n=Number(i.searchParams.get("pal"));Number.isFinite(n)&&p[n]&&(o=n,c.setPalette(p[n]));const m=i.searchParams.get("spawn");m&&y.includes(m)&&(l=m,c.setSpawn(m))}const f=new ce(document.getElementById("ui-root"),a.seed,{onGrow:n=>E(n),onRandom:()=>{const n=q();f.setSeed(n),E(n)},onParam:(n,m)=>c.setParams({[n]:m}),onSpecies:n=>{c.setParams({species:n}),f.syncParams(c.params)},onSpawn:n=>{l=n,c.setSpawn(n),f.setSpawn(n)},onPaletteCycle:n=>{o=(o+n+p.length)%p.length,c.setPalette(p[o])},onPauseToggle:()=>{c.paused=!c.paused,f.setPaused(c.paused)},onSave:()=>h(),onShare:()=>M(),onReset:()=>{c.regrow(),f.toast("已重新生长")},onTogglePanel:()=>f.togglePanel()});f.syncParams(c.params),f.setSpawn(l),f.onVeilDismiss(()=>f.dismissVeil());function E(n){a=z(n),o=p.indexOf(a.palette),l=a.spawn,c.applyGenome(a),f.setSeed(a.seed),f.syncParams(c.params),f.setSpawn(l);const m=new URL(window.location.href);m.search=`?seed=${encodeURIComponent(a.seed)}`,history.replaceState(null,"",m.pathname+`?seed=${encodeURIComponent(a.seed)}`),f.toast(`已生长 · ${a.palette.name}`)}function P(){const n=window.location.origin+window.location.pathname,m=new URLSearchParams;m.set("seed",a.seed);const A=C(a);return(I.some(F=>Math.abs(Number(c.params[F])-Number(A[F]))>1e-4)||o!==p.indexOf(a.palette)||l!==a.spawn)&&(m.set("p",ue(c.params)),m.set("pal",String(o)),m.set("spawn",l)),`${n}?${m.toString()}`}async function M(){const n=P();try{await navigator.clipboard.writeText(n),f.toast("链接已复制——同一种子，同一只生物")}catch{f.toast(n)}}function h(){c.draw(),t.toBlob(n=>{if(!n)return;const m=document.createElement("a");m.href=URL.createObjectURL(n),m.download=`mycelia-${a.seed.replace(/[^a-z0-9-_]/gi,"_")}.png`,m.click(),URL.revokeObjectURL(m.href),f.toast("图片已保存")},"image/png")}function v(n,m){const A=t.getBoundingClientRect();c.mouse.x=n.clientX-A.left,c.mouse.y=n.clientY-A.top,c.mouse.inside=!0,c.mouse.repel=n.shiftKey||n.button===2||m===!0&&n.ctrlKey,m!==void 0&&(c.mouse.pressing=m)}t.addEventListener("pointermove",n=>v(n)),t.addEventListener("pointerdown",n=>{v(n,!0),t.setPointerCapture(n.pointerId)}),t.addEventListener("pointerup",n=>{v(n,!1)}),t.addEventListener("pointerleave",()=>{c.mouse.inside=!1,c.mouse.pressing=!1}),t.addEventListener("contextmenu",n=>n.preventDefault()),window.addEventListener("keydown",n=>{if(!(document.activeElement instanceof HTMLInputElement))switch(n.key){case" ":n.preventDefault(),c.paused=!c.paused,f.setPaused(c.paused);break;case"s":h();break;case"r":c.regrow(),f.toast("已重新生长");break;case"g":f.togglePanel();break;case"ArrowRight":o=(o+1)%p.length,c.setPalette(p[o]);break;case"ArrowLeft":o=(o-1+p.length)%p.length,c.setPalette(p[o]);break}});let R=0;window.addEventListener("resize",()=>{window.clearTimeout(R),R=window.setTimeout(g,160)});let S=performance.now(),L=60;function X(n){const m=n-S;S=n,L+=(1e3/Math.max(1,m)-L)*.1,c.step(),c.step(),c.draw(),f.setStats(L,c.agentCount,c.paletteName),requestAnimationFrame(X)}requestAnimationFrame(X)}de();</script>
+    <style rel="stylesheet" crossorigin>:root{--ink: #eaf2ff;--dim: #8593ab;--line: rgba(150, 175, 220, .14);--glass: rgba(10, 14, 22, .55);--glass-solid: rgba(9, 12, 20, .92);--accent: #46f5c8;--font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;--mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, "Microsoft YaHei", monospace}*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;overflow:hidden;background:#04060b;color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;overscroll-behavior:none}#stage{position:fixed;inset:0;width:100vw;height:100vh;display:block;touch-action:none;cursor:crosshair}#ui-root{position:fixed;inset:0;pointer-events:none;z-index:10}#ui-root>*{pointer-events:auto}.masthead{position:fixed;top:22px;left:26px;user-select:none}.wordmark{font-size:15px;font-weight:600;letter-spacing:.42em;text-transform:uppercase;padding-left:.42em}.tagline{margin-top:6px;font-size:11px;letter-spacing:.06em;color:var(--dim);max-width:240px;line-height:1.5}.seedbar{position:fixed;bottom:26px;left:50%;transform:translate(-50%);display:flex;align-items:center;gap:8px;padding:8px 8px 8px 18px;background:var(--glass);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 60px #00000080}.seed-label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}.seed-input{background:transparent;border:none;outline:none;color:var(--ink);font-family:var(--mono);font-size:14px;width:168px;letter-spacing:.02em}.seed-input::placeholder{color:#56617a}button{font-family:var(--font);color:var(--ink);background:#ffffff0d;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12px;letter-spacing:.02em;cursor:pointer;transition:background .16s ease,border-color .16s ease,transform .08s ease;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}button:hover{background:#ffffff1a;border-color:#96afdc52}button:active{transform:translateY(1px)}button.primary{background:var(--accent);color:#04120e;border-color:transparent;font-weight:600}button.primary:hover{background:#6affd7}button.icon{padding:9px;width:36px;height:36px;justify-content:center}.toolbar{position:fixed;bottom:26px;right:26px;display:flex;gap:8px;align-items:center}.panel{position:fixed;top:22px;right:26px;width:264px;background:var(--glass);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);border:1px solid var(--line);border-radius:16px;padding:16px 16px 18px;box-shadow:0 18px 60px #00000080;transition:opacity .25s ease,transform .25s ease}.panel.hidden{opacity:0;transform:translate(12px);pointer-events:none}.panel h2{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-bottom:14px;display:flex;justify-content:space-between}.panel h2 b{color:var(--accent);font-weight:500}.row{margin-bottom:13px}.row .rlabel{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:6px}.row .rlabel span:last-child{font-family:var(--mono);color:var(--ink)}input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;background:#96afdc33;outline:none}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid #04060b;cursor:pointer;box-shadow:0 0 0 1px var(--line)}input[type=range]::-moz-range-thumb{width:14px;height:14px;border:2px solid #04060b;border-radius:50%;background:var(--ink);cursor:pointer}.seg{display:flex;gap:6px;margin-top:4px}.seg button{flex:1;padding:7px 4px;font-size:11px;justify-content:center}.seg button.on{background:#46f5c829;border-color:#46f5c866;color:var(--accent)}.divider{height:1px;background:var(--line);margin:15px 0}.stats{position:fixed;bottom:26px;left:26px;display:flex;gap:18px;font-family:var(--mono);font-size:11px;color:var(--dim);user-select:none}.stats b{color:var(--ink);font-weight:500}.toast{position:fixed;bottom:84px;left:50%;transform:translate(-50%) translateY(8px);background:var(--glass-solid);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:12px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;box-shadow:0 12px 40px #00000080}.toast.show{opacity:1;transform:translate(-50%) translateY(0)}.veil{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#04060b33,#04060bbf);z-index:20;transition:opacity .9s ease;text-align:center;padding:20px 300px 20px 20px}#ui-root>.veil.gone{opacity:0;pointer-events:none}.veil .big{font-size:clamp(38px,9vw,96px);font-weight:200;letter-spacing:.32em;padding-left:.32em;background:linear-gradient(180deg,#ffffff,#7fd8ff 60%,var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rise 1.2s cubic-bezier(.16,1,.3,1) both}.veil .sub{margin-top:18px;color:var(--dim);font-size:clamp(12px,2.4vw,15px);letter-spacing:.08em;line-height:1.6;max-width:520px;animation:rise 1.2s .15s cubic-bezier(.16,1,.3,1) both}.veil .hint{margin-top:26px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#56617a;animation:pulse 2.4s ease-in-out infinite}@keyframes rise{0%{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}@keyframes pulse{0%,to{opacity:.4}50%{opacity:1}}@media (max-width: 720px){.panel{display:none}.veil{padding:20px}.tagline{display:none}.seed-input{width:120px}.stats{display:none}.toolbar{bottom:84px}}</style>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+    <div id="ui-root"></div>
+  </body>
+</html>

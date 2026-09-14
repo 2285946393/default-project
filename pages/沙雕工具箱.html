@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>沙雕工具箱 🎁 摸鱼解压全家桶</title>
+<style>
+  :root{
+    --bg1:#1a1030;--bg2:#0d0a1e;--panel:rgba(28,20,52,.6);--panel-solid:#1c1434;
+    --border:rgba(167,139,250,.18);--pink:#ff6bbf;--purple:#a78bfa;--cyan:#6ee7ff;
+    --gold:#ffd54a;--red:#fb7185;--green:#4ade80;--text:#f0ecff;--muted:#b9aed6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:radial-gradient(ellipse at 20% 0%,var(--bg1),var(--bg2) 70%);
+    color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;min-height:100vh;
+  }
+  /* ---------- 顶部 ---------- */
+  header{padding:26px 30px 18px;border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,rgba(26,16,48,.8),transparent);text-align:center}
+  header h1{font-size:24px;font-weight:800;letter-spacing:2px}
+  header h1 span{color:var(--gold)}
+  header .tag{font-size:12.5px;color:var(--muted);margin-top:6px}
+  /* ---------- Tab 导航 ---------- */
+  .tabs{display:flex;justify-content:center;gap:10px;padding:16px 20px;flex-wrap:wrap}
+  .tab{background:var(--panel);border:1px solid var(--border);border-radius:24px;
+    padding:10px 22px;cursor:pointer;font-size:14px;color:var(--muted);transition:.2s;user-select:none}
+  .tab:hover{color:var(--text);border-color:var(--purple)}
+  .tab.active{background:linear-gradient(135deg,rgba(255,107,191,.25),rgba(167,139,250,.25));
+    color:var(--text);border-color:var(--pink);font-weight:600}
+  .page{display:none;max-width:900px;margin:0 auto;padding:10px 24px 60px}
+  .page.active{display:block}
+  /* ---------- 通用 ---------- */
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;
+    padding:22px;margin-bottom:18px;backdrop-filter:blur(6px)}
+  .card h2{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .card h2 small{color:var(--muted);font-weight:400;font-size:12px}
+  button{background:var(--panel-solid);border:1px solid var(--border);color:var(--text);
+    padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px;transition:.15s}
+  button:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
+  button.primary{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;
+    border:none;font-weight:600}
+  button.primary:hover{filter:brightness(1.15);color:#fff}
+  input[type=text],select{background:#0d0a1e;border:1px solid var(--border);border-radius:10px;
+    color:var(--text);padding:11px 14px;font-size:14px;outline:none}
+  input[type=text]:focus,select:focus{border-color:var(--cyan)}
+  .hint{font-size:12px;color:var(--muted);line-height:1.7}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  /* ===================== 📝 狗屁不通 ===================== */
+  .mode-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{background:var(--panel-solid);border:1px solid var(--border);border-radius:20px;
+    padding:8px 18px;font-size:13px;color:var(--muted);cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--purple)}
+  .chip.on{background:rgba(255,107,191,.2);border-color:var(--pink);color:var(--pink);font-weight:600}
+  .slider-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .slider-row input[type=range]{flex:1;accent-color:var(--pink)}
+  .slider-row .val{color:var(--gold);font-weight:700;min-width:80px;text-align:right}
+  #bs-output{background:#0d0a1e;border:1px solid var(--border);border-radius:12px;padding:18px;
+    min-height:120px;font-size:14.5px;line-height:2;color:var(--text);white-space:pre-wrap;display:none}
+  #bs-output.show{display:block}
+  /* ===================== 🪷 电子木鱼 ===================== */
+  .muyu-wrap{text-align:center;padding:10px 0}
+  #muyu{font-size:130px;cursor:pointer;user-select:none;line-height:1;
+    transition:transform .08s;filter:drop-shadow(0 0 24px rgba(255,213,74,.35))}
+  #muyu:active{transform:scale(.9)}
+  #muyu.knock{animation:knock .18s ease}
+  @keyframes knock{40%{transform:scale(.88) rotate(-3deg)}}
+  .merit-bar{display:inline-flex;gap:30px;margin-top:18px;font-size:14px}
+  .merit-bar b{color:var(--gold);font-size:20px}
+  .combo{position:fixed;pointer-events:none;color:var(--gold);font-weight:800;
+    font-size:26px;text-shadow:0 0 12px rgba(255,213,74,.6);z-index:99;
+    animation:fly 1s ease-out forwards}
+  @keyframes fly{to{transform:translateY(-90px);opacity:0}}
+  .float-txt{position:fixed;pointer-events:none;color:var(--cyan);font-size:18px;
+    z-index:99;animation:fly 1.2s ease-out forwards}
+  #auto-btn.on{border-color:var(--green);color:var(--green)}
+  .bells{display:flex;gap:12px;justify-content:center;margin-top:20px}
+  /* ===================== 📜 老黄历 ===================== */
+  .almanac-day{text-align:center;margin-bottom:18px}
+  .almanac-day .date{font-size:30px;font-weight:800;color:var(--gold)}
+  .almanac-day .lucky{margin-top:6px;font-size:15px}
+  .yi-ji{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:600px){.yi-ji{grid-template-columns:1fr}}
+  .yi-ji .col{background:var(--panel-solid);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .yi-ji h3{font-size:14px;margin-bottom:10px}
+  .yi-ji .yi h3{color:var(--green)}  .yi-ji .ji h3{color:var(--red)}
+  .yi-ji ul{list-style:none}
+  .yi-ji li{font-size:14px;padding:5px 0;color:var(--text)}
+  .sign-out{text-align:center;background:#0d0a1e;border:1px solid var(--border);
+    border-radius:12px;padding:22px;min-height:90px}
+  .sign-out .q{font-size:18px;color:var(--pink);font-weight:600;margin-bottom:8px}
+  .sign-out .a{font-size:14px;color:var(--muted);line-height:1.9}
+  /* ===================== 🏆 证书 ===================== */
+  .cert-wrap{max-width:640px;margin:0 auto}
+  .cert{background:linear-gradient(160deg,#2a1f3d,#1a1030);border:3px solid var(--gold);
+    border-radius:14px;padding:34px 26px;text-align:center;position:relative;
+    box-shadow:0 0 40px rgba(255,213,74,.15), inset 0 0 60px rgba(255,213,74,.05)}
+  .cert::before{content:"✦";position:absolute;top:8px;left:12px;color:var(--gold);font-size:14px}
+  .cert::after{content:"✦";position:absolute;top:8px;right:12px;color:var(--gold);font-size:14px}
+  .cert .ct{font-size:13px;letter-spacing:5px;color:var(--gold);margin-bottom:16px}
+  .cert .name{font-size:32px;font-weight:800;color:var(--text);margin-bottom:8px}
+  .cert .title{font-size:19px;color:var(--pink);font-weight:600;margin-bottom:6px}
+  .cert .reason{font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:14px}
+  .cert .seal{position:absolute;right:20px;bottom:16px;width:74px;height:74px;border:3px solid var(--red);
+    border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;
+    color:var(--red);font-size:13px;font-weight:800;transform:rotate(-14deg);opacity:.85;
+    font-family:"KaiTi","STKaiti",serif}
+  .cert .seal span{display:block;line-height:1.3}
+  /* ---------- 页脚 ---------- */
+  footer{text-align:center;padding:24px;color:var(--muted);font-size:12.5px;
+    border-top:1px solid var(--border);line-height:2}
+  footer .qq{color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎁 沙雕工具箱 <span>· 摸鱼解压全家桶</span></h1>
+  <div class="tag">狗屁不通生成器 · 电子木鱼 · 每日沙雕运势 · 沙雕证书颁发所 —— 一次摸个够</div>
+</header>
+
+<nav class="tabs">
+  <div class="tab active" data-page="p-bs">📝 狗屁不通</div>
+  <div class="tab" data-page="p-muyu">🪷 电子木鱼</div>
+  <div class="tab" data-page="p-almanac">📜 沙雕运势</div>
+  <div class="tab" data-page="p-cert">🏆 沙雕证书</div>
+</nav>
+
+<!-- ==================== 📝 狗屁不通生成器 ==================== -->
+<section id="p-bs" class="page active">
+  <div class="card">
+    <h2>📝 狗屁不通生成器 <small>基于 BullshitGenerator 语料魔改</small></h2>
+    <div class="mode-chips" id="bs-modes">
+      <div class="chip on" data-mode="apology">🙇 道歉信</div>
+      <div class="chip" data-mode="summary">📊 年终总结</div>
+      <div class="chip" data-mode="quit">🚪 退群声明</div>
+      <div class="chip" data-mode="praise">😍 夸夸文</div>
+    </div>
+    <div class="row">
+      <input type="text" id="bs-topic" placeholder="输入主题，比如：今天又没写作业" style="flex:1;min-width:200px">
+      <button class="primary" id="bs-gen">✨ 生成</button>
+      <button id="bs-copy">📋 复制</button>
+    </div>
+    <div class="slider-row">
+      <span class="hint">字数</span>
+      <input type="range" id="bs-len" min="300" max="5000" step="100" value="1000">
+      <span class="val" id="bs-len-val">1000 字</span>
+    </div>
+    <div id="bs-output"></div>
+  </div>
+</section>
+
+<!-- ==================== 🪷 电子木鱼 ==================== -->
+<section id="p-muyu" class="page">
+  <div class="card muyu-wrap">
+    <h2 style="justify-content:center">🪷 电子木鱼 <small>敲一下功德+1</small></h2>
+    <div id="muyu">🪷</div>
+    <div class="merit-bar">
+      <span>功德 <b id="merit">0</b></span>
+      <span>连击 <b id="combo-n">0</b></span>
+      <span>历史最高 <b id="merit-best">0</b></span>
+    </div>
+    <div class="bells">
+      <button id="auto-btn">🤖 自动修行：关</button>
+      <button id="reset-btn">💀 清空功德</button>
+    </div>
+    <p class="hint" style="margin-top:16px">敲得越快连击越高，连击有加成哦（上限 3 倍）</p>
+  </div>
+</section>
+
+<!-- ==================== 📜 每日沙雕运势 ==================== -->
+<section id="p-almanac" class="page">
+  <div class="card">
+    <div class="almanac-day">
+      <div class="date" id="al-date">——</div>
+      <div class="lucky" id="al-lucky">——</div>
+    </div>
+    <div class="yi-ji">
+      <div class="col yi">
+        <h3>✅ 宜</h3>
+        <ul id="al-yi"></ul>
+      </div>
+      <div class="col ji">
+        <h3>🚫 忌</h3>
+        <ul id="al-ji"></ul>
+      </div>
+    </div>
+    <div class="sign-out" id="al-sign">
+      <div class="q">🎋 今日一签</div>
+      <div class="a" id="al-sign-text">点击下方按钮抽取今日运势签</div>
+      <button class="primary" id="al-draw" style="margin-top:10px">🎯 抽签</button>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 🏆 沙雕证书颁发所 ==================== -->
+<section id="p-cert" class="page">
+  <div class="card cert-wrap">
+    <h2>🏆 沙雕证书颁发所 <small>国际摸鱼协会权威认证</small></h2>
+    <div class="row">
+      <input type="text" id="cert-name" placeholder="输入大名（或网名）" style="flex:1;min-width:180px">
+      <button class="primary" id="cert-gen">📜 颁发证书</button>
+      <button id="cert-another">🔀 换一个</button>
+    </div>
+    <div class="cert" id="cert-body" style="margin-top:14px">
+      <div class="ct">—— 权威认证 ——</div>
+      <div class="name" id="cert-n">？？？</div>
+      <div class="title" id="cert-t">等待颁发…</div>
+      <div class="reason" id="cert-r">输入名字点击颁发，解锁你的离谱人生成就</div>
+      <div class="seal" id="cert-seal" style="display:none"><span>权威</span><span>认证</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  🎁 沙雕工具箱 · 有花无实の小站出品 · 纯属娱乐，请勿用于正规用途<br>
+  🐳 QQ 交流群：<span class="qq">574612434</span> · 小鲸鱼岛欢迎你
+</footer>
+
+<script>
+/* ================= Tab 切换 ================= */
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active')});
+    t.classList.add('active');
+    document.getElementById(t.dataset.page).classList.add('active');
+  });
+});
+
+/* ================= 📝 狗屁不通生成器 ================= */
+var BS = {};
+BS.famous = [
+"爱迪生a，天才是百分之一的勤奋加百分之九十九的汗水。b",
+"查尔斯·史a，一个人几乎可以在任何他怀有无限热忱的事情上成功。b",
+"培根说过，深窥自己的心，而后发觉一切的奇迹在你自己。b",
+"歌德曾经a，流水在碰到底处时才会释放活力。b",
+"莎士比亚a，那脑袋里的智慧，就像打火石里的火花一样，不去打它是不肯出来的。b",
+"戴尔·卡耐基a，多数人都拥有自己不了解的能力和机会，都有可能做到未曾梦想的事情。b",
+"白哲特a，坚强的信念能赢得强者的心，并使他们变得更坚强。b",
+"伏尔泰a，不经巨大的困难，不会有伟大的事业。b",
+"富勒曾经a，苦难磨炼一些人，也毁灭另一些人。b",
+"文森特·皮尔a，改变你的想法，你就改变了自己的世界。b",
+"拿破仑·希尔a，不要等待，时机永远不会恰到好处。b",
+"塞涅卡a，生命如同寓言，其价值不在与长短，而在与内容。b",
+"奥普拉·温弗瑞a，你相信什么，你就成为什么样的人。b",
+"吕凯特a，生命不可能有两次，但许多人连一次也不善于度过。b",
+"笛卡儿a，我的努力求学没有得到别的好处，只不过是愈来愈发觉自己的无知。b",
+"左拉a，生活的道路一旦选定，就要勇敢地走到底，决不回头。b",
+"米歇潘a，生命是一条艰险的峡谷，只有勇敢的人才能通过。b",
+"吉姆·罗恩a，要么你主宰生活，要么你被生活主宰。b",
+"日本谚语a，不幸可能成为通向幸福的桥梁。b",
+"海贝尔a，人生就是学校。在那里，与其说好的教师是幸福，不如说好的教师是不幸。b",
+"德谟克利特a，节制使快乐增加并使享受加强。b",
+"裴斯泰洛齐a，今天应做的事没有做，明天再早也是耽误了。b",
+"歌德a，决定一个人的一生，以及整个命运的，只是一瞬之间。b",
+"卡耐基a，一个不注意小事情的人，永远不会成就大事业。b",
+"卢梭a，浪费时间是一桩大罪过。b",
+"康德a，既然我已经踏上这条道路，那么，任何东西都不应妨碍我沿着这条路走下去。b",
+"亚伯拉罕·林肯a，你活了多少岁不算什么，重要的是你是如何度过这些岁月的。b",
+"韩非a，内外相应，言行相称。b",
+"富兰克林a，你热爱生命吗？那么别浪费时间，因为时间是组成生命的材料。b",
+"马尔顿a，坚强的信心，能使平凡的人做出惊人的事业。b",
+"苏轼a，古之立大事者，不惟有超世之才，亦必有坚忍不拔之志。b",
+"王阳明a，故立志者，为学之心也；为学者，立志之事也。b",
+"乌申斯基a，学习是劳动，是充满思想的劳动。b",
+"富兰克林a，读书是易事，思索是难事，但两者缺一，便全无用处。b",
+"鲁巴金a，读书是在别人思想的帮助下，建立起自己的思想。b",
+"培根a，合理安排时间，就等于节约时间。b",
+"屠格涅夫a，你想成为幸福的人吗？但愿你首先学会吃得起苦。b",
+"叔本华a，普通人只想到如何度过时间，有才能的人设法利用时间。b",
+"俾斯麦a，失败是坚忍的最后考验。b",
+"池田大作a，不要回避苦恼和困难，挺起身来向它挑战，进而克服它。b",
+"黑塞a，有勇气承担命运这才是英雄好汉。b",
+"培根a，阅读使人充实，会谈使人敏捷，写作使人精确。b",
+"塞内加a，勇气通往天堂，怯懦通往地狱。b",
+"老子a，知人者智，自知者明。胜人者有力，自胜者强。b",
+"马云a，最大的挑战和突破在于用人，而用人最大的突破在于信任人。b",
+"雷锋a，自己活着，就是为了使别人过得更美好。b",
+"莫扎特a，谁和我一样用功，谁就会和我一样成功。b",
+"马克思a，一切节省，归根到底都归结为时间的节省。b",
+"孔子a，知之者不如好之者，好之者不如乐之者。b",
+"黑格尔a，只有永远躺在泥坑里的人，才不会再掉进坑里。b",
+"贝多芬a，卓越的人一大优点是：在不利与艰难的遭遇里百折不饶。b",
+"罗曼·罗兰a，只有把抱怨环境的心情，化为上进的力量，才是成功的保证。b"
+];
+BS.bosh = [
+"现在，解决x的问题，是非常非常重要的。所以，",
+"我们不得不面对一个非常尴尬的事实，那就是，",
+"x的发生，到底需要如何做到，不x的发生，又会如何产生。",
+"而这些并不是完全重要，更加重要的问题是，",
+"x，到底应该如何实现。",
+"带着这些问题，我们来审视一下x。",
+"所谓x，关键是x需要如何写。",
+"我们一般认为，抓住了问题的关键，其他一切则会迎刃而解。",
+"问题的关键究竟为何?",
+"x因何而发生?",
+"每个人都不得不面对这些问题。在面对这种问题时，",
+"一般来讲，我们都必须务必慎重的考虑考虑。",
+"要想清楚，x，到底是一种怎么样的存在。",
+"了解清楚x到底是一种怎么样的存在，是解决一切问题的关键。",
+"就我个人来说，x对我的意义，不能不说非常重大。",
+"本人也是经过了深思熟虑，在每个日日夜夜思考这个问题。",
+"x，发生了会如何，不发生又会如何。",
+"生活中，若x出现了，我们就不得不考虑它出现了的事实。",
+"我们都知道，只要有意义，那么就必须慎重考虑。",
+"既然如此，",
+"那么，",
+"我认为，",
+"一般来说，",
+"总结的来说，",
+"既然如何，",
+"经过上述讨论，",
+"这样看来，",
+"从这个角度来看，",
+"我们不妨可以这样来想:",
+"这是不可避免的。",
+"可是，即使是这样，x的出现仍然代表了一定的意义。",
+"对我个人而言，x不仅仅是一个重大的事件，还可能会改变我的人生。"
+];
+BS.after = [
+"这不禁令我深思。",
+"带着这句话，我们还要更加慎重的审视这个问题:",
+"这启发了我。",
+"我希望诸位也能好好地体会这句话。",
+"这句话语虽然很短，但令我浮想联翩。",
+"这句话看似简单，但其中的阴郁不禁让人深思。",
+"这句话把我们带到了一个新的维度去思考这个问题:",
+"这似乎解答了我的疑惑。"
+];
+BS.before = ["曾经说过","在不经意间这样说过","说过一句著名的话","曾经提到过","说过一句富有哲理的话"];
+/* 模式语料：开头/结尾/语气词 */
+BS.modes = {
+  apology:{
+    title:"道歉信", opener:"尊敬的对方：\n\n您好！关于{topic}这件事，本人怀着无比沉痛与愧疚的心情，写下这封道歉信。",
+    ending:"最后，再次向您表达最诚挚的歉意！恳请您大人有大量，原谅我这一次吧！\n\n此致\n敬礼！\n一个深刻反省中的罪人",
+    topicFix:"我错了这件事"
+  },
+  summary:{
+    title:"年终总结", opener:"【{topic}】年度工作总结报告\n\n时光荏苒，岁月如梭。回首这一年，{topic}始终是我工作的重中之重。",
+    ending:"展望新的一年，我将继续以饱满的热情、昂扬的斗志、务实的作风，把{topic}事业推向新的高峰！\n\n汇报人：一位平凡的打工人",
+    topicFix:"本年度的各项指标"
+  },
+  quit:{
+    title:"退群声明", opener:"各位群友：\n\n大家好。经过长达三十秒的慎重考虑，本人决定退出本群。主要原因与{topic}有关。",
+    ending:"天下没有不散的筵席。愿各位群友前程似锦，我们有缘再见！江湖路远，后会有期！\n\n—— 一位即将远行的群友",
+    topicFix:"群里的水太深"
+  },
+  praise:{
+    title:"夸夸文", opener:"今天，我必须用最大的声量告诉全世界：{topic}，你也太棒了吧！！",
+    ending:"总之，{topic}就是坠吊的！！不接受反驳！让我们一起为{topic}鼓掌！！！👏👏👏",
+    topicFix:"这位绝世小可爱"
+  }
+};
+function bsPick(list){ return list[Math.floor(Math.random()*list.length)]; }
+function bsFamous(){
+  var s = bsPick(BS.famous);
+  /* 统一占位符：a → 随机引导语，b → 去掉 */
+  s = s.replace(/曾经a[，,]/, bsPick(BS.before) + "，");
+  s = s.replace(/a[，,]/, bsPick(BS.before) + "，");
+  s = s.replace(/b$/, "");
+  s = s.trim();
+  if(!/[。！？]$/.test(s)) s = s + "。";
+  return s + bsPick(BS.after);
+}
+function bsLun(topic){
+  return bsPick(BS.bosh).replace(/x/g, topic);
+}
+function bsParagraph(topic){
+  var s = "";
+  while(s.length < 200){
+    var r = Math.random()*100;
+    if(r < 20){ s += bsFamous(); }
+    else{ s += bsLun(topic) + " ";    }
+  }
+  return "　　" + s;
+}
+function bsGenerate(){
+  var topic = document.getElementById('bs-topic').value.trim() || "一天掉多少根头发";
+  var mode = document.querySelector('#bs-modes .chip.on').dataset.mode;
+  var m = BS.modes[mode];
+  var total = parseInt(document.getElementById('bs-len').value,10);
+  var body = "";
+  while(body.length < total){
+    body += bsParagraph(m.topicFix === undefined ? topic : topic) + "\n";
+    /* 段落里把主题自然融进去：每隔一段用一次真主题 */
+    if(Math.random() < 0.5) body += bsParagraph(topic) + "\n";
+  }
+  var text = m.opener.replace("{topic}",topic) + "\n\n" + body + "\n" + m.ending.replace("{topic}",topic);
+  var out = document.getElementById('bs-output');
+  out.textContent = text;
+  out.classList.add('show');
+}
+document.getElementById('bs-gen').addEventListener('click', bsGenerate);
+document.getElementById('bs-modes').addEventListener('click', function(e){
+  var chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('#bs-modes .chip').forEach(function(c){c.classList.remove('on')});
+  chip.classList.add('on');
+});
+document.getElementById('bs-copy').addEventListener('click', function(){
+  var out = document.getElementById('bs-output');
+  if(!out.classList.contains('show')){ bsGenerate(); }
+  var txt = out.textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){
+      var b = document.getElementById('bs-copy');
+      b.textContent = '✅ 已复制';
+      setTimeout(function(){ b.textContent = '📋 复制'; }, 1500);
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    alert('已复制到剪贴板');
+  }
+});
+document.getElementById('bs-len').addEventListener('input', function(){
+  document.getElementById('bs-len-val').textContent = this.value + ' 字';
+});
+
+/* ================= 🪷 电子木鱼 ================= */
+var Muyu = {
+  merit: parseInt(localStorage.getItem('shadiaokit_merit')||'0',10),
+  best: parseInt(localStorage.getItem('shadiaokit_best')||'0',10),
+  combo: 0, lastKnock: 0, autoTimer: null
+};
+function muyuRender(){
+  document.getElementById('merit').textContent = Muyu.merit;
+  document.getElementById('merit-best').textContent = Muyu.best;
+  document.getElementById('combo-n').textContent = Muyu.combo;
+}
+function muyuFloat(txt, x, y, isCombo){
+  var el = document.createElement('div');
+  el.className = isCombo ? 'combo' : 'float-txt';
+  el.textContent = txt;
+  el.style.left = (x-30) + 'px';
+  el.style.top = (y-40) + 'px';
+  document.body.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 1200);
+}
+function muyuKnock(ev){
+  var now = Date.now();
+  if(now - Muyu.lastKnock < 800){ Muyu.combo++; } else { Muyu.combo = 1; }
+  Muyu.lastKnock = now;
+  var mult = Math.min(3, 1 + Math.floor(Muyu.combo/10));
+  var gain = 1 * mult;
+  Muyu.merit += gain;
+  if(Muyu.merit > Muyu.best){ Muyu.best = Muyu.merit; localStorage.setItem('shadiaokit_best', String(Muyu.best)); }
+  localStorage.setItem('shadiaokit_merit', String(Muyu.merit));
+  muyuRender();
+  var el = document.getElementById('muyu');
+  el.classList.remove('knock');
+  void el.offsetWidth;
+  el.classList.add('knock');
+  var x = ev ? ev.clientX : (window.innerWidth/2 + (Math.random()*100-50));
+  var y = ev ? ev.clientY : (window.innerHeight/2);
+  muyuFloat('功德 +' + gain, x, y, false);
+  if(Muyu.combo > 0 && Muyu.combo % 10 === 0){
+    muyuFloat('连击 x' + Muyu.combo + '！', x, y-50, true);
+  }
+}
+document.getElementById('muyu').addEventListener('click', muyuKnock);
+document.getElementById('auto-btn').addEventListener('click', function(){
+  var b = this;
+  if(Muyu.autoTimer){
+    clearInterval(Muyu.autoTimer); Muyu.autoTimer = null;
+    b.textContent = '🤖 自动修行：关'; b.classList.remove('on');
+  } else {
+    Muyu.autoTimer = setInterval(function(){ muyuKnock(null); }, 500);
+    b.textContent = '🤖 自动修行：开'; b.classList.add('on');
+  }
+});
+document.getElementById('reset-btn').addEventListener('click', function(){
+  if(!confirm('确定要清空全部功德吗？三思啊施主！')) return;
+  Muyu.merit = 0; Muyu.combo = 0;
+  localStorage.setItem('shadiaokit_merit','0');
+  muyuRender();
+});
+muyuRender();
+
+/* ================= 📜 每日沙雕运势 ================= */
+var Alm = {
+  yi: ["摸鱼","带薪拉屎","早早下班","点奶茶","网购下单","打游戏","睡午觉","刷短视频","发呆","装忙","翘掉夕会","怼需求","改bug前先抽卡","假装断网","疯狂敲键盘假装高产","光明正大吃零食","薅羊毛","提前点外卖","听歌不听会","把'稍后处理'挂嘴边","给自己的多肉浇水","整理表情包"],
+  ji: ["开会","改需求","写周报","主动加班","回复'在吗'","接线上告警","背锅","和产品对线","承诺上线时间","说'这个很简单'","手滑merge到main","凌晨看监控","帮别人debug","发言表态","当第一个吃螃蟹的人","信了'最后一个bug'的邪","动别人的数据库","周五下午发版","说'我看看'","低估工期"],
+  signs: [
+    {q:"上上签 · 鲸鱼跃龙门", a:"今日宜猥琐发育。摸鱼摸得好，下班下得早；代码写得少，绩效跑不了。切记：领导画的饼，闻一闻就还回去。"},
+    {q:"上签 · 咸鱼翻身", a:"今天的你气场全开，适合把拖延已久的小事一口气干掉三件，然后心安理得地摸鱼到下班。注意：别主动揽活。"},
+    {q:"中签 · 平平淡淡才是真", a:"今日运势如白开水，无灾无喜。最稳妥的策略是：装忙。领导路过时敲键盘的速度要快，眼神要专注。"},
+    {q:"中签 · 天道酬勤？", a:"今日努力工作会有回报——的概率约等于你抽卡出金的概率。建议：把力气留给下班后的生活。"},
+    {q:"下签 · 需求如山倒", a:"今日不宜接新活。如果躲不过，记住三字真言：'排期呢'。凡事先问排期，可保平安。"},
+    {q:"下下签 · 周五发版大凶", a:"今日切忌碰任何部署按钮。若必须发版，请沐浴更衣、焚香祷告、备好回滚脚本。祖师爷都救不了周五下午发版的人。"},
+    {q:"隐藏签 · 天选打工人", a:"你被小鲸鱼岛的神选中了！今天无论发生什么，都往好处想：需求变了=有活干，服务器崩了=能学到东西，被裁员=终于能休假了！"}
+  ]
+};
+/* 日期种子：同一天刷新结果不变 */
+function almSeed(str){
+  var h = 0;
+  for(var i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) >>> 0; }
+  return h;
+}
+function almRng(seed){
+  var s = seed;
+  return function(){
+    s = (s * 1103515245 + 12345) >>> 0;
+    return s / 4294967296;
+  };
+}
+function almInit(){
+  var d = new Date();
+  var ds = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+  var week = ['日','一','二','三','四','五','六'][d.getDay()];
+  document.getElementById('al-date').textContent = d.getMonth()+1 + ' 月 ' + d.getDate() + ' 日 · 星期' + week;
+  var rng = almRng(almSeed(ds + '|v1'));
+  /* 宜 3 条 */
+  var yiPool = Alm.yi.slice(); var jiPool = Alm.ji.slice();
+  var yiN = [], jiN = [];
+  for(var i=0;i<3;i++){
+    yiN.push(yiPool.splice(Math.floor(rng()*yiPool.length),1)[0]);
+    jiN.push(jiPool.splice(Math.floor(rng()*jiPool.length),1)[0]);
+  }
+  document.getElementById('al-yi').innerHTML = yiN.map(function(x){return '<li>✅ ' + x + '</li>'}).join('');
+  document.getElementById('al-ji').innerHTML = jiN.map(function(x){return '<li>🚫 ' + x + '</li>'}).join('');
+  /* 运势等级 */
+  var luckLevel = Math.floor(rng()*5) + 1;
+  var stars = '⭐'.repeat(luckLevel) + '☆'.repeat(5-luckLevel);
+  var luckTxt = ['','水逆退散','小有惊喜','平平淡淡','元气满满','欧气爆棚'][luckLevel];
+  document.getElementById('al-lucky').textContent = '今日运势：' + stars + ' ' + luckTxt;
+  /* 抽签（每天固定一支） */
+  var sign = Alm.signs[Math.floor(rng()*Alm.signs.length)];
+  document.getElementById('al-sign-text').textContent = sign.q + '\n' + sign.a;
+  document.getElementById('al-draw').addEventListener('click', function(){
+    var t = document.getElementById('al-sign-text');
+    t.style.opacity = 0;
+    setTimeout(function(){
+      t.textContent = sign.q + '\n' + sign.a;
+      t.style.transition = 'opacity .6s';
+      t.style.opacity = 1;
+    }, 200);
+  });
+}
+almInit();
+
+/* ================= 🏆 沙雕证书颁发所 ================= */
+var Cert = {
+  pre: ["国际","宇宙","银河系","全球","亚太地区","业界顶尖","国家级","远古","赛博","元宇宙"],
+  adj: ["资深","首席","终身荣誉","特级","王牌","传奇","殿堂级","骨灰级","超凡","殿堂级"],
+  field: ["摸鱼学","摆烂艺术学","干饭学","熬夜学","发呆学","表情包研究","废话文学","葛优躺研究","装忙学","薅羊毛学","抽卡玄学","追番学","奶茶品鉴","外卖红包学","周一恐惧症研究"],
+  degree: ["博士生导师","教授","研究员","院士","大师","宗师","泰斗","课代表","课代表","终身成就奖得主"],
+  reasons: [
+    "该同志长期奋战在摸鱼第一线，创造了「领导在场 0.5 秒切换 Excel」的传奇纪录",
+    "其独创的「周报文学」被多家大厂列为学习教材，废话含量高达 99.8%",
+    "连续 365 天坚持干饭不迟到，用行动诠释了「民以食为天」的古老智慧",
+    "在凌晨三点追完最终话并及时发朋友圈剧透，展现了信息时代先行者的担当",
+    "于无数个深夜研究明日方舟/原神抽卡玄学，虽出金率堪忧但初心不改",
+    "把「稍等一下」练成了条件反射，其排期防御体系固若金汤",
+    "多次在奶茶三分糖与全糖之间做出艰难抉择，展现了当代青年的韧性",
+    "全年无休地给表情包分类归档，建成了本地区最大的私人表情库"
+  ],
+  seals: ["摸鱼协会","干饭联盟","摆烂研究院","小鲸鱼岛认证总部","国际废话文学组织"]
+};
+function certPick(list){ return list[Math.floor(Math.random()*list.length)]; }
+function certMake(){
+  var name = document.getElementById('cert-name').value.trim();
+  if(!name){ alert('先输入大名，证书才好写你名字呀～'); return; }
+  certFill(name);
+}
+function certFill(name){
+  var t = certPick(Cert.pre) + certPick(Cert.adj) + certPick(Cert.field) + certPick(Cert.degree);
+  document.getElementById('cert-n').textContent = name;
+  document.getElementById('cert-t').textContent = '「 ' + t + ' 」';
+  document.getElementById('cert-r').textContent = '获奖理由：' + certPick(Cert.reasons) + '。特发此证，以资鼓励！';
+  var seal = document.getElementById('cert-seal');
+  seal.style.display = 'flex';
+  seal.innerHTML = '<span>' + certPick(Cert.seals).slice(0,2) + '</span><span>权威认证</span>';
+}
+document.getElementById('cert-gen').addEventListener('click', certMake);
+document.getElementById('cert-another').addEventListener('click', function(){
+  var name = document.getElementById('cert-name').value.trim() || '无名氏';
+  certFill(name);
+});
+</script>
+</body>
+</html>

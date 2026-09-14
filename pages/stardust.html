@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>星尘 · Stardust</title>
+<meta name="description" content="移动鼠标，吸引星尘，创造属于你的星系。点击爆发超新星。单文件，零依赖。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#050510}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  color:rgba(255,255,255,.8);
+  -webkit-font-smoothing:antialiased;
+}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
+
+.hud{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(18px,3vw,32px)}
+.title h1{font-size:clamp(22px,3vw,30px);font-weight:300;letter-spacing:.42em;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.title p{margin-top:8px;font-size:11px;letter-spacing:.34em;color:rgba(255,255,255,.45)}
+
+.bottom{display:flex;flex-direction:column;align-items:center;gap:16px}
+#hint{font-size:13px;letter-spacing:.25em;color:rgba(255,255,255,.65);transition:opacity 1.2s ease;text-shadow:0 2px 16px rgba(0,0,0,.7)}
+#hint.gone{opacity:0}
+
+.dock{
+  pointer-events:auto;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  padding:10px 14px;border-radius:999px;
+  background:rgba(16,16,32,.42);
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 18px 50px rgba(0,0,0,.4);
+}
+@media (prefers-reduced-transparency: reduce){
+  .dock{background:rgba(16,16,32,.95);backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  height:38px;padding:0 16px;border-radius:999px;
+  font-size:13px;letter-spacing:.08em;
+  color:rgba(255,255,255,.7);
+  background:transparent;border:1px solid rgba(255,255,255,.1);
+  cursor:pointer;transition:.25s;
+  font-family:inherit;
+}
+.pill:hover{border-color:rgba(255,255,255,.35);color:#fff}
+.pill:focus-visible{outline:2px solid #7c8cf8;outline-offset:2px}
+.pill.active{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.1);color:#fff}
+.pill .sw{width:14px;height:14px;border-radius:50%;flex:none}
+.sw-galaxy{background:radial-gradient(circle at 30% 30%,#a5b4ff,#38e1c6)}
+.sw-fire{background:radial-gradient(circle at 30% 30%,#ff9a5c,#ff2d55)}
+.sw-ice{background:radial-gradient(circle at 30% 30%,#c8f0ff,#5b9eff)}
+.sw-gold{background:radial-gradient(circle at 30% 30%,#ffe89a,#ff8c00)}
+.sep{width:1px;height:20px;background:rgba(255,255,255,.14);margin:0 4px}
+
+.meta{position:fixed;top:clamp(18px,3vw,32px);right:clamp(18px,3vw,32px);text-align:right;font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.35);line-height:2}
+
+#toast{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  padding:14px 28px;border-radius:12px;
+  background:rgba(16,16,32,.85);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.15);
+  font-size:14px;letter-spacing:.1em;color:#fff;
+  opacity:0;transition:opacity .4s;pointer-events:none;z-index:10;
+}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="hud">
+  <div class="title">
+    <h1>星尘</h1>
+    <p>STARDUST · 移动鼠标，创造你的星系</p>
+  </div>
+  <div class="bottom">
+    <p id="hint">移动鼠标吸引星尘 · 点击爆发超新星 · 滚轮缩放</p>
+    <div class="dock" role="toolbar">
+      <button class="pill active" data-pal="0"><span class="sw sw-galaxy"></span>银河</button>
+      <button class="pill" data-pal="1"><span class="sw sw-fire"></span>烈焰</button>
+      <button class="pill" data-pal="2"><span class="sw sw-ice"></span>冰霜</button>
+      <button class="pill" data-pal="3"><span class="sw sw-gold"></span>黄金</button>
+      <span class="sep"></span>
+      <button class="pill" id="btnMode">引力模式</button>
+      <button class="pill" id="btnReset">重置</button>
+      <button class="pill" id="btnSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="meta">粒子：<span id="pCount">0</span><br>缩放：<span id="zLevel">1.0x</span></div>
+<div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
+  var W, H, dpr;
+
+  var PARTICLE_COUNT = 2200;
+  var TRAIL_ALPHA = 0.06;
+  var GRAVITY_STRENGTH = 800;
+  var TANGENT_STRENGTH = 0.6;
+  var DAMPING = 0.985;
+  var MAX_SPEED = 12;
+
+  var mouse = { x: -9999, y: -9999, active: false };
+  var zoom = 1;
+  var offsetX = 0, offsetY = 0;
+  var attractMode = true; // true=引力, false=斥力
+
+  var palettes = [
+    { name: 'galaxy', colors: [[124,140,248],[56,225,198],[180,160,255],[100,200,255],[200,180,255]] },
+    { name: 'fire',   colors: [[255,107,53],[255,45,85],[255,180,80],[255,140,60],[255,80,120]] },
+    { name: 'ice',    colors: [[168,230,255],[90,144,217],[200,240,255],[120,180,255],[180,220,255]] },
+    { name: 'gold',   colors: [[255,215,0],[255,140,0],[255,240,180],[255,180,50],[255,200,100]] }
+  ];
+  var palIndex = 0;
+
+  var particles = [];
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function createParticle() {
+    var angle = Math.random() * Math.PI * 2;
+    var dist = Math.random() * Math.max(W, H) * 0.5;
+    var cx = W / 2 + offsetX;
+    var cy = H / 2 + offsetY;
+    var c = palettes[palIndex].colors[Math.floor(Math.random() * palettes[palIndex].colors.length)];
+    return {
+      x: cx + Math.cos(angle) * dist,
+      y: cy + Math.sin(angle) * dist,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      size: Math.random() * 1.8 + 0.4,
+      baseSize: Math.random() * 1.8 + 0.4,
+      r: c[0], g: c[1], b: c[2],
+      brightness: Math.random() * 0.5 + 0.5,
+      life: 1
+    };
+  }
+
+  function initParticles() {
+    particles = [];
+    for (var i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(createParticle());
+    }
+    document.getElementById('pCount').textContent = PARTICLE_COUNT;
+  }
+
+  function supernova(x, y) {
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      var dx = p.x - x;
+      var dy = p.y - y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 300) {
+        var force = (300 - dist) / 300 * 25;
+        p.vx += (dx / (dist + 0.1)) * force;
+        p.vy += (dy / (dist + 0.1)) * force;
+        p.brightness = Math.min(1.5, p.brightness + 0.6);
+      }
+    }
+    // 爆发中心闪光
+    flashes.push({ x: x, y: y, radius: 0, alpha: 1, maxRadius: 200 });
+  }
+
+  var flashes = [];
+
+  function update(dt) {
+    var cx = W / 2 + offsetX;
+    var cy = H / 2 + offsetY;
+    var mx = mouse.active ? mouse.x : cx;
+    var my = mouse.active ? mouse.y : cy;
+
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+
+      // 鼠标引力/斥力
+      var dx = mx - p.x;
+      var dy = my - p.y;
+      var distSq = dx * dx + dy * dy;
+      var dist = Math.sqrt(distSq) + 0.1;
+
+      if (dist < 600) {
+        var force = GRAVITY_STRENGTH / distSq * (attractMode ? 1 : -1);
+        force = Math.min(force, 2.5);
+        p.vx += (dx / dist) * force;
+        p.vy += (dy / dist) * force;
+
+        // 切向力 —— 形成旋转星系
+        var tx = -dy / dist;
+        var ty = dx / dist;
+        p.vx += tx * TANGENT_STRENGTH * force * 0.8;
+        p.vy += ty * TANGENT_STRENGTH * force * 0.8;
+      }
+
+      // 速度限制
+      var speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (speed > MAX_SPEED) {
+        p.vx = (p.vx / speed) * MAX_SPEED;
+        p.vy = (p.vy / speed) * MAX_SPEED;
+      }
+
+      // 阻尼
+      p.vx *= DAMPING;
+      p.vy *= DAMPING;
+
+      // 位置更新
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // 亮度恢复
+      p.brightness += (0.6 - p.brightness) * 0.02;
+
+      // 边界环绕
+      var margin = 100;
+      if (p.x < -margin) p.x = W + margin;
+      if (p.x > W + margin) p.x = -margin;
+      if (p.y < -margin) p.y = H + margin;
+      if (p.y > H + margin) p.y = -margin;
+
+      // 大小随速度变化
+      p.size = p.baseSize * (1 + speed * 0.08);
+    }
+
+    // 更新闪光
+    for (var j = flashes.length - 1; j >= 0; j--) {
+      var f = flashes[j];
+      f.radius += 8;
+      f.alpha -= 0.025;
+      if (f.alpha <= 0) flashes.splice(j, 1);
+    }
+  }
+
+  function render() {
+    // 拖尾效果
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = 'rgba(5,5,16,' + TRAIL_ALPHA + ')';
+    ctx.fillRect(0, 0, W, H);
+
+    // 发光叠加
+    ctx.globalCompositeOperation = 'lighter';
+
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      var alpha = Math.min(1, p.brightness) * 0.85;
+      var size = p.size * zoom;
+
+      // 外层光晕
+      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 4);
+      grad.addColorStop(0, 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + alpha + ')');
+      grad.addColorStop(0.4, 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + (alpha * 0.3) + ')');
+      grad.addColorStop(1, 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 核心亮点
+      ctx.fillStyle = 'rgba(255,255,255,' + (alpha * 0.9) + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 超新星闪光
+    for (var j = 0; j < flashes.length; j++) {
+      var f = flashes[j];
+      var fgrad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.radius);
+      var c = palettes[palIndex].colors[0];
+      fgrad.addColorStop(0, 'rgba(255,255,255,' + f.alpha + ')');
+      fgrad.addColorStop(0.3, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (f.alpha * 0.6) + ')');
+      fgrad.addColorStop(1, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
+      ctx.fillStyle = fgrad;
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  var last = performance.now();
+  function frame(now) {
+    var dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    update(dt);
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  // ===== 交互 =====
+  var hint = document.getElementById('hint');
+  var interacted = false;
+
+  function markInteracted() {
+    if (!interacted) {
+      interacted = true;
+      hint.classList.add('gone');
+    }
+  }
+
+  canvas.addEventListener('mousemove', function (e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+    markInteracted();
+  });
+
+  canvas.addEventListener('mouseleave', function () {
+    mouse.active = false;
+  });
+
+  canvas.addEventListener('mousedown', function (e) {
+    markInteracted();
+    supernova(e.clientX, e.clientY);
+  });
+
+  canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    markInteracted();
+    var t = e.touches[0];
+    mouse.x = t.clientX;
+    mouse.y = t.clientY;
+    mouse.active = true;
+    supernova(t.clientX, t.clientY);
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+    var t = e.touches[0];
+    mouse.x = t.clientX;
+    mouse.y = t.clientY;
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', function (e) {
+    mouse.active = false;
+  });
+
+  canvas.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    markInteracted();
+    var delta = e.deltaY > 0 ? 0.9 : 1.1;
+    zoom = Math.max(0.3, Math.min(3, zoom * delta));
+    document.getElementById('zLevel').textContent = zoom.toFixed(1) + 'x';
+  }, { passive: false });
+
+  // 配色切换
+  var pills = document.querySelectorAll('[data-pal]');
+  pills.forEach(function (b) {
+    b.addEventListener('click', function () {
+      pills.forEach(function (x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      palIndex = parseInt(b.getAttribute('data-pal'), 10);
+      // 渐变切换粒子颜色
+      var newColors = palettes[palIndex].colors;
+      for (var i = 0; i < particles.length; i++) {
+        var c = newColors[Math.floor(Math.random() * newColors.length)];
+        particles[i].r = c[0];
+        particles[i].g = c[1];
+        particles[i].b = c[2];
+      }
+      showToast('已切换配色');
+    });
+  });
+
+  // 引力/斥力模式
+  document.getElementById('btnMode').addEventListener('click', function () {
+    attractMode = !attractMode;
+    this.textContent = attractMode ? '引力模式' : '斥力模式';
+    this.classList.toggle('active', !attractMode);
+    showToast(attractMode ? '引力模式：星尘向你汇聚' : '斥力模式：星尘被你推开');
+  });
+
+  // 重置
+  document.getElementById('btnReset').addEventListener('click', function () {
+    initParticles();
+    flashes = [];
+    zoom = 1;
+    document.getElementById('zLevel').textContent = '1.0x';
+    ctx.fillStyle = '#050510';
+    ctx.fillRect(0, 0, W, H);
+    showToast('星系已重置');
+  });
+
+  // 保存
+  document.getElementById('btnSave').addEventListener('click', function () {
+    var link = document.createElement('a');
+    link.download = 'stardust-' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('图片已保存');
+  });
+
+  // Toast
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1800);
+  }
+
+  // 启动
+  resize();
+  initParticles();
+  ctx.fillStyle = '#050510';
+  ctx.fillRect(0, 0, W, H);
+  window.addEventListener('resize', function () {
+    resize();
+    ctx.fillStyle = '#050510';
+    ctx.fillRect(0, 0, W, H);
+  });
+  requestAnimationFrame(frame);
+})();
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

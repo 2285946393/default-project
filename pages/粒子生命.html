@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#05070c" />
+<title>粒子生命 · Particle Life</title>
+<!--
+  粒子生命 Particle Life（中文单文件离线版）
+  基于开源项目 hunar4321/particle-life (MIT License, Copyright (c) 2022 Hunar Ahmad) 改造：
+  重写为空间哈希网格 + 经典分段力曲线（Clusters / Tom Mohr 模型），自建中文界面与可视化吸引矩阵。
+  零依赖、零联网，双击即可运行。
+-->
+<style>
+  :root{
+    --ink:#eaf2ff; --dim:#8b99b4; --line:rgba(150,175,220,.14);
+    --glass:rgba(11,15,24,.62); --glass-solid:rgba(9,12,20,.94);
+    --accent:#46f5c8; --accent2:#5aa9ff;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;background:#04060b;color:var(--ink);font-family:var(--font);user-select:none;}
+  #stage{position:fixed;inset:0;display:block;cursor:crosshair;touch-action:none;}
+
+  /* ---------- 通用玻璃 ---------- */
+  .glass{
+    background:var(--glass); backdrop-filter:blur(22px) saturate(1.4); -webkit-backdrop-filter:blur(22px) saturate(1.4);
+    border:1px solid var(--line); border-radius:16px; box-shadow:0 18px 60px rgba(0,0,0,.5);
+  }
+
+  /* ---------- 左上品牌 ---------- */
+  .masthead{position:fixed;top:20px;left:24px;z-index:10;pointer-events:none;text-shadow:0 2px 14px #000;}
+  .wordmark{font-size:19px;font-weight:600;letter-spacing:.14em;}
+  .wordmark b{color:var(--accent);font-weight:700;}
+  .tagline{margin-top:5px;font-size:12px;color:var(--dim);letter-spacing:.06em;}
+
+  /* ---------- 右侧控制面板 ---------- */
+  .panel{position:fixed;top:18px;right:18px;width:272px;max-height:calc(100vh - 36px);overflow-y:auto;
+    padding:15px 15px 16px;z-index:15;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;}
+  .panel::-webkit-scrollbar{width:7px;} .panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:6px;}
+  .panel.hidden{opacity:0;transform:translateX(24px);pointer-events:none;}
+  .panel h2{font-size:12px;letter-spacing:.22em;color:var(--dim);font-weight:600;display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;}
+  .panel h2 b{color:var(--accent);letter-spacing:.08em;font-weight:600;}
+  .sec{border-top:1px solid var(--line);padding-top:12px;margin-top:12px;}
+  .sec-title{font-size:11px;letter-spacing:.18em;color:var(--dim);margin-bottom:9px;}
+
+  /* 吸引矩阵 */
+  .matrix-wrap{display:flex;gap:7px;align-items:flex-start;}
+  .matrix-col-head,.matrix-row-head{display:grid;gap:3px;}
+  .matrix-col-head{margin-left:17px;grid-auto-flow:column;grid-template-rows:14px;}
+  .matrix-row-head{grid-template-columns:14px;margin-top:3px;}
+  .dot{width:14px;height:14px;border-radius:50%;box-shadow:0 0 7px currentColor;}
+  .matrix{display:grid;gap:3px;margin-top:3px;}
+  .cell{width:26px;height:22px;border-radius:5px;background:#141b29;border:1px solid rgba(255,255,255,.06);cursor:ew-resize;position:relative;overflow:hidden;}
+  .cell i{position:absolute;left:0;top:0;bottom:0;display:block;}
+  .cell::after{content:attr(data-v);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font:9px/1 var(--mono);color:rgba(255,255,255,.72);mix-blend-mode:difference;}
+  .matrix-tools{display:flex;gap:6px;margin-top:9px;}
+  .matrix-hint{font-size:10.5px;color:var(--dim);margin-top:7px;line-height:1.5;}
+
+  /* 分段按钮组 */
+  .seg{display:flex;background:rgba(255,255,255,.05);border-radius:9px;padding:3px;gap:3px;}
+  .seg button{flex:1;border:0;background:transparent;color:var(--dim);font-family:var(--font);font-size:12px;padding:6px 0;border-radius:7px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:linear-gradient(180deg,rgba(70,245,200,.22),rgba(70,245,200,.1));color:var(--accent);box-shadow:inset 0 0 0 1px rgba(70,245,200,.28);}
+  .seg button:active{transform:scale(.96);}
+
+  /* 滑块行 */
+  .row{margin:9px 0;}
+  .row .lab{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-bottom:5px;}
+  .row .lab output{color:var(--ink);font-family:var(--mono);}
+  input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:rgba(255,255,255,.12);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff,var(--accent));cursor:pointer;box-shadow:0 0 8px rgba(70,245,200,.6);border:0;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:var(--accent);cursor:pointer;}
+
+  /* 普通按钮 */
+  .btn{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font-family:var(--font);
+    font-size:12px;padding:7px 9px;border-radius:9px;cursor:pointer;transition:.15s;flex:1;white-space:nowrap;}
+  .btn:hover{background:rgba(70,245,200,.12);border-color:rgba(70,245,200,.3);}
+  .btn:active{transform:scale(.96);}
+  .btn.primary{background:linear-gradient(180deg,rgba(70,245,200,.22),rgba(70,245,200,.08));border-color:rgba(70,245,200,.34);color:var(--accent);}
+  .btnrow{display:flex;gap:6px;margin-top:8px;}
+  .chkrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim);margin:8px 0;cursor:pointer;}
+  .chkrow input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;}
+
+  /* ---------- 底部种子栏 ---------- */
+  .seedbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:14;display:flex;align-items:center;gap:9px;
+    padding:9px 12px;border-radius:14px;}
+  .seedbar .k{font-size:11px;color:var(--dim);letter-spacing:.12em;}
+  .seed-input{background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);font-family:var(--mono);
+    font-size:13px;padding:6px 9px;border-radius:9px;width:118px;outline:none;text-align:center;}
+  .seed-input:focus{border-color:rgba(70,245,200,.4);}
+  .iconbtn{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+    color:var(--ink);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .iconbtn:hover{background:rgba(70,245,200,.14);border-color:rgba(70,245,200,.3);}
+
+  /* ---------- 左下状态 ---------- */
+  .stats{position:fixed;left:22px;bottom:20px;z-index:10;font-family:var(--mono);font-size:11.5px;color:var(--dim);
+    line-height:1.7;text-shadow:0 1px 8px #000;pointer-events:none;}
+  .stats b{color:var(--ink);font-weight:600;}
+
+  /* ---------- 浮动工具栏 ---------- */
+  .toolbar{position:fixed;right:18px;bottom:20px;z-index:14;display:flex;gap:7px;padding:7px;border-radius:13px;}
+  .toolbar .iconbtn{width:36px;height:34px;}
+
+  /* ---------- 开场遮罩 ---------- */
+  .veil{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;padding:20px;padding-right:300px;
+    background:radial-gradient(ellipse at center,rgba(4,6,11,.25),rgba(4,6,11,.8));transition:opacity .8s ease;cursor:pointer;}
+  .veil.gone{opacity:0;pointer-events:none;}
+  .veil .big{font-size:clamp(36px,8vw,88px);font-weight:200;letter-spacing:.3em;padding-left:.3em;
+    background:linear-gradient(180deg,#fff,#8fe0ff 58%,var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .veil .sub{margin-top:16px;color:var(--dim);font-size:clamp(12px,2.2vw,15px);line-height:1.8;max-width:520px;letter-spacing:.05em;}
+  .veil .hint{margin-top:24px;font-size:11px;letter-spacing:.22em;color:#5a6785;text-transform:uppercase;animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
+
+  @media (max-width:760px){
+    .panel{width:236px;right:10px;top:10px;}
+    .veil{padding:20px;}
+    .tagline{display:none;}
+    .seedbar{bottom:14px;}
+    .stats{font-size:10.5px;}
+  }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<div class="masthead">
+  <div class="wordmark">粒子生命 · <b>PARTICLE LIFE</b></div>
+  <div class="tagline">几条吸引与排斥的规则，涌现出会追逐、吞噬、共生的彩色生命</div>
+</div>
+
+<div class="panel glass" id="panel"></div>
+
+<div class="stats" id="stats"></div>
+
+<div class="seedbar glass">
+  <span class="k">世界种子</span>
+  <input class="seed-input" id="seedInput" inputmode="numeric" />
+  <button class="iconbtn" id="seedGo" title="按此种子生成">↵</button>
+  <button class="iconbtn" id="seedRand" title="随机一个新世界">🎲</button>
+</div>
+
+<div class="toolbar glass">
+  <button class="iconbtn" id="tbPause" title="暂停 / 继续（空格）">⏸</button>
+  <button class="iconbtn" id="tbNew" title="随机新规则（R）">🎲</button>
+  <button class="iconbtn" id="tbReset" title="只重新散布粒子（O）">↻</button>
+  <button class="iconbtn" id="tbSave" title="保存图片（P）">📷</button>
+  <button class="iconbtn" id="tbPanel" title="隐藏 / 显示面板（G）">⚙</button>
+</div>
+
+<div class="veil" id="veil">
+  <div>
+    <div class="big">粒子生命</div>
+    <div class="sub">每个颜色是一个“物种”，它们彼此喜欢或讨厌。<br>规则极简，却会自发长出会旋转、追逐、吞噬与共生的活体结构。</div>
+    <div class="hint">点击任意处开始 · 按住拖动吸引 · Shift / 右键拖动驱散</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   配色主题：每套 7 个物种色（协调、发光感）
+============================================================ */
+const PALETTES = [
+  { name:"霓虹深渊", bg:"#04060b", colors:["#2de2e6","#3a86ff","#9b5de5","#f15bb5","#00f5d4","#4cc9f0","#c8b6ff"] },
+  { name:"熔岩余烬", bg:"#0a0503", colors:["#ff6b35","#f7931e","#ffd23f","#ef233c","#ff0a6c","#fb8500","#ffb703"] },
+  { name:"极光森林", bg:"#030a07", colors:["#80ed99","#57cc99","#38a3a5","#22577a","#b5e48c","#4cc9f0","#99d98c"] },
+  { name:"星云糖果", bg:"#0a0710", colors:["#ffafcc","#bde0fe","#a2d2ff","#cdb4db","#ffc8dd","#90dbf4","#f1c0e8"] },
+  { name:"赛博朋克", bg:"#07030c", colors:["#f72585","#b5179e","#7209b7","#4cc9f0","#4895ef","#4361ee","#3bf4fb"] },
+  { name:"深海荧光", bg:"#02080d", colors:["#00f5d4","#00bbf9","#90e0ef","#fee440","#f15bb5","#48cae4","#caf0f8"] },
+];
+
+/* ============================================================
+   状态
+============================================================ */
+const state = {
+  seed: 0,
+  species: 5,           // 物种数
+  perSpecies: 600,      // 每物种粒子数
+  radius: 30,           // 作用半径（逻辑像素）
+  force: 0.15,          // 力强度 / 时间尺度
+  damping: 0.85,        // 速度阻尼（越大越黏）
+  wall: 1,              // 壁面反弹强度
+  palette: 0,
+  glow: true,           // 辉光
+  trails: 0.22,         // 拖影：背景覆盖 alpha，越小拖尾越长
+  paused: false,
+  autoEvolve: false,    // 自动演化规则
+  evolveEvery: 70,      // 自动演化周期（帧）
+  particleSize: 2.0,
+  A: [],                // 吸引矩阵 A[i][j] ∈ [-1,1]
+};
+const BETA = 0.3;        // 硬核排斥比例
+const MAX_SPECIES = 7;
+
+/* ============================================================
+   可复现随机
+============================================================ */
+let _rngState = 0;
+function srand(s){ _rngState = s >>> 0; }
+function rng(){
+  let t = _rngState += 0x6D2B79F5;
+  t = Math.imul(t ^ t >>> 15, t | 1);
+  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+function randSeed(){ return (Math.floor(Math.random()*4294967296)) >>> 0; }
+
+/* ============================================================
+   Canvas / 尺寸
+============================================================ */
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d", { alpha:false });
+let W=0,H=0,dpr=1;
+function resize(){
+  dpr = Math.min(window.devicePixelRatio||1, 1.6);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.floor(W*dpr); canvas.height = Math.floor(H*dpr);
+  canvas.style.width=W+"px"; canvas.style.height=H+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  buildGrid();
+}
+window.addEventListener("resize", resize);
+
+/* ============================================================
+   粒子（扁平 TypedArray）+ 空间哈希网格
+============================================================ */
+let N=0, px,py,vx,vy,sp;
+let cols=0,rows=0,cellSize=state.radius,gridCount,cellStart,cellFill,cellCount,sorted;
+
+function allocParticles(){
+  N = state.species * state.perSpecies;
+  px=new Float32Array(N); py=new Float32Array(N);
+  vx=new Float32Array(N); vy=new Float32Array(N);
+  sp=new Uint8Array(N);
+  gridCount = Math.max(cols*rows,1);
+  cellStart=new Int32Array(gridCount+1);
+  cellFill =new Int32Array(gridCount);
+  cellCount=new Int32Array(gridCount);
+  sorted   =new Int32Array(N);
+}
+function buildGrid(){
+  cellSize = Math.max(8, state.radius);
+  cols = Math.max(1, Math.ceil(W/cellSize));
+  rows = Math.max(1, Math.ceil(H/cellSize));
+  gridCount = cols*rows;
+  cellStart=new Int32Array(gridCount+1);
+  cellFill =new Int32Array(gridCount);
+  cellCount=new Int32Array(gridCount);
+  if(sorted) sorted=new Int32Array(N);
+}
+
+// 随机散布粒子
+function scatter(){
+  srand(state.seed ^ 0x9e3779b9);
+  let n=0;
+  for(let s=0;s<state.species;s++){
+    // 每个物种初始聚成一小团，更容易看出分化
+    const cx=rng()*W*0.6+W*0.2, cy=rng()*H*0.6+H*0.2;
+    for(let k=0;k<state.perSpecies;k++){
+      const a=rng()*Math.PI*2, rr=Math.sqrt(rng())*Math.min(W,H)*0.18;
+      px[n]=Math.min(W-4,Math.max(4,cx+Math.cos(a)*rr));
+      py[n]=Math.min(H-4,Math.max(4,cy+Math.sin(a)*rr));
+      vx[n]=0; vy[n]=0; sp[n]=s; n++;
+    }
+  }
+}
+
+// 由种子生成吸引矩阵
+function randomizeRules(){
+  srand(state.seed);
+  state.A=[];
+  for(let i=0;i<MAX_SPECIES;i++){
+    const row=[];
+    for(let j=0;j<MAX_SPECIES;j++){
+      // 略微拉开两极，结构更鲜明
+      let v=rng()*2-1;
+      row.push(v);
+    }
+    state.A.push(row);
+  }
+}
+function symmetrize(){
+  for(let i=0;i<state.species;i++)for(let j=0;j<i;j++){
+    const v=(state.A[i][j]+state.A[j][i])*0.5;
+    state.A[i][j]=state.A[j][i]=v;
+  }
+  syncMatrixCells();
+}
+
+/* ============================================================
+   模拟一步：空间网格 + 分段力
+============================================================ */
+const mouse={x:0,y:0,active:false,mode:1,down:false};
+let evolveTimer=0, totalSpeed=0;
+
+function rebuildSpatial(){
+  cellCount.fill(0);
+  for(let n=0;n<N;n++){
+    const cx=Math.min(cols-1,Math.max(0,(px[n]/cellSize)|0));
+    const cy=Math.min(rows-1,Math.max(0,(py[n]/cellSize)|0));
+    cellCount[cy*cols+cx]++;
+  }
+  cellStart[0]=0;
+  for(let c=0;c<gridCount;c++) cellStart[c+1]=cellStart[c]+cellCount[c];
+  cellFill.set(cellStart.subarray(0,gridCount));
+  for(let n=0;n<N;n++){
+    const cx=Math.min(cols-1,Math.max(0,(px[n]/cellSize)|0));
+    const cy=Math.min(rows-1,Math.max(0,(py[n]/cellSize)|0));
+    const id=cy*cols+cx;
+    sorted[cellFill[id]++]=n;
+  }
+}
+
+function step(){
+  rebuildSpatial();
+  const R=state.radius, R2=R*R, beta=BETA, damp=state.damping, F=state.force;
+  const pal=PALETTES[state.palette];
+  totalSpeed=0;
+
+  for(let n=0;n<N;n++){
+    const apx=px[n], apy=py[n], si=sp[n];
+    const ccx=Math.min(cols-1,Math.max(0,(apx/R)|0));
+    const ccy=Math.min(rows-1,Math.max(0,(apy/R)|0));
+    let fx=0,fy=0;
+    const x0=ccx>0?ccx-1:0, x1=ccx<cols-1?ccx+1:cols-1;
+    const y0=ccy>0?ccy-1:0, y1=ccy<rows-1?ccy+1:rows-1;
+    const rowA=state.A[si];
+
+    for(let cy=y0;cy<=y1;cy++){
+      for(let cx=x0;cx<=x1;cx++){
+        const cid=cy*cols+cx;
+        const end=cellStart[cid+1];
+        for(let q=cellStart[cid];q<end;q++){
+          const m=sorted[q];
+          if(m===n) continue;
+          let dx=apx-px[m], dy=apy-py[m];
+          const d2=dx*dx+dy*dy;
+          if(d2>0 && d2<R2){
+            const d=Math.sqrt(d2);
+            const nd=d/R;                 // 归一化距离 0..1
+            let f;
+            if(nd<beta){ f=nd/beta-1; }   // 硬核排斥
+            else { f=rowA[sp[m]]*(1-Math.abs(2*nd-1-beta)/(1-beta)); } // 三角吸引/排斥峰
+            const inv=f/d;
+            fx+=inv*dx; fy+=inv*dy;
+          }
+        }
+      }
+    }
+
+    // 鼠标重力井
+    if(mouse.down){
+      let dx=apx-mouse.x, dy=apy-mouse.y;
+      const d2=dx*dx+dy*dy, MR=Math.min(W,H)*0.22, MR2=MR*MR;
+      if(d2<MR2 && d2>1){
+        const d=Math.sqrt(d2);
+        const f=mouse.mode*2.2*(1-d/MR);
+        fx+=f*dx/d; fy+=f*dy/d;
+      }
+    }
+    // 壁面软排斥
+    if(state.wall>0){
+      const w=state.radius*0.9, s=0.12*state.wall;
+      if(apx<w) fx+=(w-apx)*s; else if(apx>W-w) fx+=(W-w-apx)*s;
+      if(apy<w) fy+=(w-apy)*s; else if(apy>H-w) fy+=(H-w-apy)*s;
+    }
+
+    let nvx=vx[n]*damp+fx*F, nvy=vy[n]*damp+fy*F;
+    // 限速防爆
+    const sp2=nvx*nvx+nvy*nvy, cap=6;
+    if(sp2>cap*cap){ const k=cap/Math.sqrt(sp2); nvx*=k; nvy*=k; }
+    vx[n]=nvx; vy[n]=nvy;
+    totalSpeed+=Math.abs(nvx)+Math.abs(nvy);
+  }
+
+  // 位置积分 + 硬墙反弹
+  for(let n=0;n<N;n++){
+    let x=px[n]+vx[n], y=py[n]+vy[n];
+    if(x<0){x=-x;vx[n]*=-0.6;} else if(x>W){x=2*W-x;vx[n]*=-0.6;}
+    if(y<0){y=-y;vy[n]*=-0.6;} else if(y>H){y=2*H-y;vy[n]*=-0.6;}
+    px[n]=x; py[n]=y;
+  }
+  totalSpeed/=N;
+
+  // 自动演化：周期性微调一条规则
+  if(state.autoEvolve){
+    if(--evolveTimer<=0){
+      const i=(rng()*state.species)|0, j=(rng()*state.species)|0;
+      let v=state.A[i][j]+(rng()*0.5-0.25);
+      state.A[i][j]=Math.max(-1,Math.min(1,v));
+      syncMatrixCells();
+      evolveTimer=state.evolveEvery;
+    }
+  }
+}
+
+/* ============================================================
+   渲染
+============================================================ */
+function hexToRgb(hex){
+  const n=parseInt(hex.slice(1),16);
+  return [(n>>16)&255,(n>>8)&255,n&255];
+}
+let rgbCache=null,strCache=null,palIdx=-1;
+function paletteRgb(){
+  if(palIdx===state.palette && rgbCache) return rgbCache;
+  rgbCache=PALETTES[state.palette].colors.map(hexToRgb);
+  strCache=rgbCache.map(c=>({
+    core:`rgb(${c[0]},${c[1]},${c[2]})`,
+    glow:`rgba(${c[0]},${c[1]},${c[2]},0.12)`,
+  }));
+  palIdx=state.palette; return rgbCache;
+}
+function render(){
+  const pal=PALETTES[state.palette];
+  const bg=hexToRgb(pal.bg);
+  ctx.globalCompositeOperation="source-over";
+  ctx.fillStyle=`rgba(${bg[0]},${bg[1]},${bg[2]},${state.glow?state.trails:1})`;
+  ctx.fillRect(0,0,W,H);
+
+  paletteRgb();
+  const sz=state.particleSize, per=state.perSpecies;
+  ctx.globalCompositeOperation = state.glow ? "lighter":"source-over";
+  // 粒子按物种连续存放，按物种批量绘制，避免逐粒子切换 fillStyle
+  if(state.glow){
+    const hsz=sz*2.1;
+    for(let s=0;s<state.species;s++){
+      ctx.fillStyle=strCache[s].glow;
+      for(let n=s*per,end=Math.min(N,(s+1)*per);n<end;n++) ctx.fillRect(px[n]-hsz*0.5,py[n]-hsz*0.5,hsz,hsz);
+    }
+  }
+  for(let s=0;s<state.species;s++){
+    ctx.fillStyle=strCache[s].core;
+    for(let n=s*per,end=Math.min(N,(s+1)*per);n<end;n++) ctx.fillRect(px[n]-sz*0.5,py[n]-sz*0.5,sz,sz);
+  }
+  ctx.globalCompositeOperation="source-over";
+}
+
+/* ============================================================
+   UI 构建
+============================================================ */
+const panel=document.getElementById("panel");
+function el(tag,attrs,...kids){
+  const e=document.createElement(tag);
+  attrs=attrs||{};
+  for(const k in attrs){
+    if(k==="class")e.className=attrs[k];
+    else if(k==="html")e.innerHTML=attrs[k];
+    else if(k==="dataset")Object.assign(e.dataset,attrs[k]);
+    else if(k==="style"&&typeof attrs[k]==="object")Object.assign(e.style,attrs[k]);
+    else e[k]=attrs[k];
+  }
+  for(const kid of kids){ if(kid!=null) e.append(kid); }
+  return e;
+}
+
+let matrixEl=null, cellEls=[];
+function buildPanel(){
+  panel.innerHTML="";
+  // 标题 + 配色
+  const title=el("h2",{},"关系宇宙", el("b",{id:"palName"},PALETTES[state.palette].name));
+  panel.append(title);
+
+  /* ---- 吸引矩阵 ---- */
+  const sec1=el("div",{class:"sec"});
+  sec1.append(el("div",{class:"sec-title"},"物种吸引矩阵（行→被谁影响）"));
+  matrixEl=el("div",{class:"matrix"});
+  matrixEl.style.gridTemplateColumns=`repeat(${state.species},26px)`;
+  // 列头（与矩阵列同宽，圆点居中对齐）
+  const colHead=el("div",{class:"matrix-col-head"});
+  colHead.style.gridTemplateColumns=`repeat(${state.species},26px)`;
+  colHead.style.gap="3px"; colHead.style.marginLeft="21px";
+  const rowHead=el("div",{class:"matrix-row-head"});
+  rowHead.style.gridTemplateRows=`repeat(${state.species},22px)`;
+  rowHead.style.gap="3px";
+  for(let s=0;s<state.species;s++){
+    const cd=el("span",{class:"dot",id:"ch"+s}); cd.style.justifySelf="center";
+    const rd=el("span",{class:"dot",id:"rh"+s}); rd.style.alignSelf="center";
+    colHead.append(cd); rowHead.append(rd);
+  }
+  // 行头在左；右侧纵向为“列头 + 矩阵”，保证行列严格对齐
+  const right=el("div",{});
+  right.append(colHead,matrixEl);
+  const wrap=el("div",{class:"matrix-wrap"}, rowHead, right);
+  sec1.append(wrap);
+
+  cellEls=[];
+  for(let i=0;i<state.species;i++){
+    for(let j=0;j<state.species;j++){
+      const c=el("div",{class:"cell",dataset:{i,j}});
+      bindCell(c,i,j);
+      matrixEl.append(c);
+      (cellEls[i]=cellEls[i]||[])[j]=c;
+    }
+  }
+  sec1.append(el("div",{class:"matrix-tools"},
+    btn("随机",()=>{state.seed=randSeed();randomizeRules();scatter();syncMatrixCells();setSeedBox();},false),
+    btn("对称",symmetrize,false),
+    btn("归零",()=>{for(let i=0;i<state.species;i++)for(let j=0;j<state.species;j++)state.A[i][j]=0;syncMatrixCells();},false),
+  ));
+  sec1.append(el("div",{class:"matrix-hint",html:"绿=吸引 · 红=排斥 · 深色=中立<br>按住格子左右拖动调节，单击在 −1 / 0 / +1 间切换"}));
+  panel.append(sec1);
+
+  /* ---- 物种数 ---- */
+  const sec2=el("div",{class:"sec"});
+  sec2.append(el("div",{class:"sec-title"},"物种数量"));
+  const seg=el("div",{class:"seg"});
+  for(let k=1;k<=MAX_SPECIES;k++){
+    const b=el("button",{textContent:k});
+    if(k===state.species)b.classList.add("on");
+    b.onclick=()=>{state.species=k;allocParticles();scatter();buildPanel();colorDots();};
+    seg.append(b);
+  }
+  sec2.append(seg);
+  panel.append(sec2);
+
+  /* ---- 参数滑块 ---- */
+  const sec3=el("div",{class:"sec"});
+  sec3.append(el("div",{class:"sec-title"},"世界参数"));
+  sec3.append(slider("每族数量",state.perSpecies,100,1400,20,v=>{state.perSpecies=v|0;allocParticles();scatter();},"个"));
+  sec3.append(slider("作用半径",state.radius,12,60,1,v=>{state.radius=v;buildGrid();},"px"));
+  sec3.append(slider("力强度",state.force,0.02,0.3,0.005,v=>state.force=v,"×"));
+  sec3.append(slider("惯性黏度",state.damping,0.5,0.97,0.01,v=>state.damping=v,""));
+  sec3.append(slider("粒子大小",state.particleSize,0.8,4,0.1,v=>state.particleSize=v,"px"));
+  sec3.append(slider("拖影长度",1-state.trails,0,0.95,0.01,v=>state.trails=1-v,""));
+  panel.append(sec3);
+
+  /* ---- 配色 ---- */
+  const sec4=el("div",{class:"sec"});
+  sec4.append(el("div",{class:"sec-title"},"配色主题"));
+  const palSeg=el("div",{class:"seg"});
+  PALETTES.forEach((p,idx)=>{
+    const b=el("button",{textContent:p.name,style:{fontSize:"10px",padding:"6px 2px"}});
+    if(idx===state.palette)b.classList.add("on");
+    b.onclick=()=>{state.palette=idx;document.getElementById("palName").textContent=p.name;colorDots();[...palSeg.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");};
+    palSeg.append(b);
+  });
+  // 配色较多，改为两行网格
+  palSeg.style.flexWrap="wrap"; [...palSeg.children].forEach(b=>b.style.flex="0 0 31.5%");
+  sec4.append(palSeg);
+  panel.append(sec4);
+
+  /* ---- 演化与显示 ---- */
+  const sec5=el("div",{class:"sec"});
+  sec5.append(el("div",{class:"sec-title"},"演化与显示"));
+  sec5.append(check("自动演化规则（世界会自己变异）",state.autoEvolve,v=>state.autoEvolve=v));
+  sec5.append(slider("演化速度",state.evolveEvery,15,200,5,v=>state.evolveEvery=215-v,"帧"));
+  sec5.append(check("辉光发光",state.glow,v=>state.glow=v));
+  panel.append(sec5);
+
+  /* ---- 操作按钮 ---- */
+  const sec6=el("div",{class:"sec"});
+  sec6.append(el("div",{class:"btnrow"},
+    btn("🎲 随机新世界",newWorld,true),
+  ));
+  sec6.append(el("div",{class:"btnrow"},
+    btn("重新散布",()=>{scatter();},false),
+    btn("保存图片",savePNG,false),
+  ));
+  panel.append(sec6);
+
+  syncMatrixCells(); colorDots();
+}
+
+function btn(text,fn,primary){ return el("button",{class:"btn"+(primary?" primary":""),textContent:text,onclick:fn}); }
+function slider(label,val,min,max,step,fn,suffix){
+  const out=el("output",{textContent:fmt(val)+(suffix||"")});
+  const inp=el("input",{type:"range",min,max,step,value:val});
+  inp.oninput=()=>{const v=parseFloat(inp.value);out.textContent=fmt(v)+(suffix||"");fn(v);};
+  return el("div",{class:"row"}, el("div",{class:"lab"}, el("span",{textContent:label}), out), inp);
+}
+function fmt(v){ return Number.isInteger(v)?(""+v):(""+Math.round(v*1000)/1000); }
+function check(label,val,fn){
+  const inp=el("input",{type:"checkbox"}); inp.checked=val;
+  inp.onchange=()=>fn(inp.checked);
+  return el("label",{class:"chkrow"}, inp, el("span",{textContent:label}));
+}
+
+// 矩阵格子：拖动调节 / 单击切换
+function bindCell(c,i,j){
+  let dragging=false,moved=false,startX=0;
+  const setFromX=(clientX)=>{
+    const r=c.getBoundingClientRect();
+    let v=((clientX-r.left)/r.width)*2-1;
+    v=Math.max(-1,Math.min(1,v));
+    state.A[i][j]=v; paintCell(c,v);
+  };
+  c.addEventListener("pointerdown",e=>{
+    dragging=true;moved=false;startX=e.clientX;
+    try{c.setPointerCapture(e.pointerId);}catch(_){}
+    e.preventDefault();
+  });
+  c.addEventListener("pointermove",e=>{
+    if(!dragging)return;
+    if(Math.abs(e.clientX-startX)>3)moved=true;
+    if(moved)setFromX(e.clientX);
+  });
+  c.addEventListener("pointerup",e=>{
+    if(!moved){ // 单击循环
+      let cur=state.A[i][j];
+      let nv = cur< -0.33 ? 0 : (cur<0.33 ? 1 : -1);
+      state.A[i][j]=nv; paintCell(c,nv);
+    }
+    dragging=false;
+  });
+  c.addEventListener("contextmenu",e=>{e.preventDefault();state.A[i][j]=0;paintCell(c,0);});
+}
+function paintCell(c,v){
+  // 正：青绿（吸引）；负：暖红（排斥）；0：深色
+  let inner=c.querySelector("i");
+  if(!inner){inner=el("i",{});c.prepend(inner);}
+  const a=Math.abs(v);
+  if(v>0.02){ inner.style.background=`rgba(70,245,200,${0.25+a*0.75})`; inner.style.right=(50-a*50)+"%"; inner.style.left="50%"; }
+  else if(v<-0.02){ inner.style.background=`rgba(255,86,108,${0.25+a*0.75})`; inner.style.left=(50-a*50)+"%"; inner.style.right="50%"; }
+  else { inner.style.background="transparent"; inner.style.left="50%";inner.style.right="50%"; }
+  c.dataset.v=v.toFixed(1);
+}
+function syncMatrixCells(){
+  if(!cellEls.length)return;
+  for(let i=0;i<state.species;i++)for(let j=0;j<state.species;j++){
+    if(cellEls[i]&&cellEls[i][j])paintCell(cellEls[i][j],state.A[i][j]);
+  }
+}
+function colorDots(){
+  const pal=PALETTES[state.palette].colors;
+  for(let s=0;s<state.species;s++){
+    const ch=document.getElementById("ch"+s), rh=document.getElementById("rh"+s);
+    if(ch){ch.style.color=pal[s];ch.style.background=pal[s];}
+    if(rh){rh.style.color=pal[s];rh.style.background=pal[s];}
+  }
+}
+
+/* ============================================================
+   世界生成 / 种子
+============================================================ */
+const seedInput=document.getElementById("seedInput");
+function setSeedBox(){ seedInput.value=state.seed; window.location.hash="#"+state.seed; document.title="粒子生命 #"+state.seed; }
+function newWorld(seed){
+  state.seed = (seed===undefined||seed===null)?randSeed():seed>>>0;
+  randomizeRules();
+  if(!px || px.length!==state.species*state.perSpecies) allocParticles();
+  scatter();
+  setSeedBox();
+  syncMatrixCells();
+}
+document.getElementById("seedGo").onclick=()=>{const v=parseInt(seedInput.value);if(isFinite(v))newWorld(v);};
+seedInput.addEventListener("keydown",e=>{if(e.key==="Enter"){const v=parseInt(seedInput.value);if(isFinite(v))newWorld(v);}});
+document.getElementById("seedRand").onclick=()=>newWorld();
+
+/* ============================================================
+   工具栏 / 快捷键
+============================================================ */
+function setPause(p){state.paused=p;document.getElementById("tbPause").textContent=p?"▶":"⏸";}
+document.getElementById("tbPause").onclick=()=>setPause(!state.paused);
+document.getElementById("tbNew").onclick=()=>newWorld();
+document.getElementById("tbReset").onclick=()=>scatter();
+document.getElementById("tbSave").onclick=savePNG;
+document.getElementById("tbPanel").onclick=()=>panel.classList.toggle("hidden");
+function savePNG(){
+  const a=document.createElement("a");
+  a.download=`粒子生命_${state.seed}.png`;
+  a.href=canvas.toDataURL("image/png");
+  a.click();
+}
+window.addEventListener("keydown",e=>{
+  if(document.activeElement===seedInput)return;
+  switch(e.key.toLowerCase()){
+    case " ":e.preventDefault();setPause(!state.paused);break;
+    case "r":newWorld();break;
+    case "o":scatter();break;
+    case "s":symmetrize();break;
+    case "g":panel.classList.toggle("hidden");break;
+    case "p":savePNG();break;
+    case "arrowleft":state.palette=(state.palette+PALETTES.length-1)%PALETTES.length;buildPanel();break;
+    case "arrowright":state.palette=(state.palette+1)%PALETTES.length;buildPanel();break;
+    default:
+      if(e.key>="1"&&e.key<="7"){const k=+e.key;if(k<=MAX_SPECIES){state.species=k;allocParticles();scatter();buildPanel();}}
+  }
+});
+
+/* ============================================================
+   鼠标 / 触摸交互
+============================================================ */
+function pos(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+canvas.addEventListener("pointerdown",e=>{
+  const p=pos(e); mouse.x=p.x;mouse.y=p.y;mouse.down=true;
+  mouse.mode=(e.button===2||e.shiftKey||e.ctrlKey)?-1:1;
+  try{canvas.setPointerCapture(e.pointerId);}catch(_){}
+});
+canvas.addEventListener("pointermove",e=>{const p=pos(e);mouse.x=p.x;mouse.y=p.y;
+  if(e.buttons) mouse.mode=(e.shiftKey||e.ctrlKey)?-1:1;});
+window.addEventListener("pointerup",()=>mouse.down=false);
+canvas.addEventListener("contextmenu",e=>e.preventDefault());
+
+/* ============================================================
+   开场遮罩
+============================================================ */
+const veil=document.getElementById("veil");
+veil.addEventListener("click",()=>{
+  veil.classList.add("gone");
+  // 淡出后彻底移除，兼容动画被节流/暂停的环境
+  setTimeout(()=>{veil.style.display="none";},900);
+});
+
+/* ============================================================
+   主循环
+============================================================ */
+const statsEl=document.getElementById("stats");
+let last=performance.now(),fps=0;
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt=now-last;last=now;
+  if(dt>0)fps=fps*0.92+(1000/dt)*0.08;
+  if(!state.paused){ step(); }
+  render();
+  statsEl.innerHTML=`粒子 <b>${N.toLocaleString()}</b> · 物种 <b>${state.species}</b><br>帧率 <b>${fps.toFixed(0)}</b> fps · 活跃度 <b>${totalSpeed.toFixed(1)}</b>`;
+}
+
+/* ============================================================
+   启动
+============================================================ */
+(function init(){
+  // 从 URL hash 读种子
+  const h=window.location.hash.replace("#","");
+  const hv=parseInt(h);
+  state.seed = isFinite(hv)&&h!=="" ? (hv>>>0) : randSeed();
+  resize();
+  randomizeRules();
+  allocParticles();
+  scatter();
+  buildPanel();
+  setSeedBox();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

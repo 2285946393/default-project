@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抉择回响 · 词条人生</title>
+<style>
+:root{--bg:#080c14;--panel:#0e1525;--border:#1e2d4a;--text:#d8e8f8;--muted:#6a8aaa;--gold:#ffd54a;--red:#ff6b6b;--green:#52c99a;--blue:#52a0e8;--pink:#e87ab5;--purple:#9b7be8;--orange:#f5a623;--teal:#3dd6c8;--yellow:#f5d76e;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow:hidden}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars i{position:absolute;background:#fff;border-radius:50%;animation:tw 3s infinite}
+@keyframes tw{0%,100%{opacity:.06}50%{opacity:.8}}
+
+.game-wrap{position:relative;z-index:2;width:100%;max-width:620px;padding:0 16px 20px;display:flex;flex-direction:column;height:100%;min-height:0}
+
+header{padding:18px 0 12px;text-align:center}
+header h1{font-size:22px;font-weight:800;letter-spacing:3px;background:linear-gradient(90deg,#52c99a,#52a0e8,#e87ab5);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 8px rgba(82,160,232,.3))}
+
+/* 属性条 */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:10px 0}
+.stat{text-align:center}
+.stat .icon{width:28px;height:28px;margin:0 auto 4px}
+.stat .label{font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:3px}
+.stat .bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.stat .bar{height:100%;border-radius:2px;transition:width .5s ease}
+.stat .val{font-size:10px;margin-top:3px;font-weight:700}
+
+/* 阶段进度条 */
+.progress-bar{padding:0 0 10px;position:relative}
+.progress-track{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;position:relative}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#52c99a,#52a0e8);transition:width .8s ease}
+.progress-stages{display:flex;justify-content:space-between;margin-top:6px}
+.progress-stages span{font-size:9px;color:var(--muted);letter-spacing:.5px}
+.progress-stages span.active{color:var(--text);font-weight:700}
+
+/* 词条卡片 */
+.card-area{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:8px 0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;min-height:180px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.card::before{content:'';position:absolute;inset:-1px;border-radius:19px;background:linear-gradient(135deg,rgba(82,160,232,.2),rgba(232,122,181,.1));z-index:-1}
+.card-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:12px;text-transform:uppercase}
+.card-badge .dot{width:6px;height:6px;border-radius:50%}
+.card-text{font-size:16px;line-height:1.8;color:var(--text);min-height:60px;letter-spacing:.5px}
+.card-text .cursor{display:inline-block;width:2px;height:1em;background:var(--text);vertical-align:text-bottom;animation:blink .6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.card-text .typed{display:inline}
+
+/* 选项 */
+.choices{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.choice{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:.18s;text-align:left;font-size:14px;color:var(--text);display:flex;align-items:center;gap:10px;position:relative;overflow:hidden}
+.choice::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(82,160,232,.2),transparent);transition:width .2s ease}
+.choice:hover{border-color:rgba(82,160,232,.5);transform:translateX(4px)}
+.choice:hover::before{width:100%}
+.choice:hover .ch-effect{opacity:1}
+.choice:active{transform:translateX(2px) scale(.99)}
+.ch-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:rgba(255,255,255,.06)}
+.ch-text{flex:1;line-height:1.5}
+.ch-effect{font-size:11px;color:var(--teal);opacity:0;transition:.2s;white-space:nowrap}
+
+/* 结局 */
+.ending-card{text-align:center}
+.ending-card .ending-title{font-size:24px;font-weight:800;margin-bottom:16px}
+.ending-card .ending-stats{display:flex;justify-content:center;gap:20px;margin:20px 0;flex-wrap:wrap}
+.ending-card .es{text-align:center}
+.ending-card .es .ev{font-size:22px;font-weight:700}
+.ending-card .es .el{font-size:11px;color:var(--muted)}
+.ending-card .restart-btn{margin-top:24px;padding:14px 40px;background:linear-gradient(135deg,#52c99a,#52a0e8);border:none;border-radius:30px;color:#04121c;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:1px;transition:.2s}
+.ending-card .restart-btn:hover{filter:brightness(1.15);transform:scale(1.04)}
+
+/* 开始页 */
+.start-area{text-align:center;padding:20px 0}
+.start-area h2{font-size:28px;font-weight:800;margin-bottom:12px;background:linear-gradient(90deg,#ffd54a,#e87ab5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.start-area p{color:var(--muted);font-size:13px;line-height:1.8;margin-bottom:24px}
+.start-area .begin-btn{padding:14px 50px;background:linear-gradient(135deg,#52a0e8,#9b7be8);border:none;border-radius:30px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:2px;transition:.2s;box-shadow:0 4px 24px rgba(82,160,232,.3)}
+.start-area .begin-btn:hover{filter:brightness(1.15);transform:scale(1.04)}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(10,16,30,.95);border:1px solid var(--teal);padding:10px 24px;border-radius:25px;font-size:13px;z-index:60;opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="game-wrap">
+  <header><h1>抉择回响</h1></header>
+  <div class="stats" id="stats">
+    <div class="stat"><div class="icon"><svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="#ffd54a" opacity=".15" stroke="#ffd54a" stroke-width="1.5"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#ffd54a">$</text></svg></div><div class="label">财富</div><div class="bar-wrap"><div class="bar" id="bar-money" style="width:50%;background:#ffd54a"></div></div><div class="val" id="val-money">50</div></div>
+    <div class="stat"><div class="icon"><svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="#52a0e8" opacity=".15" stroke="#52a0e8" stroke-width="1.5"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#52a0e8">Q</text></svg></div><div class="label">智商</div><div class="bar-wrap"><div class="bar" id="bar-iq" style="width:50%;background:#52a0e8"></div></div><div class="val" id="val-iq">50</div></div>
+    <div class="stat"><div class="icon"><svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="#e87ab5" opacity=".15" stroke="#e87ab5" stroke-width="1.5"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#e87ab5">E</text></svg></div><div class="label">情商</div><div class="bar-wrap"><div class="bar" id="bar-eq" style="width:50%;background:#e87ab5"></div></div><div class="val" id="val-eq">50</div></div>
+    <div class="stat"><div class="icon"><svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="#52c99a" opacity=".15" stroke="#52c99a" stroke-width="1.5"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#52c99a">C</text></svg></div><div class="label">性格</div><div class="bar-wrap"><div class="bar" id="bar-cha" style="width:50%;background:#52c99a"></div></div><div class="val" id="val-cha">50</div></div>
+    <div class="stat"><div class="icon"><svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="#9b7be8" opacity=".15" stroke="#9b7be8" stroke-width="1.5"/><text x="14" y="18" text-anchor="middle" font-size="11" fill="#9b7be8">L</text></svg></div><div class="label">运气</div><div class="bar-wrap"><div class="bar" id="bar-luck" style="width:50%;background:#9b7be8"></div></div><div class="val" id="val-luck">50</div></div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-stages" id="progressStages">
+      <span id="st-baby" class="active">婴儿</span>
+      <span id="st-kid">童年</span>
+      <span id="st-teen">中学</span>
+      <span id="st-young">大学</span>
+      <span id="st-mid">中年</span>
+      <span id="st-old">老年</span>
+      <span id="st-end">结局</span>
+    </div>
+  </div>
+  <div class="card-area" id="cardArea">
+    <div class="start-area" id="startArea">
+      <h2>词条人生</h2>
+      <p>你的人生由一个个荒诞词条组成<br>每次选择，命运就此改变<br>每个选择都是"亲手操控自己"</p>
+      <button class="begin-btn" id="beginBtn">开始人生</button>
+    </div>
+    <div class="card" id="card" style="display:none">
+      <div class="card-badge"><div class="dot" id="badgeDot"></div><span id="badgeText">婴儿期</span></div>
+      <div class="card-text" id="cardText"></div>
+      <div class="choices" id="choices"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STAGE_META = {
+  baby:{label:"婴儿期",color:"#e87ab5",progress:0},
+  kid:{label:"童年",color:"#52c99a",progress:16.6},
+  teen:{label:"中学",color:"#f5a623",progress:33.3},
+  young:{label:"大学",color:"#52a0e8",progress:50},
+  mid:{label:"中年",color:"#9b7be8",progress:66.6},
+  old:{label:"老年",color:"#ffd54a",progress:83.3},
+  end:{label:"结局",color:"#ff6b6b",progress:100}
+};
+
+const ENTRIES = [
+  {name:"刚出生",text:"你妈在产房里刷抖音，你爸在打游戏。护士问谁先抱你？",stage:"baby",choices:[
+    {t:"你妈先抱",i:"👩",eff:{cha:1,eq:1},next:"kid"},
+    {t:"你爸先抱",i:"👨",eff:{iq:1,cha:-1},next:"kid"},
+    {t:"护士抱",i:"💉",eff:{luck:2},next:"kid"}
+  ]},
+  {name:"尿不湿之争",text:"你半夜尿湿了三条尿不湿，谁该起来换？",stage:"baby",choices:[
+    {t:"妈妈换",i:"👩",eff:{eq:1,luck:-1},next:"kid"},
+    {t:"爸爸换",i:"👨",eff:{money:1,cha:1},next:"kid"},
+    {t:"自己换（天才婴儿）",i:"🧒",eff:{iq:3,cha:-1},next:"kid"}
+  ]},
+  {name:"小学第一天",text:"老师问谁想当班长，你：",stage:"kid",choices:[
+    {t:"高调竞选",i:"📢",eff:{cha:3,eq:-1},next:"teen"},
+    {t:"低调拒绝",i:"🤐",eff:{iq:1,eq:1},next:"teen"},
+    {t:"当场睡着",i:"💤",eff:{cha:-1,luck:2},next:"teen"}
+  ]},
+  {name:"邻居家电视",text:"邻居家电视放着猫和老鼠，你没写作业：",stage:"kid",choices:[
+    {t:"坚持写完",i:"📚",eff:{iq:2,cha:-1},next:"teen"},
+    {t:"偷偷去看",i:"📺",eff:{cha:1,iq:-1},next:"teen"},
+    {t:"拉上同学一起看",i:"👫",eff:{eq:3,iq:-1},next:"teen"}
+  ]},
+  {name:"被高年级欺负",text:"大孩抢了你辣条：",stage:"kid",choices:[
+    {t:"哭着回家",i:"😭",eff:{eq:1,cha:-2},next:"teen"},
+    {t:"死磕到底",i:"🥊",eff:{cha:3,luck:-1},next:"teen"},
+    {t:"告老师",i:"📝",eff:{iq:1,eq:2},next:"teen"}
+  ]},
+  {name:"中考抉择",text:"重点高中和职高录取通知同时到：",stage:"teen",choices:[
+    {t:"去重点高中",i:"🎓",eff:{iq:3,cha:-1},next:"young"},
+    {t:"去职高学技术",i:"🔧",eff:{money:2,iq:-1},next:"young"},
+    {t:"复读一年",i:"📖",eff:{iq:1,luck:1},next:"young"}
+  ]},
+  {name:"高考数学",text:"高考数学最后一道大题：",stage:"teen",choices:[
+    {t:"算出来了",i:"🧠",eff:{iq:5,money:1},next:"young"},
+    {t:"直接交白卷",i:"😶",eff:{cha:2,iq:-3},next:"young"},
+    {t:"传纸条给同桌",i:"📝",eff:{eq:2,cha:1},next:"young"}
+  ]},
+  {name:"高三暗恋",text:"暗恋的女生突然向你表白：",stage:"teen",choices:[
+    {t:"同意交往",i:"💕",eff:{eq:2,iq:-1},next:"young"},
+    {t:"拒绝专心读书",i:"📚",eff:{iq:2,eq:-1},next:"young"},
+    {t:"假装没看到",i:"🙈",eff:{cha:-2,luck:1},next:"young"}
+  ]},
+  {name:"选专业",text:"高考完填志愿：",stage:"young",choices:[
+    {t:"计算机",i:"💻",eff:{money:3,iq:1},next:"mid"},
+    {t:"哲学",i:"📜",eff:{cha:2,iq:1,money:-2},next:"mid"},
+    {t:"考古",i:"🦴",eff:{luck:2,money:-1},next:"mid"}
+  ]},
+  {name:"大四实习",text:"导师和某公司同时抢你：",stage:"young",choices:[
+    {t:"去导师实验室",i:"🔬",eff:{iq:3,money:-1},next:"mid"},
+    {t:"去大厂实习",i:"🏢",eff:{money:3,iq:-1},next:"mid"},
+    {t:"去创业公司",i:"🚀",eff:{luck:3,money:1},next:"mid"}
+  ]},
+  {name:"老板画饼",text:"老板说：'干得好明年给你加薪 50%'：",stage:"mid",choices:[
+    {t:"信了拼命干",i:"💪",eff:{cha:1,money:1},next:"old"},
+    {t:"当场摊牌",i:"🗣️",eff:{cha:2,eq:2},next:"old"},
+    {t:"偷偷投简历",i:"📄",eff:{eq:1,luck:2},next:"old"}
+  ]},
+  {name:"结婚抉择",text:"七大姑八大姨催你相亲：",stage:"mid",choices:[
+    {t:"相亲结婚",i:"💒",eff:{eq:2,money:-1},next:"old"},
+    {t:"继续单身",i:"🎉",eff:{cha:2,eq:-1},next:"old"},
+    {t:"闪婚网络对象",i:"💻",eff:{luck:3,money:-2},next:"old"}
+  ]},
+  {name:"中年危机",text:"房贷、车贷、孩子学费同时来：",stage:"mid",choices:[
+    {t:"咬牙扛着",i:"🦷",eff:{cha:2,money:-2},next:"old"},
+    {t:"卖房还债",i:"🏠",eff:{money:2,cha:-1},next:"old"},
+    {t:"买彩票搏一把",i:"🎰",eff:{money:5,luck:1},next:"old"}
+  ]},
+  {name:"退休时刻",text:"单位让你 60 岁退休：",stage:"old",choices:[
+    {t:"含泪退休",i:"👴",eff:{cha:1,money:1},next:"end"},
+    {t:"继续返聘",i:"♻️",eff:{money:3,cha:-1},next:"end"},
+    {t:"退休当保安",i:"🛡️",eff:{cha:1,luck:1},next:"end"}
+  ]},
+  {name:"遗产分配",text:"你整理一生，发现：",stage:"old",choices:[
+    {t:"攒了不少钱",i:"💰",eff:{money:5},next:"end"},
+    {t:"结交了一堆朋友",i:"👥",eff:{eq:3},next:"end"},
+    {t:"读了很多书",i:"📚",eff:{iq:3},next:"end"}
+  ]},
+  {name:"最后一天",text:"你躺在躺椅上，阳光正好，你想起了：",stage:"old",choices:[
+    {t:"那个夏天的蝉鸣",i:"🐛",eff:{cha:2},next:"end"},
+    {t:"初恋的笑容",i:"💕",eff:{eq:2},next:"end"},
+    {t:"高考那道数学题",i:"🧮",eff:{iq:1},next:"end"}
+  ]}
+];
+
+const ENDINGS = [
+  {name:"天才少年",text:"你的智商被测出 180，清华破格录取，全国轰动！",icon:"🧠",color:"#52a0e8"},
+  {name:"创业赢家",text:"你的创业公司上市敲钟，身家百亿，员工万人。",icon:"🏆",color:"#ffd54a"},
+  {name:"普通人生",text:"你成了个普通人，一辈子平平淡淡，平安喜乐。",icon:"🍀",color:"#52c99a"},
+  {name:"社交达人",text:"你微信好友五万人，每天饭局不断，夜夜笙歌。",icon:"🎭",color:"#e87ab5"},
+  {name:"隐居田园",text:"你卖掉所有，去山里种菜养猫，过上了梦想的生活。",icon:"🏔️",color:"#9b7be8"},
+  {name:"英年早逝",text:"你倒在了工位上，享年 __ 岁。RIP。",icon:"⚰️",color:"#ff6b6b"},
+  {name:"人生赢家",text:"钱多、智商高、情商高、人人羡慕，你是传说。",icon:"🌟",color:"#ffd54a"},
+  {name:"看破红尘",text:"你出了家，每天敲钟念经，内心前所未有的平静。",icon:"🪷",color:"#f5a623"}
+];
+
+const STAGES_ORDER = ["baby","kid","teen","young","mid","old","end"];
+
+let attrs = {money:50,iq:50,eq:50,cha:50,luck:50};
+let currentStage = "baby";
+let currentEntry = null;
+let history = [];
+
+function clamp(v){return Math.max(0,Math.min(100,v))}
+function updateUI(){
+  for(const k of ["money","iq","eq","cha","luck"]){
+    const v = clamp(attrs[k]);
+    const bar=document.getElementById("bar-"+k);
+    const val=document.getElementById("val-"+k);
+    if(bar) bar.style.width=v+"%";
+    if(val) val.textContent=v;
+  }
+  for(const s of STAGES_ORDER){
+    const el=document.getElementById("st-"+s);
+    if(el) el.classList.toggle("active",STAGES_ORDER.indexOf(s)<=STAGES_ORDER.indexOf(currentStage));
+  }
+  const meta=STAGE_META[currentStage]||STAGE_META.baby;
+  const fill=document.getElementById("progressFill");
+  if(fill) fill.style.width=meta.progress+"%";
+}
+
+function getNextEntry(stage){
+  const pool=ENTRIES.filter(e=>e.stage===stage);
+  if(!pool.length) return null;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function getEnding(){
+  const total=attrs.money+attrs.iq+attrs.eq+attrs.cha+attrs.luck;
+  const avg=total/5;
+  const max=Math.max(attrs.money,attrs.iq,attrs.eq,attrs.cha,attrs.luck);
+  const min=Math.min(attrs.money,attrs.iq,attrs.eq,attrs.cha,attrs.luck);
+  if(attrs.iq>=90) return ENDINGS[0];
+  if(attrs.money>=90) return ENDINGS[1];
+  if(attrs.eq>=85 && attrs.cha>=85) return ENDINGS[3];
+  if(attrs.cha>=85 && attrs.luck>=85) return ENDINGS[4];
+  if(attrs.iq>=80 && attrs.money>=80) return ENDINGS[6];
+  if(attrs.iq<=15||attrs.luck<=15||attrs.money<=15) return ENDINGS[5];
+  if(attrs.eq<=15||attrs.cha<=15) return ENDINGS[7];
+  return ENDINGS[2];
+}
+
+function effectColor(key,delta){
+  const colors={money:"#ffd54a",iq:"#52a0e8",eq:"#e87ab5",cha:"#52c99a",luck:"#9b7be8"};
+  const labels={money:"财富",iq:"智商",eq:"情商",cha:"性格",luck:"运气"};
+  const c=colors[key];
+  return "<span style='color:"+c+"'>"+(delta>0?"+":"")+delta+" "+labels[key]+"</span>";
+}
+
+function showEntry(entry){
+  currentEntry=entry;
+  const meta=STAGE_META[entry.stage]||STAGE_META.baby;
+  document.getElementById("badgeDot").style.background=meta.color;
+  document.getElementById("badgeText").textContent=meta.label;
+  const card=document.getElementById("card");
+  const startArea=document.getElementById("startArea");
+  if(startArea) startArea.style.display="none";
+  card.style.display="block";
+  const textEl=document.getElementById("cardText");
+  textEl.innerHTML='<span class="typed"></span><span class="cursor"></span>';
+  const typed=[];
+  let ci=0;
+  function typeNext(){
+    if(ci<entry.text.length){
+      typed.push(entry.text[ci]);
+      ci++;
+      textEl.querySelector('.typed').textContent=typed.join('');
+      setTimeout(typeNext,28+Math.random()*20);
+    }
+  }
+  typeNext();
+  const choicesEl=document.getElementById("choices");
+  choicesEl.innerHTML="";
+  setTimeout(()=>{
+    entry.choices.forEach((ch,i)=>{
+      const btn=document.createElement("button");
+      btn.className="choice";
+      const effStr=Object.entries(ch.eff).map(([k,v])=>effectColor(k,v)).join(" ");
+      btn.innerHTML='<div class="ch-icon">'+ch.i+'</div><div class="ch-text"><div>'+ch.t+'</div><div class="ch-effect">'+effStr+'</div></div>';
+      btn.style.opacity="0";
+      btn.style.transform="translateY(10px)";
+      setTimeout(()=>{
+        btn.style.transition="opacity .3s, transform .3s";
+        btn.style.opacity="1";
+        btn.style.transform="translateY(0)";
+      },50+i*80);
+      btn.onclick=()=>makeChoice(ch);
+      choicesEl.appendChild(btn);
+    });
+  },entry.text.length*30+200);
+}
+
+function makeChoice(ch){
+  Object.entries(ch.eff).forEach(([k,v])=>{attrs[k]=clamp(attrs[k]+v);});
+  updateUI();
+  history.push({entry:currentEntry,choice:ch});
+  const nextStage=ch.next;
+  currentStage=nextStage;
+  updateUI();
+  if(nextStage==="end"){
+    setTimeout(showEnding,400);
+  }else{
+    const next=getNextEntry(nextStage);
+    setTimeout(()=>{if(next) showEntry(next);},400);
+  }
+}
+
+function showEnding(){
+  const ending=getEnding();
+  currentStage="end";
+  updateUI();
+  const card=document.getElementById("card");
+  const meta=STAGE_META.end;
+  document.getElementById("badgeDot").style.background=meta.color;
+  document.getElementById("badgeText").textContent="结局";
+  const textEl=document.getElementById("cardText");
+  const choicesEl=document.getElementById("choices");
+  card.className="card ending-card";
+  textEl.innerHTML='<div class="ending-title" style="background:'+ending.color+';-webkit-background-clip:text;background-clip:text;color:transparent">'+ending.icon+" "+ending.name+'</div><div style="color:var(--text);font-size:15px;line-height:1.8">'+ending.text+"</div>";
+  const total=attrs.money+attrs.iq+attrs.eq+attrs.cha+attrs.luck;
+  const statBars='<div class="ending-stats">'+
+    '<div class="es"><div class="ev" style="color:#ffd54a">'+attrs.money+'</div><div class="el">财富</div></div>'+
+    '<div class="es"><div class="ev" style="color:#52a0e8">'+attrs.iq+'</div><div class="el">智商</div></div>'+
+    '<div class="es"><div class="ev" style="color:#e87ab5">'+attrs.eq+'</div><div class="el">情商</div></div>'+
+    '<div class="es"><div class="ev" style="color:#52c99a">'+attrs.cha+'</div><div class="el">性格</div></div>'+
+    '<div class="es"><div class="ev" style="color:#9b7be8">'+attrs.luck+'</div><div class="el">运气</div></div>'+
+    '</div>';
+  choicesEl.innerHTML=statBars+'<button class="restart-btn" onclick="restartGame()">再来一次</button>';
+}
+
+function restartGame(){
+  attrs={money:50,iq:50,eq:50,cha:50,luck:50};
+  currentStage="baby";
+  history=[];
+  currentEntry=null;
+  updateUI();
+  const card=document.getElementById("card");
+  card.className="card";
+  document.getElementById("startArea").style.display="";
+  card.style.display="none";
+}
+
+(function(){
+  const starBox=document.getElementById("stars");
+  for(let i=0;i<40;i++){
+    const s=document.createElement("i");
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    const sz=Math.random()*2+1;
+    s.style.width=s.style.height=sz+"px";
+    s.style.animationDelay=Math.random()*3+"s";
+    s.style.animationDuration=Math.random()*2+2+"s";
+    starBox.appendChild(s);
+  }
+  updateUI();
+  document.getElementById("beginBtn").onclick=()=>{
+    const first=getNextEntry("baby");
+    if(first){currentStage="baby";updateUI();showEntry(first);}
+  };
+})();
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>球藻 · Marimo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body, html {
+    width: 100%; height: 100%; overflow: hidden;
+    background: #0a1628;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    color: #c8d8e8;
+  }
+
+  /* WebGL Canvas */
+  #canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    z-index: 1;
+  }
+
+  /* 水下背景层 */
+  .underwater-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(40, 80, 120, 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(20, 50, 80, 0.5) 0%, transparent 50%),
+      linear-gradient(180deg, #0d2847 0%, #0a1f3a 40%, #071830 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* 光束效果 */
+  .light-rays {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+  }
+  .light-ray {
+    position: absolute;
+    width: 120px;
+    height: 150%;
+    top: -20%;
+    background: linear-gradient(180deg, rgba(120, 180, 220, 0.08) 0%, rgba(120, 180, 220, 0.02) 50%, transparent 100%);
+    transform: skewX(-15deg);
+    animation: raySway 8s ease-in-out infinite;
+  }
+  .light-ray:nth-child(1) { left: 15%; animation-delay: 0s; }
+  .light-ray:nth-child(2) { left: 45%; width: 80px; animation-delay: -3s; opacity: 0.7; }
+  .light-ray:nth-child(3) { left: 70%; width: 100px; animation-delay: -5s; opacity: 0.5; }
+  @keyframes raySway {
+    0%, 100% { transform: skewX(-15deg) translateX(0); opacity: 0.6; }
+    50% { transform: skewX(-10deg) translateX(20px); opacity: 1; }
+  }
+
+  /* 气泡容器 */
+  #bubbles {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(200, 230, 255, 0.4), rgba(150, 200, 240, 0.1));
+    border: 1px solid rgba(180, 220, 255, 0.2);
+    animation: bubbleRise linear infinite;
+  }
+  @keyframes bubbleRise {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-110vh) translateX(30px) scale(0.5); opacity: 0; }
+  }
+
+  /* 标题 */
+  .title {
+    position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
+    text-align: center; z-index: 10; pointer-events: none;
+  }
+  .title h1 {
+    font-size: 32px; font-weight: 300; letter-spacing: 16px;
+    color: #a8c8e0; text-shadow: 0 0 30px rgba(100, 160, 200, 0.4);
+    padding-left: 16px;
+  }
+  .title .sub {
+    font-size: 11px; letter-spacing: 8px; color: #5a7a9a;
+    margin-top: 8px; font-family: sans-serif;
+  }
+
+  /* 控制面板 */
+  .panel {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: rgba(10, 25, 45, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(100, 150, 200, 0.2);
+    border-radius: 16px;
+    padding: 18px 28px;
+    z-index: 20;
+    display: flex; gap: 28px; align-items: flex-end;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  }
+  .control {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    min-width: 70px;
+  }
+  .control label {
+    font-size: 11px; letter-spacing: 2px; color: #7a9ab8;
+    font-family: sans-serif;
+  }
+  .control input[type="range"] {
+    -webkit-appearance: none;
+    width: 80px; height: 4px;
+    background: rgba(100, 150, 200, 0.2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  .control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: linear-gradient(135deg, #7ac0e8, #4a90c0);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(100, 170, 220, 0.5);
+    transition: transform 0.2s;
+  }
+  .control input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+  .control .value {
+    font-size: 12px; color: #a8c8e0; font-family: monospace;
+    min-width: 30px; text-align: center;
+  }
+
+  /* 开关按钮 */
+  .toggle-group {
+    display: flex; gap: 10px; align-items: center;
+  }
+  .toggle-btn {
+    padding: 8px 16px;
+    background: rgba(100, 150, 200, 0.1);
+    border: 1px solid rgba(100, 150, 200, 0.25);
+    border-radius: 8px;
+    color: #7a9ab8;
+    font-size: 12px; letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .toggle-btn:hover {
+    background: rgba(100, 150, 200, 0.2);
+    color: #a8c8e0;
+  }
+  .toggle-btn.active {
+    background: rgba(100, 170, 220, 0.25);
+    border-color: rgba(100, 170, 220, 0.5);
+    color: #b8d8f0;
+    box-shadow: 0 0 15px rgba(100, 170, 220, 0.2);
+  }
+
+  /* 隐藏的原始控制元素 */
+  .hidden-controls {
+    position: absolute; width: 0; height: 0;
+    overflow: hidden; opacity: 0; pointer-events: none;
+  }
+
+  /* 操作提示 */
+  .hint {
+    position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; color: #5a7a9a; letter-spacing: 3px;
+    font-family: sans-serif; z-index: 10; pointer-events: none;
+    opacity: 0.7;
+  }
+
+  /* GitHub 链接 */
+  .github-link {
+    position: absolute; top: 28px; right: 28px;
+    z-index: 10; opacity: 0.4; transition: opacity 0.3s;
+  }
+  .github-link:hover { opacity: 0.8; }
+  .github-link svg { width: 24px; height: 24px; fill: #7a9ab8; }
+
+  @media (max-width: 700px) {
+    .panel { flex-wrap: wrap; gap: 16px; padding: 14px 18px; max-width: 95vw; }
+    .control { min-width: 55px; }
+    .control input[type="range"] { width: 60px; }
+    .title h1 { font-size: 24px; letter-spacing: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 水下背景 -->
+<div class="underwater-bg"></div>
+
+<!-- 光束 -->
+<div class="light-rays">
+  <div class="light-ray"></div>
+  <div class="light-ray"></div>
+  <div class="light-ray"></div>
+</div>
+
+<!-- 气泡 -->
+<div id="bubbles"></div>
+
+<!-- WebGL Canvas -->
+<canvas id="canvas"></canvas>
+
+<!-- 标题 -->
+<div class="title">
+  <h1>球 藻</h1>
+  <div class="sub">MARIMO · 水中的绿色星球</div>
+</div>
+
+<div class="hint">拖拽球藻 · 感受毛发的物理流动</div>
+
+<!-- GitHub -->
+<a class="github-link" href="https://github.com/saharan/works" target="_blank" title="Based on sahran/works">
+  <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+</a>
+
+<!-- 隐藏的原始控制元素（main.js 会读取这些 ID） -->
+<div class="hidden-controls">
+  <input type="range" id="radius" min="1" max="10" step="0.1" value="5">
+  <input type="range" id="amount" min="0.1" max="1" step="0.01" value="0.75">
+  <input type="range" id="length" min="1" max="10" step="0.1" value="3">
+  <input type="range" id="volume" min="0.4" max="1" step="0.01" value="0.6">
+  <input type="checkbox" id="gravity" checked>
+  <input type="checkbox" id="rgb">
+</div>
+
+<!-- 精美控制面板 -->
+<div class="panel">
+  <div class="control">
+    <label>大小</label>
+    <input type="range" id="uiRadius" min="1" max="10" step="0.1" value="5">
+    <span class="value" id="uiRadiusVal">5.0</span>
+  </div>
+  <div class="control">
+    <label>密度</label>
+    <input type="range" id="uiAmount" min="0.1" max="1" step="0.01" value="0.75">
+    <span class="value" id="uiAmountVal">75%</span>
+  </div>
+  <div class="control">
+    <label>毛长</label>
+    <input type="range" id="uiLength" min="1" max="10" step="0.1" value="3">
+    <span class="value" id="uiLengthVal">3.0</span>
+  </div>
+  <div class="control">
+    <label>蓬松</label>
+    <input type="range" id="uiVolume" min="0.4" max="1" step="0.01" value="0.6">
+    <span class="value" id="uiVolumeVal">60%</span>
+  </div>
+  <div class="toggle-group">
+    <button class="toggle-btn active" id="uiGravity">重力</button>
+    <button class="toggle-btn" id="uiRgb">彩虹</button>
+  </div>
+</div>
+
+<script src="./main.js"></script>
+<script>
+(function() {
+  // 同步 UI 控制到隐藏的原始控制元素
+  function syncControl(uiId, hiddenId, valFormatter) {
+    const ui = document.getElementById(uiId);
+    const hidden = document.getElementById(hiddenId);
+    const valEl = document.getElementById(uiId + 'Val');
+    ui.addEventListener('input', function() {
+      hidden.value = ui.value;
+      hidden.dispatchEvent(new Event('input', {bubbles: true}));
+      if (valEl && valFormatter) valEl.textContent = valFormatter(ui.value);
+    });
+  }
+
+  syncControl('uiRadius', 'radius', v => parseFloat(v).toFixed(1));
+  syncControl('uiAmount', 'amount', v => Math.round(v * 100) + '%');
+  syncControl('uiLength', 'length', v => parseFloat(v).toFixed(1));
+  syncControl('uiVolume', 'volume', v => Math.round(v * 100) + '%');
+
+  // 开关按钮
+  function syncToggle(uiBtnId, hiddenId) {
+    const btn = document.getElementById(uiBtnId);
+    const hidden = document.getElementById(hiddenId);
+    btn.addEventListener('click', function() {
+      btn.classList.toggle('active');
+      hidden.checked = btn.classList.contains('active');
+      hidden.dispatchEvent(new Event('input', {bubbles: true}));
+      hidden.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+  }
+  syncToggle('uiGravity', 'gravity');
+  syncToggle('uiRgb', 'rgb');
+
+  // 生成气泡
+  const bubblesContainer = document.getElementById('bubbles');
+  function createBubble() {
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    const size = 3 + Math.random() * 12;
+    bubble.style.width = size + 'px';
+    bubble.style.height = size + 'px';
+    bubble.style.left = (10 + Math.random() * 80) + '%';
+    bubble.style.bottom = '-20px';
+    bubble.style.animationDuration = (6 + Math.random() * 8) + 's';
+    bubble.style.animationDelay = (Math.random() * 2) + 's';
+    bubblesContainer.appendChild(bubble);
+    setTimeout(() => bubble.remove(), 16000);
+  }
+  setInterval(createBubble, 400);
+  // 初始生成一些
+  for (let i = 0; i < 15; i++) {
+    setTimeout(createBubble, i * 200);
+  }
+
+  // 点击画布释放气泡群
+  const canvas = document.getElementById('canvas');
+  canvas.addEventListener('click', function(e) {
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        const size = 4 + Math.random() * 10;
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = (e.clientX + (Math.random() - 0.5) * 60) + 'px';
+        bubble.style.top = (e.clientY + (Math.random() - 0.5) * 30) + 'px';
+        bubble.style.animationDuration = (4 + Math.random() * 4) + 's';
+        bubblesContainer.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 9000);
+      }, i * 60);
+    }
+  });
+})();
+</script>
+</body>
+</html>

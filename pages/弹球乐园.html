@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>弹球乐园 🍬 挂机看球，爽感自己涨</title>
+<style>
+  :root{
+    --cream:#fff7ec;--card:#ffffff;--ink:#5b4a3f;--ink2:#9c8a7d;
+    --straw:#ff8fab;--mint:#7fd8be;--lemon:#ffd97d;--sky:#9ad0ff;--lilac:#c9a7f5;
+    --shadow:0 6px 24px rgba(255,143,171,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
+  body{background:linear-gradient(180deg,#fff7ec 0%,#ffeeda 60%,#ffe8d6 100%);
+    color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;
+    display:flex;flex-direction:column;align-items:center}
+  header{padding:18px 20px 6px;text-align:center}
+  header h1{font-size:22px;font-weight:800;letter-spacing:1px;color:var(--ink)}
+  header h1 .bd{color:var(--straw)}
+  header .tag{font-size:12.5px;color:var(--ink2);margin-top:4px}
+  .hud{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0 12px}
+  .pill{background:var(--card);border-radius:999px;padding:7px 16px;font-size:13px;
+    box-shadow:var(--shadow);font-weight:600;display:flex;align-items:center;gap:6px}
+  .pill b{font-size:15px}
+  .pill.p1 b{color:var(--straw)} .pill.p2 b{color:#4fb99f} .pill.p3 b{color:#e8a33d} .pill.p4 b{color:#7a9ff0}
+  .wrap{position:relative;margin-bottom:12px}
+  canvas{display:block;border-radius:22px;background:#fffdf8;
+    box-shadow:0 10px 40px rgba(232,163,61,.15), inset 0 0 0 3px #ffe8d6;
+    touch-action:none;cursor:pointer}
+  .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    border-radius:22px;background:rgba(255,247,236,.88);backdrop-filter:blur(4px);z-index:5}
+  .overlay.show{display:flex}
+  .panel{text-align:center;max-width:430px;padding:24px}
+  .panel .big{font-size:26px;font-weight:800;margin-bottom:10px;color:var(--ink)}
+  .panel .big .bd{color:var(--straw)}
+  .panel .desc{font-size:13.5px;color:var(--ink2);line-height:2;margin-bottom:16px}
+  .btn{background:linear-gradient(135deg,var(--straw),#ffb3c6);color:#fff;border:none;
+    padding:13px 34px;border-radius:999px;font-size:15px;font-weight:700;cursor:pointer;
+    box-shadow:0 6px 20px rgba(255,143,171,.4);transition:.15s;font-family:inherit}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,143,171,.5)}
+  .btn.mint{background:linear-gradient(135deg,#7fd8be,#a8e6cf);box-shadow:0 6px 20px rgba(127,216,190,.4)}
+  .up-title{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:4px}
+  .up-sub{font-size:12px;color:var(--ink2);margin-bottom:16px}
+  .up-cards{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .up-card{width:126px;background:var(--card);border-radius:18px;padding:16px 10px;cursor:pointer;
+    box-shadow:var(--shadow);border:3px solid transparent;transition:.15s;animation:pop .35s ease}
+  .up-card:nth-child(2){animation-delay:.08s}
+  .up-card:nth-child(3){animation-delay:.16s}
+  @keyframes pop{from{transform:scale(.7);opacity:0}}
+  .up-card:hover{transform:translateY(-5px) scale(1.04);border-color:var(--lemon)}
+  .up-card .ico{font-size:34px;margin-bottom:8px}
+  .up-card .nm{font-size:14px;font-weight:800;margin-bottom:6px}
+  .up-card .ds{font-size:11.5px;color:var(--ink2);line-height:1.6}
+  .c1 .nm{color:#e8799f}.c2 .nm{color:#3fa98c}.c3 .nm{color:#d99a2b}
+  .combo{position:absolute;top:18px;right:20px;font-size:20px;font-weight:800;color:#ff8fab;
+    opacity:0;transform:scale(.6);transition:.2s;pointer-events:none;text-shadow:0 2px 0 #fff}
+  .combo.show{opacity:1;transform:scale(1.1)}
+  footer{padding:14px 20px;color:var(--ink2);font-size:12px;text-align:center;line-height:2}
+  footer .qq{color:#e8799f;font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍬 弹球<span class="bd">乐园</span></h1>
+  <div class="tag">球全自动乱飞，你只管选强化 · 看数字爆炸就完事了</div>
+</header>
+
+<div class="hud">
+  <div class="pill p3">🍭 波次 <b id="h-wave">1</b></div>
+  <div class="pill p1">🔵 弹球 <b id="h-balls">1</b></div>
+  <div class="pill p2">💥 伤害 <b id="h-dmg">1</b></div>
+  <div class="pill p4">🏆 最佳 <b id="h-best">0</b></div>
+</div>
+
+<div class="wrap">
+  <canvas id="cv" width="460" height="620"></canvas>
+  <div class="combo" id="combo">连锁 x3！</div>
+
+  <div class="overlay show" id="ov-start">
+    <div class="panel">
+      <div class="big">🍬 欢迎来到<span class="bd">弹球乐园</span></div>
+      <div class="desc">弹球全自动发射，撞碎糖果砖！<br>
+      每波结束三选一强化：穿透 · 分裂 · 暴击 · 爆破…<br>
+      砖墙压到底线就输，看你能撑几波～</div>
+      <button class="btn" id="btn-start">🍬 开园营业</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-choose">
+    <div class="panel">
+      <div class="up-title">🎁 波次奖励 · 挑一个！</div>
+      <div class="up-sub" id="up-sub">下一波马上开始</div>
+      <div class="up-cards" id="up-cards"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ov-over">
+    <div class="panel">
+      <div class="big">🍭 糖果墙<span class="bd">压境啦</span></div>
+      <div class="desc" id="over-desc"></div>
+      <button class="btn mint" id="btn-again">🔄 再来一局</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  🍬 弹球乐园 · 有花无实の小站出品 · 挂机看球超解压<br>
+  🐳 QQ 交流群：<span class="qq">574612434</span> · 小鲸鱼岛欢迎你
+</footer>
+
+<script>
+var cv = document.getElementById('cv');
+var ctx = cv.getContext('2d');
+var W = cv.width, H = cv.height;
+var $ = function(id){ return document.getElementById(id); };
+
+var PAD = 10;
+var TILE_H = 40, GAP = 8, COLS = 8;
+var COLW = (W - PAD*2) / COLS;
+var BOTTOM = H - 64;
+var LAUNCH_Y = H - 26;
+
+var CANDY = ['#ff8fab','#7fd8be','#ffd97d','#9ad0ff','#c9a7f5','#ffb98a'];
+var critColor = '#ff5f8f';
+
+var G = {
+  phase: 'menu',
+  wave: 1,
+  best: parseInt(localStorage.getItem('pinparadise_best') || '0', 10),
+  ballCount: 1,
+  dmg: 1,
+  pierce: 0,
+  crit: 0,
+  split: 0,
+  splitCap: 0,
+  blast: 0,
+  speed: 7,
+  balls: [],
+  launched: 0,
+  launchTimer: 0,
+  launchAngle: 0,
+  tiles: [],
+  floats: [],
+  parts: [],
+  combo: 0,
+  comboTimer: 0,
+  shake: 0,
+  waveBroken: 0
+};
+
+function rowY(r){ return PAD + TILE_H/2 + r * (TILE_H + GAP); }
+function colX(c){ return PAD + COLW*c + COLW/2; }
+function tileW(){ return COLW - GAP; }
+
+function spawnRow(){
+  var empt = {};
+  var nEmpty = G.wave < 4 ? 3 : (G.wave < 9 ? 2 : 1);
+  while(Object.keys(empt).length < nEmpty) empt[Math.floor(Math.random()*COLS)] = 1;
+  for(var c=0; c<COLS; c++){
+    if(empt[c]) continue;
+    var hp = Math.max(2, Math.round((2 + G.wave*1.8) * (0.8 + Math.random()*0.5)));
+    var kind = (Math.random() < 0.12) ? 'star' : 'norm';
+    if(kind === 'star') hp = Math.max(2, Math.round(hp*0.5));
+    G.tiles.push({col:c, row:0, x:colX(c), y:rowY(0), w:tileW(), h:TILE_H, hp:hp, maxHp:hp, kind:kind});
+  }
+}
+function shiftRows(){
+  for(var i=0;i<G.tiles.length;i++){
+    var t = G.tiles[i];
+    t.row++;
+    t.y = rowY(t.row);
+  }
+}
+
+function launchBall(){
+  var a = G.launchAngle + (Math.random()-0.5)*0.22;
+  var sp = G.speed;
+  G.balls.push({x: W/2, y: LAUNCH_Y, vx: Math.sin(a)*sp, vy: -Math.cos(a)*sp, r: 7, pierce: G.pierce, temp: false});
+  G.launched++;
+}
+function spawnTempBall(x, y){
+  var tempCount = 0;
+  for(var i=0;i<G.balls.length;i++) if(G.balls[i].temp) tempCount++;
+  if(tempCount >= G.splitCap) return;
+  var a = Math.random()*Math.PI*2;
+  G.balls.push({x:x, y:y, vx:Math.cos(a)*G.speed, vy:Math.sin(a)*G.speed, r:6, pierce:0, temp:true});
+}
+
+function addFloat(x, y, txt, isCrit){
+  G.floats.push({x:x, y:y, txt:txt, life: isCrit?36:26, crit:isCrit, vy: -1.4});
+  if(G.floats.length > 60) G.floats.shift();
+}
+function burst(x, y, color){
+  for(var i=0;i<8;i++){
+    var a = Math.random()*Math.PI*2, sp = 1.5+Math.random()*2.5;
+    G.parts.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:22,color:color,r:2.5+Math.random()*2.5});
+  }
+  if(G.parts.length > 260) G.parts.splice(0, G.parts.length-260);
+}
+
+function hitTile(t, bx, by){
+  var dmg = G.dmg;
+  var crit = Math.random() < G.crit;
+  if(crit) dmg *= 3;
+  t.hp -= dmg;
+  addFloat(t.x + (Math.random()-0.5)*16, t.y - 8, String(dmg), crit);
+  if(t.hp <= 0){
+    var ci = Math.floor(Math.random()*CANDY.length);
+    burst(t.x, t.y, t.kind==='star' ? '#ffd97d' : CANDY[ci]);
+    G.combo++;
+    G.comboTimer = 70;
+    G.shake = Math.min(8, G.shake + 2);
+    G.waveBroken++;
+    if(t.kind === 'star'){ G.ballCount++; addFloat(t.x, t.y-24, '🔵+1', true); }
+    if(G.split > 0 && Math.random() < G.split) spawnTempBall(t.x, t.y);
+    if(G.blast > 0){
+      for(var j=G.tiles.length-1; j>=0; j--){
+        var o = G.tiles[j];
+        if(Math.abs(o.col-t.col) <= 1 && Math.abs(o.row-t.row) <= 1 && o !== t){
+          o.hp -= G.blast;
+          addFloat(o.x, o.y-6, String(G.blast), false);
+          if(o.hp <= 0){ burst(o.x, o.y, '#ffb98a'); G.tiles.splice(j,1); }
+        }
+      }
+    }
+    var idx = G.tiles.indexOf(t);
+    if(idx >= 0) G.tiles.splice(idx, 1);
+  }
+}
+
+function physicsStep(){
+  var i, j, b, t;
+  for(i=G.balls.length-1; i>=0; i--){
+    b = G.balls[i];
+    b.x += b.vx;
+    b.y += b.vy;
+    if(b.x - b.r < PAD){ b.x = PAD + b.r; b.vx = Math.abs(b.vx); }
+    if(b.x + b.r > W - PAD){ b.x = W - PAD - b.r; b.vx = -Math.abs(b.vx); }
+    if(b.y - b.r < PAD){ b.y = PAD + b.r; b.vy = Math.abs(b.vy); }
+    if(b.y - b.r > H){ G.balls.splice(i,1); continue; }
+    if(Math.abs(b.vy) < 1.4) b.vy = (b.vy >= 0 ? 1 : -1) * 1.4;
+    var sp = Math.hypot(b.vx, b.vy), want = G.speed;
+    if(Math.abs(sp - want) > 0.6){ b.vx *= want/sp; b.vy *= want/sp; }
+    for(j=0; j<G.tiles.length; j++){
+      t = G.tiles[j];
+      var cx = Math.max(t.x - t.w/2, Math.min(b.x, t.x + t.w/2));
+      var cy = Math.max(t.y - t.h/2, Math.min(b.y, t.y + t.h/2));
+      var dx = b.x - cx, dy = b.y - cy;
+      if(dx*dx + dy*dy <= b.r*b.r){
+        if(b.pierce > 0){ b.pierce--; }
+        else{
+          if(dx === 0 && dy === 0){
+            var pl = b.x - (t.x - t.w/2), pr = (t.x + t.w/2) - b.x;
+            var pt = b.y - (t.y - t.h/2), pb = (t.y + t.h/2) - b.y;
+            var m = Math.min(pl, pr, pt, pb);
+            if(m === pl){ b.x = t.x - t.w/2 - b.r; b.vx = -Math.abs(b.vx); }
+            else if(m === pr){ b.x = t.x + t.w/2 + b.r; b.vx = Math.abs(b.vx); }
+            else if(m === pt){ b.y = t.y - t.h/2 - b.r; b.vy = -Math.abs(b.vy); }
+            else { b.y = t.y + t.h/2 + b.r; b.vy = Math.abs(b.vy); }
+          } else if(Math.abs(dx) > Math.abs(dy)){
+            b.vx = Math.abs(b.vx) * (dx > 0 ? 1 : -1);
+            b.x = cx + (dx > 0 ? b.r+0.5 : -(b.r+0.5));
+          } else {
+            b.vy = Math.abs(b.vy) * (dy > 0 ? 1 : -1);
+            b.y = cy + (dy > 0 ? b.r+0.5 : -(b.r+0.5));
+          }
+        }
+        hitTile(t, b.x, b.y);
+        break;
+      }
+    }
+  }
+}
+
+function endWave(){
+  G.wave++;
+  shiftRows();
+  var over = false;
+  for(var i=0;i<G.tiles.length;i++){
+    if(G.tiles[i].y + TILE_H/2 >= BOTTOM){ over = true; break; }
+  }
+  if(over){ gameOver(); return; }
+  spawnRow();
+  showUpgrades();
+}
+
+function gameOver(){
+  G.phase = 'over';
+  if(G.wave - 1 > G.best){
+    G.best = G.wave - 1;
+    localStorage.setItem('pinparadise_best', String(G.best));
+  }
+  $('over-desc').innerHTML = '撑到了 <b style="color:#e8799f">' + (G.wave - 1) + '</b> 波 · 击碎 <b style="color:#3fa98c">' + G.waveBrokenTotal() + '</b> 块糖果砖<br>弹球库存 ' + G.ballCount + ' 颗 · 伤害 ' + G.dmg;
+  updateHud();
+  $('ov-over').classList.add('show');
+}
+G.waveBrokenTotal = function(){ return G._brokenTotal || 0; };
+
+var UPGRADES = [
+  {ico:'🔵', nm:'弹球 +1', ds:'每波多发一颗球', c:'c1', can:function(){return true;}, ap:function(){G.ballCount++;}},
+  {ico:'💥', nm:'伤害 +1', ds:'每颗球敲得更痛', c:'c2', can:function(){return true;}, ap:function(){G.dmg++;}},
+  {ico:'🔥', nm:'穿透 +1', ds:'球可贯穿 1 块砖不反弹', c:'c1', can:function(){return G.pierce < 4;}, ap:function(){G.pierce++;}},
+  {ico:'✨', nm:'暴击 +10%', ds:'3 倍伤害的概率提升', c:'c3', can:function(){return G.crit < 0.6;}, ap:function(){G.crit += 0.1;}},
+  {ico:'➗', nm:'分裂 +15%', ds:'击碎砖块概率撒出临时球', c:'c2', can:function(){return G.split < 0.75;}, ap:function(){G.split += 0.15; G.splitCap += 2;}},
+  {ico:'💣', nm:'爆破 +1', ds:'击碎砖块波及邻近砖', c:'c3', can:function(){return G.blast < 5;}, ap:function(){G.blast++;}},
+  {ico:'⚡', nm:'弹速 +12%', ds:'球飞得更快更上头', c:'c1', can:function(){return G.speed < 12;}, ap:function(){G.speed *= 1.12;}}
+];
+function showUpgrades(){
+  G.phase = 'choose';
+  var pool = UPGRADES.filter(function(u){ return u.can(); });
+  var picks = [];
+  while(picks.length < 3 && pool.length){
+    var u = pool.splice(Math.floor(Math.random()*pool.length), 1)[0];
+    picks.push(u);
+  }
+  var html = '';
+  picks.forEach(function(u, i){
+    html += '<div class="up-card ' + u.c + '" data-i="' + i + '">'
+      + '<div class="ico">' + u.ico + '</div>'
+      + '<div class="nm">' + u.nm + '</div>'
+      + '<div class="ds">' + u.ds + '</div></div>';
+  });
+  $('up-cards').innerHTML = html;
+  $('up-sub').textContent = '第 ' + G.wave + ' 波准备中 · 当前：' + G.ballCount + ' 球 / ' + G.dmg + ' 伤';
+  $('ov-choose').classList.add('show');
+  $('up-cards').querySelectorAll('.up-card').forEach(function(el){
+    el.addEventListener('click', function(){
+      var u = picks[parseInt(this.dataset.i, 10)];
+      u.ap();
+      $('ov-choose').classList.remove('show');
+      startWave();
+    });
+  });
+  updateHud();
+}
+function startWave(){
+  G.phase = 'flying';
+  G.launched = 0;
+  G.launchTimer = 0;
+  G.launchAngle = (Math.random()-0.5) * 1.4;
+  updateHud();
+}
+
+function updateHud(){
+  $('h-wave').textContent = G.wave;
+  $('h-balls').textContent = G.ballCount;
+  $('h-dmg').textContent = G.dmg + (G.crit > 0 ? '✨' : '');
+  $('h-best').textContent = G.best;
+}
+
+function draw(){
+  ctx.save();
+  if(G.shake > 0){
+    ctx.translate((Math.random()-0.5)*G.shake, (Math.random()-0.5)*G.shake);
+    G.shake *= 0.85;
+    if(G.shake < 0.4) G.shake = 0;
+  }
+  ctx.fillStyle = '#fffdf8';
+  ctx.fillRect(-12, -12, W+24, H+24);
+  ctx.fillStyle = 'rgba(255,143,171,.05)';
+  for(var gx=PAD; gx<W; gx+=COLW){
+    ctx.fillRect(gx, 0, 1, H);
+  }
+  ctx.strokeStyle = 'rgba(255,143,171,.45)';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([10, 8]);
+  ctx.beginPath();
+  ctx.moveTo(PAD, BOTTOM);
+  ctx.lineTo(W - PAD, BOTTOM);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(156,138,125,.6)';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('警戒线 ⚠️', PAD + 4, BOTTOM + 16);
+
+  for(var i=0;i<G.tiles.length;i++){
+    var t = G.tiles[i];
+    var hue = t.kind === 'star' ? '#ffd97d' : CANDY[t.col % CANDY.length];
+    var ratio = t.hp / t.maxHp;
+    ctx.fillStyle = hue;
+    ctx.globalAlpha = 0.45 + ratio*0.55;
+    roundRect(t.x - t.w/2, t.y - t.h/2, t.w, t.h, 10);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,.8)';
+    ctx.lineWidth = 2;
+    roundRect(t.x - t.w/2, t.y - t.h/2, t.w, t.h, 10);
+    ctx.stroke();
+    ctx.fillStyle = '#7a5c4f';
+    ctx.font = 'bold 15px "Segoe UI",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(t.kind === 'star' ? '⭐' + t.hp : String(t.hp), t.x, t.y + 1);
+  }
+
+  for(var j=0;j<G.balls.length;j++){
+    var b = G.balls[j];
+    ctx.fillStyle = b.temp ? '#9ad0ff' : '#ff8fab';
+    ctx.shadowColor = b.temp ? 'rgba(154,208,255,.8)' : 'rgba(255,143,171,.8)';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,255,255,.85)';
+    ctx.beginPath();
+    ctx.arc(b.x - b.r*0.3, b.y - b.r*0.3, b.r*0.32, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  if(G.phase === 'flying' && G.launched < G.ballCount){
+    ctx.fillStyle = '#ffd97d';
+    ctx.beginPath();
+    ctx.arc(W/2, LAUNCH_Y, 9, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  ctx.font = 'bold 13px sans-serif';
+  for(var k=0;k<G.floats.length;k++){
+    var f = G.floats[k];
+    f.y += f.vy;
+    f.life--;
+    ctx.globalAlpha = Math.min(1, f.life/14);
+    ctx.fillStyle = f.crit ? critColor : '#9c8a7d';
+    if(f.crit) ctx.font = 'bold 17px sans-serif';
+    else ctx.font = 'bold 13px sans-serif';
+    ctx.fillText(f.txt, f.x, f.y);
+    ctx.globalAlpha = 1;
+  }
+  G.floats = G.floats.filter(function(f){ return f.life > 0; });
+
+  for(var m=0;m<G.parts.length;m++){
+    var p = G.parts[m];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.life--;
+    ctx.globalAlpha = Math.max(0, p.life/22);
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  G.parts = G.parts.filter(function(p){ return p.life > 0; });
+
+  if(G.combo >= 3 && G.comboTimer > 0){
+    var cEl = $('combo');
+    cEl.textContent = '连锁 x' + G.combo + '！';
+    cEl.classList.add('show');
+  } else {
+    $('combo').classList.remove('show');
+  }
+  ctx.restore();
+}
+
+var last = 0, acc = 0, FT = 1000/60;
+function loop(ts){
+  requestAnimationFrame(loop);
+  var dt = ts - last; last = ts;
+  if(dt > 100) dt = 100;
+  acc += dt;
+  while(acc >= FT){
+    acc -= FT;
+    if(G.phase === 'flying'){
+      if(G.launched < G.ballCount){
+        G.launchTimer -= FT;
+        if(G.launchTimer <= 0){ launchBall(); G.launchTimer = 120; }
+      }
+      physicsStep();
+      if(G.comboTimer > 0) G.comboTimer -= FT;
+      if(G.comboTimer <= 0) G.combo = 0;
+      if(G.balls.length === 0 && G.launched >= G.ballCount) endWave();
+    }
+    if(G.shake > 0){ G.shake *= 0.9; if(G.shake < 0.3) G.shake = 0; }
+  }
+  draw();
+}
+requestAnimationFrame(loop);
+
+function roundRect(x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function resetGame(){
+  G.wave = 1; G.ballCount = 1; G.dmg = 1;
+  G.pierce = 0; G.crit = 0; G.split = 0; G.splitCap = 0; G.blast = 0; G.speed = 7;
+  G.balls = []; G.tiles = []; G.floats = []; G.parts = [];
+  G.combo = 0; G.comboTimer = 0; G.shake = 0; G.launched = 0;
+  spawnRow();
+  showUpgrades();
+}
+$('btn-start').addEventListener('click', function(){
+  $('ov-start').classList.remove('show');
+  resetGame();
+});
+$('btn-again').addEventListener('click', function(){
+  $('ov-over').classList.remove('show');
+  resetGame();
+});
+updateHud();
+</script>
+</body>
+</html>

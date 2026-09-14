@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号管理系统</title>
+    <style>
+        :root {
+            --color-1: #9BE9FF;
+            --color-2: #FFACD2;
+            --color-3: #5B85D2;
+            --color-4: #2C4271;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #1F2937;
+            --text-sub: #6B7280;
+            --danger: #EF4444;
+            --success: #10B981;
+            --primary: #3B82F6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--color-1) 0%, var(--color-2) 30%, var(--color-3) 60%, var(--color-4) 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+        }
+
+        .header-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 毛玻璃卡片 */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.4;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: var(--text-sub);
+            margin-bottom: 30px;
+        }
+
+        /* 按钮通用 */
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: #2563EB; }
+
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #059669; }
+
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #DC2626; }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-outline:hover { background: var(--primary); color: #fff; }
+
+        .btn-sm { padding: 6px 12px; font-size: 0.82rem; border-radius: 6px; }
+
+        /* 登录层 */
+        .login-wrap {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 36px;
+            text-align: center;
+        }
+
+        .login-card .logo {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .login-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .login-card .sub {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        .login-card .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .login-card label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text-sub);
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .login-card input:focus { outline: none; border-color: var(--primary); }
+
+        .login-card .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px;
+            font-size: 1rem;
+            margin-top: 6px;
+        }
+
+        /* Key 行 */
+        .key-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 14px 16px;
+            background: rgba(59, 130, 246, 0.06);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .key-row .key-label {
+            font-weight: 600;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+        .key-row .key-value {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            background: #fff;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 6px 12px;
+            flex: 1;
+            min-width: 200px;
+            word-break: break-all;
+        }
+
+        .key-row .key-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .gateway-hint {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .gateway-hint code {
+            background: rgba(0,0,0,0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, monospace;
+        }
+
+        /* 操作栏 */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .selected-count {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .batch-actions {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .batch-actions.show { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 调度工具栏 */
+        .schedule-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .schedule-bar .field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .schedule-bar label {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .schedule-bar select {
+            padding: 8px 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: #fff;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .schedule-bar select:focus { outline: none; border-color: var(--primary); }
+
+        .schedule-bar .fixed-field {
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .schedule-bar .fixed-field.show { display: flex; }
+
+        .schedule-bar .spacer { flex: 1; }
+
+        /* 表格区域 */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            min-height: 200px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            white-space: nowrap;
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        th {
+            background: rgba(0,0,0,0.03);
+            color: var(--text-sub);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover td {
+            background: rgba(59, 130, 246, 0.04);
+        }
+
+        tr.selected td {
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        /* 复选框样式 */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* 状态标签 */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .tag-yes { background: rgba(16, 185, 129, 0.12); color: #059669; }
+        .tag-no  { background: rgba(239, 68, 68, 0.10); color: #DC2626; }
+
+        /* 账号名称 */
+        .account-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .account-name.abnormal {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .account-error {
+            font-size: 0.75rem;
+            color: var(--danger);
+            max-width: 220px;
+            white-space: normal;
+            word-break: break-all;
+            margin-top: 2px;
+        }
+
+        /* 余额样式 */
+        .balance { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .balance-total { color: var(--text-main); }
+        .balance-temp  { color: #D97706; }
+        .balance-perm  { color: #7C3AED; }
+
+        /* 行内操作按钮 */
+        .row-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show { display: flex; }
+
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal h3 { margin-bottom: 20px; font-size: 1.2rem; }
+        .modal .form-group { margin-bottom: 16px; }
+        .modal label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--text-sub); }
+        .modal input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+        .modal input:focus { outline: none; border-color: var(--primary); }
+        .modal .btn-group { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #1F2937;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            z-index: 2000;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* 加载遮罩 */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-sub);
+            font-size: 1rem;
+        }
+
+        .loading .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 登录层 ===== -->
+    <div class="container" id="loginView" style="display:none;">
+        <div class="login-wrap">
+            <div class="card login-card">
+                <div class="logo">🔐</div>
+                <h2>账号管理系统</h2>
+                <p class="sub">请输入管理密码以继续</p>
+                <div class="form-group">
+                    <label>管理密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入管理密码" autocomplete="current-password">
+                </div>
+                <button class="btn btn-primary" onclick="login()">登 录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 管理界面 ===== -->
+    <div class="container" id="adminView" style="display:none;">
+        <div class="header">
+            <h1>🏢 账号管理系统</h1>
+            <div class="header-actions">
+                <button class="btn btn-outline btn-sm" onclick="openChangePwdModal()">🔑 修改密码</button>
+                <button class="btn btn-danger btn-sm" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="card" id="mainCard">
+            <!-- Key 行 -->
+            <div class="key-row">
+                <span class="key-label">key：</span>
+                <span class="key-value" id="keyValue">加载中...</span>
+                <div class="key-actions">
+                    <button class="btn btn-outline btn-sm" onclick="openKeyModal()">✏️ 自定义</button>
+                    <button class="btn btn-primary btn-sm" onclick="genKey()">🎲 随机生成</button>
+                </div>
+                <div class="gateway-hint">网关地址：<code id="gatewayUrl">-</code>（请求头 <code>Authorization: Bearer {key}</code> 或 <code>X-API-Key</code>）</div>
+            </div>
+
+            <!-- 调度工具栏 -->
+            <div class="schedule-bar">
+                <div class="field">
+                    <label>调度方式</label>
+                    <select id="scheduleMode" onchange="changeSchedule()">
+                        <option value="random">随机抽取</option>
+                        <option value="round_robin">轮询</option>
+                        <option value="fixed">固定使用某账号</option>
+                        <option value="priority_temp">优先临时积分高</option>
+                    </select>
+                </div>
+                <div class="fixed-field" id="fixedField">
+                    <label>固定账号</label>
+                    <select id="fixedAccount"></select>
+                </div>
+                <div class="spacer"></div>
+                <button class="btn btn-primary" onclick="checkSelected()">🔍 检测</button>
+            </div>
+
+            <!-- 空状态 -->
+            <div id="emptyState" class="empty-state" style="display:none;">
+                <div class="icon">👤</div>
+                <p>暂无账号，点击下方按钮添加</p>
+                <button class="btn btn-primary" onclick="openModal()">＋ 添加账号</button>
+            </div>
+
+            <!-- 列表状态 -->
+            <div id="listState">
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;cursor:pointer;user-select:none;">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()"> 全选
+                        </label>
+                        <button class="btn btn-primary" onclick="openModal()">＋ 添加账号</button>
+                        <span class="selected-count" id="selectedCount">已选 0 个账号</span>
+                    </div>
+                    <div class="toolbar-right">
+                        <div class="batch-actions" id="batchActions">
+                            <button class="btn btn-success" onclick="reLogin()">🔄 重新登录</button>
+                            <button class="btn btn-primary" onclick="queryBalance()">💰 查询余额</button>
+                            <button class="btn btn-danger" onclick="deleteSelected()">🗑 删除账号</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:50px;"></th>
+                                <th>账号</th>
+                                <th>是否签到</th>
+                                <th>签到时间</th>
+                                <th>总余额</th>
+                                <th>临时余额</th>
+                                <th>永久余额</th>
+                                <th>临时余额到期时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加账号弹窗 -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <h3>添加新账号</h3>
+            <div class="form-group">
+                <label>账号名称</label>
+                <input type="text" id="newAccountName" placeholder="请输入账号名称">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="newAccountPwd" placeholder="请输入密码">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="addAccount()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改密码弹窗 -->
+    <div class="modal-overlay" id="changePwdModal">
+        <div class="modal">
+            <h3>修改密码</h3>
+            <div class="form-group">
+                <label>旧密码</label>
+                <input type="password" id="oldPassword" placeholder="请输入旧密码" autocomplete="current-password">
+            </div>
+            <div class="form-group">
+                <label>新密码</label>
+                <input type="password" id="newPassword" placeholder="请输入新密码" autocomplete="new-password">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="closeChangePwdModal()">取消</button>
+                <button class="btn btn-primary" onclick="changePassword()">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义 Key 弹窗 -->
+    <div class="modal-overlay" id="keyModal">
+        <div class="modal">
+            <h3>自定义 Key</h3>
+            <div class="form-group">
+                <label>API Key</label>
+                <input type="text" id="customKey" placeholder="请输入新的 API Key">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="closeKeyModal()">取消</button>
+                <button class="btn btn-primary" onclick="setKey()">确认设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ====== 状态 ======
+        let accounts = [];
+        let selectedIds = new Set();
+
+        // ====== 基础工具 ======
+        function getBaseURL() {
+            return window.location.protocol + "//" + window.location.host;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 2500);
+        }
+
+        function esc(s) {
+            return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+            });
+        }
+
+        function fmtMoney(v) {
+            const n = Number(v);
+            if (isNaN(n)) return "--";
+            return "￥" + n.toFixed(2);
+        }
+
+        function fmtTime(s) {
+            if (!s) return "--";
+            return s;
+        }
+
+        // ====== API 封装 ======
+        async function api(path, options) {
+            const opts = options || {};
+            opts.credentials = "include";
+            if (opts.body && typeof opts.body !== "string") {
+                opts.headers = Object.assign({ "Content-Type": "application/json" }, opts.headers || {});
+                opts.body = JSON.stringify(opts.body);
+            }
+            const resp = await fetch(path, opts);
+            let data = null;
+            try { data = await resp.json(); } catch (e) { data = null; }
+            if (!resp.ok) {
+                const err = new Error((data && data.error) || ("请求失败 HTTP " + resp.status));
+                err.status = resp.status;
+                throw err;
+            }
+            return data;
+        }
+
+        // ====== 登录 / 登出 ======
+        async function login() {
+            const password = document.getElementById("loginPassword").value;
+            if (!password) { showToast("请输入管理密码"); return; }
+            try {
+                await api("/api/admin/login", { method: "POST", body: { password: password } });
+                showToast("登录成功");
+                enterAdmin();
+            } catch (e) {
+                showToast(e.message || "登录失败");
+            }
+        }
+
+        async function logout() {
+            try { await api("/api/admin/logout", { method: "POST" }); } catch (e) {}
+            showToast("已退出登录");
+            showLogin();
+        }
+
+        // ====== 视图切换 ======
+        function showLogin() {
+            document.getElementById("loginView").style.display = "block";
+            document.getElementById("adminView").style.display = "none";
+            document.getElementById("loginPassword").value = "";
+            document.getElementById("loginPassword").focus();
+        }
+
+        function enterAdmin() {
+            document.getElementById("loginView").style.display = "none";
+            document.getElementById("adminView").style.display = "block";
+            document.getElementById("gatewayUrl").textContent = getBaseURL() + "/v1";
+            loadKey();
+            loadSchedule();
+            loadAccounts();
+        }
+
+        // ====== 账号列表 ======
+        async function loadAccounts() {
+            try {
+                const data = await api("/api/admin/accounts");
+                accounts = data.accounts || [];
+                render();
+            } catch (e) {
+                if (e.status === 401) {
+                    showLogin();
+                } else {
+                    showToast(e.message || "加载账号失败");
+                }
+            }
+        }
+
+        // ====== 渲染 ======
+        function render() {
+            const emptyState = document.getElementById("emptyState");
+            const listState  = document.getElementById("listState");
+            const tbody      = document.getElementById("accountBody");
+
+            if (accounts.length === 0) {
+                emptyState.style.display = "block";
+                listState.style.display  = "none";
+            } else {
+                emptyState.style.display = "none";
+                listState.style.display  = "block";
+            }
+
+            tbody.innerHTML = accounts.map(acc => {
+                const checked = selectedIds.has(acc.id) ? "checked" : "";
+                const rowClass = selectedIds.has(acc.id) ? "selected" : "";
+                const abnormal = (!acc.healthy) || (acc.error && acc.error !== "");
+                const signedTag = acc.checked_in
+                    ? '<span class="tag tag-yes">✔ 已签到</span>'
+                    : '<span class="tag tag-no">✖ 未签到</span>';
+                const nameHtml = '<span class="account-name' + (abnormal ? " abnormal" : "") + '">' + esc(acc.identifier) + '</span>'
+                    + (acc.error ? '<div class="account-error">' + esc(acc.error) + '</div>' : "");
+
+                return `
+                <tr class="${rowClass}" id="row_${acc.id}">
+                    <td><input type="checkbox" ${checked} onchange="toggleSelect('${acc.id}')"></td>
+                    <td>${nameHtml}</td>
+                    <td>${signedTag}</td>
+                    <td>${fmtTime(acc.checkin_date)}</td>
+                    <td class="balance balance-total">${fmtMoney(acc.total_balance)}</td>
+                    <td class="balance balance-temp">${fmtMoney(acc.temp_balance)}</td>
+                    <td class="balance balance-perm">${fmtMoney(acc.permanent_balance)}</td>
+                    <td>${fmtTime(acc.temp_expire)}</td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="btn btn-outline btn-sm" onclick="reLoginOne('${acc.id}')">重新登录</button>
+                            <button class="btn btn-outline btn-sm" onclick="queryBalanceOne('${acc.id}')">查询余额</button>
+                            <button class="btn btn-outline btn-sm" onclick="checkinOne('${acc.id}')">签到</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteOne('${acc.id}')">删除</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join("");
+
+            updateToolbar();
+            updateFixedSelect();
+        }
+
+        // ====== 选择逻辑 ======
+        function toggleSelect(id) {
+            if (selectedIds.has(id)) {
+                selectedIds.delete(id);
+            } else {
+                selectedIds.add(id);
+            }
+            render();
+        }
+
+        function toggleSelectAll() {
+            const cb = document.getElementById("selectAll");
+            if (cb.checked) {
+                accounts.forEach(a => selectedIds.add(a.id));
+            } else {
+                selectedIds.clear();
+            }
+            render();
+        }
+
+        function updateToolbar() {
+            const count = selectedIds.size;
+            document.getElementById("selectedCount").textContent = `已选 ${count} 个账号`;
+
+            const batch = document.getElementById("batchActions");
+            if (count > 0) {
+                batch.classList.add("show");
+            } else {
+                batch.classList.remove("show");
+            }
+
+            const cb = document.getElementById("selectAll");
+            cb.checked = (accounts.length > 0 && count === accounts.length);
+        }
+
+        // ====== 添加账号 ======
+        function openModal() {
+            document.getElementById("addModal").classList.add("show");
+            document.getElementById("newAccountName").value = "";
+            document.getElementById("newAccountPwd").value = "";
+            document.getElementById("newAccountName").focus();
+        }
+
+        function closeModal() {
+            document.getElementById("addModal").classList.remove("show");
+        }
+
+        async function addAccount() {
+            const name = document.getElementById("newAccountName").value.trim();
+            const pwd  = document.getElementById("newAccountPwd").value.trim();
+            if (!name) { showToast("请输入账号名称"); return; }
+            if (!pwd)  { showToast("请输入密码"); return; }
+
+            try {
+                await api("/api/admin/accounts", { method: "POST", body: { identifier: name, password: pwd } });
+                closeModal();
+                showToast(`账号 "${name}" 添加成功`);
+                loadAccounts();
+            } catch (e) {
+                showToast(e.message || "添加失败");
+            }
+        }
+
+        // ====== 批量操作 ======
+        async function reLogin() {
+            const ids = accounts.filter(a => selectedIds.has(a.id)).map(a => a.id);
+            if (ids.length === 0) { showToast("请先选择账号"); return; }
+            showToast(`正在为 ${ids.length} 个账号重新登录...`);
+            for (const id of ids) {
+                try { await api(`/api/admin/accounts/${id}/relogin`, { method: "POST" }); }
+                catch (e) { showToast(e.message || "重新登录失败"); }
+            }
+            showToast("重新登录完成");
+            loadAccounts();
+        }
+
+        async function queryBalance() {
+            const ids = accounts.filter(a => selectedIds.has(a.id)).map(a => a.id);
+            if (ids.length === 0) { showToast("请先选择账号"); return; }
+            showToast(`正在查询 ${ids.length} 个账号余额...`);
+            // 记录最后一条失败原因：后端查询失败时返回非 200 + error 字段，
+            // 不能被结尾的“查询完成”提示覆盖，否则真实故障会被掩盖。
+            let failed = 0;
+            let lastError = "";
+            for (const id of ids) {
+                try { await api(`/api/admin/accounts/${id}/balance`, { method: "POST" }); }
+                catch (e) { failed++; lastError = e.message || "查询余额失败"; }
+            }
+            if (failed > 0) {
+                showToast(`${failed}/${ids.length} 个账号查询失败：${lastError}`);
+            } else {
+                showToast("余额查询完成");
+            }
+            loadAccounts();
+        }
+
+        async function deleteSelected() {
+            const ids = accounts.filter(a => selectedIds.has(a.id)).map(a => a.id);
+            if (ids.length === 0) { showToast("请先选择账号"); return; }
+            if (!confirm(`确定要删除选中的 ${ids.length} 个账号吗？`)) return;
+
+            for (const id of ids) {
+                try { await api(`/api/admin/accounts/${id}`, { method: "DELETE" }); }
+                catch (e) { showToast(e.message || "删除失败"); }
+            }
+            selectedIds.clear();
+            showToast("删除成功");
+            loadAccounts();
+        }
+
+        // ====== 单行操作 ======
+        async function reLoginOne(id) {
+            try {
+                await api(`/api/admin/accounts/${id}/relogin`, { method: "POST" });
+                showToast("重新登录成功");
+                loadAccounts();
+            } catch (e) {
+                showToast(e.message || "重新登录失败");
+            }
+        }
+
+        async function queryBalanceOne(id) {
+            try {
+                await api(`/api/admin/accounts/${id}/balance`, { method: "POST" });
+                showToast("余额查询成功");
+                loadAccounts();
+            } catch (e) {
+                showToast(e.message || "查询余额失败");
+            }
+        }
+
+        async function checkinOne(id) {
+            try {
+                const data = await api(`/api/admin/accounts/${id}/checkin`, { method: "POST" });
+                showToast(data && data.checked_in ? "签到成功" : "签到状态异常");
+                loadAccounts();
+            } catch (e) {
+                showToast(e.message || "签到失败");
+            }
+        }
+
+        async function deleteOne(id) {
+            if (!confirm("确定要删除该账号吗？")) return;
+            try {
+                await api(`/api/admin/accounts/${id}`, { method: "DELETE" });
+                selectedIds.delete(id);
+                showToast("删除成功");
+                loadAccounts();
+            } catch (e) {
+                showToast(e.message || "删除失败");
+            }
+        }
+
+        // ====== 检测 ======
+        async function checkSelected() {
+            let ids = accounts.filter(a => selectedIds.has(a.id)).map(a => a.id);
+            if (ids.length === 0) {
+                ids = accounts.map(a => a.id);
+            }
+            if (ids.length === 0) { showToast("暂无账号可检测"); return; }
+
+            showToast(`正在检测 ${ids.length} 个账号...`);
+            for (const id of ids) {
+                try { await api(`/api/admin/accounts/${id}/check`, { method: "POST" }); }
+                catch (e) { showToast(e.message || "检测失败"); }
+            }
+            showToast("检测完成");
+            loadAccounts();
+        }
+
+        // ====== Key 管理 ======
+        async function loadKey() {
+            try {
+                const data = await api("/api/admin/key");
+                document.getElementById("keyValue").textContent = data.key || "--";
+            } catch (e) {
+                if (e.status === 401) { showLogin(); }
+                else { showToast(e.message || "加载 Key 失败"); }
+            }
+        }
+
+        function openKeyModal() {
+            document.getElementById("keyModal").classList.add("show");
+            document.getElementById("customKey").value = "";
+            document.getElementById("customKey").focus();
+        }
+
+        function closeKeyModal() {
+            document.getElementById("keyModal").classList.remove("show");
+        }
+
+        async function setKey() {
+            const key = document.getElementById("customKey").value.trim();
+            if (!key) { showToast("请输入 Key"); return; }
+            try {
+                await api("/api/admin/key", { method: "POST", body: { key: key } });
+                closeKeyModal();
+                showToast("Key 已更新");
+                loadKey();
+            } catch (e) {
+                showToast(e.message || "设置 Key 失败");
+            }
+        }
+
+        async function genKey() {
+            if (!confirm("确定要随机生成新的 Key 吗？旧 Key 将立即失效。")) return;
+            try {
+                const data = await api("/api/admin/key/generate", { method: "POST" });
+                document.getElementById("keyValue").textContent = data.key || "--";
+                showToast("已生成新 Key");
+            } catch (e) {
+                showToast(e.message || "生成 Key 失败");
+            }
+        }
+
+        // ====== 调度管理 ======
+        async function loadSchedule() {
+            try {
+                const data = await api("/api/admin/schedule");
+                const mode = data.mode || "random";
+                document.getElementById("scheduleMode").value = mode;
+                updateFixedField(mode);
+                const fixedSel = document.getElementById("fixedAccount");
+                fixedSel.value = data.fixed_id || "";
+            } catch (e) {
+                if (e.status === 401) { showLogin(); }
+                else { showToast(e.message || "加载调度配置失败"); }
+            }
+        }
+
+        function updateFixedField(mode) {
+            const field = document.getElementById("fixedField");
+            if (mode === "fixed") {
+                field.classList.add("show");
+            } else {
+                field.classList.remove("show");
+            }
+        }
+
+        function updateFixedSelect() {
+            const sel = document.getElementById("fixedAccount");
+            const current = sel.value;
+            sel.innerHTML = accounts.map(a =>
+                '<option value="' + esc(a.id) + '">' + esc(a.identifier) + '</option>'
+            ).join("");
+            if (current) { sel.value = current; }
+        }
+
+        async function changeSchedule() {
+            const mode = document.getElementById("scheduleMode").value;
+            updateFixedField(mode);
+            const body = { mode: mode };
+            if (mode === "fixed") {
+                const fixedId = document.getElementById("fixedAccount").value;
+                if (!fixedId) { showToast("请选择固定账号"); return; }
+                body.fixed_id = fixedId;
+            }
+            try {
+                await api("/api/admin/schedule", { method: "POST", body: body });
+                showToast("调度方式已更新");
+            } catch (e) {
+                showToast(e.message || "更新调度方式失败");
+                loadSchedule();
+            }
+        }
+
+        // ====== 修改密码 ======
+        function openChangePwdModal() {
+            document.getElementById("changePwdModal").classList.add("show");
+            document.getElementById("oldPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("oldPassword").focus();
+        }
+
+        function closeChangePwdModal() {
+            document.getElementById("changePwdModal").classList.remove("show");
+        }
+
+        async function changePassword() {
+            const oldPwd = document.getElementById("oldPassword").value;
+            const newPwd = document.getElementById("newPassword").value;
+            if (!oldPwd) { showToast("请输入旧密码"); return; }
+            if (!newPwd) { showToast("请输入新密码"); return; }
+            try {
+                await api("/api/admin/change-password", { method: "POST", body: { old: oldPwd, new: newPwd } });
+                closeChangePwdModal();
+                showToast("密码修改成功");
+            } catch (e) {
+                showToast(e.message || "修改密码失败");
+            }
+        }
+
+        // ====== 弹窗外部点击关闭 ======
+        ["addModal", "changePwdModal", "keyModal"].forEach(function (id) {
+            document.getElementById(id).addEventListener("click", function (e) {
+                if (e.target === this) {
+                    this.classList.remove("show");
+                }
+            });
+        });
+
+        // 登录框回车提交
+        document.getElementById("loginPassword").addEventListener("keydown", function (e) {
+            if (e.key === "Enter") { login(); }
+        });
+
+        // ====== 初始化 ======
+        // 尝试加载账号列表，401 则显示登录层
+        (async function init() {
+            showLogin();
+            try {
+                await api("/api/admin/accounts");
+                enterAdmin();
+            } catch (e) {
+                showLogin();
+            }
+        })();
+    </script>
+</body>
+</html>

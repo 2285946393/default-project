@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>虚拟歌姬 · 音乐可视化演奏台</title>
+<style>
+  :root{--teal:#41f0e0;--pink:#ff8fe8;--cyan:#7fd8ff;--blue:#3aa0ff;--dark:#0a1020;--panel:#111a30;--text:#e8f4ff;--muted:#8aa6c8;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1000px 700px at 70% 10%,#122042,#0a1020 60%);color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden}
+  .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(65,240,224,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(65,240,224,.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  header{padding:22px 26px;text-align:center;position:relative;z-index:2}
+  header .logo{font-size:34px;font-weight:800;letter-spacing:2px;text-shadow:0 0 20px rgba(65,240,224,.5)}
+  header .logo .m{color:var(--teal)}
+  header .logo .u{color:var(--pink)}
+  header .sub{color:var(--muted);font-size:13px;margin-top:8px;letter-spacing:1px}
+  .main{max-width:1000px;margin:0 auto;padding:0 20px 40px;position:relative;z-index:2}
+
+  /* 歌姬形象区 */
+  .stage{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:center;margin-bottom:24px}
+  @media(max-width:760px){.stage{grid-template-columns:1fr}}
+  .doll{position:relative;height:360px;background:linear-gradient(180deg,rgba(18,26,50,.6),rgba(10,16,32,.6));border:1px solid rgba(65,240,224,.25);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 60px rgba(65,240,224,.06)}
+  .doll .avatar{width:200px;height:200px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:120px;background:radial-gradient(circle at 35% 30%,#233d6b,#15254a);border:3px solid var(--teal);box-shadow:0 0 40px rgba(65,240,224,.4);animation:float 3s ease-in-out infinite;position:relative}
+  .doll .avatar::after{content:"";position:absolute;inset:-16px;border-radius:50%;border:2px dashed rgba(65,240,224,.3);animation:spin 10s linear infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .doll .name-tag{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:16px;font-weight:700;color:var(--teal);text-shadow:0 0 12px rgba(65,240,224,.6)}
+  .doll .tag{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;background:rgba(65,240,224,.15);border:1px solid var(--teal);padding:3px 12px;border-radius:14px;color:var(--teal);letter-spacing:1px}
+
+  /* 可视化频谱 */
+  .viz{background:rgba(18,26,50,.5);border:1px solid rgba(65,240,224,.2);border-radius:20px;padding:20px;box-shadow:inset 0 0 40px rgba(0,0,0,.4)}
+  .viz canvas{width:100%;height:220px;display:block;border-radius:12px;background:#080d1c}
+  .viz-info{display:flex;justify-content:space-between;margin-top:12px;font-size:12px;color:var(--muted)}
+  .eqbar{display:flex;gap:4px;height:70px;align-items:flex-end;justify-content:center}
+  .eqbar i{width:10px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--pink),var(--teal));animation:eq 1s ease-in-out infinite}
+  @keyframes eq{0%,100%{height:15%}50%{height:95%}}
+  .eqbar i:nth-child(2n){animation-delay:.2s}.eqbar i:nth-child(3n){animation-delay:.4s}
+
+  /* 播放区 */
+  .player{background:var(--panel);border:1px solid rgba(65,240,224,.2);border-radius:16px;padding:18px;margin-top:20px}
+  .player-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .track-info{flex:1;min-width:200px}
+  .track-info .t-name{font-size:18px;font-weight:700;color:var(--teal)}
+  .track-info .t-artist{font-size:13px;color:var(--muted);margin-top:2px}
+  .controls{display:flex;gap:10px;align-items:center}
+  .controls button{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;font-size:20px;background:linear-gradient(135deg,var(--teal),var(--blue));color:#04121a;transition:.2s;display:flex;align-items:center;justify-content:center}
+  .controls button:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(65,240,224,.5)}
+  .controls .big{width:60px;height:60px;font-size:26px}
+  .progress{flex:1;min-width:200px;height:6px;background:#0a1428;border-radius:4px;cursor:pointer;position:relative}
+  .progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--teal));border-radius:4px}
+  .progress .dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;left:0%}
+
+  /* 歌单 */
+  .tracklist{margin-top:22px}
+  .section-title{font-size:16px;font-weight:700;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .track{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;cursor:pointer;transition:.15s;border:1px solid transparent}
+  .track:hover{background:rgba(65,240,224,.06);border-color:rgba(65,240,224,.2)}
+  .track.active{background:rgba(65,240,224,.1);border-color:var(--teal)}
+  .track .idx{width:26px;color:var(--muted);font-size:13px;text-align:center}
+  .track .t-emo{font-size:24px}
+  .track .t-name{flex:1;font-size:14px;font-weight:600}
+  .track .t-art{font-size:12px;color:var(--muted);width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .track .t-dur{font-size:12px;color:var(--muted);width:40px;text-align:right}
+  .track .play-ico{width:30px;text-align:center;color:var(--teal)}
+
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,26,48,.95);border:1px solid var(--teal);padding:12px 26px;border-radius:30px;font-size:14px;z-index:60;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}
+  .hint code{color:var(--pink)}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<header>
+  <div class="logo"><span class="m">初</span><span class="u">音</span>未来 歌姬工坊</div>
+  <div class="sub">VOCALOID 音乐可视化演奏台 · 跟随节奏律动的虚拟歌姬</div>
+</header>
+
+<div class="main">
+  <div class="stage">
+    <div class="doll">
+      <div class="avatar" id="avatar">🎤</div>
+      <div class="tag" id="dollTag">● 待机中</div>
+      <div class="name-tag">初音ミク MIKU</div>
+    </div>
+
+    <div class="viz">
+      <canvas id="spectrum"></canvas>
+      <div class="eqbar" id="eqbar"></div>
+      <div class="viz-info">
+        <span id="vizStatus">等待音乐播放…</span>
+        <span id="vizFreq">0 Hz</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="player">
+    <div class="player-top">
+      <div class="track-info">
+        <div class="t-name" id="nowName">未选择歌曲</div>
+        <div class="t-artist" id="nowArtist">从下方歌单选择</div>
+      </div>
+      <div class="progress" id="progress">
+        <div class="bar" id="progBar"></div>
+        <div class="dot" id="progDot"></div>
+      </div>
+      <div class="controls">
+        <button onclick="prevTrack()">⏮</button>
+        <button class="big" id="btnPlay" onclick="togglePlay()">▶</button>
+        <button onclick="nextTrack()">⏭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tracklist">
+    <div class="section-title">🎵 歌单 · VOCALOID 精选</div>
+    <div id="trackList"></div>
+  </div>
+
+  <div class="hint">💡 点击歌单任意歌曲播放 · 频谱与歌姬会随音乐节奏律动 · <code>上/下方向键</code>切换歌曲</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = id=>document.getElementById(id);
+const SONG = 48000;
+let audioCtx=null, analyser=null, source=null;
+let currentTrack=0, isPlaying=false;
+
+/* ============ 歌单 (用内置合成旋律模拟VOCALOID歌曲) ============ */
+const TRACKS = [
+  {name:"洗脳 · 初音未来", art:"DECO*27", emo:"🎤", notes:[440,494,523,494,440,523,587,659,587,523,494,587,659,698,659,587]},
+  {name:"千本桜", art:"黑うさP", emo:"🌸", notes:[523,587,659,698,659,587,523,587,698,784,698,659,587,523,587,659]},
+  {name:"深海少女", art:"ゆうゆP", emo:"🌊", notes:[392,440,494,440,392,494,523,494,440,392,440,494,587,523,494,440]},
+  {name:"メルト", art:"ryo", emo:"💗", notes:[523,659,784,880,784,659,784,880,988,880,784,659,523,659,784,880]},
+  {name:"神っぽいな", art:"ピノキオP", emo:"✨", notes:[494,523,587,659,587,523,494,440,494,523,587,659,698,659,587,523]},
+  {name:"デンパラダイス", art:"picco", emo:"⚡", notes:[659,698,784,880,784,698,659,587,659,698,784,659,698,784,880,987]},
+];
+
+/* ============ 内置合成引擎 (生成VOCALOID风格的旋律) ============ */
+function renderTrackList(){
+  const box=$('trackList');
+  box.innerHTML='';
+  TRACKS.forEach((t,i)=>{
+    const d=document.createElement('div');
+    d.className='track'+(i===currentTrack?' active':'');
+    d.innerHTML=`<span class="idx">${i+1}</span><span class="t-emo">${t.emo}</span><span class="t-name">${t.name}</span><span class="t-art">${t.art}</span><span class="t-dur">0:${(8+i).toString().padStart(2,'0')}</span><span class="play-ico">▶</span>`;
+    d.onclick=()=>{ currentTrack=i; loadTrack(); playTrack(); renderTrackList(); };
+    box.appendChild(d);
+  });
+}
+function loadTrack(){
+  const t=TRACKS[currentTrack];
+  $('nowName').textContent=t.name;
+  $('nowArtist').textContent=t.art+' · '+(8+currentTrack)+'秒';
+}
+function getAudioCtx(){
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTrack(){
+  const actx=getAudioCtx();
+  if(actx.state==='suspended') actx.resume();
+  stopCurrent();
+  const t=TRACKS[currentTrack];
+  const dur=8;
+  const sr=actx.sampleRate;
+  const total=sr*dur;
+  const buffer=actx.createBuffer(1,total,sr);
+  const data=buffer.getChannelData(0);
+  const beat=0.5;  // 每音持续秒
+  const scale=[262,277,294,311,330,349,370,392,415,440,466,494,523,554,587,622,659,698,740,784,831,880];
+  for(let i=0;i<t.notes.length;i++){
+    const start=Math.floor(i*beat*sr);
+    const len=Math.floor(beat*0.85*sr);
+    const f=t.notes[i];
+    for(let j=0;j<len && start+j<total;j++){
+      const tt=j/sr;
+      const env=Math.min(1,tt/0.02)*Math.exp(-4*tt);
+      data[start+j]+=0.3*Math.sin(2*Math.PI*f*tt)*env;
+    }
+  }
+  // 加个简单鼓点
+  for(let b=0;b<dur/beat;b++){
+    const st=Math.floor(b*beat*sr);
+    const len=Math.floor(0.08*sr);
+    for(let j=0;j<len && st+j<total;j++){
+      const tt=j/sr;
+      data[st+j]+=0.25*Math.exp(-30*tt)*Math.sin(2*Math.PI*120*tt);
+    }
+  }
+  // 归一化
+  let mx=0; for(let i=0;i<total;i++) if(Math.abs(data[i])>mx)mx=Math.abs(data[i]);
+  if(mx>0.9){ const k=0.9/mx; for(let i=0;i<total;i++) data[i]*=k; }
+
+  source=actx.createBufferSource();
+  source.buffer=buffer;
+  analyser=actx.createAnalyser();
+  analyser.fftSize=512;
+  analyser.smoothingTimeConstant=0.75;
+  source.connect(analyser);
+  analyser.connect(actx.destination);
+  source.onended=()=>{ isPlaying=false; $('btnPlay').textContent='▶'; $('dollTag').textContent='○ 待机中'; $('avatar').textContent='🎤'; nextTrack(); };
+  source.start();
+  isPlaying=true;
+  $('btnPlay').textContent='⏸';
+  $('dollTag').textContent='● 演唱中';
+  toast('♪ 正在播放 · '+t.name);
+  startViz();
+  requestAnimationFrame(animateAvatar);
+}
+function stopCurrent(){
+  if(source){ try{source.stop();}catch(e){} source.disconnect(); source=null; }
+}
+function togglePlay(){
+  if(isPlaying){ stopCurrent(); isPlaying=false; $('btnPlay').textContent='▶'; $('dollTag').textContent='○ 已暂停'; }
+  else playTrack();
+}
+function prevTrack(){ currentTrack=(currentTrack-1+TRACKS.length)%TRACKS.length; loadTrack(); renderTrackList(); playTrack(); }
+function nextTrack(){ currentTrack=(currentTrack+1)%TRACKS.length; loadTrack(); renderTrackList(); playTrack(); }
+
+/* ============ 频谱可视化 ============ */
+const cv=$('spectrum'), ctx=cv.getContext('2d');
+function fitCv(){ const r=cv.getBoundingClientRect(); cv.width=r.width; cv.height=r.height; }
+window.addEventListener('resize',fitCv); fitCv();
+let vizOn=false, vizData=null;
+function startViz(){ vizOn=true; }
+const freqArr=new Uint8Array(512);
+function vizLoop(){
+  if(!vizOn || !analyser){ requestAnimationFrame(vizLoop); return; }
+  analyser.getByteFrequencyData(freqArr);
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const bars=64;
+  const bw=W/bars;
+  for(let i=0;i<bars;i++){
+    const idx=Math.floor(i*(freqArr.length/2)/bars);
+    const v=freqArr[idx]/255;
+    const bh=Math.max(2,v*H*0.9);
+    const x=i*bw, y=H-bh;
+    const grad=ctx.createLinearGradient(0,y,0,H);
+    grad.addColorStop(0,'#ff8fe8');
+    grad.addColorStop(1,'#41f0e0');
+    ctx.fillStyle=grad;
+    ctx.globalAlpha=0.85;
+    ctx.fillRect(x+1,y,bw-2,bh);
+  }
+  // 平均频率
+  let sum=0,cnt=0; for(let i=0;i<30;i++){sum+=freqArr[i];cnt++;}
+  $('vizFreq').textContent=Math.round(sum/cnt*2)+' Hz';
+  $('vizStatus').textContent='🔊 实时频谱 · 歌曲: '+TRACKS[currentTrack].name;
+  requestAnimationFrame(vizLoop);
+}
+requestAnimationFrame(vizLoop);
+/* 静止时频谱动画 */
+const eqBox=$('eqbar');
+for(let i=0;i<28;i++){const b=document.createElement('i');eqBox.appendChild(b);}
+/* 歌姬随节奏摇摆 */
+let avTick=0;
+function animateAvatar(){
+  const av=$('avatar');
+  if(isPlaying && analyser){
+    analyser.getByteFrequencyData(freqArr);
+    let avg=0; for(let i=0;i<20;i++)avg+=freqArr[i]; avg/=20;
+    const s=1+avg/255*0.15;
+    av.style.transform=`translateY(${Math.sin(avTick)*4}px) scale(${s})`;
+    avTick+=0.15;
+    requestAnimationFrame(animateAvatar);
+  } else {
+    av.style.transform='';
+  }
+}
+
+/* ============ 进度条 ============ */
+setInterval(()=>{
+  if(source && audioCtx){
+    const cur=audioCtx.currentTime;
+    $('progBar').style.width='0%';
+  }
+},200);
+$('progress').onclick=e=>{
+  const r=$('progress').getBoundingClientRect();
+  const p=(e.clientX-r.left)/r.width;
+  // 简化: 重播
+  if(isPlaying) playTrack();
+};
+
+/* ============ 键盘控制 ============ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowUp'){e.preventDefault();prevTrack();}
+  if(e.key==='ArrowDown'){e.preventDefault();nextTrack();}
+  if(e.key===' '){e.preventDefault();togglePlay();}
+});
+
+/* ============ 提示 ============ */
+let toastTimer;
+function toast(t){const o=$('toast');o.textContent=t;o.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>o.classList.remove('show'),2500);}
+
+/* 初始化 */
+renderTrackList();
+loadTrack();
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

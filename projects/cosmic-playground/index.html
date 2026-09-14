@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmic Playground - 粒子宇宙</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>">
+  <style>
+  /* ===== 沉浸增强版自定义样式 ===== */
+  .hud { display: none !important; }
+  .panel { display: none !important; }
+  .tips { display: none !important; }
+
+  /* 自定义标题 */
+  #cosmic-brand {
+    position: fixed; top: 24px; right: 28px;
+    text-align: right; pointer-events: none; user-select: none; z-index: 15;
+  }
+  #cosmic-brand .name {
+    font-family: Georgia, serif; font-size: 26px; font-style: italic;
+    color: #fff; letter-spacing: 0.06em;
+    text-shadow: 0 0 24px rgba(102,126,234,0.6);
+  }
+  #cosmic-brand .sub {
+    font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4); margin-top: 4px;
+  }
+
+  /* 极简底部控制栏 */
+  #cosmic-bar {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 2px;
+    background: rgba(10, 10, 25, 0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 6px 12px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 15;
+    max-width: 95vw;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .cosmic-mode {
+    font-family: 'Courier New', monospace;
+    font-size: 9px; letter-spacing: 0.05em;
+    background: transparent; border: 1px solid transparent;
+    color: rgba(255,255,255,0.5); padding: 5px 9px; border-radius: 15px;
+    cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+  }
+  .cosmic-mode:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .cosmic-mode.active { color: #fff; background: rgba(102,126,234,0.4); border-color: rgba(102,126,234,0.6); }
+  .cosmic-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 4px; }
+  .cosmic-theme {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    cursor: pointer; transition: all 0.2s ease; flex-shrink: 0;
+  }
+  .cosmic-theme:hover { transform: scale(1.15); }
+  .cosmic-theme.active { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+  .cosmic-action {
+    font-family: 'Courier New', monospace;
+    font-size: 9px; letter-spacing: 0.05em;
+    background: transparent; border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5); padding: 5px 9px; border-radius: 15px;
+    cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+  }
+  .cosmic-action:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+
+  /* 操作提示 */
+  #cosmic-tip {
+    position: fixed; left: 50%; bottom: 80px; transform: translateX(-50%);
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); pointer-events: none; user-select: none;
+    opacity: 0; transition: opacity 1s ease; z-index: 14; text-align: center; line-height: 2;
+  }
+  #cosmic-tip.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <!-- 顶部信息栏 -->
+  <div class="hud">
+    <div class="hud-item" id="fps">FPS: 60</div>
+    <div class="hud-item" id="particle-count">粒子: 0</div>
+    <div class="hud-item" id="mode-label">模式: 星系</div>
+  </div>
+
+  <!-- 控制面板 -->
+  <div class="panel" id="panel">
+    <div class="panel-toggle" id="panel-toggle">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </div>
+    <h2 class="panel-title">Cosmic Playground</h2>
+
+    <div class="control-group">
+      <label>视觉模式</label>
+      <div class="mode-grid">
+        <button class="mode-btn active" data-mode="galaxy">星系</button>
+        <button class="mode-btn" data-mode="aurora">极光</button>
+        <button class="mode-btn" data-mode="nebula">星云</button>
+        <button class="mode-btn" data-mode="matrix">矩阵</button>
+        <button class="mode-btn" data-mode="fireworks">烟花</button>
+        <button class="mode-btn" data-mode="starfield">星场</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>粒子数量: <span id="count-val">1500</span></label>
+      <input type="range" id="particle-slider" min="200" max="5000" value="1500" step="100">
+    </div>
+
+    <div class="control-group">
+      <label>粒子大小: <span id="size-val">3</span></label>
+      <input type="range" id="size-slider" min="1" max="10" value="3" step="0.5">
+    </div>
+
+    <div class="control-group">
+      <label>速度: <span id="speed-val">1.0</span></label>
+      <input type="range" id="speed-slider" min="0.1" max="3" value="1" step="0.1">
+    </div>
+
+    <div class="control-group">
+      <label>鼠标引力: <span id="gravity-val">1.0</span></label>
+      <input type="range" id="gravity-slider" min="0" max="5" value="1" step="0.1">
+    </div>
+
+    <div class="control-group">
+      <label>配色方案</label>
+      <div class="theme-row">
+        <button class="theme-btn active" data-theme="cosmic" style="background:linear-gradient(135deg,#667eea,#764ba2)"></button>
+        <button class="theme-btn" data-theme="fire" style="background:linear-gradient(135deg,#f12711,#f5af19)"></button>
+        <button class="theme-btn" data-theme="ocean" style="background:linear-gradient(135deg,#00c6ff,#0072ff)"></button>
+        <button class="theme-btn" data-theme="nature" style="background:linear-gradient(135deg,#11998e,#38ef7d)"></button>
+        <button class="theme-btn" data-theme="neon" style="background:linear-gradient(135deg,#ff00ff,#00ffff)"></button>
+      </div>
+    </div>
+
+    <div class="control-group btn-row">
+      <button class="action-btn" id="btn-fullscreen">全屏</button>
+      <button class="action-btn" id="btn-screenshot">截图</button>
+      <button class="action-btn" id="btn-reset">重置</button>
+    </div>
+
+    <div class="tips">
+      <p>鼠标移动 - 引力场</p>
+      <p>左键点击 - 粒子爆炸</p>
+      <p>右键点击 - 粒子黑洞</p>
+      <p>滚轮 - 缩放视角</p>
+      <p>空格键 - 暂停/继续</p>
+    </div>
+  </div>
+
+  <!-- 截图闪光效果 -->
+  <div class="flash" id="flash"></div>
+
+  <script src="js/app.js"></script>
+
+  <!-- ===== 沉浸增强版自定义 UI ===== -->
+  <div id="cosmic-brand">
+    <div class="name">粒子宇宙</div>
+    <div class="sub">Cosmic Playground</div>
+  </div>
+
+  <div id="cosmic-tip">移动鼠标引力场 · 左键爆炸 · 右键黑洞 · 滚轮缩放</div>
+
+  <div id="cosmic-bar">
+    <button class="cosmic-mode active" data-mode="galaxy">星系</button>
+    <button class="cosmic-mode" data-mode="aurora">极光</button>
+    <button class="cosmic-mode" data-mode="nebula">星云</button>
+    <button class="cosmic-mode" data-mode="matrix">矩阵</button>
+    <button class="cosmic-mode" data-mode="fireworks">烟花</button>
+    <button class="cosmic-mode" data-mode="starfield">星场</button>
+    <div class="cosmic-divider"></div>
+    <div class="cosmic-theme active" data-theme="cosmic" style="background:linear-gradient(135deg,#667eea,#764ba2)"></div>
+    <div class="cosmic-theme" data-theme="fire" style="background:linear-gradient(135deg,#f12711,#f5af19)"></div>
+    <div class="cosmic-theme" data-theme="ocean" style="background:linear-gradient(135deg,#00c6ff,#0072ff)"></div>
+    <div class="cosmic-theme" data-theme="nature" style="background:linear-gradient(135deg,#11998e,#38ef7d)"></div>
+    <div class="cosmic-theme" data-theme="neon" style="background:linear-gradient(135deg,#ff00ff,#00ffff)"></div>
+    <div class="cosmic-divider"></div>
+    <button class="cosmic-action" id="cosmic-fullscreen">全屏</button>
+    <button class="cosmic-action" id="cosmic-screenshot">截图</button>
+    <button class="cosmic-action" id="cosmic-reset">重置</button>
+  </div>
+
+  <script>
+  (function(){
+    function waitForApp(cb){
+      if (document.querySelector('.mode-btn.active')) { cb(); }
+      else { setTimeout(() => waitForApp(cb), 100); }
+    }
+    waitForApp(function(){
+      // 模式切换
+      document.querySelectorAll('.cosmic-mode').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var mode = btn.dataset.mode;
+          document.querySelector('.mode-btn[data-mode="' + mode + '"]').click();
+          document.querySelectorAll('.cosmic-mode').forEach(function(b){ b.classList.remove('active'); });
+          btn.classList.add('active');
+        });
+      });
+      // 配色切换
+      document.querySelectorAll('.cosmic-theme').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var theme = btn.dataset.theme;
+          document.querySelector('.theme-btn[data-theme="' + theme + '"]').click();
+          document.querySelectorAll('.cosmic-theme').forEach(function(b){ b.classList.remove('active'); });
+          btn.classList.add('active');
+        });
+      });
+      // 功能按钮
+      document.getElementById('cosmic-fullscreen').addEventListener('click', function(){
+        document.getElementById('btn-fullscreen').click();
+      });
+      document.getElementById('cosmic-screenshot').addEventListener('click', function(){
+        document.getElementById('btn-screenshot').click();
+      });
+      document.getElementById('cosmic-reset').addEventListener('click', function(){
+        document.getElementById('btn-reset').click();
+      });
+      // 键盘 1-6 切换模式
+      document.addEventListener('keydown', function(e){
+        var num = parseInt(e.key);
+        if (num >= 1 && num <= 6) {
+          var modes = ['galaxy','aurora','nebula','matrix','fireworks','starfield'];
+          document.querySelector('.cosmic-mode[data-mode="' + modes[num-1] + '"]').click();
+        }
+      });
+      // 显示提示
+      var tip = document.getElementById('cosmic-tip');
+      setTimeout(function(){ tip.classList.add('show'); }, 500);
+      setTimeout(function(){ tip.classList.remove('show'); }, 5000);
+    });
+  })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消逝进行时 · 正在消失的中国日常</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #f3ede2;
+    --bg-dark: #e8dfd0;
+    --ink: #2c1810;
+    --ink-light: #5a4030;
+    --accent: #b23a27;
+    --accent-dark: #8a2a1c;
+    --gold: #b8860b;
+    --card: #faf6ee;
+    --border: #c9b896;
+    --shadow: rgba(44, 24, 16, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* ===== 顶部 Hero ===== */
+  .hero {
+    position: relative;
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 20px;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(178,58,39,0.06) 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-dark) 100%);
+    border-bottom: 3px double var(--border);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 30px; left: 30px; right: 30px; bottom: 30px;
+    border: 1px solid var(--border);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .hero-stamp {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    letter-spacing: 8px;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 6px 20px;
+    margin-bottom: 40px;
+    transform: rotate(-2deg);
+    opacity: 0.85;
+  }
+
+  .hero h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(42px, 8vw, 88px);
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: var(--ink);
+    margin-bottom: 16px;
+    text-shadow: 2px 2px 0 rgba(178,58,39,0.1);
+  }
+
+  .hero .subtitle {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: var(--ink-light);
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+  }
+
+  .hero .desc {
+    max-width: 620px;
+    font-size: 15px;
+    color: var(--ink-light);
+    line-height: 2;
+    margin-bottom: 40px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat .num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--accent);
+  }
+
+  .hero-stat .label {
+    font-size: 12px;
+    color: var(--ink-light);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    font-size: 12px;
+    color: var(--ink-light);
+    letter-spacing: 3px;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* ===== 导航 ===== */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--ink);
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .nav a {
+    color: var(--bg);
+    text-decoration: none;
+    padding: 14px 28px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  .nav a:hover, .nav a.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ===== 时间轴 ===== */
+  .timeline-section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 20px 80px;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 32px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+  }
+
+  .section-sub {
+    text-align: center;
+    color: var(--ink-light);
+    font-size: 14px;
+    margin-bottom: 50px;
+    letter-spacing: 1px;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--border) 10%, var(--border) 90%, transparent);
+    transform: translateX(-50%);
+  }
+
+  .specimen {
+    position: relative;
+    width: 50%;
+    padding: 20px 40px;
+    margin-bottom: 40px;
+  }
+
+  .specimen:nth-child(odd) {
+    left: 0;
+    text-align: right;
+  }
+
+  .specimen:nth-child(even) {
+    left: 50%;
+    text-align: left;
+  }
+
+  .specimen::before {
+    content: '';
+    position: absolute;
+    top: 40px;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    border-radius: 50%;
+    z-index: 2;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .specimen:nth-child(odd)::before { right: -8px; }
+  .specimen:nth-child(even)::before { left: -8px; }
+
+  .specimen-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .specimen-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 8px 0 var(--shadow);
+  }
+
+  .specimen-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+    filter: sepia(0.15) contrast(1.02);
+  }
+
+  .specimen-body {
+    padding: 20px;
+  }
+
+  .specimen-num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+
+  .specimen-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .specimen-excerpt {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.9;
+    margin-bottom: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .specimen-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .countdown-badge {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .countdown-badge.gone {
+    color: var(--ink-light);
+    text-decoration: line-through;
+  }
+
+  .vote-count {
+    font-size: 11px;
+    color: var(--ink-light);
+  }
+
+  /* ===== 详情弹窗 ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(44, 24, 16, 0.7);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    max-width: 720px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--ink-light);
+    cursor: pointer;
+    z-index: 10;
+    width: 40px; height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+
+  .modal-close:hover { color: var(--accent); }
+
+  .modal-img {
+    width: 100%;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    filter: sepia(0.12);
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+
+  .modal-num {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 30px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+
+  .modal-text {
+    font-size: 15px;
+    line-height: 2.1;
+    color: var(--ink);
+    margin-bottom: 24px;
+    text-align: justify;
+  }
+
+  .data-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+
+  .data-card h4 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px dotted var(--border);
+  }
+
+  .data-row:last-child { border-bottom: none; }
+
+  .data-row .key { color: var(--ink-light); }
+  .data-row .val { font-weight: 600; color: var(--ink); }
+
+  .data-note {
+    font-size: 11px;
+    color: var(--ink-light);
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  /* ===== 投票区 ===== */
+  .vote-section {
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .vote-section h4 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+
+  .vote-section .vote-desc {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 18px;
+  }
+
+  .vote-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .vote-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink);
+  }
+
+  .vote-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .vote-btn.voted {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .vote-result {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    margin-top: 12px;
+  }
+
+  .vote-result .median {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent);
+  }
+
+  .vote-already {
+    font-size: 13px;
+    color: var(--gold);
+    margin-top: 8px;
+  }
+
+  /* ===== 排行榜 ===== */
+  .ranking-section {
+    background: var(--bg-dark);
+    padding: 70px 20px 80px;
+    border-top: 3px double var(--border);
+  }
+
+  .ranking-inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .ranking-list {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+
+  .ranking-header, .ranking-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 120px 100px;
+    padding: 14px 20px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ranking-header {
+    background: var(--ink);
+    color: var(--bg);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  .ranking-row {
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+
+  .ranking-row:last-child { border-bottom: none; }
+  .ranking-row:hover { background: var(--bg); }
+
+  .rank-num {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: var(--accent);
+  }
+
+  .rank-num.top { color: var(--gold); }
+
+  .rank-name {
+    font-weight: 600;
+  }
+
+  .rank-time {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .rank-time.gone {
+    color: var(--ink-light);
+    text-decoration: line-through;
+  }
+
+  .rank-votes {
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+
+  /* ===== 关于项目 ===== */
+  .about-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 70px 20px 80px;
+  }
+
+  .about-text {
+    font-size: 15px;
+    line-height: 2.2;
+    color: var(--ink);
+    margin-bottom: 20px;
+    text-align: justify;
+  }
+
+  .about-text strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .about-rules {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-top: 30px;
+    border-radius: 4px;
+  }
+
+  .about-rules h4 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    margin-bottom: 14px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .about-rules ol {
+    padding-left: 20px;
+    font-size: 14px;
+    line-height: 2;
+    color: var(--ink-light);
+  }
+
+  /* ===== 页脚 ===== */
+  footer {
+    background: var(--ink);
+    color: var(--bg);
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  footer .footer-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--bg);
+  }
+
+  footer .footer-sub {
+    font-size: 11px;
+    color: rgba(243,237,226,0.5);
+    margin-top: 8px;
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 700px) {
+    .timeline::before { left: 20px; }
+    .specimen {
+      width: 100%;
+      left: 0 !important;
+      text-align: left !important;
+      padding-left: 50px;
+      padding-right: 10px;
+    }
+    .specimen::before { left: 12px !important; right: auto !important; }
+    .nav a { padding: 12px 14px; font-size: 12px; }
+    .ranking-header, .ranking-row {
+      grid-template-columns: 36px 1fr 80px 60px;
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+    .hero-stats { gap: 24px; }
+    .modal-body { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="top">
+  <div class="hero-stamp">第 壹 期 · 2026</div>
+  <h1>消逝进行时</h1>
+  <div class="subtitle">—— 给正在消失的中国日常写倒计时 ——</div>
+  <p class="desc">
+    有些东西正在你没注意的时候，一点点退场。<br>
+    报刊亭、现金找零、手写春联、绿皮慢车……<br>
+    我们记录它们，也邀请你预言：<strong style="color:var(--accent)">它们还能活多久？</strong>
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num" id="statSpecimens">7</div>
+      <div class="label">收录标本</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num" id="statVotes">0</div>
+      <div class="label">次预言</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">2</div>
+      <div class="label">已确认消逝</div>
+    </div>
+  </div>
+  <div class="scroll-hint">向下滚动 ↓ 查看标本</div>
+</section>
+
+<!-- ===== 导航 ===== -->
+<nav class="nav">
+  <a href="#top" class="active">首页</a>
+  <a href="#timeline">标本档案</a>
+  <a href="#ranking">预言榜</a>
+  <a href="#about">关于项目</a>
+</nav>
+
+<!-- ===== 时间轴 ===== -->
+<section class="timeline-section" id="timeline">
+  <h2 class="section-title">标 本 档 案</h2>
+  <p class="section-sub">点击任意标本，查看详情并投下你的预言</p>
+  <div class="timeline" id="timelineContainer"></div>
+</section>
+
+<!-- ===== 排行榜 ===== -->
+<section class="ranking-section" id="ranking">
+  <div class="ranking-inner">
+    <h2 class="section-title">预 言 排 行 榜</h2>
+    <p class="section-sub">按"全民预测剩余寿命"从短到长排列 · 数据实时更新</p>
+    <div class="ranking-list" id="rankingList"></div>
+  </div>
+</section>
+
+<!-- ===== 关于 ===== -->
+<section class="about-section" id="about">
+  <h2 class="section-title">关 于 这 个 项 目</h2>
+  <p class="section-sub">为什么要做这件事</p>
+  <p class="about-text">
+    这不是一个怀旧项目。怀旧是向后看，而我们在做的是<strong>向前看</strong>——记录那些正在消失的事物，并邀请所有人来预言它们的"死亡时间"。
+  </p>
+  <p class="about-text">
+    2026 年的今天，移动支付已经普及，高铁网络覆盖全国，流媒体取代了录像厅。但在很多角落，一些旧事物还在苟延残喘。它们还能撑多久？没人知道。但<strong>预言本身就是一种关注</strong>——当足够多的人认真思考"它还能活几年"，这件事物就被看见了。
+  </p>
+  <p class="about-text">
+    项目启动后第 3 年、第 5 年、第 10 年，我们会回访每一件标本：它还在吗？变了吗？当年预言最准的人，将获得「时间预言家」徽章。<strong>时间越久，这个项目越有价值。</strong>
+  </p>
+  <div class="about-rules">
+    <h4>收录规则</h4>
+    <ol>
+      <li>只收录"曾经普遍存在、现在正在减少或已经消失"的中国日常事物</li>
+      <li>每件标本配现场白描 + 数据卡 + 全民倒计时投票</li>
+      <li>数据卡中的数量为公开资料估算，标注口径，不编造精确数字</li>
+      <li>已消失的事物标注"已消逝"，作为历史档案永久保留</li>
+      <li>欢迎投稿你家乡正在消失的事物，经核实后收录</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer>
+  <div class="footer-title">消 逝 进 行 时</div>
+  <div>记录正在消失的中国日常 · 邀请所有人写下预言</div>
+  <div class="footer-sub">第壹期 Demo · 2026 年 9 月 · 所有数据为估算，仅供演示</div>
+</footer>
+
+<!-- ===== 详情弹窗 ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+// ===== 标本数据 =====
+const specimens = [
+  {
+    id: 1,
+    num: 'NO.001',
+    title: '街角报刊亭',
+    img: 'https://aka.doubaocdn.com/s/1K9MPlFZmD',
+    excerpt: '它曾经是每个十字路口的标配。亭子里挂着《读者》《故事会》，窗台上摞着当天的报纸，老板一边找零一边跟老主顾聊天。现在，它更像一个城市里的孤岛。',
+    text: '它曾经是每个十字路口的标配。亭子里挂着《读者》《故事会》，窗台上摞着当天的报纸，老板一边找零一边跟老主顾聊天。买一包烟、一份晚报、一瓶冰红茶，是很多人下班路上的固定动作。',
+    text2: '智能手机消灭了报纸，移动支付消灭了零钱，连锁便利店消灭了"顺便买瓶水"。报刊亭的生意一缩再缩，很多亭子改成了奶茶摊、快递柜，或者干脆空着，玻璃窗上贴着"转让"。',
+    text3: '剩下的报刊亭，老板大多是六十岁以上的老人。他们守着亭子，不是为了赚钱，而是习惯了。亭子是他们的社交场，也是他们和这个飞速变化的城市之间，最后一个固定的坐标。',
+    data: [
+      { key: '高峰期数量（全国）', val: '约 10 万+' },
+      { key: '现存估算', val: '不足 1 万个' },
+      { key: '年递减率', val: '约 15%–20%' },
+      { key: '最后集中区域', val: '三四线城市老城区、县城' },
+      { key: '主要经营者年龄', val: '60 岁以上' }
+    ],
+    dataNote: '数据为根据公开报道与城市观察估算，非精确统计。',
+    gone: false
+  },
+  {
+    id: 2,
+    num: 'NO.002',
+    title: '现金找零',
+    img: 'https://aka.doubaocdn.com/s/9bYxaBoFAo',
+    excerpt: '"找您三块五。"——这句话曾经每天在每个柜台响起。店主从铁皮钱盒里摸出皱巴巴的纸币和硬币，递过来。现在，更多时候是"扫这里"。',
+    text: '"找您三块五。"——这句话曾经每天在每个柜台响起。店主从铁皮钱盒里摸出皱巴巴的纸币和硬币，递过来。买菜的大妈会把零钱仔细叠好塞进布包，小孩子攥着钢镚儿跑去买糖。',
+    text2: '移动支付用了不到十年，就把现金从日常交易里挤了出去。扫码、刷脸、碰一下，钱就没了。年轻人已经很久没摸过纸币，很多人甚至分不清第五套人民币各面额的颜色。',
+    text3: '现金没有完全消失。农贸市场的老人还在用，偏远地区还在用，红白喜事的红包还在用。但"日常找零"这个动作——从钱盒里数钱、递过去、对方再数一遍——正在以肉眼可见的速度退场。',
+    data: [
+      { key: '2015 年现金交易占比', val: '约 60%' },
+      { key: '2024 年现金交易占比', val: '约 10% 以下' },
+      { key: '仍高频使用现金人群', val: '65 岁以上、偏远地区' },
+      { key: '最后场景', val: '农贸市场、庙会、红白事' },
+      { key: '小商户现金收款占比', val: '持续下降中' }
+    ],
+    dataNote: '占比数据为根据央行支付体系报告与行业研究估算趋势。',
+    gone: false
+  },
+  {
+    id: 3,
+    num: 'NO.003',
+    title: '手写春联',
+    img: 'https://aka.doubaocdn.com/s/U5izTSUYN8',
+    excerpt: '腊月里，老城区的街边会支起一张桌子。老先生蘸墨、悬腕、落笔，一副春联一气呵成。红纸黑字，墨香混着年味。现在，超市里九块九一副的印刷春联占了九成。',
+    text: '腊月里，老城区的街边会支起一张桌子。老先生蘸墨、悬腕、落笔，一副春联一气呵成。红纸黑字，墨香混着年味。围观的人指指点点：「这个『福』字写得有劲！」写好的春联挂在绳子上晾着，风一吹，红纸猎猎响。',
+    text2: '印刷春联便宜、整齐、不掉色，九块九一副，超市门口堆成山。手写春联要等、要贵、还可能墨没干蹭花。年轻人觉得"都一样"，老年人觉得"不一样"——但老年人一年比一年少了。',
+    text3: '还在坚持手写春联的，大多是退休的书法爱好者。他们不是为了赚钱，一副春联收十块二十块，不够墨纸钱。他们是觉得，过年总得有个过年的样子。而这个"样子"，正在变成一种表演，而不是日常。',
+    data: [
+      { key: '手写春联市场占比', val: '不足 5%' },
+      { key: '主要从业者', val: '60 岁以上书法爱好者' },
+      { key: '集中出现时间', val: '腊月二十至除夕' },
+      { key: '集中出现地点', val: '老城区集市、文化馆门前' },
+      { key: '单副价格区间', val: '10–50 元' }
+    ],
+    dataNote: '占比为根据年货市场观察估算，非行业精确统计。',
+    gone: false
+  },
+  {
+    id: 4,
+    num: 'NO.004',
+    title: '可开窗的绿皮慢车',
+    img: 'https://aka.doubaocdn.com/s/h7RqSnR7iV',
+    excerpt: '车窗可以向上推开，风灌进来，带着铁轨和田野的味道。乘客探出头跟站台上的人挥手，卖货的小推车在过道里挤来挤去。"啤酒饮料矿泉水，花生瓜子八宝粥。"',
+    text: '车窗可以向上推开，风灌进来，带着铁轨和田野的味道。乘客探出头跟站台上的人挥手，卖货的小推车在过道里挤来挤去。"啤酒饮料矿泉水，花生瓜子八宝粥，来，腿收一下。"这句话是一代人的集体记忆。',
+    text2: '高铁越来越密，绿皮车越来越少。那些还在跑的绿皮慢车，很多是"扶贫慢火车"——在大山里一站一停，票价几块钱，是沿线村民赶集、看病、上学的唯一交通工具。它们不是旅游项目，是生计。',
+    text3: '但即使是慢火车，也在逐步换成封闭车窗的新型车体。可以推开的车窗、可以把头伸出去的那种绿皮车，正在变成历史。未来的孩子可能无法理解：为什么坐火车要开窗？风那么大，不脏吗？',
+    data: [
+      { key: '高峰期绿皮车数量', val: '数千对（日均）' },
+      { key: '现存可开窗绿皮慢车', val: '不足百对（估算）' },
+      { key: '最低票价', val: '1–2 元（部分慢火车）' },
+      { key: '最后线路类型', val: '偏远山区扶贫慢火车' },
+      { key: '平均运行时速', val: '40–60 公里' }
+    ],
+    dataNote: '数量为根据国铁集团公开信息与铁路爱好者统计估算。',
+    gone: false
+  },
+  {
+    id: 5,
+    num: 'NO.005',
+    title: '录像厅',
+    img: 'https://aka.doubaocdn.com/s/MTCQEUITaB',
+    excerpt: '厚棉门帘一掀，里面是黑漆漆的房间和闪烁的银幕。五块钱看一下午，烟味、脚味、爆米花味混在一起。香港枪战片、周星驰喜剧，是很多人的电影启蒙。【已消逝】',
+    text: '厚棉门帘一掀，里面是黑漆漆的房间和闪烁的银幕。五块钱看一下午，烟味、脚味、爆米花味混在一起。香港枪战片、周星驰喜剧，是很多人的电影启蒙。老板在门口的小窗口收钱，递过来一张票根和一个坐垫。',
+    text2: 'VCD 和 DVD 先干掉了录像厅的一半生意，流媒体彻底终结了它。2000 年代中期，全国的录像厅几乎一夜之间消失。有些改成了网吧，有些改成了棋牌室，更多的是大门一锁，再也没开过。',
+    text3: '今天偶尔能在怀旧主题餐厅或影视基地看到"录像厅"的招牌，但那是布景，不是真的。真的录像厅已经不存在了——那种嘈杂、闷热、所有人挤在一起看一块幕布的体验，只能在记忆里找。',
+    data: [
+      { key: '高峰期（90 年代）数量', val: '全国约数十万家' },
+      { key: '单场票价', val: '2–10 元' },
+      { key: '主要片源', val: '香港录像带、盗版 VCD' },
+      { key: '基本消亡时间', val: '2005 年前后' },
+      { key: '现存状态', val: '已基本消逝，仅存怀旧布景' }
+    ],
+    dataNote: '本件为"已消逝标本"，作为历史档案永久收录。',
+    gone: true
+  },
+  {
+    id: 6,
+    num: 'NO.006',
+    title: '修钢笔的小摊',
+    img: 'https://aka.doubaocdn.com/s/be6Q9VsQyO',
+    excerpt: '树荫下，老师傅戴着老花镜，面前一个木盒子，里面分门别类装着笔尖、笔舌、墨囊、小螺丝刀。一支钢笔堵了、歪了、漏墨了，他几分钟就能修好。现在，钢笔坏了就扔。',
+    text: '树荫下，老师傅戴着老花镜，面前一个木盒子，里面分门别类装着笔尖、笔舌、墨囊、小螺丝刀。一支钢笔堵了、歪了、漏墨了，他几分钟就能修好。修一支笔三块五块，老主顾来了还能聊半天。',
+    text2: '中性笔几块钱一盒，写坏了就扔，没人再修钢笔。钢笔变成了礼品和收藏品，真正日常用钢笔的人越来越少。修钢笔这个行当，也跟着钢笔一起，从"日常维修"变成了"濒危手艺"。',
+    text3: '还在修钢笔的老人，很多是从钢笔厂退休的。他们守着一个小摊，不是为了生意——一天可能也就来一两个人。他们是舍不得那些工具，舍不得这个做了一辈子的活计。而他们之后，几乎没有年轻人愿意学。',
+    data: [
+      { key: '高峰期从业者', val: '每个城市数十至上百人' },
+      { key: '现存全国从业者', val: '不足百人（估算）' },
+      { key: '单次维修费用', val: '3–20 元' },
+      { key: '最后出现地点', val: '老城市老街、大学周边' },
+      { key: '从业者平均年龄', val: '70 岁以上' }
+    ],
+    dataNote: '从业者数量为根据媒体报道与手艺人社群估算，非精确普查。',
+    gone: false
+  },
+  {
+    id: 7,
+    num: 'NO.007',
+    title: 'IC 卡公用电话亭',
+    img: 'https://aka.doubaocdn.com/s/ov26HHtb35',
+    excerpt: '插卡、拨号、通话，三分钟一块钱。电话亭的玻璃上贴满了小广告，下雨天里面会漏雨。排队打电话是大学校园里的常态。现在，那些亭子还立着，但电话早就拆了。【已消逝】',
+    text: '插卡、拨号、通话，三分钟一块钱。电话亭的玻璃上贴满了小广告，下雨天里面会漏雨。排队打电话是大学校园里的常态，宿舍楼下的电话亭永远有人。IC 卡是学生证之外，大学生的第二张身份证。',
+    text2: '手机普及之后，公用电话亭以惊人的速度被遗弃。2000 年前后全国有约 200 万部公用电话，到 2010 年代已经基本退出日常。很多亭子还立在街边，但电话早就拆了，变成了广告牌、快递柜，或者纯废墟。',
+    text3: '少数城市把电话亭改造成了"微型图书馆"或"充电亭"，但那已经不是电话亭了。那个需要插卡、需要计时、需要在玻璃亭子里大声说话的通讯方式，已经彻底成为历史。',
+    data: [
+      { key: '高峰期（2000 年前后）', val: '全国约 200 万部' },
+      { key: 'IC 卡通话资费', val: '约 0.3 元/分钟' },
+      { key: '主要使用人群', val: '学生、外来务工者' },
+      { key: '基本退出日常时间', val: '2010 年代中期' },
+      { key: '现存状态', val: '已消逝，少量改造为他用' }
+    ],
+    dataNote: '本件为"已消逝标本"，作为历史档案永久收录。',
+    gone: true
+  }
+];
+
+// ===== 投票存储 =====
+const STORAGE_KEY = 'xiaoshi_votes_v1';
+
+function loadVotes() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch(e) {
+    return {};
+  }
+}
+
+function saveVotes(votes) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
+}
+
+function getMedian(votes) {
+  if (!votes || votes.length === 0) return null;
+  const sorted = [...votes].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function getAllVotes() {
+  const all = loadVotes();
+  const result = {};
+  specimens.forEach(s => {
+    result[s.id] = all[s.id] || [];
+  });
+  return result;
+}
+
+function getTotalVotes() {
+  const all = getAllVotes();
+  return Object.values(all).reduce((sum, arr) => sum + arr.length, 0);
+}
+
+// ===== 渲染时间轴 =====
+function renderTimeline() {
+  const container = document.getElementById('timelineContainer');
+  const allVotes = getAllVotes();
+
+  container.innerHTML = specimens.map(s => {
+    const votes = allVotes[s.id];
+    const median = getMedian(votes);
+    const countdownText = s.gone
+      ? '<span class="countdown-badge gone">已消逝</span>'
+      : median !== null
+        ? `<span class="countdown-badge">预测剩余 ${median} 年</span>`
+        : `<span class="countdown-badge">等待预言</span>`;
+
+    return `
+      <div class="specimen">
+        <div class="specimen-card" onclick="openModal(${s.id})">
+          <img class="specimen-img" src="${s.img}" alt="${s.title}" loading="lazy">
+          <div class="specimen-body">
+            <div class="specimen-num">${s.num}</div>
+            <div class="specimen-title">${s.title}</div>
+            <div class="specimen-excerpt">${s.excerpt}</div>
+            <div class="specimen-meta">
+              ${countdownText}
+              <span class="vote-count">${votes.length} 人预言</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== 渲染排行榜 =====
+function renderRanking() {
+  const allVotes = getAllVotes();
+  const list = specimens.map(s => {
+    const votes = allVotes[s.id];
+    const median = getMedian(votes);
+    return {
+      ...s,
+      voteCount: votes.length,
+      median: median,
+      sortVal: s.gone ? -1 : (median !== null ? median : 999)
+    };
+  }).sort((a, b) => a.sortVal - b.sortVal);
+
+  const container = document.getElementById('rankingList');
+  container.innerHTML = `
+    <div class="ranking-header">
+      <span>排名</span>
+      <span>标本名称</span>
+      <span>预测剩余</span>
+      <span>预言数</span>
+    </div>
+    ${list.map((s, i) => {
+      const timeText = s.gone
+        ? '<span class="rank-time gone">已消逝</span>'
+        : s.median !== null
+          ? `<span class="rank-time">${s.median} 年</span>`
+          : `<span class="rank-time" style="color:var(--ink-light)">—</span>`;
+      return `
+        <div class="ranking-row">
+          <span class="rank-num ${i < 3 ? 'top' : ''}">${i + 1}</span>
+          <span class="rank-name">${s.title}</span>
+          ${timeText}
+          <span class="rank-votes">${s.voteCount} 人</span>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+// ===== 弹窗 =====
+function openModal(id) {
+  const s = specimens.find(x => x.id === id);
+  if (!s) return;
+  const allVotes = getAllVotes();
+  const votes = allVotes[id] || [];
+  const median = getMedian(votes);
+
+  const voteOptions = [1, 2, 3, 5, 8, 10, 15, 20, 30];
+  const voteSection = s.gone
+    ? `<div class="vote-section">
+        <h4>本件已确认消逝</h4>
+        <p class="vote-desc">它已经成为历史档案，无需预言。但你可以记住它。</p>
+      </div>`
+    : `<div class="vote-section">
+        <h4>它还能活多久？</h4>
+        <p class="vote-desc">选择你认为这件事物还能存在的年数，投下你的预言</p>
+        <div class="vote-options" id="voteOptions">
+          ${voteOptions.map(y => `<button class="vote-btn" onclick="castVote(${id}, ${y})">${y} 年</button>`).join('')}
+        </div>
+        ${median !== null ? `
+          <div class="vote-result">
+            全民预测中位数：<span class="median">${median}</span> 年
+          </div>
+          <div class="vote-already">已有 ${votes.length} 人参与预言</div>
+        ` : `
+          <div class="vote-result" style="color:var(--ink-light);font-size:13px;">
+            还没有人预言，来做第一个？
+          </div>
+        `}
+      </div>`;
+
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <img class="modal-img" src="${s.img}" alt="${s.title}">
+    <div class="modal-body">
+      <div class="modal-num">${s.num}${s.gone ? ' · 已消逝标本' : ''}</div>
+      <div class="modal-title">${s.title}</div>
+      <div class="modal-text">
+        <p>${s.text}</p>
+        <br>
+        <p>${s.text2}</p>
+        <br>
+        <p>${s.text3}</p>
+      </div>
+      <div class="data-card">
+        <h4>数 据 卡</h4>
+        ${s.data.map(d => `
+          <div class="data-row">
+            <span class="key">${d.key}</span>
+            <span class="val">${d.val}</span>
+          </div>
+        `).join('')}
+        <div class="data-note">${s.dataNote}</div>
+      </div>
+      ${voteSection}
+    </div>
+  `;
+
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function castVote(id, years) {
+  const all = loadVotes();
+  if (!all[id]) all[id] = [];
+  all[id].push(years);
+  saveVotes(all);
+  openModal(id); // 刷新弹窗
+  renderTimeline();
+  renderRanking();
+  updateStats();
+}
+
+// ===== 更新统计 =====
+function updateStats() {
+  document.getElementById('statVotes').textContent = getTotalVotes();
+}
+
+// ===== 导航高亮 =====
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    document.querySelectorAll('.nav a').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ===== 点击遮罩关闭 =====
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ===== ESC 关闭 =====
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ===== 初始化 =====
+renderTimeline();
+renderRanking();
+updateStats();
+</script>
+
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

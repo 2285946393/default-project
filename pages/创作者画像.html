@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的创作者画像 · 有花无实</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --pink: #e5b1c4; --pink-deep: #c9809c; --pink-dark: #56374b;
+    --cream: #fdf3f7; --lilac: #c8b8e8; --blue: #a8c8e8; --mint: #b8e0d0;
+    --text: #431e32; --text-soft: #965d78;
+  }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(160deg, #fdf3f7 0%, #f3e8f5 45%, #e8f0fa 100%);
+    color: var(--text); min-height: 100vh; padding-bottom: 80px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  header { text-align: center; padding: 64px 0 12px; position: relative; }
+  .petal { position: absolute; font-size: 22px; opacity: .5; animation: fall 9s linear infinite; }
+  @keyframes fall { 0% { transform: translateY(-30px) rotate(0); opacity: 0; } 10% { opacity: .5; } 100% { transform: translateY(90vh) rotate(360deg); opacity: 0; } }
+  h1 { font-size: 30px; letter-spacing: 3px; }
+  h1 em { font-style: normal; color: var(--pink-deep); }
+  .subtitle { color: var(--text-soft); margin-top: 10px; font-size: 14px; line-height: 1.8; }
+  .stat-row { display: flex; justify-content: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .stat { background: rgba(255,255,255,.75); backdrop-filter: blur(6px); border: 1px solid rgba(229,177,196,.35); border-radius: 16px; padding: 12px 22px; min-width: 120px; }
+  .stat b { display: block; font-size: 26px; color: var(--pink-deep); }
+  .stat span { font-size: 12px; color: var(--text-soft); }
+
+  section { margin-top: 48px; }
+  h2 { font-size: 20px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  h2::before { content: "🌸"; font-size: 16px; }
+  .lead { font-size: 13px; color: var(--text-soft); margin-bottom: 18px; line-height: 1.8; }
+
+  .card { background: rgba(255,255,255,.78); backdrop-filter: blur(8px); border: 1px solid rgba(229,177,196,.3); border-radius: 20px; padding: 22px; box-shadow: 0 6px 30px rgba(201,128,156,.1); }
+
+  /* 雷达图 */
+  #radarBox { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; justify-content: center; }
+  #radarLegend { font-size: 13px; line-height: 2.1; color: var(--text-soft); }
+  #radarLegend b { color: var(--text); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+  /* 时间轴 */
+  #timelineBox { position: relative; }
+  .tl-controls { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .tl-controls button { border: none; border-radius: 99px; padding: 6px 16px; font-size: 12px; cursor: pointer; background: rgba(229,177,196,.18); color: var(--text-soft); border: 1px solid rgba(229,177,196,.4); transition: all .2s; }
+  .tl-controls button.on { background: var(--pink-deep); color: #fff; }
+  .tl-controls button:hover:not(.on) { background: rgba(229,177,196,.35); }
+  #tlChart { width: 100%; height: 320px; }
+
+  /* 作品网格 */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+  .work { border-radius: 14px; padding: 12px 14px; font-size: 13px; cursor: default; transition: transform .2s, box-shadow .2s; border: 1.5px solid transparent; background: rgba(255,255,255,.6); }
+  .work:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(201,128,156,.18); }
+  .work .emoji { font-size: 20px; margin-right: 6px; }
+  .work .name { font-weight: bold; }
+  .work .meta { display: block; color: var(--text-soft); font-size: 11.5px; margin-top: 5px; line-height: 1.6; }
+  .work .why { display: block; font-size: 11.5px; color: var(--pink-deep); margin-top: 5px; }
+
+  /* 三问 */
+  .qa { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .q { padding: 20px; border-radius: 18px; background: linear-gradient(150deg, rgba(255,255,255,.85), rgba(248,235,242,.6)); border: 1px solid rgba(229,177,196,.35); }
+  .q h3 { font-size: 15px; margin-bottom: 10px; color: var(--pink-deep); }
+  .q p { font-size: 13px; line-height: 1.9; color: var(--text-soft); }
+  .q p b { color: var(--text); }
+  .q .hint { margin-top: 10px; font-size: 12px; color: var(--pink-deep); background: rgba(229,177,196,.12); border-radius: 10px; padding: 8px 10px; line-height: 1.7; }
+
+  /* 结论 */
+  #verdict { margin-top: 16px; font-size: 14px; line-height: 2; }
+  #verdict b { color: var(--pink-deep); }
+  .bar-wrap { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 12.5px; }
+  .bar-label { width: 120px; text-align: right; color: var(--text-soft); flex-shrink: 0; }
+  .bar-track { flex: 1; background: rgba(229,177,196,.15); border-radius: 99px; height: 18px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--pink), var(--lilac)); transition: width 1s ease; width: 0; }
+  .bar-num { width: 34px; font-weight: bold; color: var(--pink-deep); }
+
+  footer { text-align: center; margin-top: 70px; color: var(--text-soft); font-size: 12px; line-height: 2; }
+  @media (max-width: 640px) { h1 { font-size: 24px; } #tlChart { height: 260px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="petal" style="left:12%">🌸</div><div class="petal" style="left:36%; animation-delay:2.5s">🌷</div><div class="petal" style="left:62%; animation-delay:5s">🌸</div><div class="petal" style="left:86%; animation-delay:1.2s">💮</div>
+  <h1>我的创作者<em>画像</em></h1>
+  <p class="subtitle">25 个作品，25 次回答「我想要什么」的投票。<br>这个页面不用你填任何东西——它只负责把你已经投过的票，摊开给你看。</p>
+  <div class="stat-row">
+    <div class="stat"><b id="stTotal">25</b><span>件作品</span></div>
+    <div class="stat"><b id="stGames">12+</b><span>游戏与玩法</span></div>
+    <div class="stat"><b id="stDays">37</b><span>天创作跨度</span></div>
+    <div class="stat"><b id="stTop">🎮</b><span>最常出的牌</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section>
+  <h2>你是谁 · 兴趣雷达</h2>
+  <p class="lead">按作品的真实属性统计，不是按你「觉得自己应该喜欢什么」。</p>
+  <div class="card">
+    <div id="radarBox">
+      <canvas id="radar" width="380" height="380"></canvas>
+      <div id="radarLegend"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>时间线 · 兴趣怎么迁移的</h2>
+  <p class="lead">每一枚花瓣是一件作品的「属性投票」落点。9/7 那天的爆发、9/9 之后游戏开始变重，都在图上。</p>
+  <div class="card">
+    <div class="tl-controls" id="tlBtns"></div>
+    <canvas id="tlChart"></canvas>
+  </div>
+</section>
+
+<section>
+  <h2>每一票 · 作品清单</h2>
+  <p class="lead">悬停看每件作品「为什么被做出来」——那一行才是你真正的动机。</p>
+  <div class="card"><div class="grid" id="workGrid"></div></div>
+</section>
+
+<section>
+  <h2>三个小问题 · 现在就答</h2>
+  <p class="lead">大问题「我想要什么」问不出来，是因为它太大了。把它换成这三个小的，答案会自己浮上来。</p>
+  <div class="qa">
+    <div class="q">
+      <h3>❶ 最近玩什么最上头？</h3>
+      <p>上头点 = 你的多巴胺指针。你玩《弹球磁砖》时，爽的是<b>数字滚雪球</b>还是<b>三选一构筑</b>？前者你喜欢放置/自动化，后者你喜欢策略深度。</p>
+      <div class="hint">你的作品已经回答过一半：弹球乐园（自动乱飞）和弹球磁砖（手动瞄准）你都做了——两种爽你都要。</div>
+    </div>
+    <div class="q">
+      <h3>❷ 哪个作品做完还在意它？</h3>
+      <p>做完就丢 = 只是新鲜感；做完还惦记 = 真喜欢。回去翻翻自己的清单，那件你后来还想加东西的，就是了。</p>
+      <div class="hint">线索：深渊塔你加过「15 层 + Boss + 随机事件 + 双结局」四轮扩展——它大概率是你最在意的孩子。</div>
+    </div>
+    <div class="q">
+      <h3>❸ 你希望谁看到会笑/哭？</h3>
+      <p>给「哇塞」做的（极光流体、星尘），给「会心一笑」做的（沙雕工具箱），给「鼻子一酸」做的（消逝进行时）——你最想投喂哪种情绪，就是你的受众直觉。</p>
+      <div class="hint">消逝进行时 + 时光轴 + 抉择回响，你的「抒情线」其实一直没断过。</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>画像结论</h2>
+  <div class="card">
+    <div id="bars"></div>
+    <p id="verdict">
+      你不是「不知道自己想要什么」，你是<b>想要的东西太多，还没排过优先级</b>。<br>
+      你的投票显示：主线是<b>玩法设计</b>（数量最多、迭代最勤），暗线是<b>给情绪做东西</b>（治愈、沙雕、怀旧从来没断过），副线是<b>技术炫技</b>（流体、声带、调制解调——你在用作品偷偷学自己的专业课）。<br>
+      所以下次迷茫，别问「我想要什么」。问：<b>「这次的票投给主线、暗线还是副线？」</b>——三个都合法，选一个就好。
+    </p>
+  </div>
+</section>
+
+<footer>
+  有花无实 · 创作者画像 · 数据来自 25 个作品的实际分类统计<br>
+  🌸 下次不知道做什么时，回来看看这张图，然后投票 🌸
+</footer>
+</div>
+
+<script>
+"use strict";
+// ====== 数据层：25 件作品的「属性投票」======
+// type: play(玩法) mood(情绪) tech(技术) plan(企划/记录) tool(工具)
+// axis2: 情绪光谱 sweet(治愈可爱) fun(沙雕欢乐) deep(抒情人文) dark(紧张刺激)
+// d: 日期, kb: 文件大小(投入度粗估), why: 被做出来的真实动机
+const W = [
+  { n:"极光流体", e:"🌌", t:"tech", m:["sweet"], d:9.05, kb:15, why:"想看'哇'的瞬间——技术当颜料用" },
+  { n:"星尘", e:"✨", t:"tech", m:["sweet"], d:9.05, kb:15, why:"粒子当画笔，给自己造一片星空" },
+  { n:"墨", e:"🖋️", t:"tech", m:["deep"], d:9.05, kb:18, why:"水墨晕染——中式审美的一次抒情" },
+  { n:"球藻", e:"🫧", t:"mood", m:["sweet"], d:9.05, kb:60, why:"想要一个安静的角落，看着就放松" },
+  { n:"时光轴", e:"📜", t:"plan", m:["deep"], d:9.05, kb:40, why:"想留住正在消失的瞬间" },
+  { n:"Git 时间穿梭迷宫", e:"🌀", t:"play", m:["fun"], d:9.07, kb:15, why:"把学习变成游戏——教育游戏化实验" },
+  { n:"二次元抽卡机", e:"🎴", t:"play", m:["fun","dark"], d:9.07, kb:21, why:"想要'金光一闪'的爽感，不花钱" },
+  { n:"节奏抽卡音游", e:"🎵", t:"play", m:["fun","dark"], d:9.07, kb:16, why:"抽卡不够，还要打拍子——爽感叠加实验" },
+  { n:"全能工具箱", e:"🧰", t:"tool", m:["fun"], d:9.07, kb:25, why:"日常需要+塞进一个文件的强迫症" },
+  { n:"小鲸鱼岛", e:"🏝️", t:"plan", m:["sweet","fun"], d:9.07, kb:17, why:"给 QQ 群一个家——社区归属感企划" },
+  { n:"抉择回响", e:"🔀", t:"play", m:["deep"], d:9.07, kb:23, why:"用词条重开人生——文字+选择的重量" },
+  { n:"鲸鱼娘吃米饭", e:"🍚", t:"mood", m:["sweet"], d:9.07, kb:23, why:"纯陪伴——干饭的可爱循环" },
+  { n:"深渊塔", e:"🗼", t:"play", m:["dark"], d:9.07, kb:40, why:"要策略深度+随机性+叙事的完整游戏" },
+  { n:"虚拟歌姬", e:"🎤", t:"tech", m:["sweet"], d:9.07, kb:15, why:"让声音看得见——音乐可视化" },
+  { n:"通信调制实验室", e:"📡", t:"tech", m:["deep"], d:9.07, kb:19, why:"专业课(通信原理)的作品化自救" },
+  { n:"消逝进行时", e:"⏳", t:"plan", m:["deep"], d:9.07, kb:36, why:"给消失的中国日常写倒计时——人文企划" },
+  { n:"元素秘境", e:"⛲", t:"play", m:["dark","fun"], d:9.08, kb:76, why:"落沙沙盒——想当一个'世界'的造物主" },
+  { n:"人生重开", e:"🔄", t:"play", m:["fun","dark"], d:9.09, kb:110, why:"生命重开的文字模拟——事件流的上头感" },
+  { n:"合成猫咪", e:"🐱", t:"play", m:["sweet","fun"], d:9.09, kb:133, why:"合成的爽+粉色小猫——被毙三次也要做" },
+  { n:"流体花园", e:"🌺", t:"mood", m:["sweet"], d:9.10, kb:64, why:"种花不结果——'有花无实'的自我表达" },
+  { n:"糖果果冻罐", e:"🍬", t:"mood", m:["sweet","fun"], d:9.10, kb:191, why:"挤软糖解压——把'治愈'做进交互" },
+  { n:"沙雕工具箱", e:"🎁", t:"tool", m:["fun"], d:9.11, kb:31, why:"摸鱼全家桶——幽默感的产品化" },
+  { n:"弹球磁砖", e:"🧊", t:"play", m:["dark","fun"], d:9.11, kb:99, why:"物理引擎+弹球海——连锁爆炸的爽感" },
+  { n:"弹球乐园", e:"🎡", t:"play", m:["fun","dark"], d:9.11, kb:18, why:"自动挂机+三选一构筑——策略深度的另一种解法" },
+  { n:"边界千年", e:"🗺️", t:"plan", m:["deep"], d:9.12, kb:120, why:"历史当潮水看——科普+人文的结合" },
+];
+// 类型统计
+const tCount = {};
+W.forEach(w => tCount[w.t] = (tCount[w.t] || 0) + 1);
+// 情绪统计（一件作品可以投多票）
+const mCount = {};
+W.forEach(w => w.m.forEach(mm => mCount[mm] = (mCount[mm] || 0) + 1));
+document.getElementById("stTotal").textContent = W.length;
+document.getElementById("stGames").textContent = tCount.play + "+";
+document.getElementById("stDays").textContent = Math.round((W[W.length-1].d - W[0].d) * 30.4) + " 天";
+
+const TYPE_INFO = {
+  play: { label:"玩法设计", color:"#e0809e", desc:"游戏机制 · 数值 · 爽感工程" },
+  mood: { label:"情绪治愈", color:"#a8c8e8", desc:"陪伴 · 解压 · 看着就舒服" },
+  tech: { label:"技术炫技", color:"#b8a8e8", desc:"流体/粒子/声学——技术当颜料" },
+  plan: { label:"人文企划", color:"#8ec8b0", desc:"记录 · 怀旧 · 给世界留点东西" },
+  tool: { label:"实用工具", color:"#e8c890", desc:"日常需要 · 顺手就做" },
+};
+const MOOD_INFO = {
+  sweet: { label:"治愈可爱", color:"#f0a8c0" },
+  fun:   { label:"沙雕欢乐", color:"#f0c890" },
+  deep:  { label:"抒情人文", color:"#90a8d8" },
+  dark:  { label:"紧张刺激", color:"#c88ca8" },
+};
+
+// ====== 雷达图（手绘 canvas，零依赖） ======
+function drawRadar() {
+  const c = document.getElementById("radar"), x = c.getContext("2d");
+  const cx = 190, cy = 190, R = 140, N = 5;
+  const keys = Object.keys(TYPE_INFO);
+  const max = Math.max(...keys.map(k => tCount[k]));
+  const pt = (i, r) => { const a = -Math.PI/2 + i * 2*Math.PI/N; return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; };
+  x.clearRect(0,0,380,380);
+  // 网格
+  for (let ring = 1; ring <= 4; ring++) {
+    x.beginPath();
+    for (let i = 0; i <= N; i++) { const p = pt(i % N, R*ring/4); i ? x.lineTo(...p) : x.moveTo(...p); }
+    x.strokeStyle = "rgba(201,128,156,.25)"; x.lineWidth = 1; x.stroke();
+  }
+  for (let i = 0; i < N; i++) {
+    x.beginPath(); x.moveTo(cx, cy); x.lineTo(...pt(i, R));
+    x.strokeStyle = "rgba(201,128,156,.25)"; x.stroke();
+  }
+  // 数据面
+  x.beginPath();
+  keys.forEach((k, i) => { const p = pt(i, R * tCount[k] / max); i ? x.lineTo(...p) : x.moveTo(...p); });
+  x.closePath();
+  x.fillStyle = "rgba(224,128,158,.3)"; x.fill();
+  x.strokeStyle = "#e0809e"; x.lineWidth = 2.5; x.stroke();
+  keys.forEach((k, i) => { const p = pt(i, R * tCount[k] / max); x.beginPath(); x.arc(p[0], p[1], 4.5, 0, 7); x.fillStyle = TYPE_INFO[k].color; x.fill(); x.strokeStyle = "#fff"; x.lineWidth = 1.5; x.stroke(); });
+  // 轴标签
+  x.font = "bold 13px 'Microsoft YaHei'"; x.textAlign = "center";
+  keys.forEach((k, i) => {
+    const p = pt(i, R + 26);
+    x.fillStyle = "#431e32"; x.fillText(TYPE_INFO[k].label, p[0], p[1] + 4);
+    x.fillStyle = "#965d78"; x.font = "11px 'Microsoft YaHei'";
+    x.fillText(tCount[k] + " 件", p[0], p[1] + 18);
+    x.font = "bold 13px 'Microsoft YaHei'";
+  });
+  const lg = document.getElementById("radarLegend");
+  lg.innerHTML = keys.map(k => `<span class="dot" style="background:${TYPE_INFO[k].color}"></span><b>${TYPE_INFO[k].label}</b> ×${tCount[k]} —— ${TYPE_INFO[k].desc}`).join("<br>");
+}
+drawRadar();
+
+// ====== 时间轴散点（花瓣落点） ======
+const tlCanvas = document.getElementById("tlChart");
+function drawTL(mode) {
+  const dpr = window.devicePixelRatio || 1;
+  const Wd = tlCanvas.clientWidth || 900, Hd = tlCanvas.clientHeight || 320;
+  tlCanvas.width = Wd * dpr; tlCanvas.height = Hd * dpr;
+  tlCanvas.style.width = Wd + "px"; tlCanvas.style.height = Hd + "px";
+  const x = tlCanvas.getContext("2d"); x.scale(dpr, dpr);
+  const pad = { l: 40, r: 16, t: 20, b: 34 };
+  const iw = Wd - pad.l - pad.r, ih = Hd - pad.t - pad.b;
+  const dMin = 9.04, dMax = 9.135;
+  const px = d => pad.l + (d - dMin) / (dMax - dMin) * iw;
+  let yFor, yLab, ticks;
+  if (mode === "type") {
+    const keys = Object.keys(TYPE_INFO);
+    yFor = t => pad.t + ih * (0.9 - keys.indexOf(t) / (keys.length - 1) * 0.8);
+    ticks = keys.map(k => [yFor(k), TYPE_INFO[k].label]);
+  } else {
+    const keys = Object.keys(MOOD_INFO);
+    yFor = mm => pad.t + ih * (0.9 - keys.indexOf(mm) / (keys.length - 1) * 0.8);
+    ticks = keys.map(k => [yFor(k), MOOD_INFO[k].label]);
+  }
+  x.clearRect(0, 0, Wd, Hd);
+  // 网格与轴
+  ticks.forEach(([yy, lab]) => {
+    x.strokeStyle = "rgba(201,128,156,.22)"; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(pad.l, yy); x.lineTo(Wd - pad.r, yy); x.stroke();
+    x.fillStyle = "#965d78"; x.font = "11.5px 'Microsoft YaHei'"; x.textAlign = "right";
+    x.fillText(lab, pad.l - 6, yy + 4);
+  });
+  x.textAlign = "center"; x.fillStyle = "#965d78"; x.font = "11px 'Microsoft YaHei'";
+  ["9/5", "9/7", "9/9", "9/11"].forEach(dd => {
+    const [mo, da] = dd.split("/");
+    x.fillText(dd, px(9 + (da-0)/30.4), Hd - 14);
+  });
+  x.strokeStyle = "rgba(201,128,156,.35)";
+  x.beginPath(); x.moveTo(pad.l, pad.t - 8); x.lineTo(pad.l, pad.t + ih + 6); x.stroke();
+  // 花瓣散点
+  W.forEach(w => {
+    const list = mode === "type" ? [w.t] : w.m;
+    list.forEach(mm => {
+      const cx = px(w.d), cy = yFor(mode === "type" ? w.t : mm);
+      const col = mode === "type" ? TYPE_INFO[mm].color : MOOD_INFO[mm].color;
+      x.font = "17px serif"; x.textAlign = "center";
+      x.globalAlpha = .85;
+      x.fillText("🌸", cx + (w.n.length % 5) * 3 - 6, cy + 6);
+      x.globalAlpha = 1;
+      x.fillStyle = col;
+      x.beginPath(); x.arc(cx, cy, 3, 0, 7); x.fill();
+    });
+  });
+}
+// 时间轴切换
+const tlBtns = document.getElementById("tlBtns");
+[["type", "按类型"], ["mood", "按情绪"]].forEach(([mode, lab], i) => {
+  const b = document.createElement("button");
+  b.textContent = lab; if (!i) b.classList.add("on");
+  b.onclick = () => { [...tlBtns.children].forEach(bb => bb.classList.remove("on")); b.classList.add("on"); drawTL(mode); };
+  tlBtns.appendChild(b);
+});
+drawTL("type");
+window.addEventListener("resize", () => drawTL(tlBtns.querySelector(".on").textContent.includes("类型") ? "type" : "mood"));
+
+// ====== 作品网格 ======
+const grid = document.getElementById("workGrid");
+W.forEach(w => {
+  const div = document.createElement("div");
+  div.className = "work";
+  div.style.borderColor = TYPE_INFO[w.t].color + "55";
+  div.innerHTML = `<span class="emoji">${w.e}</span><span class="name">${w.n}</span>
+    <span class="meta">${TYPE_INFO[w.t].label} · ${w.m.map(mm => MOOD_INFO[mm].label).join("＋")}</span>
+    <span class="why">🌸 ${w.why}</span>`;
+  div.title = w.why;
+  grid.appendChild(div);
+});
+
+// ====== 结论条 ======
+const bars = document.getElementById("bars");
+const total = W.length;
+const barData = [
+  ...Object.keys(TYPE_INFO).map(k => [TYPE_INFO[k].label + "（主线候选）", tCount[k]]),
+];
+barData.sort((a, b) => b[1] - a[1]).forEach(([lab, n]) => {
+  const row = document.createElement("div");
+  row.className = "bar-wrap";
+  row.innerHTML = `<span class="bar-label">${lab}</span><div class="bar-track"><div class="bar-fill" data-w="${Math.round(n/total*100)}%"></div></div><span class="bar-num">${n}</span>`;
+  bars.appendChild(row);
+});
+setTimeout(() => document.querySelectorAll(".bar-fill").forEach(b => b.style.width = b.dataset.w), 300);
+document.getElementById("stTop").textContent = "🎮";
+</script>
+</body>
+</html>

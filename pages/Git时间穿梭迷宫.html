@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GIT 时间穿梭 · 代码迷宫</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; user-select:none; -webkit-user-select:none; }
+  html,body { height:100%; overflow:hidden; font-family:"Segoe UI", "PingFang SC", "Microsoft YaHei", monospace; }
+  body {
+    background:#0d0f1a;
+    display:flex; align-items:center; justify-content:center;
+    color:#dbe4ff;
+  }
+  #wrap { position:relative; width:min(96vw,760px); }
+  canvas { display:block; width:100%; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.6); }
+  /* HUD */
+  #hud {
+    display:flex; justify-content:space-between; align-items:center;
+    background:rgba(20,22,40,.9); border:1px solid #3a3f6a;
+    padding:8px 14px; border-radius:10px; margin-bottom:8px;
+    font-size:15px; letter-spacing:.5px;
+  }
+  #hud .stat { display:flex; align-items:center; gap:6px; }
+  #hud .icon { font-size:18px; }
+  #hud #barhp { width:90px; height:12px; background:#2a2d4a; border-radius:6px; overflow:hidden; }
+  #hud #barhp i { display:block; height:100%; width:100%; background:linear-gradient(90deg,#ff5f6d,#ff8a5c); border-radius:6px; transition:width .15s; }
+  /* 底部按钮（触屏/新手辅助） */
+  #pad {
+    display:flex; justify-content:center; gap:12px; margin-top:10px; flex-wrap:wrap;
+  }
+  .key {
+    width:52px; height:52px; border-radius:12px;
+    background:linear-gradient(#2a2e52,#1a1d38); color:#c9d4ff;
+    border:1px solid #3f4472; font-size:22px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 0 #101226; transition:transform .05s;
+  }
+  .key:active { transform:translateY(3px); box-shadow:0 1px 0 #101226; }
+  #keyBack { width:auto; padding:0 18px; font-size:18px; color:#7fe0ff; }
+  /* 覆盖层 */
+  .overlay {
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:18px;
+    background:rgba(8,9,18,.82); border-radius:14px; text-align:center; padding:20px;
+  }
+  .overlay.hidden { display:none; }
+  .overlay h1 { font-size:34px; letter-spacing:2px; }
+  .overlay h1 .glow { color:#7fe0ff; text-shadow:0 0 18px #7fe0ff; }
+  .overlay p { font-size:15px; line-height:1.9; color:#a9b4e0; max-width:420px; }
+  .overlay .tips b { color:#ffd76e; }
+  .bigbtn {
+    padding:12px 34px; font-size:20px; border:none; border-radius:12px; cursor:pointer;
+    background:linear-gradient(#7fe0ff,#4f9bff); color:#07122b; font-weight:700;
+    box-shadow:0 5px 0 #1e4f96; transition:transform .05s; letter-spacing:1px;
+  }
+  .bigbtn:active { transform:translateY(3px); box-shadow:0 1px 0 #1e4f96; }
+  #endTitle { font-size:38px; }
+  .layer-tag { font-size:15px; color:#7fe0ff; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="hud">
+    <div class="stat"><span class="icon">🔖</span><span id="stLayer">Commit #1</span></div>
+    <div class="stat"><span class="icon">🧩</span><span id="stChip">0/3</span></div>
+    <div class="stat"><span class="icon">❤️</span><div id="barhp"><i id="hpfill" style="width:100%"></i></div><span id="stHp">100</span></div>
+    <div class="stat"><span class="icon">⏪</span><span id="stBack">回溯 ×2</span></div>
+  </div>
+  <canvas id="cv" width="630" height="450"></canvas>
+
+  <!-- 开始画面 -->
+  <div class="overlay" id="startOv">
+    <h1>GIT 时间穿梭<span class="glow">·</span>代码迷宫</h1>
+    <p class="tips">
+      🔖 你被困在版本历史里，要穿越 <b>6 个 Commit</b> 回到主线。<br>
+      🧩 收集每层所有<b>代码碎片</b>，点亮通往下一层的 <b>Push 门</b> 🚪。<br>
+      👾 避开巡逻的<b>冲突怪</b>（高层会出现红眼追踪怪）。<br>
+      ⏪ 遇到危险可<b>时间回溯</b>：回到本层起点、怪物重置、生命+30——<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;但<b>已收集的碎片会被丢弃</b>（就像 git checkout 丢未提交改动）。<br>
+      ⌨️ 方向键/ADSW 移动，<b>空格</b> 或 <b>⏪按钮</b> = 时间回溯。
+    </p>
+    <button class="bigbtn" id="btnStart">开始穿越</button>
+  </div>
+
+  <!-- 结局画面 -->
+  <div class="overlay hidden" id="endOv">
+    <div id="endTitle">🏆</div>
+    <div id="endMsg" class="tips"></div>
+    <button class="bigbtn" id="btnRestart">重新开始</button>
+  </div>
+
+  <!-- 触屏/辅助方向键 -->
+  <div id="pad">
+    <div style="display:grid; grid-template-columns:repeat(3,52px); gap:6px;">
+      <div></div><button class="key" data-d="up">▲</button><div></div>
+      <button class="key" data-d="left">◀</button><button class="key" data-d="down">▼</button><button class="key" data-d="right">▶</button>
+    </div>
+    <button class="key" id="keyBack">⏪ 回溯</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const canvas = document.getElementById('cv');
+const ctx = canvas.getContext('2d');
+const COLS=21, ROWS=15, CELL=30;
+
+const $ = id => document.getElementById(id);
+
+/* ---------- 游戏状态 ---------- */
+const TOTAL_LAYERS = 6;
+const CHIP_PER_LAYER = [3,3,4,4,5,5];
+const NORMAL_MONSTERS=[0,1,2,2,3,3];
+const CHASE_MONSTERS =[0,0,0,1,1,2];
+const MONSTER_SPEED  =[0,10,14,18,22,26];   // 移动间隔(帧)
+const WALL_SPEED     =[0, 0, 0, 8,10,12];    // 追踪怪间隔
+const BG_HUES = [218, 262, 330, 12, 120, 45]; // 每层背景色相(暗黑→演进)
+
+let state = 'idle';      // idle|play|over
+let layer=0;
+let maze, chips, chipTotal, door, doorActive;
+let player={x:1,y:1,hp:100};
+let monsters=[];
+let backCount=2;
+let frame=0;
+let moveCooldown=0, lastDir={x:0,y:0};
+let pendingDir={x:0,y:0};
+
+/* ---------- 迷宫生成（递归回溯） ---------- */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function genMaze(){
+  const m=Array.from({length:ROWS},()=>Array(COLS).fill(1));
+  (function carve(x,y){
+    for(const [dx,dy] of shuffle([[0,-2],[0,2],[-2,0],[2,0]])){
+      const nx=x+dx, ny=y+dy;
+      if(nx>0&&nx<COLS-1&&ny>0&&ny<ROWS-1&&m[ny][nx]===1){
+        m[y+dy/2][x+dx/2]=0; m[ny][nx]=0; carve(nx,ny);
+      }
+    }
+  })(1,1);
+  return m;
+}
+function openCells(m){
+  const cells=[];
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++) if(m[y][x]===0) cells.push([x,y]);
+  return cells;
+}
+function dist(x1,y1,x2,y2){ return Math.abs(x1-x2)+Math.abs(y1-y2); }
+
+/* ---------- 初始化一层 ---------- */
+function initLayer(l){
+  layer=l;
+  maze=genMaze();
+  const cells=openCells(maze);
+  // 玩家起点
+  player={x:1,y:1,hp:player.hp||100};
+  // 碎片：随机取远离起点的格子
+  const chipCells=cells.filter(c=>dist(c[0],c[1],1,1)>6).sort(()=>Math.random()-.5);
+  chipTotal=CHIP_PER_LAYER[l];
+  chips=chipCells.slice(0,chipTotal).map(c=>c[0]+','+c[1]);
+  // 门：取一块碎片位置（收集齐后在此开门）
+  door={x:chipCells[0][0], y:chipCells[0][1]};
+  doorActive=false;
+  // 怪物
+  monsters=[];
+  const avail=cells.filter(c=>dist(c[0],c[1],1,1)>3).sort(()=>Math.random()-.5);
+  let idx=0;
+  for(let i=0;i<NORMAL_MONSTERS[l];i++){ const c=avail[idx++]; if(c) monsters.push({x:c[0],y:c[1],type:'norm',t:Math.random()*40,respawn:[c[0],c[1]]}); }
+  for(let i=0;i<CHASE_MONSTERS[l];i++){ const c=avail[idx++]; if(c) monsters.push({x:c[0],y:c[1],type:'chase',t:0,respawn:[c[0],c[1]]}); }
+  backCount=2;
+  refreshHUD();
+}
+
+/* ---------- 碰撞 ---------- */
+function isWall(x,y){
+  if(x<0||y<0||x>=COLS||y>=ROWS) return true;
+  return maze[y][x]===1;
+}
+function tryMove(p,dx,dy){
+  if(!isWall(p.x+dx,p.y+dy)){ p.x+=dx; p.y+=dy; return true; }
+  return false;
+}
+
+/* ---------- 回溯 ---------- */
+function timeBack(){
+  if(state!=='play'||backCount<=0) return;
+  // git checkout：回到本层起点，碎片被丢弃，怪物重置，生命+30
+  backCount--;
+  player.x=1; player.y=1; player.hp=Math.min(100,player.hp+30);
+  chips=[]; doorActive=false; door={x:door.x,y:door.y};
+  monsters.forEach(m=>{ m.x=m.respawn[0]; m.y=m.respawn[1]; m.t=0; });
+  moveCooldown=0;
+  refreshHUD();
+}
+
+/* ---------- HUD ---------- */
+function refreshHUD(){
+  $('stLayer').textContent='Commit #'+(layer+1);
+  $('stChip').textContent='🧩 '+(chips?chips.length:0)+'/'+chipTotal;
+  $('stHp').textContent=player.hp;
+  $('hpfill').style.width=player.hp+'%';
+  $('stBack').textContent='回溯 ×'+backCount;
+}
+
+/* ---------- 绘制 ---------- */
+function draw(){
+  if(!maze) return;
+  const hue=BG_HUES[layer];
+  // 背景
+  ctx.fillStyle=`hsl(${hue},35%,9%)`;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  // 迷宫格子
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
+    const wall=maze[y][x]===1;
+    ctx.fillStyle=wall?`hsl(${hue},40%,15%)`:`hsl(${hue},30%,24%)`;
+    ctx.fillRect(x*CELL,y*CELL,CELL,CELL);
+    if(wall){ ctx.fillStyle=`hsl(${hue},45%,10%)`; ctx.fillRect(x*CELL+2,y*CELL+2,CELL-4,CELL-4); }
+    else{ ctx.fillStyle=`hsl(${hue},40%,12%)`; ctx.fillRect(x*CELL+CELL/2-1,y*CELL+CELL/2-1,2,2); }
+  }
+  // 出生点
+  ctx.font=CELL-8+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🕹️',1*CELL+CELL/2,1*CELL+CELL/2);
+  // 碎片
+  chips.forEach(k=>{ const [x,y]=k.split(',').map(Number);
+    ctx.fillStyle='rgba(255,215,110,.15)'; ctx.beginPath(); ctx.arc(x*CELL+CELL/2,y*CELL+CELL/2,12,0,7); ctx.fill();
+    ctx.font=(CELL-8)+'px serif'; ctx.fillText('🧩',x*CELL+CELL/2,y*CELL+CELL/2);
+  });
+  // 门
+  const dc=doorActive;
+  ctx.font=CELL+'px serif';
+  ctx.globalAlpha=dc?1:0.55;
+  ctx.fillText(dc?'🚪':'🔒',door.x*CELL+CELL/2,door.y*CELL+CELL/2);
+  ctx.globalAlpha=1;
+  if(dc){ ctx.strokeStyle='#7fe0ff'; ctx.lineWidth=2; ctx.shadowBlur=12; ctx.shadowColor='#7fe0ff';
+    ctx.strokeRect(door.x*CELL+2,door.y*CELL+2,CELL-4,CELL-4); ctx.shadowBlur=0; }
+  // 怪物
+  monsters.forEach(m=>{
+    ctx.font=(CELL-8)+'px serif';
+    const flicker=(m.type==='chase' && (frame>>2)%2===0);
+    ctx.globalAlpha=flicker?0.5:1;
+    ctx.fillText(m.type==='chase'?'👹':'👾',m.x*CELL+CELL/2,m.y*CELL+CELL/2);
+    ctx.globalAlpha=1;
+  });
+  // 玩家
+  ctx.font=CELL+'px serif';
+  ctx.fillText('😺',player.x*CELL+CELL/2,player.y*CELL+CELL/2);
+  // 外层暗角
+  ctx.strokeStyle='rgba(0,0,0,.4)'; ctx.lineWidth=4; ctx.strokeRect(0,0,canvas.width,canvas.height);
+}
+
+/* ---------- 移动冷却 ---------- */
+function tryStep(){
+  if(state!=='play') return;
+  // 玩家
+  if(moveCooldown<=0 && (pendingDir.x||pendingDir.y)){
+    if(tryMove(player,pendingDir.x,pendingDir.y)){ moveCooldown=6; }
+    pendingDir={x:0,y:0};
+  }
+  if(moveCooldown>0) moveCooldown--;
+  // 收集
+  const key=player.x+','+player.y;
+  const i=chips.indexOf(key);
+  if(i>=0){ chips.splice(i,1); refreshHUD();
+    if(chips.length===0){ doorActive=true; } }
+  // 进门
+  if(doorActive && player.x===door.x && player.y===door.y){
+    if(layer>=TOTAL_LAYERS-1){ gameEnd(true); } else { layer++; initLayer(layer); }
+    return;
+  }
+  // 怪物
+  for(const m of monsters){
+    const interval=m.type==='chase'?WALL_SPEED[layer]:MONSTER_SPEED[layer];
+    if(interval===0) continue;
+    if(frame%interval!==0) continue;
+    if(m.type==='chase'){
+      // 简单追踪：往玩家方向走一步（不能穿墙）
+      if(m.x!==player.x){ tryMove(m, Math.sign(player.x-m.x),0); }
+      else if(m.y!==player.y){ tryMove(m, 0, Math.sign(player.y-m.y)); }
+    } else {
+      // 随机游走
+      const d=[[1,0],[-1,0],[0,1],[0,-1]][Math.random()*4|0];
+      tryMove(m,d[0],d[1]);
+    }
+  }
+  // 玩家被怪撞
+  for(const m of monsters){
+    if(m.x===player.x&&m.y===player.y){
+      const dmg=m.type==='chase'?25:20;
+      player.hp-=dmg;
+      if(player.hp<=0){ player.hp=0; refreshHUD(); gameEnd(false); return; }
+      // 轻微推开（若可能）
+      tryMove(player, Math.sign(player.x-m.x)||(Math.random()<.5?1:-1), Math.sign(player.y-m.y)||(Math.random()<.5?1:-1));
+      refreshHUD();
+    }
+  }
+  frame++;
+}
+
+/* ---------- 结局 ---------- */
+function gameEnd(win){
+  state='over';
+  const ov=$('endOv'), t=$('endTitle'), msg=$('endMsg');
+  ov.classList.remove('hidden');
+  if(win){
+    t.textContent='🏆 合并成功！';
+    msg.innerHTML='你穿越了 <b>'+TOTAL_LAYERS+'</b> 个 Commit，把主线代码<br>成功 <b>push</b> 回 GitHub 🎉<br>你已是一名合格的时间旅行程序员！';
+  } else {
+    t.textContent='💥 Merge 冲突炸了…';
+    msg.innerHTML='生命归零，你在版本历史里<b>迷失</b>了。<br>没关系，程序员就是反复 rebase。<br>（按 回车 或点按钮重来）';
+  }
+}
+
+/* ---------- 控制 ---------- */
+function setStart(){
+  state='idle'; $('startOv').classList.remove('hidden'); $('endOv').classList.add('hidden');
+}
+function startGame(){
+  state='play';
+  layer=0; player={x:1,y:1,hp:100}; frame=0;
+  $('startOv').classList.add('hidden'); $('endOv').classList.add('hidden');
+  initLayer(0);
+}
+function restart(){
+  $('endOv').classList.add('hidden');
+  startGame();
+}
+
+/* ---------- 输入 ---------- */
+document.addEventListener('keydown',e=>{
+  const map={ArrowUp:'up',w:'up',ArrowDown:'down',s:'down',ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right'};
+  const k=map[e.key]||map[e.key.toLowerCase&&e.key.toLowerCase()];
+  if(k){ e.preventDefault();
+    pendingDir={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}}[k];
+  } else if(e.key===' '){ e.preventDefault(); timeBack(); }
+  else if(e.key==='Enter' && state!=='play'){ startGame(); }
+});
+document.querySelectorAll('#pad .key[data-d]').forEach(b=>{
+  b.addEventListener('pointerdown',()=>{ pendingDir={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}}[b.dataset.d]; });
+});
+$('keyBack').addEventListener('pointerdown',timeBack);
+$('btnStart').addEventListener('click',startGame);
+$('btnRestart').addEventListener('click',restart);
+
+/* ---------- 主循环 ---------- */
+function loop(){
+  if(state==='play') tryStep();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+setStart();
+refreshHUD();
+requestAnimationFrame(loop);
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>流体 · Fluid</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        html, body {
+            overflow: hidden; background: #000;
+            width: 100%; height: 100%;
+            font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+        }
+        body { position: fixed; }
+        canvas { width: 100%; height: 100%; display: block; }
+
+        /* 隐藏默认 dat.GUI */
+        .dg.ac { display: none !important; }
+
+        /* 标题 */
+        .title {
+            position: absolute; top: 36px; left: 50%; transform: translateX(-50%);
+            text-align: center; z-index: 10; pointer-events: none;
+        }
+        .title h1 {
+            font-size: 36px; font-weight: 300; letter-spacing: 20px;
+            color: rgba(255,255,255,0.85);
+            text-shadow: 0 0 40px rgba(255,255,255,0.3);
+            padding-left: 20px;
+        }
+        .title .sub {
+            font-size: 11px; letter-spacing: 10px; color: rgba(255,255,255,0.4);
+            margin-top: 10px; font-family: sans-serif;
+        }
+
+        /* 操作提示 */
+        .hint {
+            position: absolute; top: 110px; left: 50%; transform: translateX(-50%);
+            font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 4px;
+            font-family: sans-serif; z-index: 10; pointer-events: none;
+            animation: hintFade 4s ease-in-out infinite;
+        }
+        @keyframes hintFade {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 底部控制面板 */
+        .panel {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 14px 20px;
+            z-index: 20;
+            display: flex; gap: 8px; align-items: center;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+        }
+
+        /* 配色按钮 */
+        .palette-btn {
+            width: 32px; height: 32px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            cursor: pointer; transition: all 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .palette-btn:hover { transform: scale(1.15); border-color: rgba(255,255,255,0.5); }
+        .palette-btn.active {
+            border-color: rgba(255,255,255,0.9);
+            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        .palette-btn .gradient {
+            position: absolute; inset: 0; border-radius: 50%;
+        }
+
+        /* 分隔线 */
+        .divider {
+            width: 1px; height: 28px; background: rgba(255,255,255,0.15); margin: 0 6px;
+        }
+
+        /* 功能按钮 */
+        .action-btn {
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px; letter-spacing: 2px;
+            cursor: pointer; transition: all 0.3s;
+            font-family: inherit;
+        }
+        .action-btn:hover {
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.95);
+        }
+        .action-btn.active {
+            background: rgba(120, 200, 255, 0.2);
+            border-color: rgba(120, 200, 255, 0.5);
+            color: rgba(180, 220, 255, 0.95);
+        }
+
+        /* GitHub 链接 */
+        .github-link {
+            position: absolute; top: 28px; right: 28px;
+            z-index: 10; opacity: 0.3; transition: opacity 0.3s;
+        }
+        .github-link:hover { opacity: 0.7; }
+        .github-link svg { width: 22px; height: 22px; fill: #fff; }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            .title h1 { font-size: 24px; letter-spacing: 12px; }
+            .panel { flex-wrap: wrap; gap: 6px; padding: 10px 14px; max-width: 95vw; }
+            .palette-btn { width: 26px; height: 26px; }
+            .action-btn { padding: 6px 10px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+
+    <!-- 隐藏的占位元素，script.js 依赖这些 DOM -->
+    <div class="promo" style="display:none;">
+        <span class="promo-close"></span>
+        <a id="apple_link"></a>
+        <a id="google_link"></a>
+    </div>
+
+    <div class="title">
+        <h1>流 体</h1>
+        <div class="sub">FLUID · 指尖的色彩漩涡</div>
+    </div>
+    <div class="hint">拖动鼠标搅动流体 · 点击产生泼溅</div>
+
+    <a class="github-link" href="https://github.com/PavelDoGreat/WebGL-Fluid-Simulation" target="_blank" title="Based on WebGL Fluid Simulation">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    </a>
+
+    <div class="panel">
+        <div class="palette-btn active" data-palette="rainbow" title="彩虹">
+            <div class="gradient" style="background: conic-gradient(red, orange, yellow, green, cyan, blue, magenta, red);"></div>
+        </div>
+        <div class="palette-btn" data-palette="aurora" title="极光">
+            <div class="gradient" style="background: linear-gradient(135deg, #00ff88, #00ccff, #8855ff);"></div>
+        </div>
+        <div class="palette-btn" data-palette="neon" title="霓虹">
+            <div class="gradient" style="background: linear-gradient(135deg, #ff00ff, #00ffff, #ffff00);"></div>
+        </div>
+        <div class="palette-btn" data-palette="sunset" title="日落">
+            <div class="gradient" style="background: linear-gradient(135deg, #ff6b35, #f7c59f, #ef5d60);"></div>
+        </div>
+        <div class="palette-btn" data-palette="ocean" title="海洋">
+            <div class="gradient" style="background: linear-gradient(135deg, #0077b6, #00b4d8, #90e0ef);"></div>
+        </div>
+        <div class="palette-btn" data-palette="fire" title="火焰">
+            <div class="gradient" style="background: linear-gradient(135deg, #ff0000, #ff7700, #ffdd00);"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="action-btn" id="btnAuto">自动</button>
+        <button class="action-btn" id="btnClear">清屏</button>
+        <button class="action-btn" id="btnPause">暂停</button>
+    </div>
+
+    <script>
+        // Google Analytics 占位（script.js 依赖此函数，缺失会导致初始化中断）
+        window.ga = window.ga || function(){ (ga.q = ga.q || []).push(arguments); };
+        ga.l = +new Date;
+    </script>
+    <script src="./dat.gui.min.js"></script>
+    <script src="./script.js"></script>
+    <script>
+    (function() {
+        // 等待核心引擎初始化
+        setTimeout(() => {
+            // 配色方案定义
+            const palettes = {
+                rainbow: null, // null = 使用原始随机全色
+                aurora: [
+                    [0.33, 1.0, 0.53], [0.0, 0.8, 1.0], [0.53, 0.33, 1.0],
+                    [0.0, 1.0, 0.7], [0.67, 0.5, 1.0], [0.2, 0.9, 0.8]
+                ],
+                neon: [
+                    [1.0, 0.0, 1.0], [0.0, 1.0, 1.0], [1.0, 1.0, 0.0],
+                    [1.0, 0.2, 0.8], [0.2, 1.0, 0.8], [0.8, 1.0, 0.2]
+                ],
+                sunset: [
+                    [1.0, 0.42, 0.21], [0.97, 0.77, 0.62], [0.94, 0.36, 0.38],
+                    [1.0, 0.6, 0.3], [0.9, 0.5, 0.5], [1.0, 0.7, 0.4]
+                ],
+                ocean: [
+                    [0.0, 0.47, 0.71], [0.0, 0.71, 0.85], [0.56, 0.88, 0.94],
+                    [0.1, 0.6, 0.8], [0.3, 0.75, 0.9], [0.0, 0.4, 0.6]
+                ],
+                fire: [
+                    [1.0, 0.0, 0.0], [1.0, 0.47, 0.0], [1.0, 0.87, 0.0],
+                    [1.0, 0.2, 0.0], [1.0, 0.6, 0.1], [0.9, 0.3, 0.0]
+                ]
+            };
+
+            let currentPalette = 'rainbow';
+            let autoMode = false;
+            let autoTimer = null;
+
+            // 覆盖 generateColor 函数实现配色方案
+            window.generateColor = function() {
+                if (currentPalette === 'rainbow' || !palettes[currentPalette]) {
+                    // 原始随机全色
+                    let c = HSVtoRGB(Math.random(), 1.0, 1.0);
+                    c.r *= 0.15; c.g *= 0.15; c.b *= 0.15;
+                    return c;
+                }
+                const colors = palettes[currentPalette];
+                const chosen = colors[Math.floor(Math.random() * colors.length)];
+                // 添加轻微随机变化
+                const variation = 0.1;
+                return {
+                    r: chosen[0] * 0.15 * (1 + (Math.random() - 0.5) * variation),
+                    g: chosen[1] * 0.15 * (1 + (Math.random() - 0.5) * variation),
+                    b: chosen[2] * 0.15 * (1 + (Math.random() - 0.5) * variation)
+                };
+            };
+
+            // 配色按钮切换
+            document.querySelectorAll('.palette-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.palette-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentPalette = btn.dataset.palette;
+                    // 立即触发一次泼溅展示新配色
+                    if (typeof multipleSplats === 'function') {
+                        multipleSplats(5);
+                    }
+                });
+            });
+
+            // 自动演示模式
+            document.getElementById('btnAuto').addEventListener('click', function() {
+                autoMode = !autoMode;
+                this.classList.toggle('active', autoMode);
+                if (autoMode) {
+                    this.textContent = '停止';
+                    autoTimer = setInterval(() => {
+                        if (typeof multipleSplats === 'function' && !config.PAUSED) {
+                            multipleSplats(Math.floor(Math.random() * 4) + 2);
+                        }
+                    }, 800);
+                } else {
+                    this.textContent = '自动';
+                    clearInterval(autoTimer);
+                }
+            });
+
+            // 清屏
+            document.getElementById('btnClear').addEventListener('click', () => {
+                // 通过设置高密度消散来快速清屏
+                if (typeof clearFramebuffers === 'function') {
+                    clearFramebuffers();
+                } else {
+                    // 备用方案：临时提高消散
+                    const old = config.DENSITY_DISSIPATION;
+                    config.DENSITY_DISSIPATION = 5;
+                    setTimeout(() => { config.DENSITY_DISSIPATION = old; }, 100);
+                }
+            });
+
+            // 暂停
+            document.getElementById('btnPause').addEventListener('click', function() {
+                config.PAUSED = !config.PAUSED;
+                this.textContent = config.PAUSED ? '继续' : '暂停';
+                this.classList.toggle('active', config.PAUSED);
+            });
+
+            // 键盘快捷键
+            document.addEventListener('keydown', (e) => {
+                const keyMap = {
+                    '1': 'rainbow', '2': 'aurora', '3': 'neon',
+                    '4': 'sunset', '5': 'ocean', '6': 'fire'
+                };
+                if (keyMap[e.key]) {
+                    const btn = document.querySelector(`.palette-btn[data-palette="${keyMap[e.key]}"]`);
+                    if (btn) btn.click();
+                }
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    document.getElementById('btnPause').click();
+                }
+                if (e.key === 'c' || e.key === 'C') {
+                    document.getElementById('btnClear').click();
+                }
+                if (e.key === 'a' || e.key === 'A') {
+                    document.getElementById('btnAuto').click();
+                }
+            });
+
+            // 初始自动泼溅几下，展示效果（等待 WebGL 初始化完成）
+            let initAttempts = 0;
+            const initSplats = setInterval(() => {
+                initAttempts++;
+                try {
+                    if (typeof multipleSplats === 'function' && typeof splatProgram !== 'undefined') {
+                        multipleSplats(8);
+                        clearInterval(initSplats);
+                        console.log('[Fluid] 初始泼溅完成');
+                    }
+                } catch(e) {
+                    // 继续等待
+                }
+                if (initAttempts > 30) clearInterval(initSplats); // 最多等 3 秒
+            }, 100);
+
+            console.log('[Fluid] 美化版已加载，按 1-6 切换配色，空格暂停，C 清屏，A 自动演示');
+        }, 100);
+    })();
+    </script>
+</body>
+</html>

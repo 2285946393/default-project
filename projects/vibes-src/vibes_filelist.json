@@ -1,0 +1,149 @@
+{
+	"type": "gh",
+	"name": "yuvadm/vibes",
+	"version": "main",
+	"default": null,
+	"files": [
+		{
+			"type": "directory",
+			"name": "btctick",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "CyvxNfgrulCiAQfW/yRiygChEz8Y6dYWE4OZTSPYA3M=",
+					"size": 9456
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "isometric",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "bwJvyNFA52IX3kPcmITsRFL9cK7C6mEiG0AhvvO/CXA=",
+					"size": 9191
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "legobricks",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "A50xl8pMbAz7Y6mmFo3xO2yIXRXFBp/17FGdsCJ3hKw=",
+					"size": 11348
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "lemmings",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "oTne34xYW2Iglaem+ehfe5L+yt6JpO6cahMVZPsL/7s=",
+					"size": 15774
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "particles",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "X9fcnacIcAiEXD/cA6oWTwXFO3U8OWHVpoOhGSI1TLs=",
+					"size": 15943
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "soundscape",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "gUzCvRkOr9CVuHC3AXSVPyISx+NWqndgnLMXXwpPGs0=",
+					"size": 8665
+				},
+				{
+					"type": "file",
+					"name": "soundscape.js",
+					"hash": "sgLlXkF9Z98O+wfAnEyKCipXM0OoU0FxpnpY0UV+dw8=",
+					"size": 15368
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "trainride",
+			"files": [
+				{
+					"type": "directory",
+					"name": "js",
+					"files": [
+						{
+							"type": "file",
+							"name": "main.js",
+							"hash": "DtYW4EkmDIh7rwIC5Xb+mis37azJn94QaPKSr803DRY=",
+							"size": 19923
+						}
+					]
+				},
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "+50Wd5bWXgX0qGWzwe2QIcO2oQwNYplLe0UYNduTP5o=",
+					"size": 2228
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "webgl",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "n50ufrE3y07uROtiNZ4kWre34NCNsr/HKphiHNKnFuM=",
+					"size": 16898
+				}
+			]
+		},
+		{
+			"type": "directory",
+			"name": "zengarden",
+			"files": [
+				{
+					"type": "file",
+					"name": "index.html",
+					"hash": "W3NpJxMyMTQHrSQpkC2bGDgrMnpDKq7h1EdppOAdRgM=",
+					"size": 11964
+				}
+			]
+		},
+		{
+			"type": "file",
+			"name": "index.html",
+			"hash": "kaRN0RLb/s0yjN86/ZyQ5T56gzXGX/NiT5fz4GHJXvk=",
+			"size": 8197
+		},
+		{
+			"type": "file",
+			"name": "README.md",
+			"hash": "bnwzKXCzVmuX9KGbf8rnfX3Amuh6LSYh5ERL01+rdXU=",
+			"size": 2117
+		}
+	],
+	"links": {
+		"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/yuvadm/vibes@main"
+	}
+}

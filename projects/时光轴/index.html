@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时光轴 · 把生活过成一首诗</title>
+<style>
+  :root {
+    --bg: #faf6f0;
+    --ink: #2f2a26;
+    --ink-soft: #6b615a;
+    --accent: #c96f4a;
+    --accent-soft: #e8c7b8;
+    --card: #fffdfa;
+    --line: #e9ddd1;
+    --shadow: 0 10px 40px rgba(120, 90, 60, .10);
+    --serif: "Georgia", "Noto Serif SC", "Songti SC", serif;
+    --sans: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #f3e3d3 0%, transparent 60%),
+      linear-gradient(180deg, #faf6f0 0%, #f4ece2 100%);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 32px 16px 80px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  header.hero { text-align: center; padding: 30px 0 10px; }
+  header.hero .kicker {
+    letter-spacing: .5em; font-size: 12px; color: var(--ink-soft);
+    text-transform: uppercase; font-family: var(--serif);
+  }
+  header.hero h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(30px, 6vw, 54px);
+    margin: 12px 0 10px;
+  }
+  header.hero h1 em { font-style: italic; color: var(--accent); }
+  header.hero .sub { color: var(--ink-soft); font-size: 15px; letter-spacing: .1em; }
+
+  /* 人生进度条 */
+  .life-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 22px; box-shadow: var(--shadow);
+    padding: 30px; margin: 34px 0 26px; text-align:center;
+  }
+  .life-card .clock {
+    font-family: var(--serif); font-size: clamp(40px, 8vw, 72px);
+    letter-spacing: .06em; color: var(--ink); line-height:1;
+  }
+  .life-card .clock .tiny { font-size: .4em; color: var(--ink-soft); vertical-align: middle; }
+  .life-card .date { color: var(--ink-soft); margin-top: 12px; font-size: 14px; }
+  .life-bar-wrap { margin: 26px auto 10px; max-width: 520px; }
+  .life-bar {
+    height: 10px; background: var(--line); border-radius: 20px; overflow: hidden;
+  }
+  .life-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+    border-radius: 20px; transition: width 1s ease;
+  }
+  .life-meta { display:flex; justify-content: space-between; margin-top:10px; font-size:13px; color: var(--ink-soft); }
+  .life-meta b { color: var(--accent); font-weight: 600; }
+
+  /* 格言 */
+  .quote {
+    font-family: var(--serif); text-align:center; font-style: italic;
+    font-size: clamp(16px, 2.6vw, 21px); color: var(--ink-soft);
+    margin: 8px 0 40px; padding: 0 20px; line-height: 1.7;
+  }
+  .quote .mark { color: var(--accent); }
+
+  /* 网格 */
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 20px; box-shadow: var(--shadow);
+    padding: 26px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-weight: 400; font-size: 20px;
+    display:flex; align-items:center; gap:10px; margin-bottom: 18px;
+  }
+  .card h2 .ico { font-size: 22px; }
+
+  /* 习惯打卡 */
+  .habit-item {
+    display:flex; align-items:center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px dashed var(--line);
+  }
+  .habit-item:last-child { border-bottom:none; }
+  .habit-check {
+    width: 26px; height:26px; border:2px solid var(--accent); border-radius: 50%;
+    flex-shrink:0; cursor:pointer; display:grid; place-items:center;
+    transition: .2s; color: transparent; font-size:15px;
+  }
+  .habit-check.done { background: var(--accent); color:#fff; }
+  .habit-name { flex:1; font-size: 15px; }
+  .habit-name.done { text-decoration: line-through; color: var(--ink-soft); }
+  .habit-streak { font-size: 12px; color: var(--accent); font-weight:600; }
+  .add-habit { display:flex; gap:8px; margin-top:16px; }
+  .add-habit input {
+    flex:1; padding: 10px 12px; border:1px solid var(--line); border-radius: 12px;
+    font-size:14px; background:#fff; font-family:var(--sans);
+  }
+  button.pill {
+    border:none; border-radius: 12px; padding: 0 16px; cursor:pointer;
+    background: var(--accent); color:#fff; font-size:14px; transition:.2s; font-family:var(--sans);
+  }
+  button.pill:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  button.pill.ghost { background: transparent; border:1px solid var(--accent); color: var(--accent); }
+  .prog-today { font-size: 13px; color: var(--ink-soft); margin-top:10px; }
+  .prog-today b { color: var(--accent); }
+
+  /* 日记 */
+  .mood-row { display:flex; gap:6px; margin-bottom:14px; }
+  .mood { font-size:22px; cursor:pointer; opacity:.35; transition:.2s; filter:grayscale(1); }
+  .mood.active { opacity:1; filter:none; transform:scale(1.2); }
+  textarea {
+    width:100%; min-height:110px; resize:vertical; border:1px solid var(--line);
+    border-radius: 14px; padding: 12px; font-size:15px; font-family:var(--sans);
+    background:#fff; line-height:1.6; color:var(--ink);
+  }
+  .save-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+  .save-note { font-size:12px; color:var(--ink-soft); }
+
+  /* 目标倒计时 */
+  .goal { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px dashed var(--line); }
+  .goal:last-child { border-bottom:none; }
+  .goal .g-name { font-size:15px; }
+  .goal .g-date { font-size:12px; color:var(--ink-soft); }
+  .goal .g-days {
+    font-family:var(--serif); color:var(--accent); font-size:22px; font-weight:bold; min-width:70px; text-align:right;
+  }
+  .goal .g-days small { font-size:11px; color:var(--ink-soft); }
+
+  /* 统计 */
+  .stats { display:flex; justify-content:center; gap:40px; padding:8px 0; }
+  .stat { text-align:center; }
+  .stat .num { font-family:var(--serif); font-size:32px; color:var(--accent); }
+  .stat .lbl { font-size:12px; color:var(--ink-soft); margin-top:4px; letter-spacing:.1em; }
+
+  footer { text-align:center; margin-top:60px; color:var(--ink-soft); font-size:12px; letter-spacing:.15em; }
+
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color:#fff; padding: 12px 22px; border-radius: 30px;
+    opacity:0; transition:.3s; font-size:14px; box-shadow:0 8px 30px rgba(0,0,0,.2); pointer-events:none;
+  }
+  .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">TIMELINE OF A LIFE</div>
+    <h1>时光<em>轴</em></h1>
+    <p class="sub">把日子过成一首值得回味的诗</p>
+  </header>
+
+  <!-- 人生进度 -->
+  <section class="life-card">
+    <div class="clock" id="clock">00:00:00 <span class="tiny">余生进行中</span></div>
+    <div class="date" id="dateTxt">—</div>
+    <div class="life-bar-wrap">
+      <div class="life-bar"><div class="life-bar-fill" id="lifeBar"></div></div>
+      <div class="life-meta">
+        <span>人生进度 <b id="pct">0</b>%</span>
+        <span id="lifeInfo">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 格言 -->
+  <p class="quote" id="quote"><span class="mark">“</span>生命不是要超越别人，而是要超越自己。<span class="mark">”</span></p>
+
+  <!-- 网格 -->
+  <div class="grid">
+
+    <!-- 习惯 -->
+    <section class="card">
+      <h2><span class="ico">📌</span> 微习惯打卡</h2>
+      <div id="habitList"></div>
+      <div class="add-habit">
+        <input id="newHabit" placeholder="新增一个微习惯…" maxlength="24">
+        <button class="pill ghost" onclick="addHabit()">＋</button>
+      </div>
+      <div class="prog-today">今日完成 <b id="todayDone">0/0</b></div>
+    </section>
+
+    <!-- 日记 -->
+    <section class="card">
+      <h2><span class="ico">✒️</span> 时光日记</h2>
+      <div class="mood-row" id="moodRow"></div>
+      <textarea id="diary" placeholder="此刻的你，在想些什么…"></textarea>
+      <div class="save-row">
+        <span class="save-note" id="saveNote"></span>
+        <button class="pill" onclick="saveDiary()">写下此刻</button>
+      </div>
+    </section>
+
+    <!-- 目标 -->
+    <section class="card">
+      <h2><span class="ico">🎯</span> 盼望的日子</h2>
+      <div id="goalList"></div>
+      <div class="add-habit">
+        <input id="newGoalName" placeholder="目标 / 节日…" maxlength="20">
+        <input id="newGoalDate" type="date">
+        <button class="pill ghost" onclick="addGoal()">＋</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 统计 -->
+  <section class="card" style="margin-top:22px; padding:24px 26px;">
+    <div class="stats">
+      <div class="stat"><div class="num" id="sDays">—</div><div class="lbl">走过天</div></div>
+      <div class="stat"><div class="num" id="sWeeks">—</div><div class="lbl">走过周</div></div>
+      <div class="stat"><div class="num" id="sMonths">—</div><div class="lbl">走过月</div></div>
+      <div class="stat"><div class="num" id="sYears">—</div><div class="lbl">走过年</div></div>
+    </div>
+  </section>
+
+  <footer>· 时光轴 · 愿你安好 ·</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- 用户配置（可自行修改） ---------- */
+/* ============================================================
+   ① 你的生日 —— 请修改下方引号里的日期（"1996-05-20"）
+   这决定人生进度条与余生测算。
+   若留空，则自动按今天往回算 25 年作为演示。
+   ============================================================ */
+const BIRTH = new Date("1995-01-01");   // ← 在这里填你的生日，例如 "1996-05-20"
+
+const QUOTES = [
+  "生命不是要超越别人，而是要超越自己。",
+  "慢慢来，一切都来得及。",
+  "把每一件平凡的事做到极致，就是不平凡。",
+  "愿你付出甘之如饴，所得归于欢喜。",
+  "所有的坚持，终将温柔了岁月。",
+  "生活的乐趣，在于发现、创造与感恩。",
+  "不要等待，去成为你相信的那个人。",
+  "每一天都是新的开始，放下过去，拥抱现在。",
+  "你今天的努力，是明天的底气。",
+  "心若向阳，无惧悲伤。",
+  "认真生活，就能找到被生活偷藏起来的糖果。",
+  "愿你被这个世界温柔以待。",
+  "成长就是把训练场的汗水，酿成赛场上的从容。",
+  "先把眼前的每一件小事做好，未来自然到来。",
+  "给时间一点时间，让好事慢慢发生。",
+  "别怕路长，路长才装得下故事。",
+  "你所热爱的，就是你的生活。",
+  "今天做别人不愿做的，明天才能做别人不能做的。",
+  "生活明朗，万物可爱，人间值得，未来可期。",
+];
+
+const DEFAULT_HABITS = ["喝水 8 杯", "读书 20 分钟", "运动 30 分钟"];
+const DEFAULT_GOALS = [
+  { name: "下个月发工资", date: nextMonth() },
+  { name: "跨年夜", date: nextYearEnd() },
+];
+
+/* ---------- 状态 ---------- */
+let state = load() || {};
+
+function defaultState() {
+  return {
+    habits: DEFAULT_HABITS.map(h => ({ name: h, streak: 0, total: 0 })),
+    done: {},        // { "date": [index, ...] }
+    goals: DEFAULT_GOALS,
+    diaryDate: "",
+    diaryText: "",
+    mood: "",
+    birth: "",
+  };
+}
+if (!state.birth && BIRTH && !isNaN(BIRTH.getTime())) state.birth = BIRTH.toISOString();
+state = Object.assign(defaultState(), state);
+
+/* ---------- 工具 ---------- */
+function $(id) { return document.getElementById(id); }
+function todayKey() {
+  var d = new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+}
+function pad(n) { return (n<10?"0":"")+n; }
+function nextMonth() { var d=new Date(); d.setMonth(d.getMonth()+1); return d.toISOString(); }
+function nextYearEnd() { var d=new Date(); var y=d.getFullYear(); return new Date(y,11,31).toISOString(); }
+function load() { try { return JSON.parse(localStorage.getItem("timeshaft")); } catch(e){ return null; } }
+function save() { localStorage.setItem("timeshaft", JSON.stringify(state)); }
+function toast(msg) {
+  var t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(window.__tt); window.__tt = setTimeout(function(){ t.classList.remove("show"); }, 2000);
+}
+
+/* ---------- 时钟与人生进度 ---------- */
+function tick() {
+  var now = new Date();
+  var h=now.getHours(), m=now.getMinutes(), s=now.getSeconds();
+  $("clock").firstChild.nodeValue = pad(h)+":"+pad(m)+":"+pad(s)+" ";
+  $("dateTxt").textContent = now.getFullYear()+" 年 "+pad(now.getMonth()+1)+" 月 "+pad(now.getDate())+" 日 · 星期"+"日一二三四五六".charAt(now.getDay());
+  updateLifeProgress(now);
+}
+function updateLifeProgress(now) {
+  var birth = state.birth ? new Date(state.birth) : BIRTH;
+  if (isNaN(birth.getTime())) return;
+  var lifeSpanYears = 80;
+  var startMs = birth.getTime();
+  var endMs = birth.getFullYear && startMs + lifeSpanYears*365.25*24*3600*1000;
+  endMs = birth.getTime() + lifeSpanYears*365.25*24*3600*1000;
+  var ms = now.getTime();
+  var p = Math.min(100, Math.max(0, (ms-startMs)/(endMs-startMs)*100));
+  $("lifeBar").style.width = p+"%";
+  $("pct").textContent = p.toFixed(2);
+  var remainYears = Math.max(0, lifeSpanYears - (ms-startMs)/(365.25*24*3600*1000));
+  $("lifeInfo").textContent = "预计余生约 "+Math.floor(remainYears)+" 年";
+}
+
+/* ---------- 习惯 ---------- */
+function renderHabits() {
+  var list = $("habitList"); list.innerHTML = "";
+  var key = todayKey();
+  var doneToday = (state.done[key] || []);
+  var total = state.habits.length;
+  state.habits.forEach(function(hab, i) {
+    var row = document.createElement("div"); row.className = "habit-item";
+    var ck = document.createElement("div"); ck.className = "habit-check" + (doneToday.indexOf(i)>=0?" done":"");
+    ck.textContent = "✓"; ck.onclick = function(){ toggleHabit(i); };
+    var nm = document.createElement("div"); nm.className = "habit-name" + (doneToday.indexOf(i)>=0?" done":"");
+    nm.textContent = hab.name;
+    var st = document.createElement("div"); st.className = "habit-streak";
+    st.textContent = hab.streak>0 ? "🔥"+hab.streak : "";
+    row.appendChild(ck); row.appendChild(nm); row.appendChild(st);
+    list.appendChild(row);
+  });
+  $("todayDone").textContent = doneToday.length + "/" + total;
+}
+function toggleHabit(i) {
+  var key = todayKey();
+  var arr = state.done[key] = state.done[key] || [];
+  var idx = arr.indexOf(i);
+  if (idx >= 0) { arr.splice(idx,1); }
+  else { arr.push(i); state.habits[i].streak++; state.habits[i].total++; }
+  save(); renderHabits();
+  if (arr.indexOf(i)>=0) toast("已打卡「"+state.habits[i].name+"」");
+}
+function addHabit() {
+  var v = $("newHabit").value.trim();
+  if (!v) return toast("输入一个习惯名称～");
+  state.habits.push({ name: v, streak: 0, total: 0 });
+  $("newHabit").value = ""; save(); renderHabits(); toast("已新增习惯");
+}
+
+/* ---------- 目标 ---------- */
+function renderGoals() {
+  var list = $("goalList"); list.innerHTML = "";
+  state.goals.forEach(function(g, i) {
+    var t = new Date(g.date);
+    if (isNaN(t.getTime())) return;
+    var diff = Math.ceil((t.getTime() - Date.now()) / (24*3600*1000));
+    var row = document.createElement("div"); row.className = "goal";
+    var left = document.createElement("div");
+    var nm = document.createElement("div"); nm.className="g-name"; nm.textContent = g.name;
+    var dt = document.createElement("div"); dt.className="g-date"; dt.textContent = t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate());
+    left.appendChild(nm); left.appendChild(dt);
+    var days = document.createElement("div"); days.className="g-days";
+    days.innerHTML = diff>=0 ? (diff + "<small> 天后</small>") : ("<small>过去了</small>" + Math.abs(diff));
+    var del = document.createElement("button"); del.className="pill ghost"; del.textContent="✕";
+    del.style.padding="4px 8px"; del.onclick = function(){ state.goals.splice(i,1); save(); renderGoals(); };
+    row.appendChild(left); row.appendChild(days); row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+function addGoal() {
+  var n = $("newGoalName").value.trim(); var d = $("newGoalDate").value;
+  if (!n || !d) return toast("填写目标名称和日期");
+  state.goals.push({ name: n, date: new Date(d).toISOString() });
+  $("newGoalName").value=""; $("newGoalDate").value=""; save(); renderGoals(); toast("已添加目标");
+}
+
+/* ---------- 日记 ---------- */
+var MOODS = ["😀","😊","😌","😐","😔","😢"];
+function renderMood() {
+  var row = $("moodRow"); row.innerHTML = "";
+  MOODS.forEach(function(m){
+    var e = document.createElement("span"); e.className = "mood" + (state.mood===m?" active":"");
+    e.textContent = m; e.onclick = function(){ state.mood = m; save(); renderMood(); };
+    row.appendChild(e);
+  });
+}
+function renderDiary() {
+  var key = todayKey();
+  $("diary").value = state.diaryText || "";
+  if (state.diaryDate === key) $("saveNote").textContent = "今日已记录 · " + (state.mood||"");
+}
+function saveDiary() {
+  var key = todayKey();
+  state.diaryDate = key; state.diaryText = $("diary").value;
+  save(); renderDiary(); toast("已写入今日时光");
+}
+
+/* ---------- 统计 ---------- */
+function renderStats() {
+  var birth = state.birth ? new Date(state.birth) : BIRTH;
+  if (isNaN(birth.getTime())) return;
+  var ms = Date.now() - birth.getTime();
+  var day = 24*3600*1000;
+  $("sDays").textContent = Math.floor(ms/day);
+  $("sWeeks").textContent = Math.floor(ms/(7*day));
+  $("sMonths").textContent = Math.floor(ms/(30*day));
+  $("sYears").textContent = (ms/(365.25*day)).toFixed(1);
+}
+
+/* ---------- 格言 ---------- */
+function renderQuote() {
+  var q = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  $("quote").innerHTML = '<span class="mark">“</span>' + q + '<span class="mark">”</span>';
+}
+
+/* ---------- 初始化 ---------- */
+function init() {
+  state.birth = state.birth || (BIRTH ? BIRTH.toISOString() : "");
+  renderHabits(); renderGoals(); renderMood(); renderDiary(); renderStats(); renderQuote();
+  tick(); setInterval(tick, 1000);
+}
+init();
+</script>
+</body>
+</html>

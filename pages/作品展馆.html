@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品展馆 · 一个文件一个小世界</title>
+<meta property="og:title" content="作品展馆 · 一个文件一个小世界">
+<meta property="og:description" content="有花无实的个人作品合集：12 个双击即玩的小游戏、可视化与文字企划，全部是单文件 HTML。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="../assets/guanmain.jpg"><!-- 部署后替换为绝对地址，如 https://你的域名/guanmain.jpg -->
+<meta name="theme-color" content="#f7f3f4">
+<meta name="description" content="有花无实的个人作品合集：12 个双击即玩的游戏、可视化与文字企划，全部是单文件 HTML。">
+<style>
+:root{
+  --bg:#f7f3f4;      /* 奶油纸底 */
+  --bg-soft:#fdfbfb; /* 卡片 */
+  --ink:#362f42;     /* 深靛灰主文字 */
+  --mist:#7d7590;    /* 次文字 */
+  --line:#e8dfe3;
+  --rose:#b5486c;    /* 唯一强调色，全页锁定 */
+  --rose-soft:#f3e2e9;
+  --lilac:#9a8fb5;   /* 校供灰紫，辅助 */
+  --r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ---------- 导航 ---------- */
+nav{
+  position:sticky;top:0;z-index:50;
+  height:64px;
+  background:rgba(247,243,244,.86);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;letter-spacing:.06em;font-size:15px}
+.logo b{color:var(--rose)}
+.navlinks{display:flex;gap:28px;font-size:14px;color:var(--mist)}
+.navlinks a:hover{color:var(--ink)}
+.navlinks .join{color:var(--rose);font-weight:700}
+
+/* ---------- Hero：左文右贴纸 ---------- */
+header{
+  position:relative;
+  min-height:calc(100dvh - 64px);
+  display:flex;align-items:center;
+  overflow:hidden;
+  background:
+    radial-gradient(880px 520px at 84% 14%, rgba(216,160,186,.22), transparent 62%),
+    radial-gradient(680px 460px at 6% 92%, rgba(154,143,181,.16), transparent 60%),
+    var(--bg);
+}
+.hero{
+  display:grid;grid-template-columns:minmax(0,600px);
+  align-items:center;
+  width:100%;
+  padding:64px 0 56px;
+}
+.hero>div{position:relative;z-index:2}
+.eyebrow{
+  display:inline-block;
+  font-size:12px;letter-spacing:.35em;
+  border:1px solid var(--line);border-radius:999px;
+  padding:6px 16px;margin-bottom:26px;
+  color:var(--mist);background:var(--bg-soft);
+}
+h1{
+  font-size:clamp(34px,5.2vw,62px);
+  font-weight:800;line-height:1.18;letter-spacing:.01em;
+}
+h1 em{font-style:normal;color:var(--rose)}
+.hero .sub{
+  margin-top:20px;max-width:34em;
+  color:var(--mist);font-size:clamp(15px,1.5vw,17px);
+}
+.ctas{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:50px;padding:0 30px;border-radius:999px;
+  font-size:15px;font-weight:700;letter-spacing:.04em;
+  transition:transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s, background .25s;
+  cursor:pointer;border:none;
+}
+.btn:active{transform:scale(.97)}
+.btn-main{background:var(--rose);color:#fff;box-shadow:0 12px 30px rgba(181,72,108,.24)}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(181,72,108,.3)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--lilac);transform:translateY(-2px)}
+
+/* 站长立绘：半屏出血（游戏官网式） */
+.portrait-stage{
+  position:relative;min-height:46vh;
+  margin:0 -24px -40px;overflow:hidden;
+}
+.portrait-stage img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:50% 16%;
+}
+.portrait-stage::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg, var(--bg) 0%, rgba(247,243,244,0) 30%);
+}
+@media (min-width:901px){
+  .hero{padding-right:min(47vw,660px)}
+  .portrait-stage{
+    position:absolute;top:0;right:0;bottom:0;
+    width:min(47vw,660px);min-height:0;margin:0;z-index:0;
+  }
+  .portrait-stage img{object-position:50% 14%}
+  .portrait-stage::after{
+    background:linear-gradient(90deg, var(--bg) 0%, rgba(247,243,244,.55) 12%, rgba(247,243,244,0) 38%);
+  }
+}
+.stage-tag{
+  position:absolute;left:26px;bottom:28px;z-index:2;
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.66);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:999px;padding:9px 18px;
+  font-size:12px;letter-spacing:.22em;color:#8a3a58;
+  box-shadow:0 10px 30px rgba(154,93,109,.22);
+}
+.stage-tag::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--rose);flex:none;
+}
+@media (prefers-reduced-motion: no-preference){
+  .stage-tag::before{animation:live 1.8s ease-in-out infinite}
+}
+@keyframes live{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* 樱花飘落层 */
+.petals{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
+.petals i{position:absolute;top:0;display:block;animation:petal-fall linear infinite}
+.petals b{
+  display:block;width:100%;height:100%;
+  background:radial-gradient(circle at 32% 30%,#ffffff,#f6c3d5 78%);
+  border-radius:100% 6px 100% 6px;
+  box-shadow:0 2px 5px rgba(181,72,108,.14);
+  animation:petal-sway ease-in-out infinite;
+}
+@keyframes petal-fall{
+  from{transform:translate3d(0,-6vh,0) rotate(24deg)}
+  to{transform:translate3d(0,108vh,0) rotate(286deg)}
+}
+@keyframes petal-sway{
+  0%,100%{transform:translateX(-18px) rotate(-16deg)}
+  50%{transform:translateX(18px) rotate(20deg)}
+}
+
+/* ---------- 数字条 ---------- */
+.numbers{border-block:1px solid var(--line);background:var(--bg-soft)}
+.numbers .wrap{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;padding:52px 24px;text-align:left;
+}
+.num b{
+  display:block;
+  font-size:clamp(40px,5vw,60px);font-weight:800;line-height:1;
+  color:var(--rose);letter-spacing:.02em;
+}
+.num p{margin-top:10px;color:var(--mist);font-size:14px;letter-spacing:.05em}
+
+/* ---------- 作品：两列大图 ---------- */
+#works{padding:96px 0 40px}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:40px}
+.sec-head .tag{
+  font-size:12px;letter-spacing:.3em;color:var(--lilac);
+  white-space:nowrap;
+}
+.sec-head h2{font-size:clamp(22px,2.6vw,30px);font-weight:800}
+.sec-head p{color:var(--mist);font-size:14px;margin-left:auto}
+.bento{display:grid;grid-template-columns:repeat(2,1fr);gap:26px}
+.card{
+  position:relative;overflow:hidden;
+  background:var(--bg-soft);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  box-shadow:0 6px 24px rgba(54,47,66,.06);
+  transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s, border-color .3s;
+  display:flex;flex-direction:column;
+}
+.card:hover{transform:translateY(-6px);border-color:#d8bccb;box-shadow:0 20px 48px rgba(54,47,66,.12)}
+.card .shot{overflow:hidden;background:var(--rose-soft);aspect-ratio:4/3}
+.card .shot img{
+  width:100%;height:100%;object-fit:cover;object-position:top;
+  transition:transform .6s cubic-bezier(.16,1,.3,1);
+}
+.card:hover .shot img{transform:scale(1.04)}
+.card .body{padding:20px 24px 22px}
+.card h3{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card h3 .go{margin-left:auto;color:var(--rose);font-size:13px;font-weight:400;opacity:0;transform:translateX(-4px);transition:.3s}
+.card:hover h3 .go{opacity:1;transform:none}
+.card p{margin-top:8px;color:var(--mist);font-size:14px;line-height:1.6}
+.w2{grid-column:span 2}
+.w2 .shot{aspect-ratio:16/6}
+.tall{grid-row:span 2}
+.tall .shot{aspect-ratio:auto;flex:1;min-height:320px}
+/* 头号作品的实时 WebGL 封面 */
+.live .shot{aspect-ratio:16/7}
+.live canvas{width:100%;height:100%;display:block}
+.live .float-tag{
+  position:absolute;left:20px;bottom:16px;z-index:2;
+  font-size:12px;letter-spacing:.2em;color:#fff;
+  background:rgba(8,10,20,.45);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;padding:6px 14px;
+  pointer-events:none;
+}
+/* 无截图卡片的氛围图区 */
+.mood{
+  display:flex;align-items:center;justify-content:center;
+  position:relative;height:100%;width:100%;
+  font-size:clamp(48px,6vw,72px);
+  background:
+    radial-gradient(360px 200px at 28% 25%, rgba(154,143,181,.35), transparent 70%),
+    radial-gradient(300px 240px at 78% 80%, rgba(216,160,186,.4), transparent 65%),
+    #efe6ec;
+}
+.mood small{position:absolute;right:16px;bottom:12px;font-size:11px;color:var(--lilac);letter-spacing:.25em}
+
+/* ---------- marquee ---------- */
+.mq{
+  margin-top:90px;
+  border-block:1px solid var(--line);
+  overflow:hidden;padding:18px 0;background:var(--bg-soft);
+}
+.mq-track{display:flex;gap:0;width:max-content}
+.mq-track span{
+  padding:0 34px;white-space:nowrap;
+  font-size:14px;letter-spacing:.3em;color:var(--mist);
+}
+.mq-track i{font-style:normal;color:#dbbfcb}
+@media (prefers-reduced-motion: no-preference){
+  .mq-track{animation:pan 26s linear infinite}
+}
+@keyframes pan{to{transform:translateX(-50%)}}
+
+/* ---------- 登岛 CTA ---------- */
+#island{padding:110px 0}
+.island{
+  display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center;
+  border:1px solid var(--line);border-radius:calc(var(--r) + 8px);
+  padding:clamp(34px,5vw,64px);
+  background:
+    radial-gradient(560px 300px at 88% 12%, rgba(216,160,186,.28), transparent 60%),
+    #fbf5f7;
+  box-shadow:0 10px 40px rgba(54,47,66,.06);
+}
+.island h2{font-size:clamp(26px,3.4vw,40px);font-weight:800;line-height:1.3}
+.island h2 em{font-style:normal;color:var(--rose)}
+.island .sub{margin-top:14px;color:var(--mist);font-size:15px;max-width:30em}
+.joinbox{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.groupnum{
+  border:1px dashed #d8bccb;border-radius:var(--r);
+  padding:18px 22px;background:#fff;
+}
+.groupnum small{display:block;color:var(--mist);font-size:12px;letter-spacing:.25em;margin-bottom:6px}
+.groupnum b{font-size:30px;letter-spacing:.12em;color:var(--ink);font-weight:800}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:36px;padding-top:44px;padding-bottom:40px}
+  .portrait-stage{
+    mask-image:linear-gradient(180deg,#000 80%,transparent 100%);
+    -webkit-mask-image:linear-gradient(180deg,#000 80%,transparent 100%);
+  }
+  .stage-tag{left:16px;bottom:18px}
+  .numbers .wrap{grid-template-columns:1fr;gap:34px;padding:44px 24px}
+  .bento{grid-template-columns:1fr;gap:20px}
+  .w2{grid-column:span 1}
+  .w2 .shot{aspect-ratio:4/3}
+  .tall{grid-row:span 1}
+  .tall .shot{aspect-ratio:4/3;flex:none;min-height:0}
+  .island{grid-template-columns:1fr;gap:30px}
+}
+@media (max-width:600px){
+  .navlinks a.plain{display:none}
+}
+
+/* ---------- 入场动画（IO 驱动） ---------- */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1)}
+.rv.on{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+
+/* ---------- 页脚 ---------- */
+footer{border-top:1px solid var(--line);padding:34px 0 44px;color:var(--mist);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer b{color:var(--lilac);font-weight:400}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">有花<b>无实</b> · 作品展馆</div>
+    <div class="navlinks">
+      <a class="plain" href="#works">全部作品</a>
+      <a class="join" href="小鲸鱼岛.html">登岛</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">独立开发 · 独立设计</span>
+        <h1>一个 HTML 文件，<br>就是<em>一个小世界</em>。</h1>
+        <p class="sub">20 个双击即玩的作品：流体极光、爬塔、弹球乐园、音游、抽卡和文字企划。零安装，零构建，零依赖。</p>
+        <div class="ctas">
+          <a class="btn btn-main" href="小鲸鱼岛.html">登岛去</a>
+          <a class="btn btn-ghost" href="#works">看看作品</a>
+        </div>
+      </div>
+      <figure class="portrait-stage">
+        <img src="../assets/guanmain.jpg" width="1080" height="1080" fetchpriority="high" alt="站长立绘 · 樱花与校供少女">
+        <figcaption class="stage-tag">馆 长 在 线</figcaption>
+      </figure>
+    </div>
+  </div>
+</header>
+
+<section class="numbers">
+  <div class="wrap">
+    <div class="num rv"><b>18</b><p>个已上线的小世界</p></div>
+    <div class="num rv"><b>1</b><p>个文件 = 一个完整作品</p></div>
+    <div class="num rv"><b>0</b><p>安装、构建与依赖</p></div>
+  </div>
+</section>
+
+<section id="works">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="tag">合集</span>
+      <h2>点卡片，进世界</h2>
+      <p>全部为单文件 HTML，浏览器双击就能跑</p>
+    </div>
+
+    <div class="bento">
+      <a class="card w2 rv" href="https://youhuawushi-blog.vercel.app/lab/histmap/index.html" target="_blank" rel="noopener">
+      <a class="card w2 rv" href="https://youhuawushi-blog.vercel.app/lab/trombone/index.html" target="_blank" rel="noopener">
+        <div class="shot"><div class="mood">🗣️<small>VOICE MACHINE</small></div></div>
+        <div class="body">
+          <h3>声音的诞生<span class="go">进入 →</span></h3>
+          <p>一根物理建模的人造声带：拖舌头、按声带，它能真的开口说出 a-u-k-t-n。</p>
+        </div>
+      </a>
+
+
+        <div class="shot"><div class="mood">🗺️<small>BORDER CHRONICLES</small></div></div>
+        <div class="body">
+          <h3>边界千年<span class="go">进入 →</span></h3>
+          <p>从智人到 2010 年，54 个切片的世界历史地图册。按下播放，看帝国像潮水漫上来又退下去。</p>
+        </div>
+      </a>
+
+      <a class="card live w2 rv" href="极光流体.html">
+        <div class="shot"><canvas id="miniFluid"></canvas><span class="float-tag">在封面上划一下，直接玩</span></div>
+        <div class="body">
+          <h3>极光流体<span class="go">进入 →</span></h3>
+          <p>纯 WebGL 实时流体模拟，鼠标搅动出一整片极光。镇馆之宝，零依赖。</p>
+        </div>
+      </a>
+
+      <a class="card w2 rv" href="深渊塔.html">
+        <div class="shot"><div class="mood">🗼<small>ABYSS TOWER</small></div></div>
+        <div class="body">
+          <h3>深渊塔<span class="go">进入 →</span></h3>
+          <p>15 层爬塔，策略战斗、随机事件与两种结局。背景会随你下潜的深度一点点变暗。</p>
+        </div>
+      </a>
+
+      <a class="card w2 rv" href="Git时间穿梭迷宫.html">
+        <div class="shot"><img src="../assets/git_maze_start.png" width="1707" height="876" loading="lazy" alt="Git 时间穿梭迷宫截图"></div>
+        <div class="body">
+          <h3>GIT 时间穿梭迷宫<span class="go">进入 →</span></h3>
+          <p>在 commit 之间穿梭走迷宫，玩着玩着就把 rebase 和分支搞懂了。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="二次元抽卡机.html">
+        <div class="shot"><img src="../assets/gacha.png" width="1035" height="849" loading="lazy" alt="二次元抽卡机截图"></div>
+        <div class="body">
+          <h3>次元召唤<span class="go">进入 →</span></h3>
+          <p>不花一分钱也能体验抽卡的快乐，金光一闪全凭手气。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="节奏抽卡音游.html">
+        <div class="shot"><img src="../assets/rhythm_final.png" width="1035" height="802" loading="lazy" alt="节奏抽卡音游截图"></div>
+        <div class="body">
+          <h3>节奏抽卡<span class="go">进入 →</span></h3>
+          <p>音游加抽卡机，打节拍的同时把卡池掏空。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="虚拟歌姬音乐可视化.html">
+        <div class="shot"><img src="../assets/vocal.png" width="1035" height="798" loading="lazy" alt="虚拟歌姬音乐可视化截图"></div>
+        <div class="body">
+          <h3>虚拟歌姬<span class="go">进入 →</span></h3>
+          <p>一块看得见声音的演奏台，节拍、频谱和灯光一起呼吸。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="鲸鱼娘吃米饭.html">
+        <div class="shot"><img src="../assets/whale_chan_final.png" width="1035" height="806" loading="lazy" alt="鲸鱼娘吃米饭截图"></div>
+        <div class="body">
+          <h3>鲸鱼娘干饭中<span class="go">进入 →</span></h3>
+          <p>圆滚滚的蓝鲸娘，和一碗永远吃不完的米饭。</p>
+        </div>
+      </a>
+
+      <a class="card tall rv" href="小鲸鱼岛.html">
+        <div class="shot"><img src="../assets/whale-island-final.png" width="1692" height="2947" loading="lazy" alt="小鲸鱼岛推广页截图"></div>
+        <div class="body">
+          <h3>小鲸鱼岛<span class="go">登岛 →</span></h3>
+          <p>我们的 QQ 群总部，所有小世界的发布地。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="全能工具箱.html">
+        <div class="shot"><div class="mood">🧰<small>ALL-IN-ONE KIT</small></div></div>
+        <div class="body">
+          <h3>全能工具箱<span class="go">进入 →</span></h3>
+          <p>单位换算、随机数、文本处理，日常小工具全塞进一个文件里。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="抉择回响.html">
+        <div class="shot"><div class="mood">🔀<small>ECHOES</small></div></div>
+        <div class="body">
+          <h3>抉择回响<span class="go">进入 →</span></h3>
+          <p>用词条重开一次人生，每个选择都会回响。</p>
+        </div>
+      </a>
+
+      <a class="card w2 rv" href="xiaoshi-index.html">
+        <div class="shot"><div class="mood">⏳<small>XIAOSHI PROJECT</small></div></div>
+        <div class="body">
+          <h3>消逝进行时<span class="go">进入 →</span></h3>
+          <p>给正在消失的中国日常写倒计时：报刊亭、绿皮慢车、录像厅……每件标本由所有人预言还能活几年。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="../projects/saharan-works/marimo/index.html">
+        <div class="shot"><div class="mood">🫧<small>MARIMO</small></div></div>
+        <div class="body">
+          <h3>球藻<span class="go">进入 →</span></h3>
+          <p>一颗安静的水草球，在水里轻轻晃动、冒泡、进行光合作用，治愈系桌面小宠物。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="ink.html">
+        <div class="shot"><div class="mood">🖋<small>INK</small></div></div>
+        <div class="body">
+          <h3>墨<span class="go">进入 →</span></h3>
+          <p>鼠标为笔，屏幕为纸。墨迹自动晕染、渗透、生长，画一幅水墨。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="stardust.html">
+        <div class="shot"><div class="mood">✨<small>STARDUST</small></div></div>
+        <div class="body">
+          <h3>星尘<span class="go">进入 →</span></h3>
+          <p>移动鼠标吸引星尘，造一个属于你的星系；点一下，看超新星爆发。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="../projects/时光轴/index.html">
+        <div class="shot"><div class="mood">📜<small>TIMELINE</small></div></div>
+        <div class="body">
+          <h3>时光轴<span class="go">进入 →</span></h3>
+          <p>把生活过成一首诗，记录每一个值得被留下的瞬间。</p>
+        </div>
+      </a>
+
+      <a class="card w2 rv" href="通信调制仿真实验室.html">
+        <div class="shot"><img src="../assets/modlab.png" width="1036" height="850" loading="lazy" alt="通信调制仿真实验室截图"></div>
+        <div class="body">
+          <h3>通信调制实验室<span class="go">进入 →</span></h3>
+          <p>把 AM、FM 调制解调变成看得见的波形实验。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="沙雕工具箱.html">
+        <div class="shot"><div class="mood">🎁<small>SHADIAO KIT</small></div></div>
+        <div class="body">
+          <h3>沙雕工具箱<span class="go">进入 →</span></h3>
+          <p>摸鱼解压全家桶：狗屁不通生成器、电子木鱼、每日沙雕运势、沙雕证书颁发所。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="人生重开.html">
+        <div class="shot"><div class="mood">🔄<small>RESTART</small></div></div>
+        <div class="body">
+          <h3>人生重开<span class="go">进入 →</span></h3>
+          <p>抽天赋、分属性、逐年事件流。184 天赋 1720 事件，这一次要活出个人样。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="弹球磁砖.html">
+        <div class="shot"><div class="mood">🧊<small>BRICK BALL</small></div></div>
+        <div class="body">
+          <h3>弹球磁砖<span class="go">进入 →</span></h3>
+          <p>拖动瞄准、弹球海洗磁砖。⭐ 攒球数、🎯 撒加号球、💎 横扫激光，一发入魂。</p>
+        </div>
+      </a>
+
+      <a class="card rv" href="弹球乐园.html">
+        <div class="shot"><div class="mood">🍬<small>PIN PARADISE</small></div></div>
+        <div class="body">
+          <h3>弹球乐园<span class="go">进入 →</span></h3>
+          <p>奶油糖果风挂机弹球：全自动乱飞，波间三选一强化，看数字自己爆炸。</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="mq" aria-hidden="true">
+  <div class="mq-track">
+    <span>流体极光 <i>/</i></span><span>小游戏 <i>/</i></span><span>可视化 <i>/</i></span><span>实用工具 <i>/</i></span><span>可爱 <i>/</i></span><span>暗黑幻想 <i>/</i></span><span>单文件 HTML <i>/</i></span><span>双击即玩 <i>/</i></span>
+    <span>流体极光 <i>/</i></span><span>小游戏 <i>/</i></span><span>可视化 <i>/</i></span><span>实用工具 <i>/</i></span><span>可爱 <i>/</i></span><span>暗黑幻想 <i>/</i></span><span>单文件 HTML <i>/</i></span><span>双击即玩 <i>/</i></span>
+  </div>
+</div>
+
+<section id="island">
+  <div class="wrap">
+    <div class="island rv">
+      <div>
+        <h2>新作品，<em>岛上首发</em>。</h2>
+        <p class="sub">你在上面看到的每个小世界，都是在小鲸鱼岛里一群朋友看着长大的。有新坑、有催更、有反馈。</p>
+      </div>
+      <div class="joinbox">
+        <div class="groupnum">
+          <small>QQ 群号</small>
+          <b id="qnum">574612434</b>
+        </div>
+        <button class="btn btn-main" id="copyBtn" type="button">复制群号</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 <b>有花无实</b></div>
+    <div>所有作品 = 一个文件。双击就跑。</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); }
+    });
+  }, {threshold: 0.15});
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+
+  var btn = document.getElementById('copyBtn');
+  btn.addEventListener('click', function(){
+    var text = document.getElementById('qnum').textContent.trim();
+    function done(){
+      btn.textContent = '已复制，去 QQ 搜索';
+      setTimeout(function(){ btn.textContent = '复制群号'; }, 2200);
+    }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch(e){}
+      document.body.removeChild(ta);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  });
+})();
+
+/* 极光流体卡：迷你 WebGL 预览（与《极光流体》同源解算） */
+(function(){
+  var canvas = document.getElementById('miniFluid');
+  if (!canvas) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var gl = canvas.getContext('webgl', {alpha:false, depth:false, stencil:false, antialias:false});
+  var half = gl && gl.getExtension('OES_texture_half_float');
+  if (!half || reduce) {
+    canvas.parentNode.style.background = 'linear-gradient(120deg,#173052,#3c2a63 48%,#153a55)';
+    canvas.remove();
+    return;
+  }
+  var lin = gl.getExtension('OES_texture_half_float_linear');
+  var TT = half.HALF_FLOAT_OES, FL = lin ? gl.LINEAR : gl.NEAREST;
+
+  var VS = [
+    'precision highp float; attribute vec2 aPosition; varying vec2 vUv,vL,vR,vT,vB; uniform vec2 texelSize;',
+    'void main(){ gl_Position=vec4(aPosition,0.,1.); vUv=aPosition*.5+.5;',
+    'vL=vUv-vec2(texelSize.x,0.); vR=vUv+vec2(texelSize.x,0.); vT=vUv+vec2(0.,texelSize.y); vB=vUv-vec2(0.,texelSize.y); }'
+  ].join('\n');
+
+  var FS = {
+    disp: 'precision mediump float; varying vec2 vUv; uniform sampler2D uTexture; void main(){ vec3 f=pow(texture2D(uTexture,vUv).rgb,vec3(.85)); vec2 p=vUv-.5; float v=1.-dot(p,p)*.6; vec3 bg=mix(vec3(.012,.018,.045),vec3(.04,.05,.11),vUv.y); gl_FragColor=vec4(bg*v+f,1.); }',
+    splat: 'precision highp float; varying vec2 vUv; uniform sampler2D uTarget; uniform float aspectRatio; uniform vec3 color; uniform vec2 point; uniform float radius; void main(){ vec2 p=vUv-point; p.x*=aspectRatio; vec3 s=exp(-dot(p,p)/radius)*color; gl_FragColor=vec4(texture2D(uTarget,vUv).xyz+s,1.); }',
+    advect: 'precision highp float; varying vec2 vUv; uniform sampler2D uVelocity,uSource; uniform float dt,decay; void main(){ vec2 c=vUv-dt*texture2D(uVelocity,vUv).xy; gl_FragColor=decay*texture2D(uSource,c); }',
+    diverge: 'precision mediump float; varying vec2 vUv,vL,vR,vT,vB; uniform sampler2D uVelocity; void main(){ float L=texture2D(uVelocity,vL).x,R=texture2D(uVelocity,vR).x,T=texture2D(uVelocity,vT).y,B=texture2D(uVelocity,vB).y; gl_FragColor=vec4(.5*(R-L+T-B),0.,0.,1.); }',
+    curl: 'precision mediump float; varying vec2 vUv,vL,vR,vT,vB; uniform sampler2D uVelocity; void main(){ float L=texture2D(uVelocity,vL).y,R=texture2D(uVelocity,vR).y,T=texture2D(uVelocity,vT).x,B=texture2D(uVelocity,vB).x; gl_FragColor=vec4(.5*(R-L-T+B),0.,0.,1.); }',
+    vort: 'precision highp float; varying vec2 vUv,vL,vR,vT,vB; uniform sampler2D uVelocity,uCurl; uniform float curl,dt; void main(){ float L=texture2D(uCurl,vL).x,R=texture2D(uCurl,vR).x,T=texture2D(uCurl,vT).x,B=texture2D(uCurl,vB).x,C=texture2D(uCurl,vUv).x; vec2 f=.5*vec2(abs(T)-abs(B),abs(R)-abs(L)); f/=length(f)+.0001; f*=curl*C; f.y*=-1.; vec2 v=texture2D(uVelocity,vUv).xy+f*dt; gl_FragColor=vec4(min(max(v,-1e3),1e3),0.,1.); }',
+    press: 'precision mediump float; varying vec2 vUv,vL,vR,vT,vB; uniform sampler2D uPressure,uDivergence; void main(){ float L=texture2D(uPressure,vL).x,R=texture2D(uPressure,vR).x,T=texture2D(uPressure,vT).x,B=texture2D(uPressure,vB).x,d=texture2D(uDivergence,vUv).x; gl_FragColor=vec4((L+R+B+T-d)*.25,0.,0.,1.); }',
+    grad: 'precision mediump float; varying vec2 vUv,vL,vR,vT,vB; uniform sampler2D uPressure,uVelocity; void main(){ float L=texture2D(uPressure,vL).x,R=texture2D(uPressure,vR).x,T=texture2D(uPressure,vT).x,B=texture2D(uPressure,vB).x; vec2 v=texture2D(uVelocity,vUv).xy-vec2(R-L,T-B); gl_FragColor=vec4(v,0.,1.); }',
+    clear: 'precision mediump float; varying vec2 vUv; uniform sampler2D uTexture; uniform float value; void main(){ gl_FragColor=value*texture2D(uTexture,vUv); }'
+  };
+
+  function prog(src){
+    var p=gl.createProgram();
+    [gl.VERTEX_SHADER, gl.FRAGMENT_SHADER].forEach(function(type,i){
+      var s=gl.createShader(type);
+      gl.shaderSource(s, i?src:VS); gl.compileShader(s); gl.attachShader(p,s);
+    });
+    gl.linkProgram(p);
+    var u={}, n=gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+    for(var i=0;i<n;i++){ var nm=gl.getActiveUniform(p,i).name; u[nm]=gl.getUniformLocation(p,nm); }
+    return {p:p, bind:function(){gl.useProgram(p);}, u:u};
+  }
+
+  var qb=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,qb);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,-1,1,1,1,1,-1]),gl.STATIC_DRAW);
+  var eb=gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,eb);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array([0,1,2,0,2,3]),gl.STATIC_DRAW);
+  gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  gl.enableVertexAttribArray(0);
+
+  var uni=0;
+  function blit(t){
+    if(t==null){ gl.viewport(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight); gl.bindFramebuffer(gl.FRAMEBUFFER,null); }
+    else { gl.viewport(0,0,t.width,t.height); gl.bindFramebuffer(gl.FRAMEBUFFER,t.fbo); }
+    gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT,0);
+  }
+
+  function fbo(w,h){
+    gl.activeTexture(gl.TEXTURE0);
+    var tx=gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D,tx);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,FL);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,FL);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,TT,null);
+    var fb=gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER,fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tx,0);
+    gl.viewport(0,0,w,h); gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
+    return {width:w,height:h,texelSizeX:1/w,texelSizeY:1/h,tex:tx,fbo:fb,
+      attach:function(id){gl.activeTexture(gl.TEXTURE0+id);gl.bindTexture(gl.TEXTURE_2D,tx);return id;}};
+  }
+  function dbl(w,h){
+    var a=fbo(w,h),b=fbo(w,h);
+    return {width:w,height:h,texelSizeX:1/w,texelSizeY:1/h,
+      get read(){return a;}, get write(){return b;}, swap:function(){var t=a;a=b;b=t;}};
+  }
+
+  var P={disp:prog(FS.disp),splat:prog(FS.splat),adv:prog(FS.advect),dv:prog(FS.diverge),cl:prog(FS.curl),vo:prog(FS.vort),pr:prog(FS.press),gr:prog(FS.grad),cr:prog(FS.clear)};
+
+  var dpr=Math.min(window.devicePixelRatio||1,1.5);
+  var W=canvas.clientWidth||420,H=canvas.clientHeight||184;
+  canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+  var ar=W/Math.max(H,1);
+  var simW=Math.round(96*ar),simH=96,dyeW=Math.round(384*ar),dyeH=384;
+  var dye=dbl(dyeW,dyeH),vel=dbl(simW,simH),prs=dbl(simW,simH),dvg=fbo(simW,simH),ctl=fbo(simW,simH);
+
+  var PAL=[[.1,.95,.78],[.25,.6,1],[.6,.4,1],[.05,.85,.95]];
+  function col(k){var c=PAL[Math.floor(Math.random()*PAL.length)];return [c[0]*k,c[1]*k,c[2]*k];}
+
+  function splat(x,y,dx,dy,c){
+    P.splat.bind();
+    gl.uniform1i(P.splat.u.uTarget,vel.read.attach(0));
+    gl.uniform1f(P.splat.u.aspectRatio,ar);
+    gl.uniform2f(P.splat.u.point,x,y);
+    gl.uniform3f(P.splat.u.color,dx,dy,0);
+    gl.uniform1f(P.splat.u.radius,.0032*Math.max(ar,1));
+    blit(vel.write); vel.swap();
+    gl.uniform1i(P.splat.u.uTarget,dye.read.attach(0));
+    gl.uniform3f(P.splat.u.color,c[0],c[1],c[2]);
+    blit(dye.write); dye.swap();
+  }
+
+  var lastX=null,lastY=null;
+  var shot=canvas.parentNode||document.querySelector('.live .shot');
+  shot.addEventListener('mousemove',function(e){
+    var r=canvas.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width, y=1-(e.clientY-r.top)/r.height;
+    if(lastX!==null){
+      var dx=(x-lastX)*260, dy=(y-lastY)*260;
+      if(Math.abs(dx)+Math.abs(dy)>1) splat(x,y,dx,dy,col(.16));
+    }
+    lastX=x; lastY=y;
+  });
+  shot.addEventListener('mouseleave',function(){lastX=lastY=null;});
+
+  var visible=true;
+  var io2=new IntersectionObserver(function(es){ es.forEach(function(e){ visible=e.isIntersecting; }); },{threshold:0.05});
+  io2.observe(document.querySelector('.live'));
+
+  function seed(n){ for(var i=0;i<n;i++) splat(Math.random(),Math.random(),(Math.random()-.5)*220,(Math.random()-.5)*220,col(.5)); }
+  seed(6);
+  var ambient=0;
+
+  function fit(){
+    var nw=canvas.clientWidth||W, nh=canvas.clientHeight||H;
+    var w2=Math.round(nw*dpr), h2=Math.round(nh*dpr);
+    if(w2>0 && h2>0 && (canvas.width!==w2||canvas.height!==h2)){ canvas.width=w2; canvas.height=h2; }
+  }
+
+  var last=performance.now();
+  function frame(now){
+    requestAnimationFrame(frame);
+    var dt=Math.min((now-last)/1000,.0166); last=now;
+    if(!visible){ uni=0; return; }
+    uni=0; fit();
+    gl.disable(gl.BLEND);
+
+    P.cl.bind(); gl.uniform2f(P.cl.u.texelSize,vel.texelSizeX,vel.texelSizeY);
+    gl.uniform1i(P.cl.u.uVelocity,vel.read.attach(0)); blit(ctl);
+
+    P.vo.bind(); gl.uniform2f(P.vo.u.texelSize,vel.texelSizeX,vel.texelSizeY);
+    gl.uniform1i(P.vo.u.uVelocity,vel.read.attach(0));
+    gl.uniform1i(P.vo.u.uCurl,ctl.attach(1));
+    gl.uniform1f(P.vo.u.curl,24); gl.uniform1f(P.vo.u.dt,dt);
+    blit(vel.write); vel.swap();
+
+    P.dv.bind(); gl.uniform2f(P.dv.u.texelSize,vel.texelSizeX,vel.texelSizeY);
+    gl.uniform1i(P.dv.u.uVelocity,vel.read.attach(0)); blit(dvg);
+
+    P.cr.bind(); gl.uniform1i(P.cr.u.uTexture,prs.read.attach(0));
+    gl.uniform1f(P.cr.u.value,.8); blit(prs.write); prs.swap();
+
+    P.pr.bind(); gl.uniform2f(P.pr.u.texelSize,vel.texelSizeX,vel.texelSizeY);
+    gl.uniform1i(P.pr.u.uDivergence,dvg.attach(0));
+    for(var i=0;i<14;i++){ gl.uniform1i(P.pr.u.uPressure,prs.read.attach(1)); blit(prs.write); prs.swap(); }
+
+    P.gr.bind(); gl.uniform2f(P.gr.u.texelSize,vel.texelSizeX,vel.texelSizeY);
+    gl.uniform1i(P.gr.u.uPressure,prs.read.attach(0));
+    gl.uniform1i(P.gr.u.uVelocity,vel.read.attach(1));
+    blit(vel.write); vel.swap();
+
+    P.adv.bind(); gl.uniform2f(P.adv.u.texelSize,vel.texelSizeX,vel.texelSizeY);
+    gl.uniform1f(P.adv.u.dt,dt);
+    gl.uniform1i(P.adv.u.uVelocity,vel.read.attach(0));
+    gl.uniform1i(P.adv.u.uSource,vel.read.attach(0));
+    gl.uniform1f(P.adv.u.decay,1/(1+.2*dt));
+    blit(vel.write); vel.swap();
+    gl.uniform1i(P.adv.u.uVelocity,vel.read.attach(0));
+    gl.uniform1i(P.adv.u.uSource,dye.read.attach(1));
+    gl.uniform1f(P.adv.u.decay,1/(1+.9*dt));
+    blit(dye.write); dye.swap();
+
+    ambient+=dt;
+    if(ambient>4.5){ ambient=0; splat(Math.random(),Math.random(),(Math.random()-.5)*260,(Math.random()-.5)*260,col(.45)); }
+
+    P.disp.bind(); gl.uniform2f(P.disp.u.texelSize,1/gl.drawingBufferWidth,1/gl.drawingBufferHeight);
+    gl.uniform1i(P.disp.u.uTexture,dye.read.attach(0)); blit(null);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* 樱花飘落 */
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var layer = document.createElement('div');
+  layer.className = 'petals';
+  layer.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(layer);
+  var N = window.innerWidth < 760 ? 12 : 22;
+  for (var i = 0; i < N; i++) {
+    var drop = document.createElement('i');
+    var petal = document.createElement('b');
+    var s = 7 + Math.random() * 9;
+    var d = 11 + Math.random() * 13;
+    drop.style.cssText =
+      'left:' + (Math.random() * 100).toFixed(1) + 'vw;' +
+      'width:' + s.toFixed(1) + 'px;height:' + s.toFixed(1) + 'px;' +
+      'animation-duration:' + d.toFixed(1) + 's;' +
+      'animation-delay:-' + (Math.random() * d).toFixed(1) + 's;' +
+      'opacity:' + (0.4 + Math.random() * 0.45).toFixed(2);
+    petal.style.animationDuration = (2.6 + Math.random() * 2.6).toFixed(1) + 's';
+    petal.style.animationDelay = '-' + (Math.random() * 3).toFixed(1) + 's';
+    drop.appendChild(petal);
+    layer.appendChild(drop);
+  }
+})();
+</script>
+</body>
+</html>

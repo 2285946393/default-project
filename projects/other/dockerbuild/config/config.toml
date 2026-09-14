@@ -1,0 +1,59 @@
+# clodesen2api 部署配置（dockerbuild/config/config.toml）
+# 该目录通过 compose 挂载为容器内 /config，程序以 -c /config/config.toml 启动。
+# 首次启动时若 password.json 不存在会自动创建（默认密码 qq971971），
+# key.json 不存在会自动生成随机 Key 并写入 /config/key.json。
+#
+# 账号管理说明：
+# 本文件的 [[auth]] 段由网页账号管理系统自动管理，无需手动编辑。
+# 首次启动后访问 http://127.0.0.1:3003，登录（默认密码 qq971971），
+# 在网页中通过"添加账号"按钮添加账号，添加后会自动写入本文件的 [[auth]] 段。
+# 如需预置账号，可手动在下方 [[auth]] 段中填写 identifier / password / auto_relogin。
+
+[server]
+# 本地监听地址（容器内）
+addr = ":8080"
+
+[upstream]
+# 上游站点基础地址，供登录和签到使用
+base_url = "https://pai.zaiduyu.top"
+# 上游 OpenAI API 基础地址；网关会自行追加 /v1/... 路由
+openai_base_url = "https://pai.zaiduyu.top/api/openai"
+# 登录端点路径
+login_path = "/api/user-auth"
+# 登录请求超时（Go duration 字符串）
+login_timeout = "30s"
+# 上游请求超时（0 表示不限，流式场景建议设大一点或为 0）
+request_timeout = "0s"
+# 浏览器 UA，缺失上游会被 Cloudflare/WAF 拒绝
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+# 多账号列表：可配置多个 [[auth]]，网关按 [schedule] 策略调度。
+# 默认不预置任何账号（本文件不含 [[auth]] 段），账号请在网页账号管理系统中
+# 通过"添加账号"按钮添加，添加后会自动写入本文件的 [[auth]] 段（无需手动编辑）。
+# 如需预置账号，可手动添加如下 [[auth]] 段并填写 identifier / password / auto_relogin：
+#   [[auth]]
+#   identifier = "your_account"
+#   password = "your_password"
+#   auto_relogin = true
+
+# 每日签到（GET /api/checkin）
+[checkin]
+enable = true
+path = "/api/checkin"
+# 可选的独立签到状态查询路径；留空时不额外查询，避免把签到接口重复当作状态检测
+status_path = ""
+# 每天签到时刻（HH:MM，24h）
+at = "04:00"
+# 签到时区
+timezone = "Asia/Shanghai"
+
+# 账号余额查询（GET /api/account，启动时输出一次余额）
+[account]
+path = "/api/account"
+
+# 账号调度策略
+# mode 取值：random（随机）/ round_robin（轮询）/ fixed（固定）/ priority_temp（优先临时积分高）
+# fixed 模式下需填写 fixed_id（账号 ID 可在管理后台查看）
+[schedule]
+mode = "random"
+fixed_id = ""

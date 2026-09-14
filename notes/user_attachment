@@ -1,0 +1,175 @@
+Skip to content
+Navigation Menu
+Sign in
+yuvadm
+/
+vibes
+Public
+Notifications
+Fork 0
+ Star 1
+Code
+Issues
+Pull requests
+Actions
+Projects
+Security and quality
+main
+Go to file
+Code
+Latest commit
+yuvadm
+Update readme
+0c2af50
+ · 
+History
+Folders and files
+Name	Last commit message	Last commit date
+
+btctick
+	
+Add analytics to all pages
+	
+
+
+isometric
+	
+Add analytics to all pages
+	
+
+
+legobricks
+	
+Add legos bricks
+	
+
+
+lemmings
+	
+Add analytics to all pages
+	
+
+
+particles
+	
+Add analytics to all pages
+	
+
+
+soundscape
+	
+Add analytics to all pages
+	
+
+
+trainride
+	
+Add analytics in traintide
+	
+
+
+webgl
+	
+Add webgl noise
+	
+
+
+zengarden
+	
+Add analytics to all pages
+	
+
+
+README.md
+	
+Update readme
+	
+
+
+index.html
+	
+Add legos bricks
+	
+Repository files navigation
+README
+✨ Vibes ✨
+
+https://vibes.yuv.al
+
+A collection of cute & creative web experiments and visual experiences.
+
+🌈 Experiments
+Isometric Triangles - Dynamic background with animated geometric shapes in an isometric perspective.
+Lemmings - Cute green & blue lemmings walking and falling in a dynamic pixelated environment.
+Digital Zen Garden - A meditative drag-and-drop experience where users can arrange elements with subtle animations.
+BTC Ticker - Live Bitcoin price visualization with a cool animated chart showing price history.
+Interactive Particle System - A full-screen interactive particle system where particles respond to cursor movement, clicks, and device tilt.
+Ambient Soundscape Generator - Create beautiful, generative ambient soundscapes with customizable musical scales and parameters that play continuously in the background.
+LEGO Brick Generator - Resizable LEGO brick container with customizable color palettes and randomization options.
+WebGL Noise Generator - Interactive 3D graphics using WebGL with customizable parameters and real-time rendering.
+🚀 Local Development
+
+To view the experiments locally:
+
+Clone this repository
+Open the HTML files directly in your browser
+Main page: index.html
+Isometric Triangles: isometric/index.html
+Digital Zen Garden: zengarden/index.html
+BTC Ticker: btctick/index.html
+Interactive Particle System: particles/index.html
+Ambient Soundscape Generator: soundscape/index.html
+LEGO Brick Generator: legobricks/index.html
+WebGL Noise Generator: webgl/index.html
+💻 Technologies
+HTML5
+CSS3
+JavaScript (Vanilla)
+Google Fonts (VT323 & Fredoka)
+🎨 Style
+
+The project uses a bright, cute, and slightly pixelated aesthetic with:
+
+Pastel colors (pink, purple, light blue)
+Pixelated rendering for some elements
+Playful borders and shadows
+Retro-inspired pixel font (VT323) for headings
+Modern rounded font (Fredoka) for body text
+About
+
+Vibe coding playground
+
+vibes.yuv.al
+Resources
+Readme
+Activity
+Stars
+1 star
+Watchers
+1 watching
+Forks
+0 forks
+Report repository
+Releases
+No releases published
+Contributors
+1
+ (1)
+yuvadmYuval Adam
+Languages
+HTML
+75.7%
+JavaScript
+24.3%
+Footer
+© 2026 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Community
+Docs
+Contact
+Manage cookies
+Do not share my personal information

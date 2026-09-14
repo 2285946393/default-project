@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深渊塔 · Abyss Tower</title>
+<style>
+:root{--bg:#0a0613;--bg2:#15082a;--panel:rgba(28,20,52,.6);--panel-solid:#1c1434;--border:rgba(167,139,250,.18);--gold:#f5d76e;--purple:#a78bfa;--cyan:#6ee7ff;--red:#fb7185;--orange:#fb923c;--green:#22c55e;--text:#ece8ff;--muted:#8b7fb3;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(1200px 800px at 50% 0%,var(--bg2),var(--bg));color:var(--text);font-family:"Microsoft YaHei","Segoe UI",sans-serif;display:flex;flex-direction:column;min-height:100vh;position:relative;transition:background 1.2s}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars i{position:absolute;background:#fff;border-radius:50%;animation:tw 4s infinite}
+@keyframes tw{0%,100%{opacity:.06}50%{opacity:.85}}
+.bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:.15;pointer-events:none;z-index:0;animation:floatBg 12s ease-in-out infinite;transition:background 1.2s}
+@keyframes floatBg{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,-40px)}}
+.bg-glow.g1{background:#a78bfa;top:0;left:0}
+.bg-glow.g2{background:#6ee7ff;bottom:0;right:0;animation-delay:4s}
+
+.app{position:relative;z-index:2;display:flex;flex-direction:column;height:100vh;width:100%;max-width:1080px;margin:0 auto;padding:0 16px 16px}
+header{padding:14px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.brand{font-size:18px;font-weight:800;letter-spacing:4px;background:linear-gradient(90deg,var(--gold),var(--purple),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 8px rgba(167,139,250,.3))}
+.topbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.top-pill{background:rgba(20,12,40,.6);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.top-pill b{color:var(--text);font-weight:700}
+.top-pill.gold b{color:var(--gold)}
+.top-pill.cyan b{color:var(--cyan)}
+.top-pill.purple b{color:var(--purple)}
+.top-pill.red b{color:var(--red)}
+
+.tower-track{margin:0 0 12px;flex-shrink:0}
+.tower-track .floor-count{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.tower-track .fc-label{font-size:12px;letter-spacing:2px;color:var(--muted)}
+.tower-track .fc-pos{font-size:15px;font-weight:800;background:linear-gradient(90deg,var(--gold),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tower-bar{height:14px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid var(--border);overflow:hidden;position:relative}
+.tower-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan),var(--red));transition:width .8s cubic-bezier(.4,0,.2,1)}
+.tower-segs{position:absolute;inset:0;display:flex}
+.tower-segs span{flex:1;border-right:1px solid rgba(255,255,255,.15)}
+.tower-segs span:last-child{border-right:none}
+
+main{flex:1;min-height:0;display:grid;grid-template-columns:280px 1fr;gap:14px;overflow:hidden}
+@media(max-width:780px){main{grid-template-columns:1fr}}
+.left-col{display:flex;flex-direction:column;gap:10px;overflow-y:auto;padding-right:4px}
+.right-col{display:flex;flex-direction:column;background:rgba(18,12,40,.55);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:18px;overflow:hidden;position:relative}
+
+.card{background:rgba(20,12,40,.55);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:16px;padding:14px;transition:.2s;cursor:pointer;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:-1px;border-radius:17px;background:linear-gradient(135deg,var(--accent,var(--purple)),transparent 60%);opacity:0;transition:.2s;z-index:-1}
+.card:hover{transform:translateY(-2px);border-color:rgba(167,139,250,.4)}
+.card:hover::before{opacity:.5}
+.card.active{border-color:var(--accent,var(--purple));box-shadow:0 0 24px rgba(167,139,250,.2)}
+.card.dead{opacity:.45;filter:grayscale(.7)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.hero-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.15),rgba(0,0,0,.3));border:2px solid var(--accent,var(--purple));box-shadow:0 0 12px var(--accent,var(--purple));flex-shrink:0}
+.hero-name{flex:1;min-width:0}
+.hero-name .n{font-size:14px;font-weight:700;color:var(--text)}
+.hero-name .t{font-size:10px;color:var(--muted);letter-spacing:1px}
+.hp-bar-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin:4px 0 6px}
+.hp-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--red),var(--green));transition:width .5s}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;font-size:10px;text-align:center;color:var(--muted)}
+.stats-row span b{color:var(--text);font-size:11px}
+.favor-row{margin-top:6px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted)}
+.favor-row .heart{color:var(--red);font-size:12px}
+.favor-row .hearts{letter-spacing:1px;font-size:12px}
+
+.dialogue-area{flex:1;display:flex;flex-direction:column;min-height:0;padding:18px 24px 12px}
+.enemy-card{margin-bottom:12px;padding:12px;border-radius:14px;background:rgba(10,5,25,.5);border:1px solid var(--border);display:flex;align-items:center;gap:14px;transition:.3s}
+.enemy-card .ec-emoji{font-size:44px;filter:drop-shadow(0 0 12px currentColor)}
+.enemy-card .ec-info{flex:1}
+.enemy-card .ec-name{font-size:15px;font-weight:800;letter-spacing:1px}
+.enemy-card .ec-sub{font-size:11px;color:var(--muted);margin:2px 0 6px}
+.enemy-card .ec-meta{display:flex;gap:10px;font-size:11px;color:var(--muted)}
+.enemy-card .ec-meta b{color:var(--text)}
+.enemy-card .ec-tier{font-size:10px;padding:3px 9px;border-radius:10px;position:absolute;top:10px;right:10px;background:rgba(255,255,255,.06)}
+.enemy-card.boss{border-color:var(--red);box-shadow:0 0 22px rgba(251,113,133,.25);animation:bossPulse 2.4s infinite}
+@keyframes bossPulse{0%,100%{box-shadow:0 0 16px rgba(251,113,133,.2)}50%{box-shadow:0 0 32px rgba(251,113,133,.5)}}
+.dialogue-portrait{width:100%;max-width:250px;aspect-ratio:1;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:120px;border-radius:24px;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.1),rgba(0,0,0,.5));border:1px solid var(--border);position:relative;overflow:hidden;box-shadow:inset 0 0 60px rgba(167,139,250,.1)}
+.dialogue-portrait::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 100%,rgba(0,0,0,.4),transparent 60%)}
+.dialogue-portrait .name-tag{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:2px;background:rgba(0,0,0,.5);padding:4px 12px;border-radius:12px;backdrop-filter:blur(4px);color:var(--text);font-weight:600}
+.dialogue-text{flex:1;min-height:80px;font-size:15px;line-height:2;letter-spacing:1px;color:var(--text);overflow-y:auto;padding:0 4px}
+.dialogue-text .cursor{display:inline-block;width:2px;height:1em;background:var(--text);vertical-align:text-bottom;animation:blink .6s infinite;margin-left:2px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.actions-area{padding:12px 24px 18px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border);background:rgba(10,5,25,.5);backdrop-filter:blur(6px)}
+.actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.action-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px 8px;cursor:pointer;font-size:13px;color:var(--text);display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;font-family:inherit}
+.action-btn:hover{transform:translateY(-1px);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.action-btn:active{transform:translateY(0)}
+.action-btn .ic{font-size:16px}
+.action-btn.special{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(110,231,255,.15));border-color:rgba(167,139,250,.4)}
+.action-btn.special:hover{box-shadow:0 0 20px rgba(167,139,250,.3)}
+.action-btn.danger{background:linear-gradient(135deg,rgba(251,113,133,.2),rgba(245,158,11,.1));border-color:rgba(251,113,133,.4)}
+.action-btn.danger:hover{box-shadow:0 0 20px rgba(251,113,133,.3)}
+.action-btn:disabled{opacity:.4;cursor:not-allowed}
+
+.overlay{position:absolute;inset:0;background:rgba(10,5,25,.94);backdrop-filter:blur(12px);z-index:10;padding:24px;display:none;flex-direction:column;overflow-y:auto}
+.overlay.show{display:flex}
+.overlay h3{font-size:18px;font-weight:800;margin-bottom:14px;background:linear-gradient(90deg,var(--gold),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+.overlay h3.red{background:linear-gradient(90deg,var(--red),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+.strategy-hero{background:rgba(20,12,40,.6);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.strategy-list{display:grid;gap:10px;margin-top:10px}
+.strategy-btn{background:rgba(20,12,40,.6);border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.2s;text-align:left;font-family:inherit;color:var(--text)}
+.strategy-btn:hover{transform:translateY(-1px);border-color:var(--accent,var(--cyan));background:rgba(167,139,250,.08)}
+.strategy-btn .re{font-size:26px}
+.strategy-btn .rn{font-size:14px;font-weight:700}
+.strategy-btn .rd{font-size:11px;color:var(--muted);flex:1;line-height:1.5}
+.strategy-btn .rv{font-size:13px;color:var(--gold);white-space:nowrap}
+.back-btn{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px;cursor:pointer;font-size:13px;color:var(--text);margin-top:14px;font-family:inherit}
+.back-btn:hover{background:rgba(255,255,255,.08)}
+
+.event-card{background:rgba(20,12,40,.7);border:1px solid var(--border);border-radius:16px;padding:18px;margin-top:6px}
+.event-card .ev-emoji{font-size:44px;text-align:center;margin-bottom:10px;filter:drop-shadow(0 0 14px currentColor)}
+.event-card .ev-title{font-size:17px;font-weight:800;text-align:center;margin-bottom:8px}
+.event-card .ev-desc{font-size:13px;line-height:1.8;color:var(--text);margin-bottom:14px;text-align:center}
+.event-choice{display:block;width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;font-size:13px;color:var(--text);font-family:inherit;margin-bottom:8px;text-align:left;transition:.2s}
+.event-choice:hover{border-color:var(--accent,var(--cyan));background:rgba(167,139,250,.1)}
+.event-choice .ci{font-size:16px}
+
+.fixed-popup{position:fixed;inset:0;background:rgba(10,5,25,.96);backdrop-filter:blur(14px);z-index:30;padding:24px;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.fixed-popup.show{display:flex}
+.fixed-popup .big-emoji{font-size:76px;margin-bottom:14px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.fixed-popup h2{font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,var(--gold),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fixed-popup h2.red{background:linear-gradient(90deg,var(--red),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fixed-popup p{font-size:14px;line-height:1.9;color:var(--text);max-width:380px;margin-bottom:14px}
+.fixed-popup .rewards{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;justify-content:center}
+.fixed-popup .reward{background:rgba(20,12,40,.6);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--text)}
+.fixed-popup .reward b{color:var(--gold)}
+.fixed-popup button{background:linear-gradient(135deg,var(--purple),var(--cyan));border:none;color:#fff;padding:12px 32px;border-radius:24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(167,139,250,.4)}
+.fixed-popup button:hover{filter:brightness(1.15)}
+.fixed-popup button.danger{background:linear-gradient(135deg,var(--red),var(--orange));box-shadow:0 4px 20px rgba(251,113,133,.4)}
+
+.rewind-overlay{position:fixed;inset:0;background:rgba(10,5,25,.95);z-index:40;display:none;align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(20px)}
+.rewind-overlay.show{display:flex}
+.rewind-icon{font-size:56px;animation:rewindSpin 1.5s ease-in-out}
+@keyframes rewindSpin{0%{transform:rotate(0);opacity:1}100%{transform:rotate(-720deg);opacity:0}}
+.rewind-text{margin-top:14px;font-size:18px;letter-spacing:4px;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(10,5,25,.95);backdrop-filter:blur(8px);border:1px solid var(--purple);padding:12px 24px;border-radius:25px;font-size:13px;z-index:50;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.dead-badge{position:absolute;top:6px;right:8px;font-size:16px;opacity:.9}
+</style>
+</head>
+<body>
+<div class="bg-glow g1" id="glow1"></div>
+<div class="bg-glow g2" id="glow2"></div>
+<div class="stars" id="stars"></div>
+
+<div class="app">
+<header>
+  <div class="brand">深渊塔 · ABYSS TOWER</div>
+  <div class="topbar">
+    <div class="top-pill gold">⏳ <b id="hourglasses">3</b> 沙漏</div>
+    <div class="top-pill cyan">🌌 <b id="floorLabel">第 1</b> 层</div>
+    <div class="top-pill purple">💰 <b id="gold">100</b></div>
+    <div class="top-pill red" style="display:none" id="bossPill">👹 领主层</div>
+  </div>
+</header>
+
+<div class="tower-track">
+  <div class="floor-count">
+    <span class="fc-label">深渊层进</span>
+    <span class="fc-pos" id="floorPos">第 1 / 15 层 —— 幽暗森林</span>
+  </div>
+  <div class="tower-bar">
+    <div class="tower-fill" id="towerFill" style="width:0%"></div>
+    <div class="tower-segs" id="towerSegs"></div>
+  </div>
+</div>
+
+<main>
+  <div class="left-col" id="heroList"></div>
+  <div class="right-col">
+    <div class="dialogue-area">
+      <div class="enemy-card" id="enemyCard"></div>
+      <div class="dialogue-portrait" id="portrait">
+        <span class="name-tag" id="portraitName">深渊的呼唤</span>
+      </div>
+      <div class="dialogue-text" id="dialogue"></div>
+    </div>
+    <div class="actions-area">
+      <div class="actions-grid" id="actions"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<div class="overlay" id="dispatchPanel">
+  <h3 id="dispatchTitle">⚔️ 选择进攻策略</h3>
+  <div id="strategyHero" class="strategy-hero"></div>
+  <div class="strategy-list" id="strategyList"></div>
+  <button class="back-btn" onclick="closeDispatch()">返回塔层</button>
+</div>
+
+<div class="overlay" id="eventPanel">
+  <h3 class="red" id="eventHeading">🌀 命运的岔路</h3>
+  <div id="eventBox"></div>
+</div>
+
+<div class="fixed-popup" id="resultPopup">
+  <div class="big-emoji" id="rpEmoji">⚔️</div>
+  <h2 id="rpTitle">讨伐完成</h2>
+  <p id="rpText">一段旅程的结束。</p>
+  <div class="rewards" id="rpRewards"></div>
+  <button id="rpBtn" onclick="closeResult()">继续</button>
+</div>
+
+<div class="fixed-popup" id="endPopup">
+  <div class="big-emoji" id="endEmoji">🏆</div>
+  <h2 id="endTitle">旅程落幕</h2>
+  <p id="endText"></p>
+  <button onclick="restartGame()">重 新 开 始</button>
+</div>
+
+<div class="rewind-overlay" id="rewindOverlay">
+  <div class="rewind-icon">⏪</div>
+  <div class="rewind-text">时 间 回 溯</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const MAX_FLOOR=15;
+const HEROES = [
+  {id:"aaron",name:"亚伦",title:"圣堂骑士",emoji:"🛡️",color:"#f5d76e",atk:6,def:9,spd:4,favor:0,maxHp:120,hp:120,alive:true,
+   desc:"忠诚的圣堂骑士，沉默寡言，但绝不背弃誓言。暗处必有他的圣光。"},
+  {id:"lyra",name:"莉拉",title:"影刃刺客",emoji:"🗡️",color:"#a78bfa",atk:9,def:4,spd:9,favor:0,maxHp:80,hp:80,alive:true,
+   desc:"来自东方的神秘刺客，独来独往，眼神冷峻。她走过之处，血不沾刃。"},
+  {id:"elsa",name:"艾尔莎",title:"火焰法师",emoji:"🔥",color:"#fb7185",atk:8,def:3,spd:6,favor:0,maxHp:70,hp:70,alive:true,
+   desc:"热情而鲁莽的火焰法师，热爱一切燃烧的事物。她的火焰比诅咒更难收拾。"},
+  {id:"mira",name:"米拉",title:"月之弓手",emoji:"🏹",color:"#6ee7ff",atk:7,def:5,spd:7,favor:0,maxHp:90,hp:90,alive:true,
+   desc:"在月光下百发百中的神射手，温柔而沉默。她的箭矢会指明归途。"},
+  {id:"grom",name:"格罗姆",title:"狂战士",emoji:"🪓",color:"#fb923c",atk:10,def:6,spd:3,favor:0,maxHp:150,hp:150,alive:true,
+   desc:"野兽一般的巨汉，战斗时双眼会泛起红光。他曾被深渊的黑暗污染。"}
+];
+
+const ZONES = [
+  {floorRange:[1,5], name:"幽暗森林", sub:"湿冷的林地，腐叶下藏着低语的裂隙。", accent:"#22c55e", mon:"🐗", tier:"浅层",
+    enemies:["腐化哥布林","苔藓巨蛛","蚀骨狼","藤蔓魔像"]},
+  {floorRange:[6,10], name:"永冻雪原", sub:"永恒的冰雪覆盖一切，风声中有人呼喊你的名字。", accent:"#60a5fa", mon:"❄️", tier:"中层",
+    enemies:["冰霜幽魂","寒脊尸犬","雪原巨熊","冻土骨卫"]},
+  {floorRange:[11,15], name:"湮灭裂隙", sub:"越深入，火焰越冷。低语化作回响，塔底在呼吸。", accent:"#fb7185", mon:"🔥", tier:"深湮",
+    enemies:["深渊影蛛","怨念骑士","堕落守门人","黑曜巨像"]}
+];
+const BOSSES = {5:{name:"腐土蛆王",emoji:"🪱"},10:{name:"永冻龙骸",emoji:"🐉"},15:{name:"湮灭之心",emoji:"💀"}};
+
+const STRATEGIES = [
+  {id:"assault",name:"⚔️ 强攻",desc:"以攻代守，火力全开，输出更高但更易受伤。",mod:4,defDmg:1.0,risk:0.85},
+  {id:"guard",name:"🛡️ 坚守",desc:"稳扎稳打，大幅减伤，收益略低但更安全。",mod:1,defDmg:0.55,risk:1.0},
+  {id:"tactics",name:"🎯 智取",desc:"利用速度取巧，成功率受速度影响，受伤适中。",mod:2,defDmg:0.8,risk:1.0}
+];
+
+const EVENTS = [
+  {emoji:"🕯️",title:"扭曲的烛火",desc:"黑暗中一盏孤烛摇曳，烛芯竟是一缕纠缠的头发。火光照见墙上写满你童年的名字。",
+   choices:[{label:"点燃它",icon:"🕯️",desc:"获得神秘力量加持",effect:{favor:2,gold:30}},
+            {label:"吹灭它",icon:"💨",desc:"避开未知之物，全队恢复少量HP",effect:{hpAll:15}}]},
+  {emoji:"🕳️",title:"坍塌的甬道",desc:"脚下的石板突然陷落，露出尘封的密室。里边堆着前人留下的财物与骸骨。",
+   choices:[{label:"深入探索",icon:"💰",desc:"收获金币，但可能触发陷阱",effect:{gold:60,trap:true}},
+            {label:"谨慎退后",icon:"🛡️",desc:"不为所动，保存体力",effect:{hpAll:8}}]},
+  {emoji:"🧙",title:"流浪商人",desc:"一个蒙面身影凭空出现，兜售沾血的古物。'旅人，深渊可没有回头路。'",
+   choices:[{label:"购买护符",icon:"🧿",desc:"花费40金，全队获得治疗",effect:{cost:40,hpAll:20}},
+            {label:"婉拒离开",icon:"🙅",desc:"省下金币",effect:{}}]},
+  {emoji:"🩸",title:"血月之祭",desc:"红月当空，你听见一声苍凉的鲸歌。队伍中有人逐渐走向祭坛……",
+   choices:[{label:"拉住他",icon:"🤝",desc:"救下同伴，但消耗体力",effect:{heroHp:-10}},
+            {label:"静静旁观",icon:"🌑",desc:"见证仪式，获得一份赠礼",effect:{gold:45}}]},
+  {emoji:"📜",title:"残破的日记",desc:"墙缝里夹着一本烧去半边的日记，记录着一位前代守塔人的死亡。最后一页写着：'它在数我们的脚印。'",
+   choices:[{label:"撕掉那一页",icon:"🌀",desc:"消除阴影，全队恢复",effect:{hpAll:12}},
+            {label:"收好日记",icon:"📖",desc:"研究线索，参悟招式",effect:{favor:3}}]}
+];
+
+let state = {
+  floor: 1,
+  gold: 100,
+  hourglasses: 3,
+  selectedHeroId: "aaron",
+  heroes: HEROES.map(h=>({...h})),
+  eventSeed: Math.floor(Math.random()*9999),
+  ended: false
+};
+
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v))}
+function $(id){return document.getElementById(id)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function getZone(floor){
+  for(const z of ZONES){if(floor>=z.floorRange[0]&&floor<=z.floorRange[1])return z}
+  return ZONES[2];
+}
+function getEnemy(floor){
+  const zone=getZone(floor);
+  const enemy=BOSSES[floor];
+  if(enemy){
+    return {name:enemy.name,emoji:enemy.emoji,boss:true,
+      hp: Math.round(60+floor*22), atk: Math.round(9+floor*1.6), def: Math.round(6+floor), spd: Math.round(5+floor*0.8),
+      zone:zone, goldReward:Math.round(60+floor*12), favorReward:6};
+  }
+  const pool=zone.enemies;
+  const n=pool[Math.floor(Math.random()*pool.length)];
+  return {name:n,emoji:zone.mon,boss:false,
+    hp: Math.round(40+floor*10), atk: Math.round(4+floor*1.1), def: Math.round(3+floor*0.6), spd: Math.round(3+floor*0.5),
+    zone:zone, goldReward:Math.round(20+floor*6), favorReward:Math.floor(floor/3)+2};
+}
+
+function renderStars(){
+  const sb=$("stars");sb.innerHTML="";
+  for(let i=0;i<45;i++){
+    const s=document.createElement("i");
+    s.style.left=Math.random()*100+"%";s.style.top=Math.random()*100+"%";
+    const sz=Math.random()*2+1;s.style.width=s.style.height=sz+"px";
+    s.style.animationDelay=Math.random()*4+"s";s.style.animationDuration=Math.random()*3+2+"s";
+    sb.appendChild(s);
+  }
+}
+
+function renderBackground(){
+  const t=state.floor/MAX_FLOOR;
+  const hue=258-(258-4)*t;
+  const hue2=258-(258-340<t?0:258-4)*t;
+  const c1=`hsl(${hue},55%,12%)`;
+  const c2=`hsl(${hue},70%,6%)`;
+  document.body.style.background=`radial-gradient(1200px 800px at 50% 0%, ${c1}, ${c2})`;
+  $("glow1").style.background=`hsl(${hue},70%,55%)`;
+  $("glow2").style.background=`hsl(${(hue+70)%360},65%,55%)`;
+}
+
+function renderTopbar(){
+  $("gold").textContent=state.gold;
+  $("hourglasses").textContent=state.hourglasses;
+  $("floorLabel").textContent="第 "+state.floor;
+  $("bossPill").style.display=state.floor%5===0&&state.floor<=MAX_FLOOR?"":"none";
+  const zone=getZone(state.floor);
+  $("floorPos").textContent=`第 ${state.floor} / ${MAX_FLOOR} 层 —— ${zone.name}`;
+  $("towerFill").style.width=((state.floor-1)/MAX_FLOOR*100)+"%";
+}
+
+function renderTowerSegs(){
+  const segs=$("towerSegs");segs.innerHTML="";
+  for(let i=0;i<MAX_FLOOR;i++){
+    const s=document.createElement("span");
+    if(BOSSES[i+1]){s.style.background="rgba(251,113,133,.4)";}
+    segs.appendChild(s);
+  }
+}
+
+function heartString(f){return "♥".repeat(Math.min(5,Math.max(0,Math.floor(f/2))))}
+
+function renderHeroes(){
+  const list=$("heroList");list.innerHTML="";
+  state.heroes.forEach(h=>{
+    const div=document.createElement("div");
+    div.className="card"+(state.selectedHeroId===h.id?" active":"")+(h.alive?"":" dead");
+    div.style.setProperty("--accent",h.color);
+    const badge=h.alive?"":"<div class='dead-badge'>💀</div>";
+    div.innerHTML=`
+      <div class="card-head">
+        <div class="hero-avatar">${h.emoji}</div>
+        <div class="hero-name">
+          <div class="n">${h.name}</div>
+          <div class="t">${h.title}</div>
+        </div>${badge}
+      </div>
+      <div class="hp-bar-wrap"><div class="hp-bar" style="width:${(h.hp/h.maxHp)*100}%"></div></div>
+      <div class="stats-row">
+        <span><b>${h.atk}</b><br>攻</span>
+        <span><b>${h.def}</b><br>防</span>
+        <span><b>${h.spd}</b><br>速</span>
+      </div>
+      <div class="favor-row"><span class="heart">♥</span><span class="hearts">${heartString(h.favor)}</span><span style="margin-left:auto">好感 ${h.favor}</span></div>
+    `;
+    if(!h.alive){div.onclick=()=>toast(h.name+" 已陨落，无法召唤。");}
+    else{div.onclick=()=>{state.selectedHeroId=h.id;renderHeroes();selectHeroDialogue();};}
+    list.appendChild(div);
+  });
+}
+
+function getHero(){return state.heroes.find(h=>h.id===state.selectedHeroId)}
+
+const INITIAL_DIALOGUE = {
+  all:"深渊的裂隙在北方扩大。你必须有人下塔，一探究竟。",
+  aaron:"圣光在上。我会守护你，无论代价。",
+  lyra:"……别被我的过去吓到。我只做该做的事。",
+  elsa:"噼啪！今天该烧谁？……开玩笑的。",
+  mira:"我观察过了。越深的地方，风越紧。",
+  grom:["……面包。给我。任务。","你问我的过去？呀……不记得了。","我想我是被采集的。就像我刚创采集你时那样。"],
+  "default":"我在这里。你需要什么？"
+};
+
+let typedTimer=null;
+function typeText(el,text,cb){
+  if(typedTimer){clearTimeout(typedTimer)}
+  el.innerHTML='<span class="typed"></span><span class="cursor"></span>';
+  const arr=[];let i=0;
+  function next(){
+    if(i<text.length){
+      arr.push(text[i]);i++;
+      el.querySelector(".typed").textContent=arr.join("");
+      typedTimer=setTimeout(next,28+Math.random()*16);
+    }else{
+      if(cb)cb();
+    }
+  }
+  next();
+}
+
+function selectHeroDialogue(){
+  const hero=getHero();
+  const portrait=$("portrait");
+  portrait.style.setProperty("--accent",hero.color);
+  portrait.innerHTML=`<div style="font-size:110px;line-height:1;filter:drop-shadow(0 0 30px ${hero.color})">${hero.emoji}</div><span class="name-tag" style="background:linear-gradient(90deg,${hero.color},${hero.color}88)">${hero.name} · ${hero.title}</span>`;
+  const text=INITIAL_DIALOGUE[hero.id]||INITIAL_DIALOGUE["default"];
+  typeText($("dialogue"),"「"+text+"」\n\n"+hero.desc);
+}
+
+function renderEnemyCard(){
+  const card=$("enemyCard");
+  const enemy=getEnemy(state.floor);
+  const textColor=enemy.zone.accent;
+  const bossTag=enemy.boss?"<span class='ec-tier'>👹 领主</span>":"<span class='ec-tier'>"+enemy.zone.tier+"</span>";
+  card.className="enemy-card"+(enemy.boss?" boss":"");
+  const atkLabel=enemy.boss?"⚠️ 已锁定当前层":"即将遭遇";
+  card.innerHTML=`
+    <div class="ec-emoji" style="color:${textColor}">${enemy.emoji}</div>
+    <div class="ec-info">
+      <div class="ec-name" style="color:${textColor}">${enemy.name}</div>
+      <div class="ec-sub">${enemy.zone.name} · ${atkLabel}</div>
+      <div class="ec-meta">❤️ <b>${enemy.hp}</b> · ⚔️ <b>${enemy.atk}</b> · 🛡️ <b>${enemy.def}</b> · 💨 <b>${enemy.spd}</b></div>
+    </div>${bossTag}`;
+  card.style.borderColor=textColor;
+}
+
+function renderActions(){
+  const grid=$("actions");
+  const actions=[
+    {label:"下塔探路",icon:"⚔️",type:"dispatch",cls:"special"},
+    {label:"与Ta交谈",icon:"💬",type:"talk",cls:""},
+    {label:"赠予礼物",icon:"🎁",type:"gift",cls:""},
+    {label:"塔内休整",icon:"🛏️",type:"rest",cls:""},
+    {label:"时间回溯",icon:"⏪",type:"rewind",cls:""},
+    {label:"查看全队",icon:"📊",type:"overview",cls:""}
+  ];
+  grid.innerHTML="";
+  actions.forEach(a=>{
+    const btn=document.createElement("button");
+    btn.className="action-btn "+a.cls;
+    btn.innerHTML=`<span class="ic">${a.icon}</span><span>${a.label}</span>`;
+    btn.onclick=()=>handleAction(a.type);
+    grid.appendChild(btn);
+  });
+  if(state.ended){
+    grid.querySelectorAll("button").forEach(b=>{
+      if(b.querySelector("span").textContent!=="查看全队")b.disabled=true;
+    });
+  }
+}
+
+function handleAction(type){
+  if(state.ended&&type!=="overview"&&type!=="rewind"){toast("深渊已归寂。");return}
+  switch(type){
+    case "dispatch": openDispatch(); break;
+    case "talk": doTalk(); break;
+    case "gift": doGift(); break;
+    case "rest": doRest(); break;
+    case "rewind": doRewind(); break;
+    case "overview": doOverview(); break;
+  }
+}
+
+function openDispatch(){
+  if(state.ended)return;
+  const hero=getHero();
+  if(!hero.alive){toast(hero.name+" 已无法探路。");return}
+  const panel=$("dispatchPanel");
+  const enemy=getEnemy(state.floor);
+  $("dispatchTitle").textContent=hero.name+" · 面对 "+enemy.name;
+  const zh=$("strategyHero");
+  zh.style.setProperty("--accent",hero.color);
+  zh.innerHTML=`<div class="hero-avatar">${hero.emoji}</div><div class="hero-name"><div class="n">${hero.name}</div><div class="t">HP ${hero.hp}/${hero.maxHp} · 攻 ${hero.atk} · 速 ${hero.spd}</div></div>`;
+  const sl=$("strategyList");sl.innerHTML="";
+  STRATEGIES.forEach(s=>{
+    const btn=document.createElement("button");
+    btn.className="strategy-btn";
+    btn.style.setProperty("--accent",enemy.zone.accent);
+    btn.innerHTML=`<div class="re">${s.name.split(" ")[0]}</div><div class="rn">${s.name.split(" ")[1]}</div><div class="rd">${s.desc}</div><div class="rv">&#10024;</div>`;
+    btn.onclick=()=>doDispatch(hero.id,s.id);
+    sl.appendChild(btn);
+  });
+  panel.classList.add("show");
+}
+function closeDispatch(){$("dispatchPanel").classList.remove("show")}
+
+function doDispatch(heroId,strategyId){
+  const hero=state.heroes.find(h=>h.id===heroId);
+  const strat=STRATEGIES.find(s=>s.id===strategyId);
+  const enemy=getEnemy(state.floor);
+  closeDispatch();
+
+  const heroPower=hero.atk*2+hero.def+hero.spd+strat.mod+Math.random()*14;
+  const enemyPower=enemy.atk*2+enemy.def+enemy.spd+Math.random()*8;
+  const win=heroPower>enemyPower;
+  let dmg=Math.max(3,Math.round(enemy.atk+Math.random()*8-hero.def*strat.defDmg));
+  dmg=Math.round(dmg*strat.defDmg+ (win? -2: 2));
+  dmg=Math.max(1,dmg);
+  hero.hp=clamp(hero.hp-dmg,0,hero.maxHp);
+  let dead=false;
+  if(hero.hp<=0){hero.hp=0;hero.alive=false;dead=true}
+
+  const goldReward=win?Math.round(enemy.goldReward*(strat.risk?1:0.8)):Math.round(enemy.goldReward*0.3);
+  const favorReward=win?enemy.favorReward:1;
+  const hpReward=win?Math.round(5+Math.random()*8):0;
+  state.gold+=goldReward;
+  if(win){hero.favor=clamp(hero.favor+favorReward,0,10);hero.hp=clamp(hero.hp+hpReward,0,hero.maxHp)}
+  showResult({hero,enemy,win,dead,dmg,gold:goldReward,favor:win?favorReward:0,hp:hpReward});
+}
+
+function showResult(r){
+  const title=r.win?(r.enemy.boss?"领主已灭":"探路成功"):(r.dead?"英雄陨落":"遭受重创");
+  const emoji=r.win?(r.dead?"😵":r.enemy.boss?"🏆":"⚔️"):(r.dead?"🪦":"💥");
+  $("rpEmoji").textContent=emoji;
+  $("rpTitle").textContent=title;
+  $("rpTitle").className=r.win?"":"red";
+  let text;
+  if(r.win){
+    text=`${r.hero.name}击退了${r.enemy.name}${r.enemy.boss?",深渊的领主轰然倒塌":""}，立住了脚跟。`;
+    if(!r.win&&r.dead)text="";
+  }else if(r.dead){
+    text=`${r.hero.name}在${r.enemy.name}的屠刀下永远闭上了眼睛。……愿逝者安息。`;
+  }else{
+    text=`${r.hero.name}与${r.enemy.name}拼死缠斗，终究败下阵来，勉强退回塔内喘息。`;
+  }
+  if(r.win&&r.enemy.boss&&!r.dead)text+=`\n深渊的核心第一次在你面前颤抖。`;
+  $("rpText").textContent=text;
+  let rewards="";
+  if(r.win){
+    rewards=`<div class="reward">💰 +${r.gold} 金币</div>`;
+    if(r.favor)rewards+=`<div class="reward">♥ +${r.favor} 好感</div>`;
+    if(r.hp)rewards+=`<div class="reward">❤️ +${r.hp} HP</div>`;
+  }else{
+    rewards=`<div class="reward">💔 -${r.dmg} HP</div>`;
+    if(r.gold)rewards+=`<div class="reward">💰 +${r.gold} 金币</div>`;
+  }
+  $("rpRewards").innerHTML=rewards;
+  const btn=$("rpBtn");
+  btn.textContent=r.win?"继续":"退回塔层";
+  btn.className=r.win?"":"danger";
+  $("resultPopup").classList.add("show");
+  $("resultPopup").dataset.result=JSON.stringify(r);
+}
+
+function closeResult(){
+  $("resultPopup").classList.remove("show");
+  const data=$("resultPopup").dataset.result;
+  let r=null;try{r=JSON.parse(data)}catch(e){}
+  if(r&&r.win){
+    if(r.enemy.boss&&state.floor>=MAX_FLOOR){endGame(true);return}
+    if(state.floor%5===0&&!r.enemy.boss){}
+    state.floor++;
+    if(state.floor>MAX_FLOOR){endGame(true);return}
+    renderAll();
+    maybeTriggerEvent();
+  }else{
+    if(allDead()){endGame(false);return}
+    renderAll();
+  }
+}
+
+function maybeTriggerEvent(){
+  if(state.floor===1)return;
+  if(state.floor===MAX_FLOOR&&getEnemy(state.floor).boss)return;
+  if(Math.random()<0.45){
+    setTimeout(openEvent,400);
+  }
+}
+
+let activeEvent=null;
+function openEvent(){
+  const ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  activeEvent=ev;
+  const box=$("eventBox");
+  box.innerHTML=`
+    <div class="event-card" style="--accent:var(--purple)">
+      <div class="ev-emoji">${ev.emoji}</div>
+      <div class="ev-title">${ev.title}</div>
+      <div class="ev-desc">${ev.desc}</div>
+      ${ev.choices.map((c,i)=>`<button class="event-choice" data-i="${i}"><span class="ci">${c.icon}</span> ${c.label} — ${c.desc}</button>`).join("")}
+    </div>`;
+  box.querySelectorAll(".event-choice").forEach(b=>{
+    b.onclick=()=>resolveEvent(parseInt(b.dataset.i));
+  });
+  $("eventPanel").classList.add("show");
+}
+function closeEvent(){$("eventPanel").classList.remove("show")}
+
+function resolveEvent(i){
+  const c=activeEvent.choices[i];
+  const hero=getHero();
+  const eff=c.effect||{};
+  let msgs=[];
+  if(eff.cost){
+    if(state.gold<eff.cost){toast("金币不足，无法选择。");return}
+    state.gold-=eff.cost;msgs.push("花费 "+eff.cost+" 金");
+  }
+  if(eff.gold){state.gold+=eff.gold;msgs.push("+"+eff.gold+" 金")}
+  if(eff.gold<0){state.gold=clamp(state.gold+eff.gold,0,9999);msgs.push(eff.gold+" 金")}
+  if(eff.favor){hero.favor=clamp(hero.favor+eff.favor,0,10);msgs.push(hero.name+" ♥+"+eff.favor)}
+  if(eff.hpAll){
+    state.heroes.forEach(h=>{if(h.alive)h.hp=clamp(h.hp+eff.hpAll,0,h.maxHp)});
+    msgs.push("全队 ❤️+"+eff.hpAll);
+  }
+  if(eff.heroHp){hero.hp=clamp(hero.hp+eff.heroHp,0,hero.maxHp);msgs.push(hero.name+" ❤️"+eff.heroHp);if(hero.hp<=0){hero.hp=0;hero.alive=false;msgs.push(hero.name+" 倒下")}}
+  if(eff.trap){
+    const chance=Math.random();
+    if(chance<0.3){hero.hp=clamp(hero.hp-12,0,hero.maxHp);if(hero.hp<=0){hero.hp=0;hero.alive=false;msgs.push(hero.name+" 被陷阱吞噬")}msgs.push("触发陷阱 ❤️-12")}
+    else{msgs.push("觅得宝匣，安然无恙")}
+  }
+  closeEvent();
+  typeText($("dialogue"),"「"+activeEvent.emoji+" "+activeEvent.title+"——"+c.label+"。」 "+msgs.join("，"));
+  toast(msgs.join("，"));
+  renderAll();
+  if(allDead()){setTimeout(()=>endGame(false),800)}
+  activeEvent=null;
+}
+
+function doTalk(){
+  const hero=getHero();
+  if(!hero.alive){toast("他已无法言语。");return}
+  const pools=[
+    "圣光在上。你愿意听我讲讲那场战斗吗？",
+    "你的安全是我唯一在意的事。",
+    "有时候我会在夜里听到钟声……那是我家乡的钟。",
+    "……风变冷了。",
+    "我今天发现了一个新咒语！你看——嘟！",
+    "月亮很亮。今晚我会在塔顶。",
+    "……面包。还有吗？"
+  ];
+  const txt=pools[Math.floor(Math.random()*pools.length)];
+  typeText($("dialogue"),"「"+txt+"」");
+  hero.favor=clamp(hero.favor+1,0,10);
+  toast(hero.name+" 好感 +1");
+  renderHeroes();
+}
+
+function doGift(){
+  const hero=getHero();
+  if(state.gold<50){toast("金币不足。");return}
+  if(!hero.alive){toast("逝者已无法收礼。");return}
+  state.gold-=50;
+  hero.favor=clamp(hero.favor+2,0,10);
+  hero.hp=clamp(hero.hp+15,0,hero.maxHp);
+  const thanks=["这份礼物……谢谢你。","你总是记得我。","我把它放在枕头边。","我……收下了。","好看。会戴的。"];
+  typeText($("dialogue"),"「"+(thanks[Math.floor(Math.random()*thanks.length)])+"」");
+  toast("赠送成功 ♥+2  HP+15");
+  renderAll();
+}
+
+function doRest(){
+  state.heroes.forEach(h=>{if(h.alive)h.hp=clamp(h.hp+20,0,h.maxHp)});
+  state.gold=clamp(state.gold+30,0,9999);
+  typeText($("dialogue"),"「塔中度过平静的一夜。炉火噼啪作响，外面的风声轻柔，英雄们各自疗伤。」");
+  toast("休整完成。所有英雄 HP+20，金币+30");
+  renderAll();
+}
+
+function doRewind(){
+  if(state.hourglasses<=0){toast("沙漏已耗尽。");return}
+  if(!confirm("消耗 1 个沙漏回到第 1 层？当前英雄与金币保留。"))return;
+  state.hourglasses--;
+  state.floor=1;
+  state.heroes.forEach(h=>{if(h.alive){h.hp=h.maxHp;h.favor=Math.max(0,h.favor-1)}});
+  state.ended=false;
+  const ov=$("rewindOverlay");
+  ov.classList.add("show");
+  setTimeout(()=>{ov.classList.remove("show");typeText($("dialogue"),"「沙漏碎裂。塔底的光明再次亮起。英雄们重新站在你面前，眼中仍有光芒。」");renderAll();},1500);
+}
+
+function doOverview(){
+  const alive=state.heroes.filter(h=>h.alive).length;
+  const totalFavor=state.heroes.reduce((s,h)=>s+h.favor,0);
+  const zone=getZone(state.floor);
+  const txt=`当前在 ${zone.name}（第 ${state.floor}/${MAX_FLOOR} 层）。\n${alive}/${state.heroes.length} 名英雄在世，平均好感 ${Math.floor(totalFavor/state.heroes.length)}/10。\n每 5 层盘踞一尊领主，第 15 层的「湮灭之心」即是深渊之根。`;
+  typeText($("dialogue"),"「"+txt+"」");
+}
+
+function allDead(){return state.heroes.every(h=>!h.alive)}
+
+function endGame(won){
+  state.ended=true;
+  const pop=$("endPopup");
+  if(won){
+    $("endEmoji").textContent="🏆";
+    $("endTitle").textContent="深渊，已净";
+    const aliveFavor=state.heroes.reduce((s,h)=>s+h.favor,0);
+    $("endText").textContent=`你带领队伍穿过了 ${MAX_FLOOR} 层深渊，从幽暗森林到湮灭裂隙，最终击碎了那颗跳动的心。\n\n残存的英雄们站在塔顶，第一次仰望纯粹的夜空。\n总好感 ${aliveFavor}，金币 ${state.gold}。\n\n深渊的故事，由你写下。`;
+  }else{
+    $("endEmoji").textContent="🪦";
+    $("endTitle").textContent="全员陨落";
+    $("endTitle").className="red";
+    $("endText").textContent=`深渊的黑暗吞噬了最后一道圣光。塔逐渐合拢，叹息与低语归于沉寂。\n\n但传说总在废墟中重生——\n一切，都可以从头再来。`;
+  }
+  pop.classList.add("show");
+}
+
+function restartGame(){
+  $("endPopup").classList.remove("show");
+  state.floor=1;state.gold=100;state.hourglasses=3;state.ended=false;
+  state.heroes=HEROES.map(h=>({...h}));
+  renderAll();
+}
+
+function renderAll(){
+  renderBackground();
+  renderTopbar();
+  renderTowerSegs();
+  renderEnemyCard();
+  renderHeroes();
+  selectHeroDialogue();
+  renderActions();
+}
+
+let toastTimer=null;
+function toast(t){
+  const o=$("toast");
+  o.textContent=t;
+  o.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>o.classList.remove("show"),2200);
+}
+
+renderStars();
+renderAll();
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

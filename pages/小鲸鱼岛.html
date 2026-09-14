@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小鲸鱼岛 · 欢迎上岛</title>
+<style>
+:root{
+  --lime:#b0c627;--lime-deep:#92a815;--lime-soft:#c9dc4e;
+  --ink:#1f2313;--ink-soft:#3d4229;
+  --gray:#7e7e7c;--gray-hi:#8d8d89;--gray-lo:#6f7266;
+  --olive:#6f7751;--dark:#373828;--darker:#1c140f;
+  --r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,var(--gray) 0%,var(--olive) 55%,var(--gray-lo) 100%);
+  min-height:100vh;overflow-x:hidden;
+}
+
+/* ===== 漂浮泡泡背景 ===== */
+.bubble-field{position:fixed;inset:0;pointer-events:none;z-index:0}
+.bubble{position:absolute;bottom:-60px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(201,220,78,.35),rgba(55,56,40,.18));
+  border:2px solid rgba(176,198,39,.4);
+  animation:rise linear infinite;opacity:.7}
+@keyframes rise{
+  0%{transform:translateY(0) translateX(0);opacity:0}
+  10%{opacity:.7}
+  100%{transform:translateY(-110vh) translateX(30px);opacity:0}
+}
+
+/* ===== 厚边框基础件 ===== */
+.clay{
+  border-radius:var(--r);
+  border:3px solid var(--ink);
+  background:var(--gray-hi);
+  box-shadow:6px 6px 0 var(--dark);
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;
+}
+.clay:hover{transform:translateY(-4px);box-shadow:9px 9px 0 var(--dark)}
+.clay-lime{background:var(--lime)}
+.clay-dark{background:var(--dark);color:var(--lime-soft)}
+
+/* ===== 布局 ===== */
+.wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 20px}
+section{padding:64px 0}
+
+/* ===== 导航 ===== */
+nav{position:sticky;top:12px;z-index:20;margin-top:16px}
+.nav-inner{display:flex;align-items:center;gap:14px;padding:10px 18px}
+.nav-logo{font-size:20px;font-weight:900;display:flex;align-items:center;gap:8px;letter-spacing:2px}
+.nav-logo .logo-emoji{font-size:26px;animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.nav-links{margin-left:auto;display:flex;gap:6px}
+.nav-links a{text-decoration:none;color:var(--ink);font-size:14px;font-weight:800;padding:8px 14px;border-radius:12px;border:2px solid transparent;transition:.2s}
+.nav-links a:hover{border-color:var(--ink);background:var(--lime)}
+@media(max-width:640px){.nav-links{display:none}}
+
+/* ===== Hero ===== */
+.hero{text-align:center;padding-top:80px;padding-bottom:40px}
+.whale{font-size:104px;line-height:1;display:inline-block;animation:swim 4s ease-in-out infinite;filter:drop-shadow(0 10px 0 rgba(28,20,15,.35))}
+@keyframes swim{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(3deg)}}
+.hero h1{font-size:clamp(42px,7vw,66px);font-weight:900;letter-spacing:8px;margin:18px 0 10px;color:var(--ink);text-shadow:0 4px 0 rgba(28,20,15,.3)}
+.hero h1 .wave{color:var(--lime);-webkit-text-stroke:2px var(--ink)}
+.hero p{font-size:17px;color:var(--ink-soft);max-width:480px;margin:0 auto 30px;line-height:1.9;font-weight:600}
+.badge-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:34px}
+.badge{font-size:13px;font-weight:800;padding:8px 16px;border-radius:16px;background:var(--dark);color:var(--lime-soft);border:2px solid var(--ink);box-shadow:4px 4px 0 rgba(28,20,15,.45)}
+.cta-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn{cursor:pointer;font-family:inherit;font-size:16px;font-weight:900;letter-spacing:2px;
+  padding:16px 36px;border-radius:18px;border:3px solid var(--ink);
+  background:var(--lime);color:var(--ink);
+  box-shadow:0 6px 0 var(--ink);
+  transition:.2s cubic-bezier(.34,1.56,.64,1)}
+.btn:hover{transform:translateY(-3px);background:var(--lime-deep);box-shadow:0 9px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.btn.ghost{background:var(--gray-hi);color:var(--ink)}
+.btn.ghost:hover{background:#9a9a94}
+
+/* ===== 标题组件 ===== */
+.sec-title{text-align:center;margin-bottom:40px}
+.sec-title .tag{display:inline-block;font-size:13px;font-weight:900;letter-spacing:3px;color:var(--ink);background:var(--lime);padding:6px 18px;border-radius:14px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);margin-bottom:14px}
+.sec-title h2{font-size:clamp(26px,4vw,36px);font-weight:900;letter-spacing:4px;color:var(--ink)}
+.sec-title p{margin-top:8px;color:var(--ink-soft);font-size:15px;font-weight:600}
+
+/* ===== 聊什么 ===== */
+.topics{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:780px){.topics{grid-template-columns:1fr}}
+.topic{padding:28px 22px;text-align:center;position:relative}
+.topic:nth-child(1){background:#8d8d89}
+.topic:nth-child(2){background:#7d8262}
+.topic:nth-child(3){background:#8d8d89}
+.topic .t-icon{font-size:54px;display:inline-block;margin-bottom:14px;animation:bob 3.4s ease-in-out infinite}
+.topic:nth-child(2) .t-icon{animation-delay:.4s}
+.topic:nth-child(3) .t-icon{animation-delay:.8s}
+.topic h3{font-size:20px;font-weight:900;letter-spacing:3px;margin-bottom:10px}
+.topic p{font-size:14px;line-height:1.9;color:var(--ink-soft);font-weight:600}
+.topic .t-num{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:900;background:var(--lime);border:2px solid var(--ink);border-radius:12px;padding:3px 12px;box-shadow:2px 2px 0 var(--ink)}
+
+/* ===== 群聊预览 ===== */
+.chatbox{max-width:640px;margin:0 auto;padding:26px;background:#84847f}
+.chatbox .chat-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;margin-bottom:18px;border-bottom:3px dashed var(--ink)}
+.chat-head .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink)}
+.chat-head .dot.r{background:var(--lime-deep)}.chat-head .dot.y{background:var(--lime)}.chat-head .dot.g{background:var(--olive)}
+.chat-head span{margin-left:auto;font-size:13px;color:var(--ink-soft);font-weight:800}
+.msg{display:flex;gap:12px;margin-bottom:18px;align-items:flex-end;opacity:0;transform:translateY(14px);transition:.5s cubic-bezier(.34,1.56,.64,1)}
+.msg.show{opacity:1;transform:translateY(0)}
+.msg .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;border:3px solid var(--ink);flex-shrink:0;box-shadow:3px 3px 0 rgba(28,20,15,.4)}
+.msg .ava-blue{background:var(--olive)}
+.msg .ava-peach{background:var(--lime-deep)}
+.msg .ava-mint{background:#9aa06b}
+.msg .ava-lilac{background:#6b7d5e}
+.msg .ava-cream{background:var(--lime)}
+.msg .bubble-msg{background:#9b9b95;border:3px solid var(--ink);border-radius:18px 18px 18px 6px;padding:12px 18px;font-size:14px;line-height:1.7;color:var(--ink);box-shadow:4px 4px 0 rgba(28,20,15,.35)}
+.msg .bubble-msg .m-name{font-size:12px;font-weight:900;color:var(--ink);background:var(--lime);display:inline-block;padding:1px 8px;border-radius:8px;border:1px solid var(--ink);margin-bottom:5px}
+.msg.right{flex-direction:row-reverse}
+.msg.right .bubble-msg{border-radius:18px 18px 6px 18px;background:var(--dark);color:var(--lime-soft)}
+.msg.right .bubble-msg .m-name{background:var(--lime);color:var(--ink)}
+.egg-rain{font-size:22px;display:inline-block;animation:eggPop 1s ease-in-out infinite}
+@keyframes eggPop{0%,100%{transform:scale(1) rotate(-6deg)}50%{transform:scale(1.2) rotate(8deg)}}
+
+/* ===== 入岛指南 ===== */
+.join-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:stretch}
+@media(max-width:780px){.join-grid{grid-template-columns:1fr}}
+.join-card{padding:34px 28px;text-align:center;background:var(--dark);color:var(--lime-soft)}
+.join-card .jc-emoji{font-size:56px;display:inline-block;margin-bottom:12px;animation:bob 3s ease-in-out infinite}
+.join-card h3{font-size:22px;font-weight:900;letter-spacing:3px;margin-bottom:8px;color:var(--lime)}
+.join-card p{font-size:14px;color:#b9bda2;font-weight:600}
+.join-card .group-num{font-size:clamp(26px,5vw,34px);font-weight:900;letter-spacing:3px;color:var(--lime);background:var(--ink);border:3px dashed var(--lime);border-radius:16px;padding:12px 20px;margin:16px 0;user-select:all}
+.copy-btn{cursor:pointer;font-family:inherit;font-size:15px;font-weight:900;padding:12px 30px;border-radius:16px;border:3px solid var(--ink);background:var(--lime);color:var(--ink);box-shadow:0 5px 0 var(--ink);transition:.2s cubic-bezier(.34,1.56,.64,1)}
+.copy-btn:hover{transform:translateY(-2px);background:var(--lime-deep)}
+.copy-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.rules-card{padding:28px;background:#84847f}
+.rules-card h3{font-size:18px;font-weight:900;letter-spacing:2px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.rule{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;font-size:14px;line-height:1.7;color:var(--ink-soft);font-weight:600}
+.rule .r-ic{width:34px;height:34px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;border:3px solid var(--ink);box-shadow:2px 2px 0 rgba(28,20,15,.4)}
+.rule:nth-child(2) .r-ic{background:var(--lime)}
+.rule:nth-child(3) .r-ic{background:#9aa06b}
+.rule:nth-child(4) .r-ic{background:#7d8262}
+.rule:nth-child(5) .r-ic{background:var(--lime-deep)}
+.rule b{color:var(--ink)}
+
+/* ===== 页脚 ===== */
+footer{margin-top:20px;padding:40px 0 34px;text-align:center;background:var(--darker);border-top:3px solid var(--ink)}
+footer .f-whale{font-size:40px;display:inline-block;animation:swim 4s ease-in-out infinite}
+footer p{margin-top:10px;font-size:13px;color:#8f8f88;letter-spacing:1px}
+
+/* ===== toast ===== */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--lime);border:3px solid var(--ink);border-radius:16px;padding:12px 26px;font-size:14px;font-weight:900;color:var(--ink);box-shadow:4px 5px 0 var(--ink);opacity:0;transition:.3s cubic-bezier(.34,1.56,.64,1);z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="bubble-field" id="bubbles"></div>
+
+<div class="wrap">
+<nav>
+  <div class="nav-inner clay">
+    <div class="nav-logo"><span class="logo-emoji">🐳</span>小鲸鱼岛</div>
+    <div class="nav-links">
+      <a href="#topics">岛上玩什么</a>
+      <a href="#chat">岛民日常</a>
+      <a href="#join">上岛指南</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <span class="whale">🐳</span>
+  <h1>小<span class="wave">鲸鱼</span>岛</h1>
+  <p>一座漂浮在聊天海洋里的温柔小岛。<br>这里没有内卷没有焦虑，只有聊不完的日常、开不完的黑，和永远领不完的免费鸡蛋。</p>
+  <div class="badge-row">
+    <span class="badge">🌤️ 气氛超好</span>
+    <span class="badge">🎮 天天开黑</span>
+    <span class="badge">🥚 鸡蛋管饱</span>
+  </div>
+  <div class="cta-row">
+    <button class="btn" onclick="copyGroup()">🏝️ 立即上岛</button>
+    <a class="btn ghost" style="text-decoration:none" href="#topics">先逛逛</a>
+  </div>
+</section>
+
+<section id="topics">
+  <div class="sec-title">
+    <span class="tag">ISLAND LIFE</span>
+    <h2>岛上都在玩什么？</h2>
+    <p>三大保留节目，来了就能无缝加入</p>
+  </div>
+  <div class="topics">
+    <div class="topic clay">
+      <span class="t-num">01</span>
+      <span class="t-icon">💬</span>
+      <h3>日常唠嗑</h3>
+      <p>今天吃了什么、路上遇到的小猫、半夜的胡思乱想……什么都能说，说什么都有人接。</p>
+    </div>
+    <div class="topic clay">
+      <span class="t-num">02</span>
+      <span class="t-icon">🎮</span>
+      <h3>游戏开黑</h3>
+      <p>缺人喊一声就有人上车。从休闲小品到 steam 喜加一，岛上玩家的库存深不见底。</p>
+    </div>
+    <div class="topic clay">
+      <span class="t-num">03</span>
+      <span class="t-icon">🥚</span>
+      <h3>免费鸡蛋</h3>
+      <p>岛民传统艺能：全网免费羊毛第一时间互报。鸡蛋只是开始，白嫖使我们快乐。</p>
+    </div>
+  </div>
+</section>
+
+<section id="chat">
+  <div class="sec-title">
+    <span class="tag">DAILY LOG</span>
+    <h2>岛民日常速览</h2>
+    <p>随便截一段群聊，感受一下岛上的画风</p>
+  </div>
+  <div class="chatbox clay">
+    <div class="chat-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span>小鲸鱼岛 · 233 人在岛上</span>
+    </div>
+    <div class="msg"><div class="avatar ava-blue">🦈</div><div class="bubble-msg"><span class="m-name">鲨鱼辣椒</span>家人们谁懂啊，今天超市鸡蛋打折，我一口气囤了三板</div></div>
+    <div class="msg"><div class="avatar ava-peach">🍑</div><div class="bubble-msg"><span class="m-name">桃桃乌龙</span>晚上8点开黑来人！缺一个辅助，来的扣1</div></div>
+    <div class="msg"><div class="avatar ava-mint">🐸</div><div class="bubble-msg"><span class="m-name">呱呱</span>1！顺便问下有人在养绿萝吗，我的又黄了</div></div>
+    <div class="msg right"><div class="avatar ava-cream">🥚</div><div class="bubble-msg"><span class="m-name">岛主小鲸</span><span class="egg-rain">🥚</span> 叮！今日免费鸡蛋通道已开启，手慢无～</div></div>
+    <div class="msg"><div class="avatar ava-lilac">🐙</div><div class="bubble-msg"><span class="m-name">八爪鱼丸</span>冲！！昨天领的鸡蛋煎了特别香哈哈哈</div></div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="sec-title">
+    <span class="tag">JOIN US</span>
+    <h2>上岛指南</h2>
+    <p>三步上岛，全程免费</p>
+  </div>
+  <div class="join-grid">
+    <div class="join-card clay">
+      <span class="jc-emoji">📮</span>
+      <h3>岛屿通行证</h3>
+      <p>QQ 搜索群号，或直接复制给朋友</p>
+      <div class="group-num" id="groupNum">574612434</div>
+      <button class="copy-btn" onclick="copyGroup()">📋 复制群号</button>
+    </div>
+    <div class="rules-card clay">
+      <h3>🗺️ 上岛须知</h3>
+      <div class="rule"><span class="r-ic">🌊</span><div><b>友好第一</b>：吵架去海上吵，岛上只准贴贴。</div></div>
+      <div class="rule"><span class="r-ic">🎮</span><div><b>开黑随意</b>：喊人不上车没关系，下次记得还。</div></div>
+      <div class="rule"><span class="r-ic">🥚</span><div><b>羊毛共享</b>：领到好东西，记得回来吼一嗓子。</div></div>
+      <div class="rule"><span class="r-ic">💤</span><div><b>潜水自由</b>：不说话也没关系，岛永远给你留着位置。</div></div>
+    </div>
+  </div>
+</section>
+</div>
+
+<footer>
+  <span class="f-whale">🐳</span>
+  <p>小鲸鱼岛 · 一座永远温柔的岛 · 欢迎回家</p>
+</footer>
+
+<div class="toast" id="toast">群号已复制！去 QQ 粘贴上岛吧 🐳</div>
+
+<script>
+"use strict";
+const GROUP_NUMBER="574612434";
+
+(function makeBubbles(){
+  const field=document.getElementById("bubbles");
+  for(let i=0;i<16;i++){
+    const b=document.createElement("div");
+    b.className="bubble";
+    const size=Math.random()*36+12;
+    b.style.width=size+"px";
+    b.style.height=size+"px";
+    b.style.left=Math.random()*100+"%";
+    b.style.animationDuration=(Math.random()*10+9)+"s";
+    b.style.animationDelay=(Math.random()*12)+"s";
+    field.appendChild(b);
+  }
+})();
+
+let toastTimer=null;
+function showToast(t){
+  const o=document.getElementById("toast");
+  o.textContent=t;
+  o.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>o.classList.remove("show"),2200);
+}
+
+function copyGroup(){
+  const done=()=>showToast("群号已复制！去 QQ 粘贴上岛吧 🐳");
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(GROUP_NUMBER).then(done).catch(()=>fallbackCopy(done));
+  }else{fallbackCopy(done)}
+}
+function fallbackCopy(done){
+  const ta=document.createElement("textarea");
+  ta.value=GROUP_NUMBER;
+  ta.style.position="fixed";ta.style.opacity="0";
+  document.body.appendChild(ta);
+  ta.select();
+  try{document.execCommand("copy");done()}catch(e){showToast("复制失败，群号："+GROUP_NUMBER)}
+  document.body.removeChild(ta);
+}
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){en.target.classList.add("show");io.unobserve(en.target)}
+  });
+},{threshold:.25});
+document.querySelectorAll(".msg").forEach((m,i)=>{
+  m.style.transitionDelay=(i*0.12)+"s";
+  io.observe(m);
+});
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

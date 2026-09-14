@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>墨 · Ink</title>
+<meta name="description" content="鼠标为笔，屏幕为纸。墨迹自动晕染、渗透、生长。零门槛，画一幅水墨。单文件，零依赖。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Serif SC",serif;
+  background:#ede4d0;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* 宣纸纹理背景 */
+.paper{
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(180,150,100,.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(160,130,90,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(200,170,120,.04) 0%, transparent 70%),
+    linear-gradient(135deg, #f2ead6 0%, #e8dcc0 50%, #f0e6cc 100%);
+}
+.paper::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.6;pointer-events:none;
+}
+.paper::after{
+  content:'';position:absolute;inset:0;
+  box-shadow:inset 0 0 120px rgba(120,90,50,.15);
+  pointer-events:none;
+}
+
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
+
+.hud{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(18px,3vw,32px);z-index:5}
+.title h1{
+  font-family:"Noto Serif SC","SimSun",serif;
+  font-size:clamp(28px,4vw,40px);font-weight:900;
+  letter-spacing:.3em;color:#2a2218;
+  text-shadow:0 1px 0 rgba(255,255,255,.3);
+}
+.title p{margin-top:6px;font-size:11px;letter-spacing:.3em;color:rgba(60,45,25,.5)}
+
+.bottom{display:flex;flex-direction:column;align-items:center;gap:14px}
+#hint{
+  font-size:13px;letter-spacing:.25em;color:rgba(60,45,25,.6);
+  transition:opacity 1.2s ease;
+  font-family:"Noto Serif SC",serif;
+}
+#hint.gone{opacity:0}
+
+.dock{
+  pointer-events:auto;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+  padding:10px 16px;border-radius:6px;
+  background:rgba(245,238,220,.7);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(100,75,40,.2);
+  box-shadow:0 4px 20px rgba(80,60,30,.1);
+}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  height:36px;padding:0 14px;border-radius:4px;
+  font-size:13px;letter-spacing:.1em;
+  color:rgba(60,45,25,.7);
+  background:transparent;border:1px solid rgba(100,75,40,.2);
+  cursor:pointer;transition:.2s;
+  font-family:inherit;
+}
+.pill:hover{border-color:rgba(100,75,40,.5);color:#2a2218;background:rgba(255,255,255,.3)}
+.pill:focus-visible{outline:2px solid #8b6914;outline-offset:2px}
+.pill.active{border-color:#2a2218;background:rgba(42,34,24,.08);color:#2a2218;font-weight:600}
+.sep{width:1px;height:20px;background:rgba(100,75,40,.2);margin:0 4px}
+
+/* 墨色浓度滑块 */
+.ink-control{
+  pointer-events:auto;
+  display:flex;align-items:center;gap:10px;
+  padding:8px 16px;border-radius:6px;
+  background:rgba(245,238,220,.7);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(100,75,40,.2);
+  font-size:12px;letter-spacing:.1em;color:rgba(60,45,25,.6);
+}
+.ink-control input[type=range]{
+  -webkit-appearance:none;width:100px;height:4px;
+  background:linear-gradient(to right,#1a1a1a,#666);
+  border-radius:2px;outline:none;cursor:pointer;
+}
+.ink-control input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:#2a2218;border:2px solid #f5eedc;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+
+.meta{
+  position:fixed;top:clamp(18px,3vw,32px);right:clamp(18px,3vw,32px);
+  text-align:right;font-size:11px;letter-spacing:.2em;
+  color:rgba(60,45,25,.4);line-height:2;z-index:5;
+}
+
+/* 印章 */
+.stamp-preview{
+  position:fixed;pointer-events:none;z-index:10;
+  width:60px;height:60px;
+  border:3px solid #b23a27;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Noto Serif SC",serif;font-size:20px;font-weight:900;
+  color:#b23a27;
+  opacity:0;transition:opacity .2s;
+  transform:translate(-50%,-50%) rotate(-5deg);
+  letter-spacing:0;
+  line-height:1;text-align:center;
+}
+.stamp-preview.show{opacity:.85}
+
+#toast{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  padding:12px 24px;border-radius:6px;
+  background:rgba(42,34,24,.88);
+  font-size:13px;letter-spacing:.1em;color:#f5eedc;
+  opacity:0;transition:opacity .3s;pointer-events:none;z-index:20;
+  font-family:inherit;
+}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="paper"></div>
+<canvas id="c"></canvas>
+<div class="stamp-preview" id="stampPreview">墨</div>
+
+<div class="hud">
+  <div class="title">
+    <h1>墨</h1>
+    <p>INK · 鼠标为笔，屏幕为纸</p>
+  </div>
+  <div class="bottom">
+    <p id="hint">按住鼠标绘画 · 慢则浓晕，快则飞白</p>
+    <div class="ink-control">
+      <span>墨浓</span>
+      <input type="range" id="inkDensity" min="1" max="10" value="6">
+      <span>笔粗</span>
+      <input type="range" id="brushSize" min="1" max="10" value="5">
+    </div>
+    <div class="dock" role="toolbar">
+      <button class="pill active" id="btnBrush">画笔</button>
+      <button class="pill" id="btnStamp">印章</button>
+      <span class="sep"></span>
+      <button class="pill" id="btnClear">洗纸</button>
+      <button class="pill" id="btnSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="meta">墨迹粒子：<span id="inkCount">0</span><br>模式：<span id="modeLabel">画笔</span></div>
+<div id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
+  var W, H, dpr;
+
+  var inkDrops = [];
+  var stamps = [];
+  var isDrawing = false;
+  var lastX = 0, lastY = 0;
+  var lastTime = 0;
+  var tool = 'brush'; // brush / stamp
+
+  var inkDensity = 0.6;  // 墨浓 0.1-1.0
+  var brushSize = 5;     // 笔粗 1-10
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  // 墨滴类
+  function InkDrop(x, y, radius, opacity, spreadSpeed) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.maxRadius = radius * (2.5 + Math.random() * 2);
+    this.opacity = opacity;
+    this.spreadSpeed = spreadSpeed || (0.3 + Math.random() * 0.5);
+    this.irregularity = 0.7 + Math.random() * 0.6; // 渗透不规则度
+    this.angle = Math.random() * Math.PI * 2;
+    this.angleSpeed = (Math.random() - 0.5) * 0.02;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = (Math.random() - 0.5) * 0.3;
+    this.life = 1;
+  }
+
+  InkDrop.prototype.update = function () {
+    // 扩散
+    if (this.radius < this.maxRadius) {
+      this.radius += this.spreadSpeed;
+      this.opacity *= 0.985;
+    }
+    // 缓慢漂移（模拟纸纤维渗透方向）
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vx *= 0.98;
+    this.vy *= 0.98;
+    this.angle += this.angleSpeed;
+    this.life -= 0.001;
+  };
+
+  InkDrop.prototype.draw = function (ctx) {
+    if (this.opacity < 0.01 || this.life <= 0) return;
+
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+
+    // 不规则墨团：用多个偏移的圆叠加模拟渗透边缘
+    var r = this.radius;
+    var alpha = this.opacity * Math.max(0, this.life);
+
+    // 主墨团
+    var grad = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+    grad.addColorStop(0, 'rgba(15,12,8,' + alpha + ')');
+    grad.addColorStop(0.5, 'rgba(25,20,15,' + (alpha * 0.6) + ')');
+    grad.addColorStop(0.8, 'rgba(35,28,20,' + (alpha * 0.25) + ')');
+    grad.addColorStop(1, 'rgba(40,32,22,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 渗透毛刺（不规则边缘）
+    var spikes = 3 + Math.floor(Math.random() * 3);
+    for (var i = 0; i < spikes; i++) {
+      var a = (i / spikes) * Math.PI * 2 + this.angle;
+      var dist = r * (0.6 + Math.random() * 0.5);
+      var sx = Math.cos(a) * dist * 0.5;
+      var sy = Math.sin(a) * dist * 0.5;
+      var sr = r * (0.2 + Math.random() * 0.3) * this.irregularity;
+      var sgrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr);
+      sgrad.addColorStop(0, 'rgba(20,16,10,' + (alpha * 0.3) + ')');
+      sgrad.addColorStop(1, 'rgba(20,16,10,0)');
+      ctx.fillStyle = sgrad;
+      ctx.beginPath();
+      ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  };
+
+  function addInkAlongLine(x1, y1, x2, y2, speed) {
+    var dx = x2 - x1;
+    var dy = y2 - y1;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+
+    // 速度越快，墨滴越稀疏、越小（飞白效果）
+    // 速度越慢，墨滴越密、越大（浓晕效果）
+    var speedFactor = Math.min(1, speed / 8);
+    var dropCount = Math.max(1, Math.floor(dist / (3 + speedFactor * 8)));
+    var baseRadius = brushSize * (1.2 - speedFactor * 0.6);
+    var baseOpacity = inkDensity * (1 - speedFactor * 0.4);
+
+    for (var i = 0; i < dropCount; i++) {
+      var t = i / dropCount;
+      var x = x1 + dx * t + (Math.random() - 0.5) * baseRadius * 0.5;
+      var y = y1 + dy * t + (Math.random() - 0.5) * baseRadius * 0.5;
+      var r = baseRadius * (0.6 + Math.random() * 0.8);
+      var op = baseOpacity * (0.5 + Math.random() * 0.5);
+      var spread = 0.2 + Math.random() * 0.4 + (1 - speedFactor) * 0.3;
+      inkDrops.push(new InkDrop(x, y, r, op, spread));
+    }
+
+    // 慢速时额外加浓墨点（停顿渗墨）
+    if (speed < 2) {
+      inkDrops.push(new InkDrop(x2, y2, baseRadius * 1.5, baseOpacity * 1.2, 0.15));
+    }
+  }
+
+  function drawStamp(x, y) {
+    stamps.push({
+      x: x,
+      y: y,
+      rotation: (Math.random() - 0.5) * 0.15,
+      size: 56,
+      text: '墨'
+    });
+  }
+
+  function renderStamp(s) {
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.rotate(s.rotation);
+
+    var size = s.size;
+    ctx.strokeStyle = 'rgba(178,58,39,0.85)';
+    ctx.lineWidth = 3.5;
+    ctx.strokeRect(-size/2, -size/2, size, size);
+
+    ctx.fillStyle = 'rgba(178,58,39,0.8)';
+    ctx.font = '900 26px "Noto Serif SC", "SimSun", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s.text, 0, 1);
+
+    // 印章纹理（不均匀的盖印效果）
+    ctx.globalCompositeOperation = 'destination-out';
+    for (var i = 0; i < 20; i++) {
+      var rx = (Math.random() - 0.5) * size;
+      var ry = (Math.random() - 0.5) * size;
+      var rr = Math.random() * 3 + 1;
+      ctx.beginPath();
+      ctx.arc(rx, ry, rr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function update() {
+    for (var i = inkDrops.length - 1; i >= 0; i--) {
+      inkDrops[i].update();
+      if (inkDrops[i].life <= 0 || inkDrops[i].opacity < 0.005) {
+        inkDrops.splice(i, 1);
+      }
+    }
+    document.getElementById('inkCount').textContent = inkDrops.length;
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
+    for (var i = 0; i < inkDrops.length; i++) {
+      inkDrops[i].draw(ctx);
+    }
+    // 绘制印章
+    for (var j = 0; j < stamps.length; j++) {
+      renderStamp(stamps[j]);
+    }
+  }
+
+  function frame() {
+    update();
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  // ===== 交互 =====
+  var hint = document.getElementById('hint');
+  var interacted = false;
+
+  function markInteracted() {
+    if (!interacted) {
+      interacted = true;
+      hint.classList.add('gone');
+    }
+  }
+
+  function getPos(e) {
+    if (e.touches && e.touches[0]) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  canvas.addEventListener('mousedown', function (e) {
+    markInteracted();
+    var pos = getPos(e);
+    if (tool === 'stamp') {
+      drawStamp(pos.x, pos.y);
+      showToast('盖章');
+      return;
+    }
+    isDrawing = true;
+    lastX = pos.x;
+    lastY = pos.y;
+    lastTime = performance.now();
+    // 起笔墨点
+    addInkAlongLine(pos.x, pos.y, pos.x, pos.y, 0);
+  });
+
+  canvas.addEventListener('mousemove', function (e) {
+    if (!isDrawing || tool !== 'brush') return;
+    var pos = getPos(e);
+    var now = performance.now();
+    var dt = Math.max(1, now - lastTime);
+    var dx = pos.x - lastX;
+    var dy = pos.y - lastY;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    var speed = dist / dt * 16; // 归一化速度
+
+    addInkAlongLine(lastX, lastY, pos.x, pos.y, speed);
+
+    lastX = pos.x;
+    lastY = pos.y;
+    lastTime = now;
+  });
+
+  window.addEventListener('mouseup', function () {
+    isDrawing = false;
+  });
+
+  // 触摸
+  canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    markInteracted();
+    var pos = getPos(e);
+    if (tool === 'stamp') {
+      drawStamp(pos.x, pos.y);
+      return;
+    }
+    isDrawing = true;
+    lastX = pos.x;
+    lastY = pos.y;
+    lastTime = performance.now();
+    addInkAlongLine(pos.x, pos.y, pos.x, pos.y, 0);
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+    if (!isDrawing || tool !== 'brush') return;
+    var pos = getPos(e);
+    var now = performance.now();
+    var dt = Math.max(1, now - lastTime);
+    var dx = pos.x - lastX;
+    var dy = pos.y - lastY;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    var speed = dist / dt * 16;
+    addInkAlongLine(lastX, lastY, pos.x, pos.y, speed);
+    lastX = pos.x;
+    lastY = pos.y;
+    lastTime = now;
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', function () {
+    isDrawing = false;
+  });
+
+  // 印章预览跟随
+  var stampPreview = document.getElementById('stampPreview');
+  canvas.addEventListener('mousemove', function (e) {
+    if (tool === 'stamp') {
+      stampPreview.style.left = e.clientX + 'px';
+      stampPreview.style.top = e.clientY + 'px';
+      stampPreview.classList.add('show');
+    }
+  });
+  canvas.addEventListener('mouseleave', function () {
+    stampPreview.classList.remove('show');
+  });
+
+  // 工具切换
+  var btnBrush = document.getElementById('btnBrush');
+  var btnStamp = document.getElementById('btnStamp');
+  var modeLabel = document.getElementById('modeLabel');
+
+  btnBrush.addEventListener('click', function () {
+    tool = 'brush';
+    btnBrush.classList.add('active');
+    btnStamp.classList.remove('active');
+    modeLabel.textContent = '画笔';
+    canvas.style.cursor = 'crosshair';
+    stampPreview.classList.remove('show');
+  });
+
+  btnStamp.addEventListener('click', function () {
+    tool = 'stamp';
+    btnStamp.classList.add('active');
+    btnBrush.classList.remove('active');
+    modeLabel.textContent = '印章';
+    canvas.style.cursor = 'none';
+    showToast('点击纸面盖章');
+  });
+
+  // 墨浓/笔粗
+  document.getElementById('inkDensity').addEventListener('input', function () {
+    inkDensity = this.value / 10;
+  });
+  document.getElementById('brushSize').addEventListener('input', function () {
+    brushSize = parseInt(this.value, 10);
+  });
+
+  // 洗纸
+  document.getElementById('btnClear').addEventListener('click', function () {
+    inkDrops = [];
+    stamps = [];
+    ctx.clearRect(0, 0, W, H);
+    showToast('纸已洗净');
+  });
+
+  // 保存
+  document.getElementById('btnSave').addEventListener('click', function () {
+    // 合并宣纸背景+墨迹
+    var out = document.createElement('canvas');
+    out.width = canvas.width;
+    out.height = canvas.height;
+    var octx = out.getContext('2d');
+    // 宣纸色
+    octx.fillStyle = '#ede4d0';
+    octx.fillRect(0, 0, out.width, out.height);
+    // 墨迹
+    octx.drawImage(canvas, 0, 0);
+    var link = document.createElement('a');
+    link.download = 'ink-' + Date.now() + '.png';
+    link.href = out.toDataURL('image/png');
+    link.click();
+    showToast('画作已保存');
+  });
+
+  // Toast
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1500);
+  }
+
+  // 启动
+  resize();
+  window.addEventListener('resize', resize);
+  requestAnimationFrame(frame);
+})();
+</script>
+<a href="作品展馆.html" class="back-home" aria-label="返回作品展馆">&#8592; 返回展馆</a>
+<style>.back-home{position:fixed;left:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;background:rgba(181,72,108,.92);color:#fff;text-decoration:none;font:600 13px/1 "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 8px 24px rgba(181,72,108,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s}.back-home:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(181,72,108,.5)}</style>
+</body>
+</html>

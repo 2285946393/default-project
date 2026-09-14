@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>列车之旅 · Train Journey</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            overflow: hidden;
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+            background: #000;
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+        }
+        canvas { display: block; }
+
+        /* ===== 加载界面 ===== */
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-bottom-color: #fff;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loading p {
+            font-size: 16px;
+            letter-spacing: 4px;
+            opacity: 0.8;
+        }
+
+        /* ===== 开始界面 ===== */
+        #startScreen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10,15,30,0.85) 0%, rgba(20,25,45,0.75) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        #startScreen h1 {
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 300;
+            letter-spacing: 12px;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+        #startScreen .subtitle {
+            font-size: clamp(13px, 1.5vw, 16px);
+            letter-spacing: 6px;
+            opacity: 0.6;
+            margin-bottom: 50px;
+        }
+        #startBtn {
+            padding: 16px 48px;
+            font-size: 16px;
+            letter-spacing: 4px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+        }
+        #startBtn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+        .controls-hint {
+            margin-top: 40px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            opacity: 0.45;
+            line-height: 2.2;
+            text-align: center;
+        }
+        .controls-hint kbd {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: monospace;
+            margin: 0 2px;
+        }
+
+        /* ===== HUD ===== */
+        #hud {
+            display: none;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* 顶部信息栏 */
+        .hud-top {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+        .hud-panel {
+            background: rgba(10,15,25,0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 20px;
+        }
+        .hud-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            opacity: 0.5;
+            margin-bottom: 4px;
+        }
+        .hud-value {
+            font-size: 22px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+        .hud-value .unit {
+            font-size: 12px;
+            opacity: 0.5;
+            margin-left: 4px;
+        }
+        #periodLabel {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        /* 底部速度条 */
+        .hud-bottom {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(10,15,25,0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 10px 24px;
+        }
+        .speed-bar-container {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .speed-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4a9eff, #00d4ff);
+            border-radius: 2px;
+            transition: width 0.3s;
+            width: 30%;
+        }
+        .speed-text {
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .speed-text .unit {
+            font-size: 10px;
+            opacity: 0.5;
+        }
+
+        /* 暂停指示 */
+        #pauseIndicator {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: 200;
+            letter-spacing: 16px;
+            opacity: 0.6;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        }
+
+        /* 右下角操作提示 */
+        .hud-hint {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            opacity: 0.35;
+            line-height: 2;
+            text-align: right;
+        }
+        .hud-hint kbd {
+            display: inline-block;
+            padding: 1px 6px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 3px;
+            font-size: 10px;
+            font-family: monospace;
+        }
+
+        /* 左下角标题 */
+        .hud-title {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            font-size: 12px;
+            letter-spacing: 4px;
+            opacity: 0.4;
+        }
+
+        @media (max-width: 600px) {
+            .hud-top { padding: 0 15px; }
+            .hud-panel { padding: 8px 14px; }
+            .hud-value { font-size: 18px; }
+            .speed-bar-container { width: 120px; }
+            .hud-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 加载 -->
+    <div id="loading">
+        <div class="loader"></div>
+        <p>正在准备列车…</p>
+    </div>
+
+    <!-- 开始界面 -->
+    <div id="startScreen">
+        <h1>列车之旅</h1>
+        <div class="subtitle">TRAIN JOURNEY · 一场穿越日夜的旅行</div>
+        <button id="startBtn">开始旅程</button>
+        <div class="controls-hint">
+            <kbd>W</kbd> / <kbd>↑</kbd> 加速 &nbsp;&nbsp; <kbd>S</kbd> / <kbd>↓</kbd> 减速<br>
+            <kbd>空格</kbd> 暂停 &nbsp;&nbsp; <kbd>T</kbd> 加速时间 &nbsp;&nbsp; <kbd>R</kbd> 回到上午
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud">
+        <div class="hud-top">
+            <div class="hud-panel">
+                <div class="hud-label">当前时间</div>
+                <div class="hud-value" id="timeValue">07:40</div>
+                <div id="periodLabel">上午</div>
+            </div>
+            <div class="hud-panel" style="text-align:right">
+                <div class="hud-label">列车速度</div>
+                <div class="hud-value"><span id="speedValue">120</span><span class="unit">km/h</span></div>
+            </div>
+        </div>
+
+        <div id="pauseIndicator">暂 停</div>
+
+        <div class="hud-bottom">
+            <div class="speed-bar-container">
+                <div class="speed-bar" id="speedBar"></div>
+            </div>
+            <div class="speed-text"><span id="speedValue2">120</span> <span class="unit">km/h</span></div>
+        </div>
+
+        <div class="hud-title">列车之旅 · TRAIN JOURNEY</div>
+
+        <div class="hud-hint">
+            <kbd>W</kbd> 加速 <kbd>S</kbd> 减速<br>
+            <kbd>空格</kbd> 暂停 <kbd>T</kbd> 时间加速
+        </div>
+    </div>
+
+    <script src="./js/three.min.js"></script>
+    <script src="./js/main.js"></script>
+    <script>
+        document.getElementById('startBtn').addEventListener('click', function() {
+            if (typeof startExperience === 'function') startExperience();
+        });
+
+        // 同步速度条
+        setInterval(function() {
+            var bar = document.getElementById('speedBar');
+            if (bar && typeof trainSpeed !== 'undefined') {
+                bar.style.width = (trainSpeed / 40 * 100) + '%';
+            }
+            var v2 = document.getElementById('speedValue2');
+            if (v2 && typeof trainSpeed !== 'undefined') {
+                v2.textContent = Math.round(trainSpeed * 10);
+            }
+        }, 100);
+    </script>
+</body>
+</html>
