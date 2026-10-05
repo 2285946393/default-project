@@ -134,22 +134,31 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const DPR = Math.min(devicePixelRatio || 1, 2);
 let W = 0, H = 0, groundY = 0;
 
-/* ================= 夜景底图 ================= */
-let stars = [], city = [], moon = { x: 0, y: 0, r: 0 };
+/* ================= 夜景底图（随等级进化） ================= */
+let stars = [], city = [], motes = [], moon = { x: 0, y: 0, r: 0 };
 function buildScene() {
   stars = [];
-  const n = Math.round(W * H / 5200);
-  for (let i = 0; i < n; i++) {
+  const starN = Math.round(W * H / 5200 * (1 + G.lv.dome * 0.22));
+  for (let i = 0; i < starN; i++) {
     stars.push({ x: Math.random() * W, y: Math.random() * groundY * 0.92,
                  r: Math.random() * 1.1 + 0.3, p: Math.random() * Math.PI * 2, s: 0.5 + Math.random() * 1.6 });
   }
+  // 天际线：塔越多，楼越高、越密
+  const grow = 1 + Math.min(0.55, G.lv.tower * 0.045);
   city = [];
   let x = -20;
   while (x < W + 40) {
     const w = 24 + Math.random() * 66;
-    const h = 26 + Math.random() * 96;
+    const h = (26 + Math.random() * 96) * grow;
     city.push({ x, w, h });
     x += w + 2 + Math.random() * 10;
+  }
+  // 金尘（稀有金弹等级带来的空中微粒）
+  motes = [];
+  const moteN = Math.min(140, G.lv.rare * 26);
+  for (let i = 0; i < moteN; i++) {
+    motes.push({ x: Math.random() * W, y: Math.random() * groundY * 0.8,
+                 r: 0.8 + Math.random() * 1.2, p: Math.random() * Math.PI * 2, v: 4 + Math.random() * 10 });
   }
   moon = { x: W * 0.82, y: groundY * 0.24, r: Math.min(W, H) * 0.045 };
 }
@@ -167,6 +176,30 @@ function drawSky(t) {
   const g = bg.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, "#050816"); g.addColorStop(0.5, "#0F172A"); g.addColorStop(1, "#1B2540");
   bg.fillStyle = g; bg.fillRect(0, 0, W, H);
+  // 极光带（夜空穹顶）：流动的紫青色纱
+  if (G.lv.dome > 0) {
+    bg.save();
+    bg.globalCompositeOperation = "lighter";
+    const bands = Math.min(3, 1 + ((G.lv.dome / 4) | 0));
+    for (let b = 0; b < bands; b++) {
+      const ph = t * 0.00016 * (b % 2 ? -1 : 1) + b * 2.1;
+      bg.beginPath();
+      const baseY = groundY * (0.28 + b * 0.1);
+      bg.moveTo(-40, baseY);
+      for (let x = -40; x <= W + 40; x += 14) {
+        const yy = baseY - 46 * Math.sin(x * 0.0032 + ph) - 22 * Math.sin(x * 0.009 + ph * 1.7);
+        bg.lineTo(x, yy);
+      }
+      const hue = b % 2 ? 268 : 176; // 紫 / 青
+      bg.strokeStyle = `hsla(${hue}, 80%, 62%, ${0.05 + Math.min(0.1, G.lv.dome * 0.016)})`;
+      bg.lineWidth = 34 + b * 12;
+      bg.stroke();
+      bg.lineWidth = 10;
+      bg.strokeStyle = `hsla(${hue}, 90%, 72%, ${0.06 + Math.min(0.12, G.lv.dome * 0.02)})`;
+      bg.stroke();
+    }
+    bg.restore();
+  }
   for (const s of stars) {
     const tw = 0.55 + 0.45 * Math.sin(t * 0.001 * s.s + s.p);
     bg.globalAlpha = 0.35 + 0.6 * tw;
@@ -174,6 +207,17 @@ function drawSky(t) {
     bg.fillRect(s.x, s.y, s.r, s.r);
   }
   bg.globalAlpha = 1;
+  // 金尘微粒（稀有金弹）：缓慢漂浮上闪
+  if (motes.length) {
+    for (const m of motes) {
+      const yy = (m.y - t * 0.001 * m.v) % (groundY * 0.8);
+      const a = 0.3 + 0.5 * Math.abs(Math.sin(t * 0.0012 + m.p));
+      bg.globalAlpha = a;
+      bg.fillStyle = "#ffd27a";
+      bg.fillRect(m.x, yy < 0 ? yy + groundY * 0.8 : yy, m.r, m.r);
+    }
+    bg.globalAlpha = 1;
+  }
   bg.save();
   const glow = bg.createRadialGradient(moon.x, moon.y, moon.r * 0.4, moon.x, moon.y, moon.r * 3.4);
   glow.addColorStop(0, "rgba(220,228,255,.20)"); glow.addColorStop(1, "rgba(220,228,255,0)");
@@ -187,13 +231,30 @@ function drawSky(t) {
     bg.lineTo(x, groundY - 26 - 20 * Math.sin(x * 0.006) - 12 * Math.sin(x * 0.017 + 2));
   }
   bg.lineTo(W, groundY); bg.closePath(); bg.fill();
+  // 城市剪影 + 窗灯（塔越多灯越亮越密）+ 楼顶发射架
+  const winA = 0.5 + Math.min(0.45, G.lv.tower * 0.06);
+  let padsDrawn = 0;
   for (const b of city) {
     bg.fillStyle = "#0d1428";
     bg.fillRect(b.x, groundY - b.h, b.w, b.h);
-    if ((b.x * 7 + b.w * 13) % 5 < 2.2) {
-      bg.fillStyle = "rgba(255,214,140,.5)";
-      bg.fillRect(b.x + b.w * 0.28, groundY - b.h * 0.62, 3, 4.4);
-      bg.fillRect(b.x + b.w * 0.6, groundY - b.h * 0.4, 3, 4.4);
+    const lights = ((b.x * 7 + b.w * 13) % 5 < 2.2 ? 2 : 1) + (G.lv.tower > 3 && b.h > 90 ? 1 : 0);
+    for (let L = 0; L < lights; L++) {
+      bg.fillStyle = `rgba(255,214,140,${winA})`;
+      bg.fillRect(b.x + b.w * (0.2 + L * 0.24), groundY - b.h * (0.62 - L * 0.18), 3, 4.4);
+    }
+    // 发射架：给最高的几栋楼装上（自动燃放塔等级）
+    if (padsDrawn < Math.min(6, G.lv.tower) && b.h > 70 && b.w > 34) {
+      const topY = groundY - b.h;
+      bg.strokeStyle = "#2a3654"; bg.lineWidth = 2;
+      bg.beginPath();
+      bg.moveTo(b.x + b.w * 0.3, topY); bg.lineTo(b.x + b.w * 0.5, topY - 13);
+      bg.lineTo(b.x + b.w * 0.7, topY); bg.stroke();
+      bg.beginPath();
+      bg.moveTo(b.x + b.w * 0.5, topY - 13); bg.lineTo(b.x + b.w * 0.5, topY - 19); bg.stroke();
+      const blink = 0.4 + 0.6 * Math.abs(Math.sin(t * 0.003 + b.x));
+      bg.fillStyle = `rgba(255,90,90,${blink})`;
+      bg.beginPath(); bg.arc(b.x + b.w * 0.5, topY - 21, 2, 0, 7); bg.fill();
+      padsDrawn++;
     }
   }
   bg.fillStyle = "#080d1c"; bg.fillRect(0, groundY, W, H - groundY);
@@ -274,7 +335,7 @@ function launch(tx, ty, big, golden) {
   const sx = tx + (Math.random() - 0.5) * 40;
   const sy = groundY - 4;
   const peak = Math.max(H * 0.1, Math.min(ty, groundY - H * 0.08));
-  const vy = -Math.sqrt(2 * 0.05 * (sy - peak));
+  const vy = -Math.sqrt(2 * 0.05 * (sy - peak)) * Math.min(1.3, 1 + G.lv.fuse * 0.035);
   rockets.push({ x: sx, y: sy, vx: (tx - sx) * 0.022, vy, tx, ty, big: !!big, golden: !!golden,
                  hue: golden ? GOLD : PALETTES[(Math.random() * PALETTES.length) | 0], t: 0 });
   sfxLaunch();
@@ -282,12 +343,13 @@ function launch(tx, ty, big, golden) {
 function explode(x, y, pal, big, golden) {
   const r = Math.random();
   const type = golden ? "willow" : r < 0.34 ? "peony" : r < 0.62 ? "ring" : r < 0.84 ? "willow" : "crackle";
-  const base = big ? 150 : 105;
-  const count = Math.min(MAX - parts.length, (base * Math.pow(1.25, G.lv.bore) * (type === "willow" ? 0.8 : 1)) | 0);
+  const vis = 1 + G.lv.bore * 0.09;                       // 大口径：炸开半径肉眼可见地变大
+  const base = (big ? 150 : 105) * Math.pow(1.25, G.lv.bore);
+  const count = Math.min(MAX - parts.length, (base * (type === "willow" ? 0.8 : 1)) | 0);
   sfxBloom(type);
   if (count > 0) for (let i = 0; i < count; i++) {
     const a = type === "ring" ? (i / count) * Math.PI * 2 : Math.random() * Math.PI * 2;
-    const sp = type === "ring" ? (big ? 4.6 : 3.6) : Math.pow(Math.random(), 0.42) * (big ? 6.2 : 4.8) + 0.4;
+    const sp = (type === "ring" ? (big ? 4.6 : 3.6) : Math.pow(Math.random(), 0.42) * (big ? 6.2 : 4.8) + 0.4) * vis;
     parts.push({
       x, y,
       vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * (type === "ring" ? 0.55 : 1),
@@ -298,7 +360,7 @@ function explode(x, y, pal, big, golden) {
       drag: type === "willow" ? 0.978 : 0.965,
       g: type === "willow" ? 0.052 : 0.075,
       c: pal[(Math.random() * pal.length) | 0],
-      w: type === "willow" ? 1.4 : 1.9,
+      w: (type === "willow" ? 1.4 : 1.9) * (1 + G.lv.bore * 0.05),
       crack: type === "crackle" && Math.random() < 0.16,
     });
   }
@@ -316,13 +378,25 @@ function step(dt) {
     fx.globalAlpha = 0.85;
     fx.fillStyle = r.golden ? "#ffe9a8" : "#ffe9b8";
     fx.fillRect(r.x, r.y, 2, 6);
+    if (G.lv.fuse > 0) {                                   // 速燃引线：双层尾焰 + 亮头
+      fx.globalAlpha = 0.4;
+      fx.fillStyle = "#ffcf7a";
+      fx.fillRect(r.x - 1.6, r.y + 4, 5.2, 10);
+      fx.globalAlpha = 0.9;
+      fx.fillStyle = "#fff6e0";
+      fx.beginPath(); fx.arc(r.x, r.y, 1.6, 0, 7); fx.fill();
+    }
     if (Math.random() < 0.5) {
       fx.globalAlpha = 0.5;
       fx.fillStyle = "rgba(255,200,120,.8)";
       fx.fillRect(r.x + (Math.random() - 0.5) * 3, r.y + 6 * Math.random(), 1.6, 1.6);
     }
     fx.globalAlpha = 1;
-    if (r.y <= r.ty || r.vy >= -0.5) { explode(r.x, r.y, r.hue, r.big, r.golden); rockets.splice(i, 1); }
+    if (r.y <= r.ty || r.vy >= -0.5) {
+      try { explode(r.x, r.y, r.hue, r.big, r.golden); }
+      catch (err) { try { (window.__fw.log = window.__fw.log || []).push("ERR " + (err && err.message)); } catch (e2) {} }
+      rockets.splice(i, 1);
+    }
   }
   for (let i = parts.length - 1; i >= 0; i--) {
     const p = parts[i];
@@ -430,6 +504,7 @@ for (const it of ITEMS) {
     if (G.dust < c || G.lv[it.id] >= it.max) return;
     G.dust -= c; G.lv[it.id]++;
     if (it.id === "tower") nextTower = 0;
+    if (it.id === "tower" || it.id === "rare" || it.id === "dome") buildScene();
     sfxBloom("ring");
     save();
     renderShop();
@@ -540,6 +615,7 @@ renderShop();
 requestAnimationFrame(frame);
 addEventListener("beforeunload", save);
 document.addEventListener("visibilitychange", () => { if (document.hidden) save(); });
+window.__fw = { G, buildScene };   // 调试/极速验收句柄
 })();
 </script>
 </body>
