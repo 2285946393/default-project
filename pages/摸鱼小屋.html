@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>摸鱼小屋 · 戳戳团子</title>
+<style>
+  :root{
+    --ink: #5b4b63;
+    --ink-soft: #9a8aa3;
+  }
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body{
+    height: 100%; margin: 0; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(165deg, #fff1f6 0%, #f6f0ff 42%, #e9f7ff 100%);
+    user-select: none; cursor: pointer;
+  }
+  body::after{ /* 角落的柔光 */
+    content: ""; position: fixed; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(520px 380px at 12% 8%, rgba(255,214,232,.55), transparent 70%),
+      radial-gradient(620px 460px at 88% 92%, rgba(206,232,255,.55), transparent 70%);
+  }
+
+  #stage{ position: fixed; inset: 0; display: block; }
+
+  .hud{
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 16px 20px; pointer-events: none;
+    font-size: 13px; color: var(--ink-soft);
+  }
+  .hud b{ color: var(--ink); font-weight: 700; }
+  .title{ letter-spacing: .5px; }
+  .counter{
+    background: rgba(255,255,255,.72);
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 999px; padding: 7px 14px;
+    box-shadow: 0 6px 18px rgba(180,150,190,.16);
+    backdrop-filter: blur(6px);
+    white-space: nowrap;
+  }
+
+  /* 心情条 */
+  .meter{
+    position: fixed; left: 50%; bottom: 74px; transform: translateX(-50%);
+    width: min(230px, 62vw); pointer-events: none;
+  }
+  .meter .track{
+    height: 9px; border-radius: 999px; overflow: hidden;
+    background: rgba(255,255,255,.72);
+    border: 1px solid rgba(255,255,255,.9);
+    box-shadow: inset 0 1px 3px rgba(160,130,175,.16);
+  }
+  .meter .fill{
+    height: 100%; width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ffc2d6, #ffd9a8 45%, #b9e7d3 100%);
+    transition: width .35s cubic-bezier(.3,.9,.3,1);
+  }
+  .meter .label{
+    margin-top: 7px; text-align: center; font-size: 12px; color: var(--ink-soft);
+  }
+  .stage-name{ color: var(--ink); font-weight: 700; }
+
+  /* 台词气泡 */
+  .bubble{
+    position: fixed; left: 50%; top: 50%;
+    transform: translate(-50%, -50%) scale(.7);
+    max-width: min(74vw, 340px);
+    padding: 11px 17px; border-radius: 18px;
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(255,255,255,1);
+    box-shadow: 0 12px 30px rgba(170,140,185,.22);
+    font-size: 14px; line-height: 1.5; text-align: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .28s ease, transform .38s cubic-bezier(.2,1.5,.4,1);
+  }
+  .bubble.on{ opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+  .hint{
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+    font-size: 12px; color: var(--ink-soft); opacity: .85;
+    text-align: center; line-height: 1.6; pointer-events: none; padding: 0 16px;
+  }
+  .hint kbd{
+    font: inherit; background: rgba(255,255,255,.8); border-radius: 6px;
+    padding: 1px 6px; border: 1px solid rgba(255,255,255,.9);
+  }
+
+  /* 飘出来的小爱心 / 星星 */
+  .pop{
+    position: fixed; pointer-events: none; font-size: 18px;
+    animation: pop-up .9s ease-out forwards;
+  }
+  @keyframes pop-up{
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(.5); }
+    25%  { opacity: 1; transform: translate(-50%, -70%) scale(1.15); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(.9); }
+  }
+</style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <div class="hud">
+    <div class="title">🐟 摸鱼小屋</div>
+    <div class="counter">今天被戳了 <b id="today">0</b> 下 · 累计 <b id="total">0</b> 下</div>
+  </div>
+
+  <div class="meter">
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <div class="label">心情 <span class="stage-name" id="stageName">刚睡醒</span> · <span id="stageNum">1</span>/6</div>
+  </div>
+
+  <div class="bubble" id="bubble"></div>
+  <div class="hint">
+    戳它一下试试 · 鼠标靠近它会看你<br>
+    <kbd>空格</kbd> 逗它 · <kbd>R</kbd> 重新开始
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const bubbleEl = document.getElementById('bubble');
+  const todayEl = document.getElementById('today');
+  const totalEl = document.getElementById('total');
+  const fillEl = document.getElementById('fill');
+  const stageNameEl = document.getElementById('stageName');
+  const stageNumEl = document.getElementById('stageNum');
+
+  /* ---------------- 六个阶段：越戳越开心 ---------------- */
+  const STAGES = [
+    { name: '刚睡醒', from: '#ffe0ec', to: '#ffc7dd', cheek: 'rgba(255,150,180,.42)', mood: 0 },
+    { name: '有点精神', from: '#ffe6d5', to: '#ffc9a8', cheek: 'rgba(255,160,130,.40)', mood: 12 },
+    { name: '心情不错', from: '#fff3cf', to: '#ffe08a', cheek: 'rgba(255,180,110,.42)', mood: 30 },
+    { name: '开心到冒泡', from: '#dcf7e8', to: '#a9e8cd', cheek: 'rgba(120,205,170,.45)', mood: 55 },
+    { name: '超级兴奋', from: '#dfe9ff', to: '#b3cbff', cheek: 'rgba(140,170,255,.45)', mood: 85 },
+    { name: '幸福圆满', from: '#f0e2ff', to: '#d3b6ff', cheek: 'rgba(185,150,255,.45)', mood: 120 }
+  ];
+
+  const LINES = {
+    idle: [
+      '（发呆中）', '你还在吗～', '要不要休息一下眼睛？', '外面的天气怎么样',
+      '我今天没什么活，就在这儿等你戳', '呼……好安静', '摸鱼使我快乐'
+    ],
+    poke: [
+      '噗叽～', '痒痒的！', '再戳一下嘛', '呼……好舒服', '我在呢，别急',
+      '唔！偷袭我', '嘿嘿', '戳哪里呢', '哎呀，果冻要晃散了', '陪你摸鱼中'
+    ],
+    levelUp: [
+      '唔……好像变胖了一点点', '哇，我升级了！', '感觉整个团子都亮起来了',
+      '这就是被戳出来的幸福吗', '再来再来！'
+    ],
+    easter: [
+      '听说今天的模型是白嫖来的', '省钱使我快乐', '免费额度也是额度呀',
+      '昨天有人折腾了一整天，就为了省几个钱'
+    ]
+  };
+
+  /* ---------------- 状态 ---------------- */
+  const state = {
+    w: 0, h: 0, dpr: 1,
+    t: 0,
+    mood: 0,
+    stage: 0,
+    pokeCount: 0,
+    today: 0,
+    total: 0,
+    bubbleTimer: 0,
+    idleTimer: 9,
+    lastPoke: -99,
+    squash: 0,        // 挤压（负=扁，正=拉长）
+    squashV: 0,
+    wobble: 0,        // 被戳后的余波
+    eye: { x: 0, y: 0 },
+    pointer: { x: 0, y: 0, has: false },
+    pops: [],
+    sparks: [],
+    hearts: []
+  };
+
+  const BASE_R = () => Math.min(state.w, state.h) * 0.17;
+
+  /* ---------------- 本地计数 ---------------- */
+  const KEY = 'moyu-tuanzi-v1';
+  function loadStats() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(KEY) || '{}');
+      const today = new Date().toISOString().slice(0, 10);
+      state.total = Number(raw.total) || 0;
+      state.today = raw.day === today ? (Number(raw.today) || 0) : 0;
+      state.mood = Number(raw.mood) || 0;
+    } catch (e) { /* 读取失败就当新的一天 */ }
+    state.day = new Date().toISOString().slice(0, 10);
+  }
+  function saveStats() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        total: state.total, today: state.today, day: state.day, mood: state.mood
+      }));
+    } catch (e) { /* 无痕模式忽略 */ }
+  }
+
+  function stageOf(mood) {
+    let s = 0;
+    for (let i = 0; i < STAGES.length; i++) if (mood >= STAGES[i].mood) s = i;
+    return s;
+  }
+
+  function syncHud() {
+    todayEl.textContent = state.today;
+    totalEl.textContent = state.total;
+    const st = STAGES[state.stage];
+    const next = STAGES[state.stage + 1];
+    const lo = st.mood;
+    const hi = next ? next.mood : st.mood + 40;
+    const pct = Math.max(0, Math.min(100, ((state.mood - lo) / (hi - lo)) * 100));
+    fillEl.style.width = pct + '%';
+    stageNameEl.textContent = st.name;
+    stageNumEl.textContent = state.stage + 1;
+  }
+
+  /* ---------------- 说话 ---------------- */
+  function say(text, ms = 2600) {
+    bubbleEl.textContent = text;
+    bubbleEl.classList.add('on');
+    state.bubbleTimer = ms / 1000;
+  }
+
+  function pick(arr) { return arr[(Math.random() * arr.length) | 0]; }
+
+  function randomLine() {
+    const r = Math.random();
+    if (r < 0.06) return pick(LINES.easter);
+    if (r < 0.2) return pick(LINES.idle);
+    return pick(LINES.poke);
+  }
+
+  /* ---------------- 尺寸 ---------------- */
+  function resize() {
+    state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    state.w = window.innerWidth;
+    state.h = window.innerHeight;
+    canvas.width = Math.floor(state.w * state.dpr);
+    canvas.height = Math.floor(state.h * state.dpr);
+    ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+
+  /* ---------------- 戳 ---------------- */
+  function poke(x, y) {
+    const cx = state.w / 2, cy = state.h / 2 + 14;
+    const dist = Math.hypot(x - cx, y - cy);
+    const r = BASE_R() * 1.35;
+    if (dist > r) { // 戳空处：轻轻飘一下，不算数
+      spawnPop(x, y, '·', 'rgba(160,140,180,.5)');
+      return;
+    }
+
+    state.pokeCount++;
+    state.today++;
+    state.total++;
+    state.mood += 1;
+    state.lastPoke = state.t;
+
+    // 果冻：先压扁再回弹
+    state.squash = -0.42;
+    state.squashV = 0;
+    state.wobble = 1;
+
+    const before = state.stage;
+    state.stage = stageOf(state.mood);
+    if (state.stage > before) {
+      say('🎉 ' + pick(LINES.levelUp), 3400);
+      burst(cx, cy, 26);
+    } else if (state.t - state._lastSayT > 0.35 || state.pokeCount % 5 === 0) {
+      say(state.pokeCount % 10 === 0
+        ? '这是你今天第 ' + state.pokeCount + ' 次戳我了'
+        : randomLine());
+    }
+    state._lastSayT = state.t;
+
+    spawnPop(x, y, Math.random() < 0.5 ? '✨' : '💗', '#ff9dc0');
+    burst(x, y - 6, 7);
+    saveStats();
+    syncHud();
+  }
+
+  function spawnPop(x, y, ch, color) {
+    state.pops.push({ x, y, ch, color, life: 0.95, max: 0.95 });
+  }
+
+  function burst(x, y, n) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = 60 + Math.random() * 200;
+      state.sparks.push({
+        x, y,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - 40,
+        life: 0.7 + Math.random() * 0.5,
+        max: 1.2,
+        size: 1.6 + Math.random() * 2.6,
+        hue: Math.random() < 0.5 ? '#ffb3d1' : '#bcd8ff'
+      });
+    }
+  }
+
+  /* ---------------- 输入 ---------------- */
+  window.addEventListener('pointerdown', (e) => {
+    poke(e.clientX, e.clientY);
+  });
+  window.addEventListener('pointermove', (e) => {
+    state.pointer.x = e.clientX;
+    state.pointer.y = e.clientY;
+    state.pointer.has = true;
+  });
+  window.addEventListener('pointerleave', () => { state.pointer.has = false; });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      poke(state.w / 2, state.h / 2 + 14);
+    } else if (e.key === 'r' || e.key === 'R') {
+      state.mood = 0; state.stage = 0; state.pokeCount = 0;
+      say('重新开始啦，今天也要开心～', 2800);
+      syncHud(); saveStats();
+    }
+  });
+
+  /* ---------------- 画团子 ---------------- */
+  function drawBlob(cx, cy, r, stage, time) {
+    const st = STAGES[stage];
+    const wob = state.wobble;
+    const sq = state.squash;
+
+    // 挤压：横向撑开、纵向压扁
+    const rx = r * (1 - sq * 0.42);
+    const ry = r * (1 + sq * 0.42);
+
+    const pts = [];
+    const N = 128;
+    for (let i = 0; i <= N; i++) {
+      const a = (i / N) * Math.PI * 2;
+      const noise =
+        Math.sin(a * 3 + time * 1.7) * 0.022 * (0.5 + wob) +
+        Math.sin(a * 5 - time * 2.3) * 0.016 * wob +
+        Math.sin(a * 2 + time * 1.1) * 0.012;
+      const k = 1 + noise;
+      pts.push({ x: cx + Math.cos(a) * rx * k, y: cy + Math.sin(a) * ry * k });
+    }
+
+    // 软软的落影
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    ctx.fillStyle = '#b79ac9';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + ry * 0.92, rx * 0.78, ry * 0.2, 0, 0, Math.PI * 2);
+    ctx.filter = 'blur(6px)';
+    ctx.fill();
+    ctx.restore();
+
+    // 身体
+    const g = ctx.createLinearGradient(cx - rx, cy - ry, cx + rx, cy + ry);
+    g.addColorStop(0, st.from);
+    g.addColorStop(1, st.to);
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.fillStyle = g;
+    ctx.shadowColor = 'rgba(190,150,205,.35)';
+    ctx.shadowBlur = 26;
+    ctx.shadowOffsetY = 8;
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // 高光
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.ellipse(cx - rx * 0.34, cy - ry * 0.42, rx * 0.22, ry * 0.15, -0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 表情
+    const blink = (Math.sin(time * 0.9) > 0.985) ? 0.12 : 1;
+    const ex = state.eye.x * rx * 0.18;
+    const ey = state.eye.y * ry * 0.16;
+    const eyeR = rx * 0.085;
+    const eyeY = cy - ry * 0.1;
+
+    ctx.fillStyle = '#5b4b63';
+    for (const sx of [-1, 1]) {
+      ctx.beginPath();
+      ctx.ellipse(cx + sx * rx * 0.3 + ex, eyeY + ey, eyeR, eyeR * blink, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // 眼神光
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = '#fff';
+    for (const sx of [-1, 1]) {
+      ctx.beginPath();
+      ctx.arc(cx + sx * rx * 0.3 + ex + eyeR * 0.35, eyeY + ey - eyeR * 0.35, eyeR * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 腮红
+    ctx.save();
+    ctx.fillStyle = st.cheek;
+    for (const sx of [-1, 1]) {
+      ctx.beginPath();
+      ctx.ellipse(cx + sx * rx * 0.56, cy + ry * 0.14, rx * 0.13, ry * 0.09, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 嘴：心情越好张得越大
+    const open = 0.35 + stage * 0.14;
+    ctx.save();
+    ctx.strokeStyle = '#5b4b63';
+    ctx.lineWidth = Math.max(1.6, rx * 0.035);
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    const my = cy + ry * 0.3;
+    const mw = rx * 0.2;
+    if (stage >= 4) {           // 张嘴笑
+      ctx.moveTo(cx - mw * 0.7, my - 2);
+      ctx.quadraticCurveTo(cx, my + mw * (0.8 + open * 0.4), cx + mw * 0.7, my - 2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,140,170,.5)';
+      ctx.beginPath();
+      ctx.moveTo(cx - mw * 0.7, my - 2);
+      ctx.quadraticCurveTo(cx, my + mw * (0.8 + open * 0.4), cx + mw * 0.7, my - 2);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.moveTo(cx - mw * 0.55, my);
+      ctx.quadraticCurveTo(cx, my + mw * (0.35 + open * 0.35), cx + mw * 0.55, my);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ---------------- 背景小光点 ---------------- */
+  const dots = [];
+  function initDots() {
+    dots.length = 0;
+    const n = Math.round(Math.min(46, (state.w * state.h) / 26000));
+    for (let i = 0; i < n; i++) {
+      dots.push({
+        x: Math.random() * state.w,
+        y: Math.random() * state.h,
+        r: 1 + Math.random() * 2.6,
+        sp: 6 + Math.random() * 16,
+        ph: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function drawDots(dt, time) {
+    ctx.save();
+    for (const d of dots) {
+      d.y -= d.sp * dt;
+      if (d.y < -10) { d.y = state.h + 10; d.x = Math.random() * state.w; }
+      const a = 0.22 + 0.2 * Math.sin(time * 1.4 + d.ph);
+      ctx.globalAlpha = a;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(d.x + Math.sin(time * 0.7 + d.ph) * 8, d.y, d.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  /* ---------------- 主循环 ---------------- */
+  let last = performance.now();
+
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    state.t += dt;
+    const time = state.t;
+
+    // 果冻回弹（弹簧）
+    state.squashV += (-state.squash * 90 - state.squashV * 9) * dt;
+    state.squash += state.squashV * dt;
+    state.wobble = Math.max(0, state.wobble - dt * 1.5);
+
+    // 眼睛追鼠标
+    const cx = state.w / 2, cy = state.h / 2 + 14;
+    let tx = 0, ty = 0;
+    if (state.pointer.has) {
+      tx = Math.max(-1, Math.min(1, (state.pointer.x - cx) / (state.w * 0.34)));
+      ty = Math.max(-1, Math.min(1, (state.pointer.y - cy) / (state.h * 0.34)));
+    } else {
+      tx = Math.sin(time * 0.5) * 0.35;
+      ty = Math.sin(time * 0.33) * 0.2;
+    }
+    state.eye.x += (tx - state.eye.x) * Math.min(1, dt * 7);
+    state.eye.y += (ty - state.eye.y) * Math.min(1, dt * 7);
+
+    // 台词气泡计时
+    if (state.bubbleTimer > 0) {
+      state.bubbleTimer -= dt;
+      if (state.bubbleTimer <= 0) bubbleEl.classList.remove('on');
+    }
+
+    // 闲着会自己说话
+    state.idleTimer -= dt;
+    if (state.idleTimer <= 0) {
+      state.idleTimer = 11 + Math.random() * 12;
+      if (state.bubbleTimer <= 0) say(pick(LINES.idle));
+    }
+
+    // 画布
+    ctx.clearRect(0, 0, state.w, state.h);
+    drawDots(dt, time);
+
+    const breathe = 1 + Math.sin(time * 1.6) * 0.022;
+    const r = BASE_R() * breathe;
+    const shake = state.wobble * 3;
+    drawBlob(cx + Math.sin(time * 13) * shake, cy + Math.cos(time * 11) * shake * 0.6, r, state.stage, time);
+
+    // 粒子
+    ctx.save();
+    for (let i = state.sparks.length - 1; i >= 0; i--) {
+      const s = state.sparks[i];
+      s.life -= dt;
+      if (s.life <= 0) { state.sparks.splice(i, 1); continue; }
+      s.vy += 240 * dt;
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+      ctx.globalAlpha = Math.max(0, s.life / s.max);
+      ctx.fillStyle = s.hue;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 表情符号飘字
+    if (state.pops.length) {
+      for (let i = 0; i < state.pops.length; i++) {
+        const p = state.pops[i];
+        p.life -= dt;
+        if (p.life <= 0) { state.pops.splice(i, 1); i--; continue; }
+        const k = 1 - p.life / p.max;
+        p.y -= 44 * dt;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.life / p.max);
+        ctx.font = '20px -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.ch, p.x + Math.sin(k * 6) * 6, p.y);
+        ctx.restore();
+      }
+    }
+
+    // 气泡跟随团子上方
+    if (bubbleEl.classList.contains('on')) {
+      const top = cy - r * 1.5 - 8;
+      bubbleEl.style.top = Math.max(70, top) + 'px';
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------------- 启动 ---------------- */
+  loadStats();
+  state.stage = stageOf(state.mood);
+  resize();
+  initDots();
+  syncHud();
+  window.addEventListener('resize', initDots);
+
+  setTimeout(() => say('你回来啦，我等你很久了～', 3200), 700);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

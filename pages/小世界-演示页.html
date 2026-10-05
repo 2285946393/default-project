@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小世界 · 演示</title>
+<style>
+:root{
+  --bg:#05060b; --ink:#eef1f8; --mist:rgba(238,241,248,.55);
+  --teal:#38e1c6; --violet:#8b7cf8; --gold:#f5d76e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0}
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity .8s ease}
+.scene.on{opacity:1;pointer-events:auto}
+
+/* 背景光晕 */
+.glow{position:fixed;border-radius:50%;filter:blur(120px);opacity:.20;pointer-events:none;z-index:0;animation:float 14s ease-in-out infinite}
+.g1{width:560px;height:560px;background:var(--violet);top:-120px;left:-100px}
+.g2{width:520px;height:520px;background:var(--teal);bottom:-140px;right:-100px;animation-delay:5s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-40px)}}
+
+/* 标题 / 结尾 */
+.big{font-size:clamp(30px,5vw,62px);font-weight:200;letter-spacing:.14em;text-align:center;line-height:1.5;z-index:2}
+.big em{font-style:normal;background:linear-gradient(90deg,var(--teal),var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:600}
+.sub{margin-top:22px;font-size:clamp(12px,1.5vw,15px);color:var(--mist);letter-spacing:.3em;z-index:2}
+.fade-up{animation:rise .9s cubic-bezier(.16,1,.3,1) both}
+.fade-up.d2{animation-delay:.25s}
+.fade-up.d3{animation-delay:.5s}
+@keyframes rise{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:none}}
+
+/* 作品巡游 */
+#montage{justify-content:center}
+.shotwrap{position:relative;width:min(86vw,1180px);height:min(56vw,620px);border-radius:18px;overflow:hidden;
+  box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.08);z-index:2;background:#000}
+.shotwrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+  transition:opacity .6s ease;will-change:transform}
+.shotwrap img.on{opacity:1;animation:kb 3.6s ease-out both}
+@keyframes kb{0%{transform:scale(1.02) translate(0,0)}100%{transform:scale(1.12) translate(-1.2%,-1%)}}
+#cap{position:absolute;left:0;right:0;bottom:0;padding:38px 30px 22px;z-index:3;
+  background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);display:flex;align-items:baseline;gap:12px}
+#cap b{font-size:clamp(16px,2vw,22px);font-weight:700}
+#cap span{font-size:clamp(11px,1.2vw,13px);color:var(--mist)}
+#counter{position:absolute;top:18px;right:24px;font-size:12px;letter-spacing:.2em;color:var(--mist);z-index:3}
+
+/* 证书 */
+.certbox{display:flex;gap:26px;z-index:2;flex-wrap:wrap;justify-content:center}
+.certbox figure{width:min(42vw,420px);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.certbox img{width:100%;display:block}
+.certbox figcaption{padding:12px 16px;font-size:12.5px;color:var(--mist)}
+.certbox figcaption b{color:var(--ink)}
+
+/* 方法论 */
+.steps{display:grid;gap:12px;z-index:2;width:min(86vw,760px)}
+.step{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:14px 18px;
+  opacity:0;transform:translateX(-14px);animation:slideIn .6s ease forwards}
+@keyframes slideIn{to{opacity:1;transform:none}}
+.step .n{flex:none;width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--violet));
+  color:#04120e;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.step b{font-size:14.5px}
+.step p{font-size:12.5px;color:var(--mist);margin-top:2px}
+
+/* 进度条 */
+#bar{position:fixed;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.08);z-index:20}
+#fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--violet));transition:width .3s linear}
+#hint{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);font-size:11px;letter-spacing:.2em;
+  color:rgba(255,255,255,.35);z-index:20;user-select:none}
+</style>
+</head>
+<body>
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+
+<div id="stage">
+
+  <div class="scene on" data-s="title">
+    <div class="big fade-up">一个 HTML 文件，<br>能<em>做什么</em>？</div>
+    <div class="sub fade-up d2">28 个网页小世界 · 有花无实</div>
+  </div>
+
+  <div class="scene" data-s="montage">
+    <div class="shotwrap" id="shotwrap">
+      <div id="cap"><b></b><span></span></div>
+      <div id="counter"></div>
+    </div>
+  </div>
+
+  <div class="scene" data-s="certs">
+    <div class="big fade-up" style="font-size:clamp(22px,3.2vw,38px)">2024 年，我入场了 <em>AIGC</em></div>
+    <div class="certbox fade-up d2" style="margin-top:26px">
+      <figure><img src="../assets/AIGC作品集/cert-kolors-lora.jpg" alt="证书"><figcaption><b>可图 Kolors-LoRA 风格故事挑战赛</b> · 核心创作者</figcaption></figure>
+      <figure><img src="../assets/AIGC作品集/cert-tianchi-llm.jpg" alt="证书"><figcaption><b>阿里云天池 · 大模型逻辑推理赛道</b> · 营员</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="scene" data-s="method">
+    <div class="big fade-up" style="font-size:clamp(22px,3.2vw,38px);margin-bottom:26px">AI 绘图最难的不是画得好看<br>而是让<em>同一个角色</em>不漂移</div>
+    <div class="steps">
+      <div class="step" style="animation-delay:.1s"><div class="n">1</div><div><b>LoRA 微调定风格</b><p>基于 Kolors，先锁死整体视觉基调。</p></div></div>
+      <div class="step" style="animation-delay:.3s"><div class="n">2</div><div><b>结构化 Prompt 锁角色</b><p>外貌/服饰拆成固定字段，每张复用，只改动作与场景。</p></div></div>
+      <div class="step" style="animation-delay:.5s"><div class="n">3</div><div><b>固定种子 + 参数迭代</b><p>逐张对比多轮迭代，直到风格不再漂移。</p></div></div>
+      <div class="step" style="animation-delay:.7s"><div class="n">4</div><div><b>全链路工作流</b><p>构思 → 分镜 → 出图 → 筛选，产出 20 张连贯插图。</p></div></div>
+    </div>
+  </div>
+
+  <div class="scene" data-s="end">
+    <div class="big fade-up">28 个做完了。<br>第 <em>29</em> 个，正在做。</div>
+    <div class="sub fade-up d2">毛烨 · AIGC 内容创作 / 前端开发</div>
+    <div class="sub fade-up d3" style="letter-spacing:.12em;font-size:13px;margin-top:10px">📮 2285946393@qq.com &nbsp;·&nbsp; 📱 19174406319</div>
+  </div>
+
+</div>
+
+<div id="bar"><div id="fill"></div></div>
+<div id="hint">空格 暂停/继续 &nbsp;·&nbsp; ← → 切换</div>
+
+<script>
+'use strict';
+var IMG = '../assets/作品截图/';
+var WORKS = [
+  ['aurora','极光流体','WebGL 实时流体'],
+  ['mycelia','菌丝世界','多智能体生成艺术'],
+  ['abyss','深渊塔','15 层爬塔 roguelike'],
+  ['whale','鲸鱼娘干饭中','交互动画'],
+  ['stardust','星尘','粒子星系'],
+  ['particle-life','粒子生命','人工生命模拟'],
+  ['reaction-diffusion','反应扩散','图灵斑图生成'],
+  ['ink','墨','水墨扩散渲染'],
+  ['marimo','球藻','治愈系实时渲染'],
+  ['fluid-garden','流体花园','交互流体艺术'],
+  ['element','元素秘境','Rust/WASM 沙盒'],
+  ['gacha','次元召唤','抽卡机'],
+  ['rhythm','节奏抽卡','音游 + 抽卡'],
+  ['vocal','虚拟歌姬','音乐可视化'],
+  ['liferestart','人生重开','数据驱动文字游戏'],
+  ['brickball','弹球磁砖','物理弹球'],
+  ['histmap','边界千年','世界历史地图'],
+  ['trombone','声音的诞生','物理建模声带'],
+  ['modlab','通信调制实验室','信号可视化'],
+  ['xiaoshi','消逝进行时','内容企划']
+];
+var MONTAGE_MS = 950;
+
+var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene'));
+var idx = -1, timer = null, paused = false, t0 = 0, elapsed = 0;
+var TOTAL = 4000 + WORKS.length * MONTAGE_MS + 5000 + 6500 + 6000;
+
+// 预载图
+WORKS.forEach(function(w){ var im = new Image(); im.src = IMG + w[0] + '.png'; });
+
+var fill = document.getElementById('fill');
+function setFill(p){ fill.style.width = Math.min(100, p * 100) + '%'; }
+
+function go(i){
+  if (i < 0) i = 0;
+  if (i >= scenes.length) { i = scenes.length - 1; }
+  idx = i;
+  scenes.forEach(function(s, k){ s.classList.toggle('on', k === i); });
+  var s = scenes[i];
+  if (s.dataset.s === 'montage') startMontage(); else stopMontage();
+}
+
+/* ---- montage ---- */
+var mTimer = null, mi = 0, imgs = [];
+function startMontage(){
+  var wrap = document.getElementById('shotwrap');
+  // 清掉旧图
+  wrap.querySelectorAll('img').forEach(function(n){ n.remove(); });
+  imgs = [];
+  WORKS.forEach(function(w, k){
+    var im = document.createElement('img');
+    im.src = IMG + w[0] + '.png';
+    im.dataset.k = k;
+    wrap.insertBefore(im, document.getElementById('cap'));
+    imgs.push(im);
+  });
+  mi = 0; showShot(0);
+  mTimer = setInterval(function(){ mi++; if (mi >= WORKS.length) { mi = 0; } showShot(mi); }, MONTAGE_MS);
+}
+function showShot(k){
+  imgs.forEach(function(im, j){
+    im.classList.remove('on');
+    if (j === k) { void im.offsetWidth; im.classList.add('on'); }
+  });
+  document.getElementById('cap').querySelector('b').textContent = WORKS[k][1];
+  document.getElementById('cap').querySelector('span').textContent = WORKS[k][2];
+  document.getElementById('counter').textContent = String(k + 1).padStart(2, '0') + ' / ' + WORKS.length;
+}
+function stopMontage(){ if (mTimer) { clearInterval(mTimer); mTimer = null; } }
+
+/* ---- 时间轴 ---- */
+var durs = [4000, WORKS.length * MONTAGE_MS, 5000, 6500, 6000];
+function schedule(){
+  clearTimeout(timer);
+  if (paused) return;
+  timer = setTimeout(function(){
+    if (idx >= scenes.length - 1) { go(0); schedule(); return; }  // 循环
+    go(idx + 1); schedule();
+  }, durs[idx]);
+}
+
+/* ---- 进度 ---- */
+var progTimer = setInterval(function(){
+  if (paused) return;
+  elapsed += 120;
+  if (elapsed > TOTAL) elapsed = 0;
+  setFill(elapsed / TOTAL);
+}, 120);
+
+/* ---- 控制 ---- */
+document.addEventListener('keydown', function(e){
+  if (e.code === 'Space') { e.preventDefault(); paused = !paused; if (paused) { clearTimeout(timer); } else { schedule(); } }
+  if (e.key === 'ArrowRight') { elapsed = 0; go(idx + 1); schedule(); }
+  if (e.key === 'ArrowLeft') { elapsed = 0; go(Math.max(0, idx - 1)); schedule(); }
+});
+document.addEventListener('click', function(){ paused = !paused; if (paused) { clearTimeout(timer); } else { schedule(); } });
+
+go(0); schedule();
+</script>
+</body>
+</html>

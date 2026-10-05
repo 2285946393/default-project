@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIGC 内容作品集 · 毛烨</title>
+<meta name="description" content="毛烨的 AIGC 内容创作作品集：LoRA 风格微调、Prompt 工程实战，以及能独立落地的创意作品。">
+<style>
+:root{
+  --bg:#f6f5f9; --card:#fff; --ink:#231f2e; --sub:#5c5666; --mist:#8b8496;
+  --line:#e7e4ec; --accent:#7c3aed; --accent-soft:#f0e9fd;
+  --shadow:0 10px 30px rgba(40,30,70,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:1000px;margin:0 auto;padding:0 26px}
+
+header{padding:52px 0 30px;border-bottom:1px solid var(--line)}
+header .name{font-size:36px;font-weight:800;letter-spacing:.02em}
+header .role{display:inline-block;margin-top:10px;padding:5px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:14px;font-weight:700}
+header .tag{margin-top:16px;color:var(--sub);font-size:15px;max-width:720px}
+header .contact{margin-top:16px;font-size:13.5px;color:var(--mist)}
+
+section{padding:34px 0}
+h2{font-size:20px;font-weight:800;margin-bottom:6px}
+h2 .en{color:var(--accent);font-size:12px;font-weight:600;letter-spacing:.14em;margin-left:8px;text-transform:uppercase}
+.sub{color:var(--mist);font-size:13.5px;margin-bottom:18px}
+
+/* 证书 */
+.certs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cert{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.cert img{width:100%;display:block;aspect-ratio:16/10;object-fit:cover}
+.cert .cap{padding:12px 16px;font-size:13px;color:var(--sub)}
+.cert .cap b{color:var(--ink)}
+
+/* 方法论 */
+.steps{display:grid;gap:12px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px}
+.step .n{flex:none;width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.step .tx b{display:block;font-size:14.5px;margin-bottom:3px}
+.step .tx p{font-size:13px;color:var(--sub)}
+
+/* 作品 */
+.works{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.work{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);transition:.22s}
+.work:hover{transform:translateY(-4px);border-color:#d6c8f0;box-shadow:0 18px 40px rgba(40,30,70,.12)}
+.work img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;background:#0a0a12}
+.work .cap{padding:11px 14px}
+.work .cap b{font-size:13.5px}
+.work .cap span{display:block;font-size:12px;color:var(--mist);margin-top:2px}
+
+/* 工具 */
+.tools{display:flex;flex-wrap:wrap;gap:9px}
+.tool{padding:6px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--ink)}
+.tool.hot{background:var(--accent-soft);border-color:#ddcdf7;color:var(--accent);font-weight:600}
+
+footer{border-top:1px solid var(--line);padding:26px 0 44px;color:var(--mist);font-size:12.5px;text-align:center}
+
+@media (max-width:720px){
+  .certs{grid-template-columns:1fr}
+  .works{grid-template-columns:1fr 1fr}
+  header .name{font-size:29px}
+}
+@media (max-width:480px){ .works{grid-template-columns:1fr} }
+@media print{
+  body{background:#fff}
+  .work,.cert,.step{box-shadow:none;break-inside:avoid}
+  .work:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="name">毛烨</div>
+    <div class="role">AIGC 内容创作 / AI 产品</div>
+    <p class="tag">2024 年入场 AIGC：做过 LoRA 风格微调、Prompt 工程实战；同时能独立把创意落地成可交互的产品（已上线 28 个 Web 作品）。<b>懂内容，也懂技术。</b></p>
+    <div class="contact">📱 19174406319 &nbsp;·&nbsp; 📮 2285946393@qq.com &nbsp;·&nbsp; 电子信息工程</div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>AIGC 经历与证书<span class="en">Certificates</span></h2>
+    <p class="sub">2024 年 Datawhale AI 夏令营，两个方向全部完成并结营。</p>
+    <div class="certs">
+      <div class="cert">
+        <img src="../assets/AIGC作品集/cert-kolors-lora.jpg" alt="Kolors-LoRA 风格故事挑战赛结营证书">
+        <div class="cap"><b>可图 Kolors-LoRA 风格故事挑战赛</b> · 核心创作者（2024.08）</div>
+      </div>
+      <div class="cert">
+        <img src="../assets/AIGC作品集/cert-tianchi-llm.jpg" alt="世界科学智能大赛逻辑推理赛道结营证书">
+        <div class="cap"><b>阿里云天池 · 大模型逻辑推理赛道</b> · 营员（2024.08）</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>方法论：我是怎么做出连贯的 AI 故事绘本<span class="en">Method</span></h2>
+    <p class="sub">AI 绘图最难的从来不是"画得好看"，而是<b>让同一个角色、同一种风格，在 20 张图里保持一致</b>。</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div class="tx"><b>定风格：LoRA 微调</b><p>基于 Kolors 大模型，用 LoRA 对目标画风做针对性微调，先锁死整体视觉基调。</p></div></div>
+      <div class="step"><div class="n">2</div><div class="tx"><b>锁角色：结构化 Prompt</b><p>把角色的外貌、服饰、年龄等拆成固定字段，每张图复用同一套描述，再按剧情只改动作与场景。</p></div></div>
+      <div class="step"><div class="n">3</div><div class="tx"><b>稳输出：参数与迭代</b><p>固定随机种子 + 精调采样参数，逐张对比、多轮迭代，直到角色与风格不再漂移。</p></div></div>
+      <div class="step"><div class="n">4</div><div class="tx"><b>串剧情：全链路工作流</b><p>从概念构思 → 分镜 → 出图 → 筛选，打通完整链路，最终产出 20 张连贯插图并交付。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>创意执行力：作品一览<span class="en">Works</span></h2>
+    <p class="sub">能独立把想法做成可交互的成品 —— 以下均为已上线的单文件 Web 作品（在线可玩）。</p>
+    <div class="works">
+      <div class="work"><img src="../assets/AIGC作品集/aurora.png" alt="极光流体"><div class="cap"><b>极光流体</b><span>WebGL 实时流体模拟</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/mycelia.png" alt="菌丝世界"><div class="cap"><b>菌丝世界</b><span>多智能体生成艺术</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/abyss.png" alt="深渊塔"><div class="cap"><b>深渊塔</b><span>15 层爬塔 roguelike</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/whale.png" alt="鲸鱼娘干饭中"><div class="cap"><b>鲸鱼娘干饭中</b><span>交互动画</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/stardust.png" alt="星尘"><div class="cap"><b>星尘</b><span>粒子星系</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/particle-life.png" alt="粒子生命"><div class="cap"><b>粒子生命</b><span>人工生命模拟</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/reaction-diffusion.png" alt="反应扩散"><div class="cap"><b>反应扩散</b><span>图灵斑图生成</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/ink.png" alt="墨"><div class="cap"><b>墨</b><span>水墨扩散渲染</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/marimo.png" alt="球藻"><div class="cap"><b>球藻</b><span>治愈系实时渲染</span></div></div>
+      <div class="work"><img src="../assets/AIGC作品集/fluid-garden.png" alt="流体花园"><div class="cap"><b>流体花园</b><span>交互流体艺术</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>工具栈<span class="en">Tools</span></h2>
+    <div class="tools">
+      <span class="tool hot">可图 Kolors</span>
+      <span class="tool hot">LoRA 微调</span>
+      <span class="tool hot">Prompt 工程</span>
+      <span class="tool hot">Seedance / AI 视频</span>
+      <span class="tool">Midjourney</span>
+      <span class="tool">GPT / Gemini / Claude / Kimi</span>
+      <span class="tool">WebGL / Canvas</span>
+      <span class="tool">剪映 / 剪辑</span>
+      <span class="tool">Figma 基础</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    毛烨 · AIGC 内容作品集 &nbsp;|&nbsp; 📮 2285946393@qq.com
+  </div>
+</footer>
+
+</body>
+</html>

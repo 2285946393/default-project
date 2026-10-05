@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>简历 · 创意前端 / AI 应用 · 毛烨</title>
+<style>
+:root{
+  --ink:#23202b; --sub:#5c5666; --mist:#8b8496; --line:#e6e2e8;
+  --accent:#b5486c; --accent-soft:#f7e9ee;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;line-height:1.38;-webkit-font-smoothing:antialiased}
+
+.page{width:210mm;min-height:297mm;margin:16px auto;background:#fff;padding:11mm 12mm;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:9px}
+.hd .name{font-size:25px;font-weight:800;letter-spacing:.03em}
+.hd .role{margin-top:3px;font-size:13px;color:var(--accent);font-weight:700}
+.hd .meta{text-align:right;font-size:12px;color:var(--sub);line-height:1.6}
+.hd .meta b{color:var(--ink);font-weight:600}
+.hd .qr{flex:0 0 auto;text-align:center;margin-left:14px}
+.hd .qr img{width:20mm;height:20mm;display:block}
+.hd .qr span{display:block;font-size:7.5px;color:var(--mist);letter-spacing:.02em;margin-top:1px;white-space:nowrap}
+
+.sec{margin-top:7px}
+.sec h2{font-size:13.5px;font-weight:800;color:var(--ink);letter-spacing:.06em;display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.sec h2::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--accent)}
+.sec h2 .en{font-size:10.5px;font-weight:600;color:var(--mist);letter-spacing:.14em;text-transform:uppercase}
+
+/* 一句话主张 */
+.claim{background:var(--accent-soft);border-radius:9px;padding:6px 11px;font-size:12px;color:var(--sub);margin-top:7px}
+.claim b{color:var(--accent);font-weight:700}
+
+.item{margin-bottom:6px;break-inside:avoid}
+.item .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.item .t{font-size:13px;font-weight:700}
+.item .t .tag{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 8px;border-radius:999px;margin-left:8px}
+.item .date{font-size:11.5px;color:var(--mist);white-space:nowrap}
+.item .stack{font-size:11px;color:var(--accent);font-weight:600;margin-top:1px}
+.item .stack .link{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent)}
+.item ul{margin:2px 0 0 15px}
+.item li{font-size:12px;color:var(--sub);margin-top:1px}
+.item li b{color:var(--ink);font-weight:600}
+.item li .link{color:var(--accent);font-weight:600;text-decoration:none;border-bottom:1px solid var(--accent)}
+
+/* 作品带：一行一个作品，紧凑 */
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;margin-top:3px}
+.gitem{font-size:11.5px;color:var(--sub);line-height:1.4}
+.gitem b{color:var(--ink);font-weight:700}
+.gitem em{font-style:normal;color:var(--accent);font-weight:600;font-size:11px}
+
+.skill{display:grid;grid-template-columns:78px 1fr;gap:3px 11px;font-size:12px}
+.skill dt{font-weight:700;color:var(--ink)}
+.skill dd{color:var(--sub)}
+.skill dd b{color:var(--ink);font-weight:600}
+
+.edu .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.edu .t{font-size:13px;font-weight:700}
+.edu .date{font-size:11.5px;color:var(--mist)}
+.edu p{font-size:12px;color:var(--sub);margin-top:2px}
+
+.tip{margin:10px 0 0;font-size:11.5px;color:var(--mist);background:var(--accent-soft);border-radius:8px;padding:7px 11px}
+.tip b{color:var(--accent)}
+
+@media print{
+  html,body{width:210mm;background:#fff}
+  .page{margin:0;box-shadow:none;width:210mm;min-height:auto;padding:10mm 12mm}
+  .item,.skill,.edu{break-inside:avoid}
+  .tip{display:none}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hd">
+    <div>
+      <div class="name">毛烨</div>
+      <div class="role">求职意向：创意前端 / 交互开发 · AI 应用（校招 · 实习）</div>
+    </div>
+    <div class="meta">
+      <div>📱 <b>19174406319</b></div>
+      <div>📮 2285946393@qq.com</div>
+      <div>🔗 ephemeralbloom.dpdns.org</div>
+    </div>
+    <div class="qr">
+      <img src="data:image/png;base64,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" alt="作品集二维码">
+      <span>扫码看作品集</span>
+    </div>
+  </div>
+
+  <div class="claim">
+    我的作品有一个共同点：<b>把抽象的规则变成别人一打开就能玩、能看懂的东西</b>——调一个参数、拖一下鼠标，屏幕里的世界就会真的改变。
+    已独立上线近 30 个作品，既手写 <b>WebGL 着色器与 WASM 胶水层</b>，也能独立完成检索算法、降级策略与部署链路，全部可在个人站点当场打开。
+  </div>
+
+  <div class="sec">
+    <h2>教育背景<span class="en">Education</span></h2>
+    <div class="edu">
+      <div class="top">
+        <div class="t">电子信息工程（本科）</div>
+        <div class="date">2023.09 – 2027.06</div>
+      </div>
+      <p>专业排名前 20%，获校级奖助学金，已通过 CET-4。在校期间自学交互开发与图形编程，独立完成并上线近 30 个可玩的 Web 作品。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>核心项目<span class="en">Key Projects</span></h2>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">菌丝世界 <span class="tag">WebGL2 · GPU 模拟</span></div>
+        <div class="date">2026.06 · 个人项目</div>
+      </div>
+      <div class="stack">WebGL2 · 浮点纹理 · 粒子系统 · GLSL</div>
+      <ul>
+        <li><b>近百万粒子在 GPU 上自组织成菌丝网络</b>：基于 Physarum 黏菌模型，用浮点纹理做状态存储、多 Pass 迭代更新，粒子循着彼此留下的"气味"生长</li>
+        <li><b>把文字变成生物</b>：输入任意词（或整条链接）哈希成一套"基因组"，决定形态、配色与性格——<b>同一个词永远长出同一只</b>，链接发给别人能一字不差复刻</li>
+        <li>鼠标可"喂养"或"驱散"菌丝，实时影响生长方向；8 套氛围配色、7 项基因参数可实时拨动</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">粒子生命 · 数字生态缸 <span class="tag">涌现模拟</span></div>
+        <div class="date">2026.07 · 个人项目</div>
+      </div>
+      <div class="stack">JavaScript · 空间网格加速 · 分段力模型</div>
+      <ul>
+        <li>规则只有一句话：任意两个物种之间"喜欢 / 讨厌 / 不理"，却会<b>自发涌现出旋转、追逐、共生、迁徙的活体结构</b></li>
+        <li><b>让玩家亲手改写规则</b>：物种吸引矩阵是这个世界的"基因"，点一格就改变整个生态的走向，几秒内连锁重组——把"一条规则如何改变一个文明"做成看得见的过程</li>
+        <li>重写空间网格核心解决万级粒子的邻居查询性能；支持随机世界、自动演化、鼠标引力/斥力搅动</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">面试间 · AI 模拟面试官 <span class="tag">AI 应用</span></div>
+        <div class="date">2026.09 · 个人项目</div>
+      </div>
+      <div class="stack">Next.js 15 · React 19 · TypeScript · Vercel AI SDK · <a class="link" href="https://ai-interviewer-two-rosy.vercel.app">ai-interviewer-two-rosy.vercel.app</a></div>
+      <ul>
+        <li>把大模型能力<b>驯化成可靠的用户功能</b>：出题 / 点评 / 评分三级降级，模型不可用时仍能走完整流程，界面不白屏</li>
+        <li>自研 <b>BM25 中文检索（RAG）</b>做知识库：bigram 分词 + 文档切分 + 上下文注入，支持贴自己的 JD / 简历出题</li>
+        <li>设计 <b>OpenAI 兼容 Provider 抽象层</b>，换模型只改环境变量；检索跑在浏览器端，简历原文不出本地</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">引力沙盒 · 反应扩散 <span class="tag">交互可视化</span></div>
+        <div class="date">2026.05 – 2026.08 · 个人项目</div>
+      </div>
+      <div class="stack">Canvas 2D · 数值模拟 · 实时调参</div>
+      <ul>
+        <li><b>引力沙盒</b>：可拖拽天体、调节引力常数，实时看多体系统从稳定轨道走向混沌</li>
+        <li><b>反应扩散</b>：把图灵斑图生成做成"可以画"的模拟——笔刷投放化学物质，看纹理自己长出来</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="sec">
+    <h2>其他作品<span class="en">More</span></h2>
+    <div class="gallery">
+      <div class="gitem"><b>深渊塔</b> <em>游戏</em>：15 层爬塔 roguelike，策略战斗 + 随机事件 + 双结局</div>
+      <div class="gitem"><b>合成猫咪</b> <em>游戏</em>：物理合成 + 进化链 + 即时反馈</div>
+      <div class="gitem"><b>流体花园</b> <em>可视化</em>：笔触驱动的流体交互装置</div>
+      <div class="gitem"><b>鲸云 API</b> <em>产品</em>：AI 网关三端 12 页，首屏 841KB→389KB</div>
+      <div class="gitem"><b>创作中台</b> <em>产品</em>：Vue3 后台，菜单级 + 按钮级双层权限</div>
+      <div class="gitem"><b>通信调制实验室</b> <em>教学</em>：AM/FM 波形可视化，专业课转教学工具</div>
+      <div class="gitem"><b>极光流体</b> <em>WebGL</em>：手写 GLSL 实时流体，零依赖单文件 23KB</div>
+      <div class="gitem"><b>元素秘境</b> <em>WASM</em>：移植 Rust 落沙内核，手写胶水层，76KB 单文件</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>技能栈<span class="en">Skills</span></h2>
+    <dl class="skill">
+      <dt>交互与图形</dt><dd><b>WebGL / WebGL2</b>、<b>GLSL 着色器</b>、GPU 粒子模拟、浮点纹理、Canvas 2D、流体与物理模拟、实时渲染与性能优化</dd>
+      <dt>前端</dt><dd><b>TypeScript</b>、<b>React / Next.js</b>、<b>Vue 3</b>、Tailwind CSS、Element Plus、Pinia、响应式与交互设计</dd>
+      <dt>AI 应用</dt><dd>LLM 接入与流式对话、<b>RAG（BM25 检索 / 文档切分 / 上下文注入）</b>、Prompt 工程、Zod 结构化输出、Vercel AI SDK</dd>
+      <dt>工程</dt><dd>Rust → WebAssembly、性能优化（首屏体积裁剪）、Git、Cloudflare Workers / Vercel 部署、能独立完成从设计到上线的全流程</dd>
+      <dt>证书</dt><dd>大学英语四级（CET-4）、普通话水平测试等级证书</dd>
+    </dl>
+  </div>
+
+  <div class="tip">💡 创意交互 / 前端方向版。投 AI 应用岗用「简历-AI应用开发.html」，投内容岗用「简历-AIGC运营.html」。</div>
+
+</div>
+</body>
+</html>

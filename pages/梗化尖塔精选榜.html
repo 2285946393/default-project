@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>梗化尖塔 · 精选梗榜</title>
+<style>
+:root{
+  --pink:#ffb3c9; --pink-deep:#f2769a; --purple:#a98cf0; --ink:#3d3550;
+  --muted:#8a82a0; --card:#ffffffcc; --line:#f0e6f5;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0 16px 56px; color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 10% 6%,#ffe3ee 0%,transparent 44%),
+    radial-gradient(circle at 92% 3%,#e8dcff 0%,transparent 42%),
+    radial-gradient(circle at 50% 100%,#e2f2ff 0%,transparent 48%),
+    #fdfaff;
+  min-height:100vh;
+}
+.wrap{max-width:880px;margin:0 auto}
+header{padding:40px 0 6px;text-align:center}
+h1{margin:0;font-size:30px;letter-spacing:2px}
+h1 span{background:linear-gradient(90deg,var(--pink-deep),var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.8}
+.sub b{color:var(--pink-deep)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:22px 0 18px}
+.tabs button{
+  border:1px solid var(--line); background:#fff; color:var(--muted);
+  padding:8px 15px; border-radius:999px; cursor:pointer;
+  font-size:13px; font-family:inherit; transition:.15s;
+}
+.tabs button:hover{border-color:var(--pink)}
+.tabs button.on{
+  background:linear-gradient(120deg,var(--pink),var(--purple));
+  border-color:transparent; color:#fff; font-weight:600;
+  box-shadow:0 4px 14px #d9a8e155;
+}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:8px 18px 14px;box-shadow:0 6px 22px #b48ec91a;backdrop-filter:blur(6px)}
+.row{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;
+  padding:13px 2px;border-bottom:1px dashed var(--line);
+}
+.row:last-child{border-bottom:0}
+.old{color:var(--muted);font-size:14px;text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arrow{color:var(--pink);font-size:13px}
+.new{font-size:16px;font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:13px}
+.dice{
+  display:block;margin:20px auto 0;border:0;cursor:pointer;
+  background:linear-gradient(120deg,var(--pink),var(--purple));color:#fff;
+  padding:11px 26px;border-radius:999px;font-size:14px;font-family:inherit;
+  box-shadow:0 6px 18px #d9a8e155;font-weight:600;
+}
+.dice:active{transform:translateY(1px)}
+.pop{
+  position:fixed;inset:0;background:#3d355066;display:none;
+  align-items:center;justify-content:center;padding:22px;z-index:9;
+}
+.pop.on{display:flex}
+.pop .box{
+  background:#fff;border-radius:22px;padding:26px 24px;max-width:420px;width:100%;
+  text-align:center;box-shadow:0 20px 50px #3d355033;
+}
+.pop .o{color:var(--muted);font-size:14px;margin-bottom:8px;word-break:break-all}
+.pop .n{font-size:24px;font-weight:700;color:var(--pink-deep);margin:6px 0 4px;line-height:1.4}
+.pop .c{margin-top:12px;font-size:12px;color:var(--muted)}
+.pop .x{
+  margin-top:18px;border:1px solid var(--line);background:#fff;color:var(--muted);
+  padding:8px 20px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:13px;
+}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px;line-height:2}
+@media (max-width:760px){
+  h1{font-size:23px}
+  header{padding-top:28px}
+  .row{grid-template-columns:1fr auto 1fr;gap:8px}
+  .old{font-size:13px}
+  .new{font-size:15px}
+  .tabs{gap:6px}
+  .tabs button{padding:7px 12px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>梗化尖塔 · <span>精选梗榜</span></h1>
+    <p class="sub">从全 mod <b>3321</b> 条改动里挑的 <b id="total">—</b> 条 · 只改文案不改数值</p>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="panel" id="list"></div>
+  <div class="empty" id="empty" style="display:none">这一类还没挑</div>
+
+  <button class="dice" id="dice">🎲 随便来一条</button>
+
+  <footer>
+    Steam 创意工坊搜「梗化尖塔 Meme Spire」就能订。<br>
+    同作者的《尖塔任务 Quest Spire》也在工坊里。
+  </footer>
+</div>
+
+<div class="pop" id="pop">
+  <div class="box">
+    <div class="o" id="popOld"></div>
+    <div class="n" id="popNew"></div>
+    <div class="c" id="popCat"></div>
+    <button class="x" id="popClose">关掉</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const PICKS = [
+    { cat: "卡牌", old: "痛击", now: "一个大逼斗" },
+    { cat: "卡牌", old: "愤怒", now: "急了急了" },
+    { cat: "卡牌", old: "预借时间", now: "花呗" },
+    { cat: "卡牌", old: "债务", now: "花呗未还" },
+    { cat: "卡牌", old: "双重释放", now: "双卡双待" },
+    { cat: "卡牌", old: "回响形态", now: "复读机" },
+    { cat: "卡牌", old: "宇宙冷漠", now: "关我屁事" },
+    { cat: "卡牌", old: "武器库", now: "火力不足恐惧症" },
+    { cat: "卡牌", old: "进阶之灾", now: "选错专业" },
+    { cat: "卡牌", old: "禁忌魔典", now: "慎选专业" },
+    { cat: "卡牌", old: "星界脉冲", now: "WiFi信号满格" },
+    { cat: "卡牌", old: "自动化", now: "上班摸鱼" },
+    { cat: "卡牌", old: "触媒", now: "科技与狠活" },
+    { cat: "卡牌", old: "好勇斗狠", now: "你瞅啥" },
+    { cat: "卡牌", old: "星位序列", now: "天王盖地虎" },
+    { cat: "卡牌", old: "灰烬打击", now: "骨灰都给你扬了" },
+    { cat: "卡牌", old: "偏差认知", now: "精神内耗" },
+    { cat: "卡牌", old: "混沌", now: "抽象" },
+    { cat: "卡牌", old: "冲锋！！", now: "芜湖，起飞" },
+    { cat: "卡牌", old: "爪击", now: "猫猫拳" },
+    { cat: "卡牌", old: "巩固", now: "焊死" },
+    { cat: "卡牌", old: "战鼓", now: "本草纲目" },
+    { cat: "卡牌", old: "永恒铠甲", now: "金钟罩铁布衫" },
+    { cat: "卡牌", old: "遗传算法", now: "祖传手艺" },
+    { cat: "卡牌", old: "群起攻之", now: "老铁们上" },
+    { cat: "卡牌", old: "防御", now: "就这？（同一个名字给了五个角色五套叫法）" },
+
+    { cat: "怪物招式", old: "建筑师", now: "包工头" },
+    { cat: "怪物招式", old: "上勾锤击", now: "升龙锤" },
+    { cat: "怪物招式", old: "两连击", now: "左勾拳右勾拳" },
+    { cat: "怪物招式", old: "打磨", now: "磨刀霍霍" },
+    { cat: "怪物招式", old: "大力挥舞", now: "抡圆了" },
+    { cat: "怪物招式", old: "啄击", now: "鸡你太美" },
+    { cat: "怪物招式", old: "怒吼", now: "狮吼功" },
+    { cat: "怪物招式", old: "旧日雕像", now: "过气雕像" },
+    { cat: "怪物招式", old: "沉睡", now: "装睡" },
+    { cat: "怪物招式", old: "横冲直撞", now: "猪突猛进" },
+    { cat: "怪物招式", old: "尖锐鸣叫", now: "土拨鼠尖叫" },
+    { cat: "怪物招式", old: "黏液", now: "糊你一脸" },
+    { cat: "怪物招式", old: "射击！", now: "biu" },
+    { cat: "怪物招式", old: "扭动", now: "蛄蛹" },
+    { cat: "怪物招式", old: "青蛙骑士", now: "蛤蟆功" },
+    { cat: "怪物招式", old: "喷吐硬币", now: "撒币" },
+    { cat: "怪物招式", old: "力量之舞", now: "跳大神" },
+    { cat: "怪物招式", old: "死亡", now: "装死" },
+    { cat: "怪物招式", old: "电球头", now: "电灯泡头" },
+    { cat: "怪物招式", old: "守护机器人", now: "门卫机器人" },
+    { cat: "怪物招式", old: "地精佣兵", now: "地精临时工" },
+    { cat: "怪物招式", old: "逃跑", now: "溜溜球" },
+    { cat: "怪物招式", old: "爆炸", now: "砰！没了" },
+    { cat: "怪物招式", old: "（原版是空的）", now: "摸鱼 / 躺平 / 挨打" },
+
+    { cat: "药水道具", old: "灰水", now: "洗脚水" },
+    { cat: "药水道具", old: "污浊药水", now: "泔水" },
+    { cat: "药水道具", old: "毒药水", now: "敌敌畏" },
+    { cat: "药水道具", old: "火焰药水", now: "二锅头" },
+    { cat: "药水道具", old: "能量药水", now: "红牛二号" },
+    { cat: "药水道具", old: "肌肉药水", now: "蛋白粉" },
+    { cat: "药水道具", old: "固化药水", now: "水泥" },
+    { cat: "药水道具", old: "王之勇气", now: "梁静茹给的勇气" },
+    { cat: "药水道具", old: "赌徒特酿", now: "赌狗特调" },
+    { cat: "药水道具", old: "龙涎香", now: "祖传秘方" },
+    { cat: "药水道具", old: "废弃药水", now: "过期药水" },
+    { cat: "药水道具", old: "瓶中船", now: "瓶中宇宙" },
+    { cat: "药水道具", old: "药水形状的石头", now: "长得像药水的石头" },
+
+    { cat: "地图界面", old: "精英", now: "狠角色" },
+    { cat: "地图界面", old: "Boss", now: "大魔王" },
+    { cat: "地图界面", old: "宝箱", now: "开盲盒" },
+    { cat: "地图界面", old: "商人", now: "带货一哥" },
+    { cat: "地图界面", old: "事件", now: "奇遇" },
+    { cat: "地图界面", old: "休息", now: "睡一觉" },
+    { cat: "地图界面", old: "锻炼", now: "撸铁" },
+    { cat: "地图界面", old: "锻造", now: "打铁" },
+    { cat: "地图界面", old: "攻势", now: "要来打你了" },
+    { cat: "地图界面", old: "召唤", now: "摇人" },
+    { cat: "地图界面", old: "守势", now: "缩壳" },
+    { cat: "地图界面", old: "濒死一击", now: "拉你陪葬" },
+    { cat: "地图界面", old: "策略", now: "憋坏水" },
+    { cat: "地图界面", old: "未知", now: "看不懂" },
+    { cat: "地图界面", old: "标准", now: "正经玩" },
+    { cat: "地图界面", old: "每日挑战", now: "每日整活" },
+    { cat: "地图界面", old: "临时不可打出苦痛", now: "临时植物人" },
+    { cat: "地图界面", old: "精英猎手", now: "精英满地跑" },
+    { cat: "地图界面", old: "致命事件", now: "问号有惊喜" },
+    { cat: "地图界面", old: "打牌真开心啊", now: "牌瘾犯了" },
+    { cat: "地图界面", old: "已经死了", now: "我早死了" },
+    { cat: "地图界面", old: "感谢惠顾！", now: "叮！到账" },
+    { cat: "地图界面", old: "微型牌组", now: "就五张" },
+    { cat: "地图界面", old: "我不和尸体交易。", now: "鲸鲸不做死人买卖的哦～" },
+    { cat: "地图界面", old: "你需要更多金币。", now: "钱钱还差一点点呢～" },
+    { cat: "地图界面", old: "感谢惠顾。", now: "谢谢惠顾～终于上当了！" }
+  ];
+
+  const CATS = ["全部", "卡牌", "怪物招式", "药水道具", "地图界面"];
+  let cur = "全部";
+
+  const listEl = document.getElementById("list");
+  const emptyEl = document.getElementById("empty");
+  const tabsEl = document.getElementById("tabs");
+
+  document.getElementById("total").textContent = PICKS.length;
+
+  tabsEl.innerHTML = CATS.map(c =>
+    `<button data-cat="${c}" class="${c === cur ? "on" : ""}">${c}</button>`).join("");
+
+  function render() {
+    const rows = cur === "全部" ? PICKS : PICKS.filter(p => p.cat === cur);
+    emptyEl.style.display = rows.length ? "none" : "block";
+    listEl.style.display = rows.length ? "block" : "none";
+    listEl.innerHTML = rows.map(p =>
+      `<div class="row">
+        <div class="old" title="${p.old}">${p.old}</div>
+        <div class="arrow">➜</div>
+        <div class="new" title="${p.now}">${p.now}</div>
+      </div>`).join("");
+  }
+
+  tabsEl.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    cur = b.dataset.cat;
+    Array.prototype.forEach.call(tabsEl.querySelectorAll("button"), x =>
+      x.classList.toggle("on", x === b));
+    render();
+  });
+
+  const pop = document.getElementById("pop");
+  document.getElementById("dice").addEventListener("click", () => {
+    const p = PICKS[Math.floor(Math.random() * PICKS.length)];
+    document.getElementById("popOld").textContent = p.old;
+    document.getElementById("popNew").textContent = p.now;
+    document.getElementById("popCat").textContent = p.cat;
+    pop.classList.add("on");
+  });
+  document.getElementById("popClose").addEventListener("click", () => pop.classList.remove("on"));
+  pop.addEventListener("click", e => { if (e.target === pop) pop.classList.remove("on"); });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#0b1020" />
+<link rel="icon" href="data:," />
+<title>傅里叶游乐场 · 用鼠标涂抹频谱</title>
+<style>
+:root {
+  --bg: #070b14;
+  --panel: rgba(255, 255, 255, .045);
+  --panel-2: rgba(255, 255, 255, .07);
+  --line: rgba(150, 200, 255, .14);
+  --line-2: rgba(150, 200, 255, .26);
+  --ink: #eaf1fb;
+  --dim: #93a9c6;
+  --hot: #6fd8ff;
+  --warm: #ff9d5c;
+  --ok: #3ddc97;
+  --r-lg: 22px;
+  --r-md: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100%;
+  color: var(--ink);
+  font-family: "MiSans", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  background:
+    radial-gradient(1100px 700px at 8% -6%, rgba(111, 216, 255, .13), transparent 62%),
+    radial-gradient(900px 700px at 96% 12%, rgba(255, 157, 92, .10), transparent 60%),
+    radial-gradient(700px 500px at 50% 108%, rgba(61, 220, 151, .06), transparent 60%),
+    linear-gradient(180deg, #080d18 0%, #060912 100%);
+}
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(150, 200, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150, 200, 255, .035) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(1000px 700px at 50% 0%, #000 30%, transparent 78%);
+}
+.wrap { position: relative; z-index: 1; max-width: 1220px; margin: 0 auto; padding: 34px 26px 72px; }
+
+/* ---------------------------------------------------------------- 顶栏 */
+.top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-bottom: 22px;
+       border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: baseline; gap: 12px; }
+.mark { font-size: 17px; letter-spacing: 4px; color: var(--ink); }
+.mark b { font-weight: 600; color: var(--hot); }
+.en { font-size: 10px; letter-spacing: 4px; color: var(--dim); }
+.top .meta { margin-left: auto; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------- 引子 */
+.intro { padding: 56px 0 44px; max-width: 900px; }
+h1 {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 56px);
+  line-height: 1.14;
+  letter-spacing: -0.6px;
+  font-weight: 600;
+}
+h1 em {
+  font-style: normal;
+  background: linear-gradient(100deg, var(--hot), var(--warm));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lede { margin: 22px 0 0; max-width: 64ch; color: #b9cbe2; font-size: 15.5px; line-height: 1.95; }
+.lede b { color: var(--ink); font-weight: 600; }
+.lede .k { color: var(--warm); }
+.steps { display: flex; gap: 34px; list-style: none; margin: 34px 0 0; padding: 0; flex-wrap: wrap; }
+.steps li { display: flex; align-items: center; gap: 12px; }
+.steps b {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 14px; font-weight: 600; color: #06121e;
+  background: linear-gradient(140deg, var(--hot), var(--warm));
+}
+.steps span { font-size: 13.5px; color: var(--dim); }
+
+/* ---------------------------------------------------------------- 展台 */
+.stage { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 18px; backdrop-filter: blur(12px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .38), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+figure.panel { margin: 0; }
+figcaption {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 12.5px; letter-spacing: .6px; color: var(--dim); margin-bottom: 12px;
+}
+.legend { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; }
+.legend i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+.legend .keep { background: #5ec8ff; }
+.legend .cut { background: #b4305f; }
+.legend span { margin-right: 4px; }
+canvas {
+  display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: var(--r-md);
+  background: #05070f; border: 1px solid rgba(150, 200, 255, .10);
+}
+#spec { cursor: crosshair; touch-action: none; }
+#spec.hint { box-shadow: 0 0 0 2px rgba(111, 216, 255, .5), 0 0 40px rgba(111, 216, 255, .22); }
+
+/* ---------------------------------------------------------------- 控制区 */
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(232px, 1fr)); gap: 16px; margin-top: 22px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 18px; backdrop-filter: blur(12px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+.card .t { font-size: 12.5px; color: var(--dim); margin-bottom: 13px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip, .btn {
+  font: inherit; cursor: pointer; color: #dbe8f8;
+  border: 1px solid var(--line-2); background: rgba(255, 255, 255, .05);
+  transition: background .18s ease, border-color .18s ease, transform .18s ease, color .18s ease;
+}
+.chip { padding: 9px 14px; font-size: 12.5px; border-radius: 999px; min-height: 36px; }
+.chip:hover, .btn:hover { background: rgba(111, 216, 255, .16); border-color: rgba(111, 216, 255, .5); transform: translateY(-1px); }
+.chip.on {
+  background: linear-gradient(120deg, var(--hot), var(--warm)); color: #06121e;
+  border-color: transparent; font-weight: 600;
+}
+.row { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; align-items: center; margin-bottom: 14px; }
+.row span { font-size: 12.5px; color: #a9c0dc; }
+.row output { font-size: 12.5px; color: var(--hot); font-variant-numeric: tabular-nums; }
+.row input { grid-column: 1 / -1; width: 100%; }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; height: 4px; border-radius: 4px; outline: none;
+  background: linear-gradient(90deg, rgba(111, 216, 255, .8), rgba(255, 157, 92, .55));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%;
+  background: #eaf6ff; border: 2px solid #5fb8e8; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .45);
+}
+.btns { display: flex; gap: 9px; flex-wrap: wrap; }
+.btn { flex: 1; min-width: 100px; padding: 12px 12px; font-size: 12.5px; text-align: center; border-radius: var(--r-md); min-height: 42px; }
+.btn.primary { background: linear-gradient(120deg, var(--hot), var(--warm)); color: #06121e; font-weight: 600; border-color: transparent; }
+.btn[aria-pressed="true"]:not(.primary) { background: rgba(111, 216, 255, .18); border-color: rgba(111, 216, 255, .5); }
+
+/* 键盘焦点：任何可点元素都能看清 */
+button:focus-visible, input:focus-visible, label:focus-within {
+  outline: 2px solid var(--hot); outline-offset: 2px; border-radius: var(--r-md);
+}
+
+/* ---------------------------------------------------------------- 说明 */
+.explain { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 20px 30px; }
+.explain h2 { margin: 0 0 10px; font-size: 13px; letter-spacing: 2px; color: var(--dim); font-weight: 500; }
+.explain p { margin: 0; font-size: 13.5px; line-height: 1.95; color: #a9c0dc; }
+.explain b { color: var(--ink); }
+.explain .k { color: var(--warm); }
+.status { margin-top: 18px; font-size: 12px; color: #7d97b4; font-variant-numeric: tabular-nums; }
+
+/* 进场：轻微上浮，别抢戏 */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.intro, .stage, .controls, .explain { animation: rise .62s cubic-bezier(.22, .9, .3, 1) both; }
+.stage { animation-delay: .06s; }
+.controls { animation-delay: .12s; }
+.explain { animation-delay: .18s; }
+#spec.hint { animation: pulseGlow 2.4s ease-in-out infinite; }
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(111, 216, 255, .28), 0 0 0 rgba(111, 216, 255, 0); }
+  50% { box-shadow: 0 0 0 2px rgba(111, 216, 255, .55), 0 0 34px rgba(111, 216, 255, .22); }
+}
+
+#drop {
+  position: fixed; inset: 0; z-index: 30; display: none; place-items: center;
+  background: rgba(6, 10, 20, .84); font-size: 17px; letter-spacing: 2px;
+}
+#drop.on { display: grid; }
+
+@media (hover: none) { .chip, .btn { min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (max-width: 880px) {
+  .wrap { padding: 22px 16px 56px; }
+  .intro { padding: 34px 0 28px; }
+  .stage { grid-template-columns: 1fr; gap: 16px; }
+  .steps { gap: 16px; }
+  .top .meta { width: 100%; margin-left: 0; }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="mark">傅里叶<b>游乐场</b></span>
+      <span class="en">FOURIER PLAYGROUND</span>
+    </div>
+    <div class="meta">256 × 256 个频率格子 · 全部在浏览器里现算</div>
+  </header>
+
+  <section class="intro">
+    <h1>把频率<em>涂掉</em>，看图片怎么变</h1>
+    <p class="lede">
+      右边那张彩色图是这张图的<b>频谱</b>：<span class="k">中间</span>管整体明暗，<span class="k">外圈</span>管细节边缘，
+      <span class="k">方向</span>管纹理走向。你用鼠标在上面抹掉哪一块，左边就立刻少掉哪一部分信息——
+      每一笔都是一次真正的逆傅里叶变换，不是滤镜。
+    </p>
+    <ol class="steps">
+      <li><b>1</b><span>在右边频谱上涂一块</span></li>
+      <li><b>2</b><span>左边马上重算给你看</span></li>
+      <li><b>3</b><span>按住 Shift 可以擦回去</span></li>
+    </ol>
+  </section>
+
+  <section class="stage">
+    <figure class="panel">
+      <figcaption>结果 · 由你的遮罩重新拼出来的图</figcaption>
+      <canvas id="out" width="512" height="512"></canvas>
+    </figure>
+    <figure class="panel">
+      <figcaption>
+        频谱 · 在这里涂
+        <span class="legend"><i class="keep"></i>保留<i class="cut"></i>涂掉</span>
+      </figcaption>
+      <canvas id="spec" width="512" height="512"></canvas>
+    </figure>
+  </section>
+
+  <section class="controls">
+    <div class="card">
+      <div class="t">一键预设</div>
+      <div class="chips" id="presets"></div>
+    </div>
+    <div class="card">
+      <div class="t">笔刷</div>
+      <div class="row"><span>笔刷大小</span><output id="brush-v"></output><input id="brush" type="range" min="3" max="80" step="1" value="18"></div>
+      <div class="btns">
+        <button class="btn" type="button" id="erase" aria-pressed="false">擦除模式：关</button>
+        <button class="btn" type="button" id="resetMask">恢复全通</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="t">换图 / 导出</div>
+      <div class="btns" id="sources"></div>
+      <div class="btns" style="margin-top:9px">
+        <button class="btn" type="button" id="pickFile">选本地图片</button>
+        <input id="file" type="file" accept="image/*" hidden />
+        <button class="btn primary" type="button" id="save">保存结果</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="t">显示</div>
+      <div class="row"><span>频谱增益</span><output id="gain-v"></output><input id="gain" type="range" min="0.2" max="3" step="0.05" value="1.15"></div>
+      <div class="row"><span>结果增益</span><output id="ogain-v"></output><input id="ogain" type="range" min="0.4" max="2" step="0.02" value="1"></div>
+      <div class="btns"><button class="btn" type="button" id="showOrig" aria-pressed="false">显示原图对照</button></div>
+    </div>
+  </section>
+
+  <section class="explain panel">
+    <div>
+      <h2>为什么涂掉就变样</h2>
+      <p>
+        一张图可以看成很多条"疏密不同的波纹"叠起来的。频谱就是把每条波纹的<b>强度和走向</b>标在格子里的地图。
+        涂掉某几格，等于把那几条波纹从图里拿掉，剩下的重新叠回去——所以每一笔都有肉眼可见的后果。
+      </p>
+    </div>
+    <div>
+      <h2>四个立刻能看懂的实验</h2>
+      <p>
+        · 抹掉<span class="k">外圈</span> → 细节没了 → <b>变糊</b><br />
+        · 只留<span class="k">外圈</span> → 只剩轮廓 → <b>边缘检测</b><br />
+        · 抹掉一条<span class="k">过中心的方向带</span> → 那个方向的<b>条纹/扫描线</b>消失<br />
+        · 点掉<span class="k">正中间</span> → 整体亮度没了 → 只剩纹理
+      </p>
+    </div>
+    <div>
+      <h2>实现</h2>
+      <p>
+        浏览器里跑的完整 2D FFT（Cooley–Tukey，256×256），每画一笔重算一次逆变换，一次约 12 毫秒。
+        频谱的直流分量在正中间，外圈是高频。可以直接把图片拖进这个页面换图。
+      </p>
+    </div>
+  </section>
+
+  <div class="status" id="status"></div>
+</div>
+
+<div id="drop">松手就换这张图</div>
+
+<script>
+(function () {
+  "use strict";
+  var N = 256;                    // FFT 尺寸
+  var VIEW = 512;                 // 画布尺寸
+  var outC = document.getElementById("out"), outX = outC.getContext("2d");
+  var specC = document.getElementById("spec"), specX = specC.getContext("2d");
+
+  // ---------------------------------------------------------------- FFT
+  function makeBitRev(n) {
+    var bits = Math.log2(n) | 0, rev = new Uint16Array(n);
+    for (var i = 0; i < n; i++) {
+      var r = 0;
+      for (var b = 0; b < bits; b++) if (i & (1 << b)) r |= 1 << (bits - 1 - b);
+      rev[i] = r;
+    }
+    return rev;
+  }
+  var BITREV = makeBitRev(N);
+  var COS = new Float32Array(N / 2), SIN = new Float32Array(N / 2);
+  for (var k = 0; k < N / 2; k++) { COS[k] = Math.cos(-2 * Math.PI * k / N); SIN[k] = Math.sin(-2 * Math.PI * k / N); }
+
+  function fft1d(re, im, off, stride, inverse) {
+    // 先把这一维搬进临时数组
+    var i, j, len, half, step, tr, ti, wr, wi, cr, ci;
+    var R = new Float32Array(N), I = new Float32Array(N);
+    for (i = 0; i < N; i++) { R[i] = re[off + i * stride]; I[i] = im[off + i * stride]; }
+    for (i = 0; i < N; i++) {
+      j = BITREV[i];
+      if (j > i) { tr = R[i]; R[i] = R[j]; R[j] = tr; ti = I[i]; I[i] = I[j]; I[j] = ti; }
+    }
+    for (len = 2; len <= N; len <<= 1) {
+      half = len >> 1; step = N / len;
+      for (i = 0; i < N; i += len) {
+        for (j = 0; j < half; j++) {
+          var c = COS[j * step], s = SIN[j * step];
+          if (inverse) s = -s;
+          var a = i + j, b = a + half;
+          wr = R[b] * c - I[b] * s; wi = R[b] * s + I[b] * c;
+          R[b] = R[a] - wr; I[b] = I[a] - wi;
+          R[a] += wr; I[a] += wi;
+        }
+      }
+    }
+    var sc = inverse ? 1 / N : 1;
+    for (i = 0; i < N; i++) { re[off + i * stride] = R[i] * sc; im[off + i * stride] = I[i] * sc; }
+  }
+
+  function fft2d(re, im, inverse) {
+    for (var y = 0; y < N; y++) fft1d(re, im, y * N, 1, inverse);
+    for (var x = 0; x < N; x++) fft1d(re, im, x, N, inverse);
+  }
+
+  // ---------------------------------------------------------------- 数据
+  var srcGray = new Float32Array(N * N);      // 原图灰度 0..1
+  var re = new Float32Array(N * N);           // 频谱实部
+  var im = new Float32Array(N * N);           // 频谱虚部
+  var specSave = new Float32Array(N * N);     // 保存一份原始频谱（换遮罩时不用重算正变换）
+  var imSave = new Float32Array(N * N);
+  var mask = new Float32Array(N * N).fill(1); // 1 = 保留，0 = 涂掉
+  var specImg = null, outImg = null;
+  var gain = 1.15, ogain = 1, brush = 18, eraseMode = false, showOrig = false;
+
+  // ---------------------------------------------------------------- 内置示例图
+  function makeSource(name) {
+    var c = document.createElement("canvas"); c.width = N; c.height = N;
+    var g = c.getContext("2d");
+    if (name === "棋盘+条纹") {
+      g.fillStyle = "#111"; g.fillRect(0, 0, N, N);
+      for (var y = 0; y < N; y += 16) for (var x = 0; x < N; x += 16)
+        if (((x / 16) + (y / 16)) % 2 === 0) { g.fillStyle = "#eee"; g.fillRect(x, y, 16, 16); }
+      g.strokeStyle = "rgba(255,120,120,.75)"; g.lineWidth = 2;
+      for (var i = 0; i < N; i += 9) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 40, N); g.stroke(); }
+    } else if (name === "圆+方+三角") {
+      g.fillStyle = "#0d1220"; g.fillRect(0, 0, N, N);
+      g.fillStyle = "#f2f6ff"; g.beginPath(); g.arc(88, 88, 46, 0, 7); g.fill();
+      g.fillStyle = "#8fd2ff"; g.fillRect(140, 130, 82, 82);
+      g.fillStyle = "#ffb27a"; g.beginPath(); g.moveTo(128, 236); g.lineTo(196, 236); g.lineTo(162, 168); g.closePath(); g.fill();
+    } else if (name === "相机测试图") {
+      for (var y2 = 0; y2 < N; y2++) for (var x2 = 0; x2 < N; x2++) {
+        var v = 0;
+        var cx = x2 - N / 2, cy = y2 - N / 2, rr = Math.sqrt(cx * cx + cy * cy);
+        v = 128 + 110 * Math.sin(rr / 3.2) * Math.exp(-rr / 90);
+        v += 60 * Math.sin(x2 / 2.4) * Math.exp(-Math.abs(cy) / 40);
+        g.fillStyle = "rgb(" + Math.max(0, Math.min(255, v | 0)) + "," +
+          Math.max(0, Math.min(255, (v * .8) | 0)) + "," + Math.max(0, Math.min(255, (v * 1.15) | 0)) + ")";
+        g.fillRect(x2, y2, 1, 1);
+      }
+    } else {
+      // 默认：渐变球 + 网格
+      for (var y3 = 0; y3 < N; y3++) for (var x3 = 0; x3 < N; x3++) {
+        var d = Math.sqrt(Math.pow(x3 - 128, 2) + Math.pow(y3 - 128, 2));
+        var t = Math.max(0, 1 - d / 130);
+        var val = 20 + 215 * Math.pow(t, 1.6) + 26 * Math.sin(x3 / 7) * Math.sin(y3 / 7);
+        g.fillStyle = "rgb(" + (val | 0) + "," + ((val * .92) | 0) + "," + ((val * 1.1) | 0) + ")";
+        g.fillRect(x3, y3, 1, 1);
+      }
+      g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 1;
+      for (var i3 = 0; i3 < N; i3 += 32) {
+        g.beginPath(); g.moveTo(i3, 0); g.lineTo(i3, N); g.stroke();
+        g.beginPath(); g.moveTo(0, i3); g.lineTo(N, i3); g.stroke();
+      }
+    }
+    return c;
+  }
+
+  function loadFromCanvas(c) {
+    var t = document.createElement("canvas"); t.width = N; t.height = N;
+    var tg = t.getContext("2d");
+    tg.drawImage(c, 0, 0, N, N);
+    var d = tg.getImageData(0, 0, N, N).data;
+    for (var i = 0, p = 0; i < N * N; i++, p += 4) {
+      var v = (d[p] * 0.299 + d[p + 1] * 0.587 + d[p + 2] * 0.114) / 255;
+      srcGray[i] = v;
+      re[i] = v; im[i] = 0;
+    }
+    fft2d(re, im, false);
+    specSave.set(re); imSave.set(im);
+    mask.fill(1);
+    drawSpec();
+    rebuild();
+  }
+
+  // ---------------------------------------------------------------- 逆变换
+  var pending = false;
+  function rebuild() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () {
+      pending = false;
+      var t0 = performance.now();
+      var R = new Float32Array(N * N), I = new Float32Array(N * N);
+      for (var i = 0; i < N * N; i++) { R[i] = specSave[i] * mask[i]; I[i] = imSave[i] * mask[i]; }
+      fft2d(R, I, true);
+      if (!outImg) outImg = outX.createImageData(N, N);
+      var d = outImg.data;
+      for (var p = 0, j = 0; j < N * N; j++, p += 4) {
+        var base = showOrig ? srcGray[j] : R[j];
+        var v = base * ogain;
+        v = v < 0 ? 0 : v > 1 ? 1 : v;
+        var c = (v * 255) | 0;
+        d[p] = c; d[p + 1] = c; d[p + 2] = c; d[p + 3] = 255;
+      }
+      var tmp = document.createElement("canvas"); tmp.width = N; tmp.height = N;
+      tmp.getContext("2d").putImageData(outImg, 0, 0);
+      outX.imageSmoothingEnabled = true;
+      outX.clearRect(0, 0, VIEW, VIEW);
+      outX.drawImage(tmp, 0, 0, VIEW, VIEW);
+      document.getElementById("status").textContent =
+        "逆变换耗时 " + (performance.now() - t0).toFixed(1) + " ms · 画布 " + N + "×" + N + " · 保留频率 " +
+        (100 * mask.reduce(function (a, b) { return a + b; }, 0) / (N * N)).toFixed(1) + "%";
+    });
+  }
+
+  // ---------------------------------------------------------------- 频谱显示
+  function drawSpec() {
+    if (!specImg) specImg = specX.createImageData(N, N);
+    var d = specImg.data;
+    var half = N / 2, maxV = 0, vals = new Float32Array(N * N);
+    for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+      var sx = (x + half) % N, sy = (y + half) % N;   // fftshift：直流搬到中心
+      var i = sy * N + sx;
+      var mag = Math.log(1 + Math.sqrt(specSave[i] * specSave[i] + imSave[i] * imSave[i]) * 46);
+      vals[y * N + x] = mag;
+      if (mag > maxV) maxV = mag;
+    }
+    for (var yy = 0; yy < N; yy++) for (var xx = 0; xx < N; xx++) {
+      var j = yy * N + xx;
+      var sx2 = (xx + half) % N, sy2 = (yy + half) % N;
+      var m = mask[sy2 * N + sx2];        // 遮罩也要用同一套 fftshift 坐标
+      var g = vals[j] / (maxV || 1) * gain;
+      g = g < 0 ? 0 : g > 1 ? 1 : g;
+      var p = j * 4;
+      // 保留的地方用冷色，涂掉的地方压成暗红，一眼能看出遮罩
+      var r = (g * 120 + 10) * (m > 0.5 ? 1 : 0.45) + (m > 0.5 ? 0 : 90);
+      var gg = (g * 210 + 12) * (m > 0.5 ? 1 : 0.25);
+      var b = (g * 255 + 20) * (m > 0.5 ? 1 : 0.3) + (m > 0.5 ? 0 : 30);
+      d[p] = Math.min(255, r); d[p + 1] = Math.min(255, gg); d[p + 2] = Math.min(255, b); d[p + 3] = 255;
+    }
+    var tmp = document.createElement("canvas"); tmp.width = N; tmp.height = N;
+    tmp.getContext("2d").putImageData(specImg, 0, 0);
+    specX.imageSmoothingEnabled = true;
+    specX.clearRect(0, 0, VIEW, VIEW);
+    specX.drawImage(tmp, 0, 0, VIEW, VIEW);
+    // 中心十字（低频轴）提示
+    specX.strokeStyle = "rgba(255,255,255,.16)"; specX.lineWidth = 1;
+    specX.beginPath(); specX.moveTo(VIEW / 2, 0); specX.lineTo(VIEW / 2, VIEW);
+    specX.moveTo(0, VIEW / 2); specX.lineTo(VIEW, VIEW / 2); specX.stroke();
+  }
+
+  // ---------------------------------------------------------------- 涂抹
+  var painting = false, lastPt = null;
+  function specToFreq(px, py) {
+    var x = Math.floor(px / VIEW * N), y = Math.floor(py / VIEW * N);
+    return { x: (x + N / 2) % N, y: (y + N / 2) % N };
+  }
+  function paintCircle(fx, fy) {
+    var r = brush, val = eraseMode ? 1 : 0;
+    var x0 = Math.floor(fx - r), x1 = Math.ceil(fx + r), y0 = Math.floor(fy - r), y1 = Math.ceil(fy + r);
+    for (var y = y0; y <= y1; y++) {
+      for (var x = x0; x <= x1; x++) {
+        var dx = x - fx, dy = y - fy;
+        if (dx * dx + dy * dy > r * r) continue;
+        var xx = ((x % N) + N) % N, yy = ((y % N) + N) % N;
+        mask[yy * N + xx] = val;
+      }
+    }
+  }
+  function paintLine(a, b) {
+    var dist = Math.hypot(b.fx - a.fx, b.fy - a.fy);
+    var steps = Math.max(1, Math.ceil(dist / Math.max(1, brush * 0.4)));
+    for (var i = 0; i <= steps; i++) {
+      var t = i / steps;
+      paintCircle(a.fx + (b.fx - a.fx) * t, a.fy + (b.fy - a.fy) * t);
+    }
+  }
+  function pointerPos(e) {
+    var r = specC.getBoundingClientRect();
+    return { px: (e.clientX - r.left) / r.width * VIEW, py: (e.clientY - r.top) / r.height * VIEW };
+  }
+  specC.addEventListener("pointerdown", function (e) {
+    specC.classList.remove("hint");
+    specC.setPointerCapture(e.pointerId);
+    painting = true;
+    var p = pointerPos(e), f = specToFreq(p.px, p.py);
+    paintCircle(f.x, f.y);
+    lastPt = { fx: f.x, fy: f.y };
+    drawSpec(); rebuild();
+  });
+  specC.addEventListener("pointermove", function (e) {
+    if (!painting) return;
+    var p = pointerPos(e), f = specToFreq(p.px, p.py);
+    if (lastPt) paintLine(lastPt, { fx: f.x, fy: f.y });
+    lastPt = { fx: f.x, fy: f.y };
+    drawSpec(); rebuild();
+  });
+  specC.addEventListener("pointerup", function () { painting = false; lastPt = null; });
+  specC.addEventListener("pointercancel", function () { painting = false; lastPt = null; });
+  specC.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+  // ---------------------------------------------------------------- 预设
+  var PRESETS = {
+    "全通（原图）": function () { mask.fill(1); },
+    "低通·模糊": function () {
+      mask.fill(0);
+      var c = N / 2, R = 26;
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var dx = (x + c) % N - c, dy = (y + c) % N - c;
+        if (dx * dx + dy * dy <= R * R) mask[y * N + x] = 1;
+      }
+    },
+    "高通·边缘": function () {
+      mask.fill(1);
+      var c = N / 2, R = 12;
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var dx = (x + c) % N - c, dy = (y + c) % N - c;
+        if (dx * dx + dy * dy <= R * R) mask[y * N + x] = 0;
+      }
+    },
+    "只留中心点": function () {
+      mask.fill(0);
+      for (var y = -2; y <= 2; y++) for (var x = -2; x <= 2; x++)
+        mask[(((y % N) + N) % N) * N + (((x % N) + N) % N)] = 1;
+    },
+    "去横向条纹": function () {
+      mask.fill(1);
+      var c = N / 2;
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var dx = (x + c) % N - c;
+        if (Math.abs(dx) <= 3 && Math.abs((y + c) % N - c) > 6) mask[y * N + x] = 0;
+      }
+    },
+    "去纵向条纹": function () {
+      mask.fill(1);
+      var c = N / 2;
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var dy = (y + c) % N - c;
+        if (Math.abs(dy) <= 3 && Math.abs((x + c) % N - c) > 6) mask[y * N + x] = 0;
+      }
+    },
+    "对角带通": function () {
+      mask.fill(0);
+      var c = N / 2;
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var dx = (x + c) % N - c, dy = (y + c) % N - c;
+        var rr = Math.sqrt(dx * dx + dy * dy);
+        if (rr > 16 && rr < 70 && Math.abs(dx - dy) < 26) mask[y * N + x] = 1;
+      }
+    },
+  };
+  var presetHost = document.getElementById("presets");
+  var PRESET_NAMES = Object.keys(PRESETS);
+  PRESET_NAMES.forEach(function (name) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.setAttribute("aria-pressed", name.indexOf("全通") === 0 ? "true" : "false");
+    b.className = "chip" + (name.indexOf("全通") === 0 ? " on" : "");
+    b.textContent = name;
+    b.onclick = function () {
+      applyPreset(PRESET_NAMES.indexOf(name));
+    };
+    presetHost.appendChild(b);
+  });
+
+  function applyPreset(i) {
+    var name = PRESET_NAMES[i];
+    if (!name) return;
+    PRESETS[name]();
+    Array.prototype.forEach.call(presetHost.children, function (c, k) {
+      c.classList.toggle("on", k === i);
+      c.setAttribute("aria-pressed", String(k === i));
+    });
+    drawSpec(); rebuild();
+  }
+
+  /*
+     旧的即时应用逻辑（保留在 applyPreset 里统一处理）
+      PRESETS[name]();
+      Array.prototype.forEach.call(presetHost.children, function (c) { c.classList.remove("on"); });
+      b.classList.add("on");
+      drawSpec(); rebuild();
+  */
+
+  // ---------------------------------------------------------------- 控件
+  var $ = function (id) { return document.getElementById(id); };
+  $("brush").oninput = function () { brush = +this.value; $("brush-v").textContent = brush + " px"; };
+  $("brush-v").textContent = brush + " px";
+  $("gain").oninput = function () { gain = +this.value; $("gain-v").textContent = gain.toFixed(2); drawSpec(); };
+  $("gain-v").textContent = gain.toFixed(2);
+  $("ogain").oninput = function () { ogain = +this.value; $("ogain-v").textContent = ogain.toFixed(2); rebuild(); };
+  $("ogain-v").textContent = ogain.toFixed(2);
+  $("erase").onclick = function () {
+    eraseMode = !eraseMode;
+    this.textContent = "擦除模式：" + (eraseMode ? "开" : "关");
+    this.classList.toggle("primary", eraseMode);
+    this.setAttribute("aria-pressed", String(eraseMode));
+  };
+  $("resetMask").onclick = function () { mask.fill(1); drawSpec(); rebuild(); };
+  $("showOrig").onclick = function () {
+    showOrig = !showOrig;
+    this.textContent = showOrig ? "正在显示原图" : "显示原图对照";
+    this.setAttribute("aria-pressed", String(showOrig));
+    rebuild();
+  };
+  $("pickFile").onclick = function () { $("file").click(); };
+  $("save").onclick = function () {
+    outC.toBlob(function (b) {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(b);
+      a.download = "fourier-" + Date.now() + ".png";
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    }, "image/png");
+  };
+  $("file").onchange = function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var img = new Image();
+    img.onload = function () { loadFromCanvas(img); URL.revokeObjectURL(img.src); };
+    img.src = URL.createObjectURL(f);
+  };
+  var srcHost = $("sources");
+  ["默认（光斑+网格）", "棋盘+条纹", "圆+方+三角", "相机测试图"].forEach(function (name, i) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+    b.className = "btn" + (i === 0 ? " primary" : "");
+    b.textContent = name;
+    b.onclick = function () {
+      loadFromCanvas(makeSource(name));
+      Array.prototype.forEach.call(srcHost.children, function (c) {
+        c.classList.remove("primary");
+        c.setAttribute("aria-pressed", "false");
+      });
+      b.classList.add("primary");
+      b.setAttribute("aria-pressed", "true");
+    };
+    srcHost.appendChild(b);
+  });
+
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Shift") eraseMode = true;
+  });
+  window.addEventListener("keyup", function (e) {
+    if (e.key === "Shift") { eraseMode = false; $("erase").textContent = "擦除模式：关"; $("erase").classList.remove("primary"); }
+  });
+  window.addEventListener("dragover", function (e) { e.preventDefault(); $("drop").classList.add("on"); });
+  window.addEventListener("dragleave", function () { $("drop").classList.remove("on"); });
+  window.addEventListener("drop", function (e) {
+    e.preventDefault(); $("drop").classList.remove("on");
+    var f = e.dataTransfer.files[0];
+    if (!f) return;
+    var img = new Image();
+    img.onload = function () { loadFromCanvas(img); };
+    img.src = URL.createObjectURL(f);
+  });
+
+  var SRC_NAMES = ["默认（光斑+网格）", "棋盘+条纹", "圆+方+三角", "相机测试图"];
+  var q = new URLSearchParams(location.search);
+  var srcIdx = parseInt(q.get("src") || "0", 10) || 0;
+  loadFromCanvas(makeSource(SRC_NAMES[srcIdx] || SRC_NAMES[0]));
+  Array.prototype.forEach.call(srcHost.children, function (c, i) {
+    c.classList.toggle("primary", i === srcIdx);
+    c.setAttribute("aria-pressed", String(i === srcIdx));
+  });
+  if (q.get("preset") !== null) applyPreset(parseInt(q.get("preset"), 10) || 0);
+  if (q.get("hint") !== "0") specC.classList.add("hint");   // 第一次进来时轻轻亮一下频谱，提示"在这里涂"
+})();
+</script>
+</body>
+</html>

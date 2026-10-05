@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>云养小水母</title>
+<style>
+  :root{
+    --ink:#4b4460;
+    --ink-soft:#7a7290;
+    --card:rgba(255,255,255,.66);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{
+    margin:0;height:100%;overflow:hidden;
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:#e8f2ff;
+  }
+  #sea{position:fixed;inset:0;display:block;touch-action:none;cursor:crosshair}
+
+  /* ---------- 左上角面板 ---------- */
+  .hud{
+    position:fixed;left:14px;top:14px;width:216px;max-width:calc(100vw - 28px);
+    padding:12px 14px 11px;
+    background:var(--card);
+    border:1px solid rgba(255,255,255,.85);
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(120,110,170,.16), inset 0 1px 0 rgba(255,255,255,.9);
+    backdrop-filter:blur(10px) saturate(1.2);
+    -webkit-backdrop-filter:blur(10px) saturate(1.2);
+    user-select:none;
+  }
+  .title{display:flex;align-items:center;gap:7px;font-size:15px;letter-spacing:.3px}
+  .title .blob{
+    width:11px;height:11px;border-radius:50% 50% 46% 46%;
+    background:radial-gradient(circle at 40% 35%,#fff,#ffb6de 70%);
+    box-shadow:0 0 8px rgba(255,150,210,.8);
+    animation:breathe 2.6s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(.72)}}
+  .title b{font-weight:600}
+  .lv{
+    margin-left:auto;font-size:11px;padding:2px 8px;border-radius:999px;
+    background:linear-gradient(135deg,#ffd9ec,#e2d6ff);color:#8a6fb0;font-weight:600;
+  }
+  .bar{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .bar .lab{font-size:11px;color:var(--ink-soft);width:28px;flex:none;letter-spacing:.5px}
+  .track{
+    flex:1;height:8px;border-radius:99px;overflow:hidden;
+    background:rgba(150,145,190,.16);
+    box-shadow:inset 0 1px 2px rgba(110,100,150,.18);
+  }
+  .fill{height:100%;width:50%;border-radius:99px;transition:width .3s ease}
+  .f1{background:linear-gradient(90deg,#ffe0a3,#ffb35f)}
+  .f2{background:linear-gradient(90deg,#ffc2e2,#ff86c2)}
+  .f3{background:linear-gradient(90deg,#d3c4ff,#a98cff)}
+  .say{
+    margin-top:10px;font-size:11.5px;line-height:1.5;color:var(--ink-soft);
+    min-height:2.6em;
+  }
+  .foot{margin-top:9px;display:flex;align-items:center;gap:8px}
+  .clock{font-size:10.5px;color:#a79fc0;letter-spacing:.4px}
+  .reset{
+    margin-left:auto;font-size:10.5px;color:#b3a9cc;background:none;border:none;
+    padding:2px 4px;cursor:pointer;font-family:inherit;text-decoration:underline dotted;
+  }
+  .reset:hover{color:#ff86c2}
+
+  /* ---------- 底部提示 ---------- */
+  .hint{
+    position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+    font-size:12px;color:#8b83a8;white-space:nowrap;
+    padding:6px 14px;border-radius:99px;
+    background:rgba(255,255,255,.5);
+    border:1px solid rgba(255,255,255,.7);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    pointer-events:none;
+    animation:fadeIn 1.2s ease .3s both;
+  }
+  @keyframes fadeIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+  /* ---------- 浮动提示 ---------- */
+  #toasts{
+    position:fixed;right:16px;bottom:58px;display:flex;flex-direction:column;
+    align-items:flex-end;gap:7px;pointer-events:none;max-width:min(300px,70vw);
+  }
+  .toast{
+    font-size:12px;line-height:1.45;color:#6d6486;
+    padding:8px 13px;border-radius:16px 16px 4px 16px;
+    background:rgba(255,255,255,.82);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 8px 22px rgba(130,120,180,.16);
+    animation:pop .34s cubic-bezier(.2,1.5,.5,1) both;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .toast.out{animation:out .5s ease forwards}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:none}}
+  @keyframes out{to{opacity:0;transform:translateY(-6px) scale(.96)}}
+
+  #err{
+    position:fixed;left:0;bottom:0;right:0;display:none;z-index:99;
+    font:11px/1.4 Consolas,monospace;color:#fff;background:#c0397a;
+    padding:6px 10px;white-space:pre-wrap;
+  }
+  @media (max-width:420px){
+    .hud{width:190px;padding:10px 12px 9px}
+    .say{font-size:11px}
+    .hint{font-size:11px;bottom:12px}
+  }
+</style>
+</head>
+<body>
+<canvas id="sea"></canvas>
+
+<div class="hud">
+  <div class="title">
+    <span class="blob"></span>
+    <b id="uiName">小水母</b>
+    <span class="lv" id="uiLv">Lv.1</span>
+  </div>
+  <div class="bar"><span class="lab">饱食</span><div class="track"><div class="fill f1" id="uiFull"></div></div></div>
+  <div class="bar"><span class="lab">心情</span><div class="track"><div class="fill f2" id="uiMood"></div></div></div>
+  <div class="bar"><span class="lab">亲密</span><div class="track"><div class="fill f3" id="uiBond"></div></div></div>
+  <div class="say" id="uiSay">刚来到这个世界，好奇地四处张望</div>
+  <div class="foot">
+    <span class="clock" id="uiClock">--:--</span>
+    <button class="reset" id="uiReset">重新养一只</button>
+  </div>
+</div>
+
+<div class="hint" id="uiHint">点水里撒浮游生物 · 点水母摸一摸</div>
+<div id="toasts"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ======================================================================
+   云养小水母 —— 一只会随真实时间改变状态的小水母
+   玩法：点击水中撒浮游生物喂它，点击水母摸一摸。
+        饱食 / 心情 / 亲密三条状态，升级会长大、变色、发光。
+        深夜它会发光，离开一段时间回来它会想你。
+   ====================================================================== */
+
+/* ---------- 报错兜底：出问题直接显示在页面上 ---------- */
+window.onerror = function(msg, src, line){
+  var e = document.getElementById('err');
+  e.style.display = 'block';
+  e.textContent = '出错了: ' + msg + ' @' + line;
+  return false;
+};
+
+/* ---------- 画布 ---------- */
+var cvs = document.getElementById('sea');
+var ctx = cvs.getContext('2d');
+var W = 0, H = 0, DPR = 1, SCALE = 1;
+
+function resize(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  cvs.width = Math.floor(W * DPR);
+  cvs.height = Math.floor(H * DPR);
+  cvs.style.width = W + 'px';
+  cvs.style.height = H + 'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  SCALE = clamp(Math.min(W, H) / 660, 0.62, 1.5);
+  buildCaustics();
+  buildStars();
+  buildMotes();
+}
+window.addEventListener('resize', resize);
+
+/* ---------- 小工具 ---------- */
+var TAU = Math.PI * 2;
+function clamp(v, a, b){ return v < a ? a : (v > b ? b : v); }
+function rand(a, b){ return a + Math.random() * (b - a); }
+function pick(arr){ return arr[(Math.random() * arr.length) | 0]; }
+function lerp(a, b, t){ return a + (b - a) * t; }
+
+/* ======================================================================
+   存档与状态
+   ====================================================================== */
+var SAVE_KEY = 'jelly-pet-v1';
+var state = {
+  level: 1,
+  exp: 0,
+  full: 72,
+  mood: 80,
+  bond: 3,
+  lastSeen: Date.now(),
+  born: Date.now()
+};
+
+function expNeed(lv){ return 10 + lv * 6; }
+
+function save(){
+  state.lastSeen = Date.now();
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch(e){}
+}
+
+function load(){
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    var d = JSON.parse(raw);
+    if (!d || typeof d !== 'object') return false;
+    state.level = clamp(+d.level || 1, 1, 15);
+    state.exp   = Math.max(0, +d.exp || 0);
+    state.full  = clamp(+d.full || 0, 0, 100);
+    state.mood  = clamp(+d.mood || 0, 0, 100);
+    state.bond  = clamp(+d.bond || 0, 0, 100);
+    state.lastSeen = +d.lastSeen || Date.now();
+    state.born  = +d.born || Date.now();
+    return true;
+  } catch(e){ return false; }
+}
+
+// 离线结算
+function settleAway(){
+  var away = (Date.now() - state.lastSeen) / 60000; // 分钟
+  if (away < 1.5) return;
+  var f = clamp(away * 0.55, 0, 60);
+  var m = clamp(away * 0.30, 0, 45);
+  state.full = clamp(state.full - f, 0, 100);
+  state.mood = clamp(state.mood - m, 0, 100);
+  var missed = Math.min(away * 0.25, 12);
+  state.bond = clamp(state.bond + missed, 0, 100);
+  var txt;
+  if (away < 60) txt = '你走了 ' + Math.round(away) + ' 分钟，水母一直在原地等你';
+  else if (away < 60 * 24) txt = '你走了 ' + (away / 60).toFixed(1) + ' 小时，水母有点想你了';
+  else txt = '你走了 ' + Math.floor(away / 1440) + ' 天…它一直没走';
+  setTimeout(function(){ toast(txt); }, 900);
+}
+
+/* ======================================================================
+   时间段配色（深夜不暗，是梦幻粉紫）
+   ====================================================================== */
+function paletteFor(h){
+  if (h >= 5 && h < 10)  return { top:'#ffdff0', mid:'#e2ecff', bot:'#f3dfff', hue:332, glow:0.40, tag:'清晨' };
+  if (h >= 10 && h < 16) return { top:'#d2ecff', mid:'#c7e4ff', bot:'#ddf3ff', hue:340, glow:0.30, tag:'白天' };
+  if (h >= 16 && h < 20) return { top:'#ffd9c8', mid:'#ffd2e7', bot:'#e0d4ff', hue:328, glow:0.55, tag:'黄昏' };
+  return { top:'#bfc8ff', mid:'#d9c9ff', bot:'#ffcfea', hue:298, glow:1.00, tag:'深夜' };
+}
+/* ?h=12 可以预览任意时段的水族箱 */
+var forcedHour = null;
+try {
+  var mmh = location.search.match(/[?&]h=(\d{1,2})/);
+  if (mmh) forcedHour = clamp(parseInt(mmh[1], 10), 0, 23);
+} catch(e){}
+var curHour = forcedHour == null ? new Date().getHours() : forcedHour;
+var pal = paletteFor(curHour);
+
+/* ======================================================================
+   水母本体
+   ====================================================================== */
+var jelly = {
+  x: 0, y: 0, vx: 0, vy: 0,
+  r: 26,
+  pt: 0,            // 脉动计时
+  pulse: 0,         // 0 舒张 ~ 1 收缩
+  tilt: 0,
+  shy: 0,           // 被摸后缩起来
+  flash: 0,         // 吃到食物的高光
+  wx: 0, wy: 0, wanderT: 0
+};
+
+function jellyRadius(){
+  return (40 + Math.min(state.level, 15) * 3.2) * SCALE;
+}
+
+/* ---------- 食物 / 粒子 ---------- */
+var food = [];
+var parts = [];
+var bubbles = [];
+var floats = [];   // 画布内浮动文字
+
+function addFloat(x, y, text, hue){
+  floats.push({ x:x, y:y, text:text, hue: hue == null ? 330 : hue, life: 0, max: 1.5 });
+}
+
+function burst(x, y, type, n, hue){
+  for (var i = 0; i < n; i++){
+    var a = rand(0, TAU), sp = rand(24, 96);
+    parts.push({
+      x:x, y:y,
+      vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 22,
+      life: 0, max: rand(0.7, 1.5),
+      size: type === 'heart' ? rand(11, 19) : rand(2, 4.6),
+      type: type, hue: hue == null ? 330 : hue
+    });
+  }
+}
+
+/* ======================================================================
+   背景：光斑与水波
+   ====================================================================== */
+var caustics = [];
+function buildCaustics(){
+  caustics.length = 0;
+  var n = 4;
+  for (var i = 0; i < n; i++){
+    caustics.push({
+      x: rand(0, W), y: rand(0, H),
+      r: rand(Math.min(W,H)*0.22, Math.min(W,H)*0.46),
+      sp: rand(0.06, 0.16), ph: rand(0, TAU),
+      a: rand(0.05, 0.11)
+    });
+  }
+}
+var stars = [];
+function buildStars(){
+  stars.length = 0;
+  var n = Math.round((W * H) / 26000);
+  for (var i = 0; i < n; i++){
+    stars.push({ x: rand(0, W), y: rand(0, H), r: rand(0.7, 1.8), ph: rand(0, TAU), sp: rand(0.6, 1.8) });
+  }
+}
+
+// 水里缓缓漂浮的微粒
+var motes = [];
+function buildMotes(){
+  motes.length = 0;
+  var n = Math.round(clamp(W * H / 13000, 40, 130));
+  for (var i = 0; i < n; i++){
+    motes.push({
+      x: rand(0, W), y: rand(0, H),
+      r: rand(0.6, 2.1) * SCALE,
+      vy: -rand(3, 11) * SCALE,
+      vx: rand(-5, 5) * SCALE,
+      ph: rand(0, TAU), sp: rand(0.5, 1.7),
+      a: rand(0.18, 0.52)
+    });
+  }
+}
+
+function drawMotes(t, dt){
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (var i = 0; i < motes.length; i++){
+    var m = motes[i];
+    m.y += m.vy * dt;
+    m.x += (m.vx + Math.sin(t * 0.5 + m.ph) * 4 * SCALE) * dt;
+    if (m.y < -8){ m.y = H + 8; m.x = rand(0, W); }
+    if (m.x < -8) m.x = W + 8;
+    if (m.x > W + 8) m.x = -8;
+    ctx.globalAlpha = m.a * (0.45 + 0.55 * Math.sin(t * m.sp + m.ph));
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawBackground(t){
+  var g = ctx.createLinearGradient(0, 0, W * 0.25, H);
+  g.addColorStop(0, pal.top);
+  g.addColorStop(0.52, pal.mid);
+  g.addColorStop(1, pal.bot);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  // 深夜的星点
+  if (pal.tag === '深夜'){
+    for (var i = 0; i < stars.length; i++){
+      var s = stars[i];
+      var tw = 0.45 + 0.55 * Math.sin(t * s.sp + s.ph);
+      ctx.globalAlpha = tw * 0.7;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, TAU); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // 水面焦散光斑
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (var k = 0; k < caustics.length; k++){
+    var c = caustics[k];
+    var cx = c.x + Math.sin(t * c.sp + c.ph) * W * 0.09;
+    var cy = c.y + Math.cos(t * c.sp * 0.8 + c.ph) * H * 0.07;
+    var rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, c.r);
+    rg.addColorStop(0, 'rgba(255,255,255,' + c.a + ')');
+    rg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = rg;
+    ctx.beginPath(); ctx.arc(cx, cy, c.r, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+
+  // 顶部水面
+  var wg = ctx.createLinearGradient(0, 0, 0, 52 * SCALE);
+  wg.addColorStop(0, 'rgba(255,255,255,.55)');
+  wg.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = wg;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(W, 0);
+  for (var x2 = W; x2 >= 0; x2 -= 14){
+    ctx.lineTo(x2, 30 * SCALE + Math.sin(x2 * 0.012 + t * 1.1) * 7 * SCALE + Math.cos(x2 * 0.03 - t * 0.7) * 3 * SCALE);
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  // 水底：一层很淡的沙丘
+  var sg = ctx.createLinearGradient(0, H - 130 * SCALE, 0, H);
+  sg.addColorStop(0, 'rgba(255,255,255,0)');
+  sg.addColorStop(1, 'rgba(255,255,255,.40)');
+  ctx.fillStyle = sg;
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  for (var x3 = 0; x3 <= W + 20; x3 += 18){
+    ctx.lineTo(x3, H - 58 * SCALE
+      + Math.sin(x3 * 0.0055 + 1.3) * 20 * SCALE
+      + Math.sin(x3 * 0.017 - 0.6) * 7 * SCALE);
+  }
+  ctx.lineTo(W, H);
+  ctx.closePath();
+  ctx.fill();
+}
+
+/* ======================================================================
+   画水母
+   ====================================================================== */
+function jellyGlow(){
+  return pal.glow * (0.75 + 0.45 * Math.min(state.level, 12) / 12);
+}
+
+function drawJelly(t){
+  var r = jelly.r;
+  var shrink = 1 - 0.28 * (jelly.shy > 0 ? Math.min(1, jelly.shy / 0.5) : 0);
+  r *= shrink;
+
+  var p = jelly.pulse;
+  var w = r * (1.30 - 0.34 * p);
+  var h = r * (1.00 - 0.30 * p);
+  var glow = jellyGlow() + jelly.flash * 0.8;
+  var hue = pal.hue;
+
+  ctx.save();
+  ctx.translate(jelly.x, jelly.y);
+  ctx.rotate(jelly.tilt);
+
+  /* --- 光晕 --- */
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  var gg = ctx.createRadialGradient(0, -h * 0.25, r * 0.12, 0, -h * 0.25, r * 2.5);
+  gg.addColorStop(0, 'hsla(' + hue + ',100%,90%,' + (0.34 * glow) + ')');
+  gg.addColorStop(1, 'hsla(' + hue + ',100%,90%,0)');
+  ctx.fillStyle = gg;
+  ctx.beginPath(); ctx.arc(0, -h * 0.25, r * 2.5, 0, TAU); ctx.fill();
+  ctx.restore();
+
+  /* --- 触手 --- */
+  var n = Math.min(4 + Math.floor(state.level / 3), 9);
+  ctx.save();
+  ctx.lineCap = 'round';
+  for (var i = 0; i < n; i++){
+    var u = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;   // -1 ~ 1
+    var x0 = u * w * 0.76;
+    var y0 = h * 0.24;
+    var len = r * (1.05 + 0.42 * (0.5 + 0.5 * Math.cos(i * 1.9))) * (1 - 0.12 * p);
+    var segs = 9;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    for (var s = 1; s <= segs; s++){
+      var k = s / segs;
+      var nx = x0 + Math.sin(t * 1.5 + i * 0.85 + k * 2.6) * len * 0.26 * k + u * len * 0.14 * k * k;
+      var ny = y0 + len * k;
+      ctx.lineTo(nx, ny);
+    }
+    ctx.lineWidth = Math.max(1.4, r * 0.075 * (1 - 0.25 * Math.abs(u)));
+    ctx.strokeStyle = 'hsla(' + hue + ',92%,' + (80 - Math.abs(u) * 8) + '%,0.62)';
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  /* --- 伞体 --- */
+  ctx.beginPath();
+  ctx.moveTo(-w, 0);
+  ctx.bezierCurveTo(-w * 1.03, -h * 1.52, w * 1.03, -h * 1.52, w, 0);
+  ctx.bezierCurveTo(w * 0.58, h * (0.30 - 0.11 * p), -w * 0.58, h * (0.30 - 0.11 * p), -w, 0);
+  ctx.closePath();
+
+  var bg = ctx.createLinearGradient(0, -h * 1.15, 0, h * 0.4);
+  bg.addColorStop(0,    'hsla(' + hue + ',100%,98%,0.98)');
+  bg.addColorStop(0.45, 'hsla(' + hue + ',98%,84%,0.92)');
+  bg.addColorStop(1,    'hsla(' + (hue + 18) + ',95%,76%,0.72)');
+  ctx.fillStyle = bg;
+  ctx.shadowColor = 'hsla(' + hue + ',100%,82%,' + clamp(0.55 * glow, 0, 0.9) + ')';
+  ctx.shadowBlur = 14 + 26 * glow;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(255,255,255,.88)';
+  ctx.lineWidth = 1.7;
+  ctx.stroke();
+
+  /* --- 伞内装饰：小月牙 + 中心核 --- */
+  ctx.save();
+  ctx.globalAlpha = 0.5 + 0.3 * glow;
+  ctx.strokeStyle = 'rgba(255,255,255,.9)';
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  ctx.ellipse(0, -h * 0.42, w * 0.52, h * 0.34, 0, Math.PI * 0.15, Math.PI * 0.85);
+  ctx.stroke();
+  ctx.restore();
+
+  var coreR = r * 0.16;
+  var cg = ctx.createRadialGradient(0, -h * 0.5, 0, 0, -h * 0.5, coreR * 2.4);
+  cg.addColorStop(0, 'rgba(255,255,255,.95)');
+  cg.addColorStop(1, 'hsla(' + hue + ',100%,88%,0)');
+  ctx.fillStyle = cg;
+  ctx.beginPath(); ctx.arc(0, -h * 0.5, coreR * 2.4, 0, TAU); ctx.fill();
+
+  /* --- 深夜：伞上的星点 --- */
+  if (pal.glow > 0.7){
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (var q = 0; q < 7; q++){
+      var ang = (q / 7) * TAU + t * 0.12;
+      var rr = w * (0.25 + 0.34 * ((q * 7) % 5) / 5);
+      var sx = Math.cos(ang) * rr;
+      var sy = -h * 0.55 + Math.sin(ang) * h * 0.28;
+      var tw2 = 0.4 + 0.6 * Math.sin(t * 2.4 + q);
+      ctx.globalAlpha = tw2 * 0.85;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(sx, sy, 1.5 * SCALE, 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  /* --- 表情 --- */
+  var blink = (Math.sin(t * 0.7) > 0.985) ? 0.15 : 1;
+  var eyeY = -h * 0.16;
+  var eyeX = w * 0.24;
+  var eyeR = Math.max(1.4, r * 0.072);
+  ctx.fillStyle = 'rgba(96,78,120,.72)';
+  if (blink > 0.5){
+    ctx.beginPath(); ctx.arc(-eyeX, eyeY, eyeR, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(eyeX, eyeY, eyeR, 0, TAU); ctx.fill();
+  } else {
+    ctx.strokeStyle = 'rgba(96,78,120,.72)';
+    ctx.lineWidth = Math.max(1.2, eyeR * 0.5);
+    ctx.beginPath();
+    ctx.moveTo(-eyeX - eyeR, eyeY); ctx.lineTo(-eyeX + eyeR, eyeY);
+    ctx.moveTo(eyeX - eyeR, eyeY);  ctx.lineTo(eyeX + eyeR, eyeY);
+    ctx.stroke();
+  }
+  // 腮红
+  var blush = state.mood / 100;
+  ctx.fillStyle = 'hsla(345,100%,80%,' + (0.25 + 0.4 * blush) + ')';
+  ctx.beginPath(); ctx.ellipse(-w * 0.52, eyeY + h * 0.12, w * 0.14, h * 0.07, 0, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(w * 0.52, eyeY + h * 0.12, w * 0.14, h * 0.07, 0, 0, TAU); ctx.fill();
+
+  ctx.restore();
+}
+
+/* ======================================================================
+   画其他东西
+   ====================================================================== */
+function drawFood(t){
+  for (var i = 0; i < food.length; i++){
+    var f = food[i];
+    var tw = 0.6 + 0.4 * Math.sin(t * 4 + f.ph);
+    var a = clamp(f.life / 0.6, 0, 1) * clamp((f.max - f.life) / 1.2, 0, 1);
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = a;
+    var rg = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 5);
+    rg.addColorStop(0, 'hsla(' + f.hue + ',100%,80%,' + (0.9 * tw) + ')');
+    rg.addColorStop(0.35, 'hsla(' + f.hue + ',100%,80%,0.25)');
+    rg.addColorStop(1, 'hsla(' + f.hue + ',100%,80%,0)');
+    ctx.fillStyle = rg;
+    ctx.beginPath(); ctx.arc(f.x, f.y, f.r * 5, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(f.x, f.y, f.r * (0.75 + 0.25 * tw), 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawBubbles(){
+  for (var i = 0; i < bubbles.length; i++){
+    var b = bubbles[i];
+    var a = clamp(b.life / b.max, 0, 1) * 0.55;
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = 'rgba(255,255,255,.95)';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, TAU); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.35)';
+    ctx.beginPath(); ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.32, b.r * 0.22, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawParts(){
+  for (var i = 0; i < parts.length; i++){
+    var p = parts[i];
+    var a = clamp(1 - p.life / p.max, 0, 1);
+    ctx.save();
+    ctx.globalAlpha = a;
+    if (p.type === 'heart'){
+      ctx.fillStyle = 'hsla(' + p.hue + ',95%,74%,.95)';
+      ctx.font = p.size + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('\u2665', p.x, p.y);
+    } else if (p.type === 'star'){
+      ctx.fillStyle = 'hsla(' + p.hue + ',100%,86%,.95)';
+      ctx.font = p.size * 3 + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('\u2726', p.x, p.y);
+    } else {
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'hsla(' + p.hue + ',100%,88%,.95)';
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * a, 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function drawFloats(){
+  for (var i = 0; i < floats.length; i++){
+    var f = floats[i];
+    var k = f.life / f.max;
+    ctx.save();
+    ctx.globalAlpha = clamp(1 - k * k, 0, 1) * 0.9;
+    ctx.fillStyle = 'hsla(' + f.hue + ',70%,48%,1)';
+    ctx.font = '600 ' + Math.round(13 * SCALE + 2) + 'px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(f.text, f.x, f.y - k * 34 * SCALE);
+    ctx.restore();
+  }
+}
+
+/* ======================================================================
+   互动
+   ====================================================================== */
+var pointer = { x: null, y: null, t: -99 };
+
+cvs.addEventListener('pointermove', function(e){
+  pointer.x = e.clientX; pointer.y = e.clientY; pointer.t = now;
+});
+cvs.addEventListener('pointerleave', function(){
+  pointer.x = null; pointer.y = null;
+});
+cvs.addEventListener('pointerdown', function(e){
+  e.preventDefault();
+  var x = e.clientX, y = e.clientY;
+  pointer.x = x; pointer.y = y; pointer.t = now;
+
+  var d = Math.hypot(x - jelly.x, y - jelly.y);
+  if (d < jelly.r * 1.7){
+    touchJelly();
+  } else {
+    dropFood(x, y);
+  }
+});
+
+var recentPokes = 0, pokeWindow = 0;
+
+function dropFood(x, y){
+  if (food.length >= 16) food.shift();
+  food.push({
+    x: x, y: y, r: 3.4 * SCALE + 1,
+    ph: rand(0, TAU), life: 0, max: rand(34, 50),
+    hue: pick([330, 350, 285, 30, 200])
+  });
+  burst(x, y, 'dot', 5, 340);
+  if (Math.random() < 0.25) addFloat(x, y - 14, pick(['撒~', '咕噜', '开饭啦']), 330);
+}
+
+function touchJelly(){
+  var now2 = now;
+  if (now2 - pokeWindow < 2) recentPokes++; else recentPokes = 1;
+  pokeWindow = now2;
+
+  jelly.shy = 0.55;                       // 缩一下
+  burst(jelly.x, jelly.y - jelly.r * 0.6, 'heart', 2 + (Math.random() * 2 | 0), 340);
+
+  if (recentPokes <= 4){
+    state.mood = clamp(state.mood + 3, 0, 100);
+    state.bond = clamp(state.bond + 1.2, 0, 100);
+    state.exp += 1;
+    addFloat(jelly.x, jelly.y - jelly.r * 1.3, pick(['咕噜~', '\u2665', '呀', '呼哇']), 335);
+  } else if (recentPokes <= 11){
+    state.mood = clamp(state.mood + 1, 0, 100);
+    state.bond = clamp(state.bond + 0.5, 0, 100);
+    addFloat(jelly.x, jelly.y - jelly.r * 1.3, pick(['别戳啦', '痒痒的', '唔…']), 300);
+  } else {
+    recentPokes = 0;
+    state.mood = clamp(state.mood - 2, 0, 100);
+    state.bond = clamp(state.bond + 3, 0, 100);
+    burst(jelly.x, jelly.y, 'heart', 16, 335);
+    burst(jelly.x, jelly.y, 'star', 6, 300);
+    addFloat(jelly.x, jelly.y - jelly.r * 1.6, '炸毛了！', 345);
+    toast('水母被你戳到炸毛，噗地吐了一串泡泡');
+  }
+  checkLevel();
+}
+
+/* ======================================================================
+   提示条 / 浮动气泡
+   ====================================================================== */
+var toastBox = document.getElementById('toasts');
+function toast(text){
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = text;
+  toastBox.appendChild(el);
+  while (toastBox.children.length > 4) toastBox.removeChild(toastBox.firstChild);
+  setTimeout(function(){
+    el.classList.add('out');
+    setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 520);
+  }, 4200);
+}
+
+/* ======================================================================
+   等级
+   ====================================================================== */
+function checkLevel(){
+  var up = false;
+  while (state.level < 15 && state.exp >= expNeed(state.level)){
+    state.exp -= expNeed(state.level);
+    state.level++;
+    up = true;
+  }
+  if (up){
+    jelly.r = jellyRadius();
+    burst(jelly.x, jelly.y, 'star', 14, 300);
+    burst(jelly.x, jelly.y, 'heart', 8, 340);
+    addFloat(jelly.x, jelly.y - jelly.r * 1.5, '长大了！', 300);
+    toast('小水母长到了 Lv.' + state.level + ' —— ' + stageName(state.level));
+  }
+}
+
+function stageName(lv){
+  if (lv <= 2) return '刚出生的幼体';
+  if (lv <= 4) return '会跟着你游的小水母';
+  if (lv <= 7) return '触手很多的活泼鬼';
+  if (lv <= 10) return '会发光的梦幻水母';
+  if (lv <= 13) return '满身星点的漂亮水母';
+  return '水族箱的镇馆之宝';
+}
+
+/* ======================================================================
+   状态面板
+   ====================================================================== */
+var ui = {
+  name: document.getElementById('uiName'),
+  lv:   document.getElementById('uiLv'),
+  full: document.getElementById('uiFull'),
+  mood: document.getElementById('uiMood'),
+  bond: document.getElementById('uiBond'),
+  say:  document.getElementById('uiSay'),
+  clock:document.getElementById('uiClock')
+};
+
+// 左上角面板占的地方，水母不进去
+var hudEl = (document.querySelector ? document.querySelector('.hud') : null);
+var forbid = { r: 236, b: 176 };
+function measureHud(){
+  if (!hudEl || !hudEl.getBoundingClientRect) return;
+  var r = hudEl.getBoundingClientRect();
+  if (r && r.width) { forbid.r = r.right + 6; forbid.b = r.bottom + 6; }
+}
+
+function sayLine(){
+  if (state.full < 18) return '肚子咕咕叫…撒点浮游生物给它吧';
+  if (state.mood < 25) return '没什么精神，摸摸它试试';
+  if (state.full > 88 && state.mood > 80) return '吃得饱饱的，在水里慢慢转圈';
+  if (state.bond > 72) return '它已经认得你了，会朝你游过来';
+  if (state.bond > 40) return '你们混熟了，它不太怕你了';
+  if (state.full < 40) return '有点饿了，开始到处找吃的';
+  if (state.mood > 85) return '心情好得冒泡泡';
+  if (pal.tag === '深夜') return '深夜了，它浑身在发光，像一小团星星';
+  if (pal.tag === '清晨') return '清早的水很凉，它慢慢醒过来';
+  return '在水里安安静静地漂着';
+}
+
+var lastUI = 0;
+function updateUI(force){
+  if (!force && now - lastUI < 0.2) return;
+  lastUI = now;
+  ui.lv.textContent = 'Lv.' + state.level;
+  ui.full.style.width = state.full.toFixed(0) + '%';
+  ui.mood.style.width = state.mood.toFixed(0) + '%';
+  ui.bond.style.width = state.bond.toFixed(0) + '%';
+  var line = sayLine();
+  if (ui.say.textContent !== line){ ui.say.textContent = line; measureHud(); }
+  var d = new Date();
+  var hh = forcedHour == null ? d.getHours() : forcedHour;
+  ui.clock.textContent = pal.tag + ' ' +
+    String(hh).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+/* ======================================================================
+   主循环
+   ====================================================================== */
+var now = 0, last = 0, saveTimer = 0, ambientTimer = 6, eventTimer = 22, autoFoodTimer = 18;
+
+function tick(ts){
+  requestAnimationFrame(tick);
+  if (!last) last = ts;
+  var dt = Math.min(0.05, (ts - last) / 1000);
+  last = ts;
+  now += dt;
+  var t = now;
+
+  /* ---- 时间变化 ---- */
+  var h = forcedHour == null ? new Date().getHours() : forcedHour;
+  if (h !== curHour){
+    curHour = h;
+    pal = paletteFor(h);
+    toast('天色变了 —— ' + pal.tag + '的水族箱');
+  }
+
+  /* ---- 状态随时间变化 ---- */
+  state.full = clamp(state.full - dt * 0.095, 0, 100);
+  if (state.full > 35) state.mood = clamp(state.mood + dt * 0.28, 0, 100);
+  else if (state.full < 14) state.mood = clamp(state.mood - dt * 0.40, 0, 100);
+
+  jelly.shy = Math.max(0, jelly.shy - dt);
+  jelly.flash = Math.max(0, jelly.flash - dt * 2.4);
+  jelly.r = lerp(jelly.r, jellyRadius(), Math.min(1, dt * 4));
+
+  /* ---- 水母移动 ---- */
+  jelly.pt += dt;
+  jelly.pulse = Math.sin(jelly.pt * 2.1) * 0.5 + 0.5;
+
+  // 给左上角的状态面板留一块空地，别让水母游到下面被挡住
+  var keep = 12;
+  if (jelly.y < forbid.b && jelly.x < forbid.r){
+    var pushX = forbid.r + keep - jelly.x;
+    var pushY = forbid.b + keep - jelly.y;
+    if (pushX < pushY){ jelly.x = forbid.r + keep; jelly.vx = Math.abs(jelly.vx) * 0.4; }
+    else { jelly.y = forbid.b + keep; jelly.vy = Math.abs(jelly.vy) * 0.4; }
+  }
+
+  // 找最近的食物
+  var target = null, bd = 1e9;
+  for (var i = 0; i < food.length; i++){
+    var f = food[i];
+    var dd = Math.hypot(f.x - jelly.x, f.y - jelly.y);
+    if (dd < bd){ bd = dd; target = f; }
+  }
+
+  var tx, ty, speed;
+  if (target){
+    tx = target.x; ty = target.y;
+    speed = 52 * SCALE + state.mood * 0.16 * SCALE;
+  } else if (pointer.x !== null && now - pointer.t < 4){
+    tx = pointer.x; ty = pointer.y;
+    // 靠得太近就停住，别黏着鼠标烦人
+    var pd = Math.hypot(tx - jelly.x, ty - jelly.y);
+    speed = pd < jelly.r * 3.4 ? 0 : 26 * SCALE;
+  } else {
+    jelly.wanderT -= dt;
+    if (jelly.wanderT <= 0){
+      jelly.wanderT = rand(3.5, 7.5);
+      jelly.wx = rand(Math.min(forbid.r + jelly.r * 1.4, W * 0.62), W * 0.86);
+      jelly.wy = rand(Math.min(forbid.b + jelly.r * 1.4, H * 0.55), H * 0.80);
+    }
+    tx = jelly.wx; ty = jelly.wy;
+    speed = 13 * SCALE;
+  }
+
+  var dx = tx - jelly.x, dy = ty - jelly.y;
+  var dl = Math.hypot(dx, dy) || 1;
+  var dvx = (dx / dl) * speed, dvy = (dy / dl) * speed;
+  var ease = Math.min(1, dt * 1.7);
+  jelly.vx += (dvx - jelly.vx) * ease;
+  jelly.vy += (dvy - jelly.vy) * ease - dt * 5.5;   // 轻微上浮的浮力感
+  jelly.x += jelly.vx * dt;
+  jelly.y += jelly.vy * dt + Math.sin(t * 0.9) * 0.22 * SCALE;
+
+  // 柔和的边界
+  var m = jelly.r * 1.5;
+  if (jelly.x < m){ jelly.x = m; jelly.vx = Math.abs(jelly.vx) * 0.5; }
+  if (jelly.x > W - m){ jelly.x = W - m; jelly.vx = -Math.abs(jelly.vx) * 0.5; }
+  if (jelly.y < m + 30 * SCALE){ jelly.y = m + 30 * SCALE; jelly.vy = Math.abs(jelly.vy) * 0.5; }
+  if (jelly.y > H - m){ jelly.y = H - m; jelly.vy = -Math.abs(jelly.vy) * 0.5; }
+
+  jelly.tilt = lerp(jelly.tilt, clamp(jelly.vx * 0.0035, -0.22, 0.22), Math.min(1, dt * 3));
+
+  /* ---- 吃东西 ---- */
+  for (var j = food.length - 1; j >= 0; j--){
+    var fo = food[j];
+    fo.life += dt;
+    fo.x += Math.sin(t * 1.3 + fo.ph) * 5 * dt;
+    fo.y += Math.cos(t * 1.1 + fo.ph) * 5 * dt;
+
+    if (fo.life > fo.max){
+      food.splice(j, 1);
+      continue;
+    }
+    if (Math.hypot(fo.x - jelly.x, fo.y - jelly.y) < jelly.r * 0.92 + fo.r){
+      food.splice(j, 1);
+      state.full = clamp(state.full + 7, 0, 100);
+      state.mood = clamp(state.mood + 2.5, 0, 100);
+      state.exp += 3;
+      jelly.flash = 1;
+      burst(jelly.x, jelly.y - jelly.r * 0.5, 'heart', 2, 340);
+      if (Math.random() < 0.3) addFloat(jelly.x, jelly.y - jelly.r * 1.2, pick(['好吃！', '嗯~', '\u2665']), 335);
+      checkLevel();
+    }
+  }
+
+  /* ---- 粒子 ---- */
+  for (var k = parts.length - 1; k >= 0; k--){
+    var pt = parts[k];
+    pt.life += dt;
+    if (pt.life > pt.max){ parts.splice(k, 1); continue; }
+    pt.x += pt.vx * dt;
+    pt.y += pt.vy * dt;
+    pt.vy += 26 * dt;          // 稍稍下沉
+    pt.vx *= (1 - dt * 1.4);
+  }
+
+  /* ---- 气泡 ---- */
+  for (var b2 = bubbles.length - 1; b2 >= 0; b2--){
+    var bb = bubbles[b2];
+    bb.life += dt;
+    bb.y -= bb.sp * dt;
+    bb.x += Math.sin(t * 2 + bb.ph) * 8 * dt;
+    if (bb.life > bb.max || bb.y < -20) bubbles.splice(b2, 1);
+  }
+
+  /* ---- 浮动文字 ---- */
+  for (var q = floats.length - 1; q >= 0; q--){
+    floats[q].life += dt;
+    if (floats[q].life > floats[q].max) floats.splice(q, 1);
+  }
+
+  /* ---- 环境气泡（水母吐泡） ---- */
+  ambientTimer -= dt;
+  if (ambientTimer <= 0){
+    ambientTimer = rand(2.2, 5.5);
+    bubbles.push({
+      x: jelly.x + rand(-jelly.r * 0.6, jelly.r * 0.6),
+      y: jelly.y - jelly.r * 0.4,
+      r: rand(1.6, 3.6) * SCALE + 0.8,
+      sp: rand(18, 40) * SCALE, ph: rand(0, TAU),
+      life: 0, max: rand(3, 6)
+    });
+  }
+
+  /* ---- 偶尔飘进来的野生浮游生物 ---- */
+  autoFoodTimer -= dt;
+  if (autoFoodTimer <= 0 && food.length < 6){
+    autoFoodTimer = rand(22, 46);
+    food.push({
+      x: Math.random() < 0.5 ? -10 : W + 10,
+      y: rand(H * 0.15, H * 0.85),
+      r: 3 * SCALE + 1, ph: rand(0, TAU), life: 0, max: 40,
+      hue: pick([330, 285, 200])
+    });
+  }
+
+  /* ---- 随机小事件 ---- */
+  eventTimer -= dt;
+  if (eventTimer <= 0){
+    eventTimer = rand(26, 52);
+    if (state.full < 15) toast('水母饿得在水里慢慢转圈');
+    else if (state.mood > 80) toast(pick(['水母开心地翻了个跟头', '水母吐了一串小泡泡', '水母在追自己的触手']));
+    else toast(pick(['水母在发呆', '水母慢慢沉下去又浮上来', '水母看了你一眼', '咕噜咕噜…']));
+  }
+
+  /* ---- 绘制 ---- */
+  drawBackground(t);
+  drawMotes(t, dt);
+  drawBubbles();
+  drawFood(t);
+  drawJelly(t);
+  drawParts();
+  drawFloats();
+
+  /* ---- 面板 & 存档 ---- */
+  updateUI(false);
+  saveTimer -= dt;
+  if (saveTimer <= 0){ saveTimer = 5; save(); }
+}
+
+/* ---------- 各种收尾 ---------- */
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden) save();
+  else last = 0;
+});
+window.addEventListener('beforeunload', save);
+
+document.getElementById('uiReset').addEventListener('click', function(){
+  if (confirm('要重新养一只小水母吗？现在这只的成长记录会清空。')){
+    try { localStorage.removeItem(SAVE_KEY); } catch(e){}
+    location.reload();
+  }
+});
+
+/* ---------- 启动 ---------- */
+resize();
+var hadSave = load();
+jelly.x = W / 2;
+jelly.y = H / 2;
+jelly.wx = W / 2; jelly.wy = H / 2;
+jelly.r = jellyRadius();
+
+function greet(){
+  if (hadSave){
+    toast('欢迎回来 · 它现在是 Lv.' + state.level + ' 的' + stageName(state.level));
+    settleAway();
+  } else {
+    toast('一只小水母出生了，先喂它点浮游生物吧');
+    burst(W / 2, H / 2, 'star', 10, 320);
+  }
+  updateUI(true);
+}
+
+updateUI(true);
+requestAnimationFrame(tick);
+setTimeout(greet, 500);
+setTimeout(function(){ document.getElementById('uiHint').style.transition = 'opacity 1s'; }, 6000);
+
+})();
+</script>
+<div id="err"></div>
+</body>
+</html>

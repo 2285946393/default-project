@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我的游戏统计</title>
+<style>
+:root{
+  --pink:#ffb3c9; --pink-deep:#f2769a; --purple:#a98cf0; --ink:#3d3550;
+  --muted:#8a82a0; --card:#ffffffcc; --line:#f0e6f5;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0 16px 64px; color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%,#ffe3ee 0%,transparent 45%),
+    radial-gradient(circle at 88% 4%,#e8dcff 0%,transparent 42%),
+    radial-gradient(circle at 50% 100%,#e2f2ff 0%,transparent 50%),
+    #fdfaff;
+  min-height:100vh;
+}
+.wrap{max-width:900px;margin:0 auto}
+header{padding:44px 0 8px;text-align:center}
+h1{margin:0;font-size:32px;letter-spacing:2px}
+h1 span{background:linear-gradient(90deg,var(--pink-deep),var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.8}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:26px 0}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:18px;
+  padding:16px 18px; box-shadow:0 6px 22px #b48ec91f; backdrop-filter:blur(6px);
+}
+.card .k{font-size:12px;color:var(--muted);letter-spacing:1px}
+.card .v{font-size:26px;font-weight:700;margin-top:6px}
+.card .v small{font-size:13px;font-weight:400;color:var(--muted);margin-left:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;
+  box-shadow:0 6px 22px #b48ec91a;margin-bottom:18px;backdrop-filter:blur(6px)}
+.panel h2{font-size:16px;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.panel h2::before{content:"";width:8px;height:8px;border-radius:50%;
+  background:linear-gradient(135deg,var(--pink),var(--purple))}
+.bar-row{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;
+  padding:6px 0;font-size:14px}
+.bar-row .rank{color:var(--muted);font-size:12px;text-align:right}
+.bar-row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-name{display:flex;flex-direction:column;gap:4px;min-width:0}
+.bar-track{height:8px;border-radius:6px;background:#f4eefb;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--pink),var(--purple))}
+.bar-row .hh{font-variant-numeric:tabular-nums;color:var(--pink-deep);font-weight:600;font-size:13px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+input[type=search]{
+  flex:1;min-width:180px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);
+  background:#fff;font-size:14px;font-family:inherit;color:var(--ink);outline:none;
+}
+input[type=search]:focus{border-color:var(--pink)}
+.seg{display:flex;background:#f7f1fb;border-radius:12px;padding:3px}
+.seg button{
+  border:0;background:transparent;padding:7px 12px;border-radius:9px;cursor:pointer;
+  font-size:13px;color:var(--muted);font-family:inherit
+}
+.seg button.on{background:#fff;color:var(--pink-deep);font-weight:600;box-shadow:0 2px 6px #b48ec926}
+.tier{font-size:11px;padding:1px 7px;border-radius:999px;display:inline-block;
+  background:#f6efff;color:#8b6fd0;white-space:nowrap}
+.list{display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:11px 2px;
+  border-bottom:1px dashed var(--line);align-items:center}
+.item:last-child{border-bottom:0}
+.item .nm{font-size:14px;display:flex;align-items:center;gap:7px;min-width:0}
+.item .nm b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .meta{font-size:11.5px;color:var(--muted);margin-top:3px}
+.item .hh{font-variant-numeric:tabular-nums;font-weight:700;color:var(--pink-deep);font-size:14px}
+.empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+.ns-item{display:flex;justify-content:space-between;gap:10px;padding:7px 2px;font-size:13px;
+  border-bottom:1px dashed var(--line)}
+.ns-item:last-child{border-bottom:0}
+.ns-item span:last-child{color:var(--muted);font-size:11.5px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px;line-height:2}
+@media (max-width:760px){
+  h1{font-size:24px}
+  .card .v{font-size:22px}
+  header{padding-top:30px}
+  .bar-row{grid-template-columns:20px 1fr auto;font-size:13px}
+  .sub{font-size:12px;padding:0 6px}
+  .tools{flex-direction:column;align-items:stretch;width:100%}
+  .seg{width:100%;box-sizing:border-box}
+  .seg button{flex:1 1 0;min-width:0;padding:7px 4px;font-size:12px}
+  .item .nm{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>我的<span>游戏统计</span></h1>
+    <div class="sub">数据来自本机 Steam 记录 · 生成于 2026-10-04 02:37</div>
+  </header>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="panel">
+    <h2>玩得最久的 20 款</h2>
+    <div id="top20"></div>
+  </div>
+
+  <div class="panel">
+    <h2>全部记录 <span id="count" style="font-weight:400;color:var(--muted);font-size:12px"></span></h2>
+    <div class="tools">
+      <input type="search" id="q" placeholder="搜游戏名…">
+      <div class="seg" id="sortseg">
+        <button data-sort="time" class="on">按时长</button>
+        <button data-sort="recent">按最近</button>
+        <button data-sort="name">按名字</button>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="empty" id="empty" style="display:none">没有匹配的游戏</div>
+  </div>
+
+  <div class="panel">
+    <h2>不在 Steam 里的（桌面启动）</h2>
+    <div id="nonsteam"></div>
+  </div>
+
+  <footer>
+    时长由 Steam 本地记录统计，未安装的游戏也保留历史。<br>
+    改完 Steam 库后重跑 <code>tools/steam_playtime.py</code> 再生成即可更新。
+  </footer>
+</div>
+
+<script>
+(function () {
+const DATA = [{"name": "Slay the Spire 2", "hours": 1004.8, "minutes": 60285, "last": 1791051325, "appid": 2868840, "installed": true}, {"name": "BlazBlue Entropy Effect", "hours": 781.9, "minutes": 46914, "last": 1790520256, "appid": 2273430, "installed": true}, {"name": "Slay the Spire", "hours": 695.6, "minutes": 41737, "last": 1790077508, "appid": 646570, "installed": true}, {"name": "No Rest for the Wicked", "hours": 522.6, "minutes": 31355, "last": 1790077507, "appid": 1371980, "installed": false}, {"name": "Don't Starve Together", "hours": 511.1, "minutes": 30665, "last": 1790077506, "appid": 322330, "installed": true}, {"name": "Aces and Adventures", "hours": 497.9, "minutes": 29872, "last": 1790077505, "appid": 1815570, "installed": true}, {"name": "Sultan's Game", "hours": 483.6, "minutes": 29018, "last": 1790077504, "appid": 3117820, "installed": true}, {"name": "Monster Hunter Wilds", "hours": 482.4, "minutes": 28942, "last": 1790077503, "appid": 2246340, "installed": false}, {"name": "FrostBound", "hours": 481.6, "minutes": 28898, "last": 1790077502, "appid": 3649580, "installed": true}, {"name": "Vampire Crawlers", "hours": 463.9, "minutes": 27833, "last": 1790077501, "appid": 3265700, "installed": false}, {"name": "Library Of Ruina", "hours": 463.4, "minutes": 27802, "last": 1790077500, "appid": 1256670, "installed": false}, {"name": "Brotato", "hours": 461.9, "minutes": 27713, "last": 1790077499, "appid": 1942280, "installed": true}, {"name": "Tricolour Lovestory", "hours": 459.1, "minutes": 27549, "last": 1790077498, "appid": 668630, "installed": false}, {"name": "Black Myth: Wukong", "hours": 446.8, "minutes": 26810, "last": 1790077497, "appid": 2358720, "installed": false}, {"name": "PEAK", "hours": 442.9, "minutes": 26573, "last": 1790077496, "appid": 3527290, "installed": false}, {"name": "AMANATSU ~Perfect Edition~", "hours": 431.4, "minutes": 25882, "last": 1790077495, "appid": 2825300, "installed": false}, {"name": "Rust", "hours": 424.9, "minutes": 25495, "last": 1790077494, "appid": 252490, "installed": false}, {"name": "Afterimage", "hours": 407.9, "minutes": 24474, "last": 1790077493, "appid": 1701520, "installed": false}, {"name": "帝国幻想乡~TOHOTOPIA", "hours": 406.6, "minutes": 24398, "last": 1790077492, "appid": 3774440, "installed": false}, {"name": "Counter-Strike 2", "hours": 402.6, "minutes": 24154, "last": 1790077491, "appid": 730, "installed": false}, {"name": "Night of the Full Moon", "hours": 402.4, "minutes": 24143, "last": 1790077490, "appid": 769560, "installed": false}, {"name": "Stacklands", "hours": 361.1, "minutes": 21667, "last": 1790077489, "appid": 1948280, "installed": true}, {"name": "The Binding of Isaac: Rebirth", "hours": 360.6, "minutes": 21639, "last": 1790077488, "appid": 250900, "installed": true}, {"name": "Satisfactory", "hours": 331.9, "minutes": 19914, "last": 1790077487, "appid": 526870, "installed": false}, {"name": "Vampire Survivors", "hours": 278.0, "minutes": 16678, "last": 1790077486, "appid": 1794680, "installed": true}, {"name": "Balatro", "hours": 277.9, "minutes": 16673, "last": 1790077485, "appid": 2379780, "installed": true}, {"name": "Guildrun Demo", "hours": 273.7, "minutes": 16421, "last": 1790077484, "appid": 4425970, "installed": true}, {"name": "How to Fish", "hours": 247.6, "minutes": 14853, "last": 1790077483, "appid": 4001890, "installed": true}, {"name": "Starsand Island", "hours": 209.9, "minutes": 12594, "last": 1790070798, "appid": 2966320, "installed": false}, {"name": "Meme Mayhem", "hours": 204.2, "minutes": 12254, "last": 1790077482, "appid": 2719030, "installed": false}, {"name": "Escape the Backrooms", "hours": 189.3, "minutes": 11359, "last": 1790077481, "appid": 1943950, "installed": false}, {"name": "Tabletop Simulator", "hours": 177.0, "minutes": 10618, "last": 1790077480, "appid": 286160, "installed": false}, {"name": "Hades II", "hours": 165.4, "minutes": 9926, "last": 1779887665, "appid": 1145350, "installed": true}, {"name": "DEAD OR ALIVE Xtreme Venus Vacation", "hours": 148.6, "minutes": 8916, "last": 1789072222, "appid": 958260, "installed": false}, {"name": "Monster Hunter: World", "hours": 146.0, "minutes": 8762, "last": 1790329031, "appid": 582010, "installed": false}, {"name": "Borderlands 2", "hours": 131.5, "minutes": 7889, "last": 1788585245, "appid": 49520, "installed": false}, {"name": "Wallpaper Engine", "hours": 124.1, "minutes": 7447, "last": 1789799046, "appid": 431960, "installed": true}, {"name": "Baldur's Gate 3", "hours": 123.1, "minutes": 7384, "last": 1769238820, "appid": 1086940, "installed": false}, {"name": "Liminal Border Part II", "hours": 109.4, "minutes": 6563, "last": 1787820965, "appid": 2730350, "installed": false}, {"name": "Biped", "hours": 103.2, "minutes": 6194, "last": 1789315085, "appid": 1071870, "installed": false}, {"name": "Hades", "hours": 94.2, "minutes": 5649, "last": 1757518647, "appid": 1145360, "installed": true}, {"name": "CHAOS;CHILD", "hours": 87.6, "minutes": 5256, "last": 1787820965, "appid": 970570, "installed": false}, {"name": "Shao Song I", "hours": 87.3, "minutes": 5238, "last": 1787820965, "appid": 4292950, "installed": false}, {"name": "Bread & Fred", "hours": 81.1, "minutes": 4866, "last": 1788585245, "appid": 1607680, "installed": false}, {"name": "MUSYNX:RETURN", "hours": 78.0, "minutes": 4683, "last": 1787967963, "appid": 3988570, "installed": false}, {"name": "历史模拟器：崇祯", "hours": 72.7, "minutes": 4362, "last": 1789315085, "appid": 4304230, "installed": false}, {"name": "DICEOMANCER", "hours": 67.8, "minutes": 4069, "last": 1780756075, "appid": 2501600, "installed": true}, {"name": "Beneath Oresa", "hours": 57.6, "minutes": 3455, "last": 1787967964, "appid": 1803400, "installed": false}, {"name": "Ampersat", "hours": 55.6, "minutes": 3334, "last": 1789315085, "appid": 1356040, "installed": false}, {"name": "Divinity: Original Sin 2", "hours": 53.5, "minutes": 3213, "last": 1775915002, "appid": 435150, "installed": false}, {"name": "花满楼", "hours": 50.7, "minutes": 3041, "last": 1789315085, "appid": 3749320, "installed": false}, {"name": "幸存者笔记", "hours": 45.3, "minutes": 2716, "last": 1789641846, "appid": 4354460, "installed": false}, {"name": "For The King", "hours": 41.6, "minutes": 2494, "last": 1754041370, "appid": 527230, "installed": false}, {"name": "Darkest Dungeon®", "hours": 41.0, "minutes": 2460, "last": 1697961801, "appid": 262060, "installed": true}, {"name": "我只是想让她们都幸福", "hours": 39.9, "minutes": 2391, "last": 1787820965, "appid": 3734680, "installed": false}, {"name": "Senren＊Banka", "hours": 39.3, "minutes": 2356, "last": 1707046612, "appid": 1144400, "installed": false}, {"name": "Dying Light", "hours": 38.2, "minutes": 2295, "last": 1759917523, "appid": 239140, "installed": false}, {"name": "Patch Quest", "hours": 34.3, "minutes": 2057, "last": 1700914606, "appid": 1347970, "installed": true}, {"name": "Dying Light 2: Reloaded Edition", "hours": 31.9, "minutes": 1914, "last": 1751276839, "appid": 534380, "installed": false}, {"name": "SWORN", "hours": 31.4, "minutes": 1882, "last": 1787967964, "appid": 1763250, "installed": false}, {"name": "你的痛柜可以种出女孩吗？", "hours": 29.7, "minutes": 1783, "last": 1787445365, "appid": 4289150, "installed": false}, {"name": "Planet Coaster", "hours": 27.7, "minutes": 1661, "last": 1787445365, "appid": 493340, "installed": false}, {"name": "METAL SLUG", "hours": 27.5, "minutes": 1651, "last": 1787537884, "appid": 366250, "installed": false}, {"name": "Euro Truck Simulator 2", "hours": 27.1, "minutes": 1629, "last": 1787445365, "appid": 227300, "installed": false}, {"name": "KarmaZoo", "hours": 26.7, "minutes": 1602, "last": 1787445365, "appid": 1661630, "installed": false}, {"name": "Valheim", "hours": 24.4, "minutes": 1467, "last": 1778674656, "appid": 892970, "installed": false}, {"name": "Islands of Insight", "hours": 23.9, "minutes": 1433, "last": 1788681124, "appid": 2071500, "installed": false}, {"name": "Havendock", "hours": 21.0, "minutes": 1259, "last": 1787537884, "appid": 2020710, "installed": false}, {"name": "Tales of the Neon Sea", "hours": 21.0, "minutes": 1259, "last": 1787537884, "appid": 828740, "installed": false}, {"name": "Fantasy General II", "hours": 20.0, "minutes": 1198, "last": 1789641846, "appid": 1025440, "installed": false}, {"name": "Field of Glory II: Medieval", "hours": 20.0, "minutes": 1198, "last": 1789641846, "appid": 1368870, "installed": false}, {"name": "Cat God Ranch", "hours": 16.6, "minutes": 997, "last": 1779542999, "appid": 2797340, "installed": false}, {"name": "OCTOPATH TRAVELER II", "hours": 15.0, "minutes": 898, "last": 1749289517, "appid": 1971650, "installed": false}, {"name": "Dead Cells", "hours": 14.2, "minutes": 850, "last": 1715948150, "appid": 588650, "installed": false}, {"name": "Monster Train", "hours": 12.8, "minutes": 766, "last": 1710507746, "appid": 1102190, "installed": false}, {"name": "Road to Empress Ⅱ", "hours": 12.4, "minutes": 747, "last": 1787937256, "appid": 4148240, "installed": false}, {"name": "Sid Meier's Civilization VI", "hours": 12.0, "minutes": 720, "last": 1779981772, "appid": 289070, "installed": false}, {"name": "Card Survival: Tropical Island", "hours": 11.4, "minutes": 685, "last": 1774111712, "appid": 1694420, "installed": false}, {"name": "It Takes Two", "hours": 10.9, "minutes": 656, "last": 1777384477, "appid": 1426210, "installed": false}, {"name": "Lost Castle", "hours": 10.7, "minutes": 641, "last": 1698552908, "appid": 434650, "installed": false}, {"name": "MONSTER HUNTER RISE", "hours": 10.5, "minutes": 632, "last": 1758345266, "appid": 1446780, "installed": false}, {"name": "Nioh 3 Demo", "hours": 10.0, "minutes": 599, "last": 1770127617, "appid": 4198760, "installed": false}, {"name": "Legacy of Kain™ Soul Reaver 1&2 Remastered", "hours": 9.7, "minutes": 582, "last": 1787056903, "appid": 2521380, "installed": false}, {"name": "Big Sister", "hours": 8.9, "minutes": 534, "last": 1790077479, "appid": 5206420, "installed": false}, {"name": "OCTOPATH TRAVELER", "hours": 8.1, "minutes": 483, "last": 1736571020, "appid": 921570, "installed": false}, {"name": "REANIMAL", "hours": 6.9, "minutes": 414, "last": 1771829601, "appid": 2129530, "installed": false}, {"name": "Summer Memories", "hours": 6.8, "minutes": 411, "last": 1704468546, "appid": 1227890, "installed": false}, {"name": "Sker Ritual", "hours": 6.6, "minutes": 397, "last": 1751118557, "appid": 1492070, "installed": false}, {"name": "VPet", "hours": 5.9, "minutes": 352, "last": 1692254272, "appid": 1920960, "installed": false}, {"name": "Cookie Clicker", "hours": 5.0, "minutes": 297, "last": 1705916095, "appid": 1454400, "installed": false}, {"name": "Ballionaire", "hours": 4.9, "minutes": 294, "last": 1761738588, "appid": 2667120, "installed": false}, {"name": "Sons Of The Forest", "hours": 4.7, "minutes": 281, "last": 1790691432, "appid": 1326470, "installed": true}, {"name": "Oh My Gore!", "hours": 4.5, "minutes": 272, "last": 1786819342, "appid": 319760, "installed": false}, {"name": "Celeste", "hours": 4.4, "minutes": 263, "last": 1732020876, "appid": 504230, "installed": false}, {"name": "Island Of Enchantment", "hours": 4.3, "minutes": 261, "last": 1786725562, "appid": 2899680, "installed": false}, {"name": "The Scroll of Taiwu : Beyond The Dome", "hours": 4.2, "minutes": 255, "last": 1700970468, "appid": 838350, "installed": false}, {"name": "Legends of Kingdom Rush", "hours": 4.2, "minutes": 250, "last": 1715485180, "appid": 1904860, "installed": false}, {"name": "Sekiro™: Shadows Die Twice", "hours": 4.0, "minutes": 243, "last": 1758273899, "appid": 814380, "installed": false}, {"name": "Jack Move", "hours": 4.0, "minutes": 242, "last": 1786795882, "appid": 1099640, "installed": false}, {"name": "World of Warships", "hours": 4.0, "minutes": 242, "last": 1786835551, "appid": 552990, "installed": false}, {"name": "嫂子", "hours": 3.9, "minutes": 234, "last": 1770539033, "appid": 4341360, "installed": false}, {"name": "代号三国：龙起", "hours": 3.8, "minutes": 227, "last": 1777893149, "appid": 3412900, "installed": false}, {"name": "Jelly Bubble", "hours": 3.7, "minutes": 221, "last": 1785935963, "appid": 3659090, "installed": false}, {"name": "Hades II Technical Test", "hours": 3.6, "minutes": 215, "last": 1714282092, "appid": 2933700, "installed": false}, {"name": "Hitler is my crush", "hours": 3.5, "minutes": 212, "last": 1786792277, "appid": 2595860, "installed": false}, {"name": "Meow Palace: Forbidden City ", "hours": 3.5, "minutes": 208, "last": 1771046826, "appid": 3915610, "installed": false}, {"name": "Paint the Town Red", "hours": 3.5, "minutes": 207, "last": 1777350792, "appid": 337320, "installed": false}, {"name": "Disco Elysium", "hours": 3.4, "minutes": 201, "last": 1702028753, "appid": 632470, "installed": false}, {"name": "Content Warning", "hours": 3.2, "minutes": 195, "last": 1790775481, "appid": 2881650, "installed": true}, {"name": "Melvor Idle", "hours": 2.9, "minutes": 172, "last": 1703597519, "appid": 1267910, "installed": false}, {"name": "Risk of Rain 2", "hours": 2.8, "minutes": 165, "last": 1751450585, "appid": 632360, "installed": false}, {"name": "电子ED治疗中心", "hours": 2.3, "minutes": 138, "last": 1780758978, "appid": 4521340, "installed": false}, {"name": "Trine 4: The Nightmare Prince", "hours": 2.2, "minutes": 131, "last": 1752651083, "appid": 690640, "installed": false}, {"name": "Kingdom Rush", "hours": 2.1, "minutes": 124, "last": 1736596536, "appid": 246420, "installed": false}, {"name": "Inscryption", "hours": 2.0, "minutes": 121, "last": 1704460174, "appid": 1092790, "installed": false}, {"name": "Luck be a Landlord", "hours": 2.0, "minutes": 119, "last": 1780814167, "appid": 1404850, "installed": false}, {"name": "Cardboard Town", "hours": 1.8, "minutes": 105, "last": 1715752536, "appid": 2198070, "installed": false}, {"name": "Biped 2", "hours": 1.8, "minutes": 105, "last": 1785488245, "appid": 2560240, "installed": false}, {"name": "Persona 4 Golden", "hours": 1.6, "minutes": 95, "last": 1748782009, "appid": 1113000, "installed": false}, {"name": "Shroom and Gloom", "hours": 1.5, "minutes": 90, "last": 1789210974, "appid": 3271280, "installed": false}, {"name": "Astrea: Six-Sided Oracles", "hours": 1.4, "minutes": 86, "last": 1729779863, "appid": 1755830, "installed": false}, {"name": "ELDEN RING", "hours": 1.3, "minutes": 78, "last": 1748779282, "appid": 1245620, "installed": false}, {"name": "Backpack Battles", "hours": 1.2, "minutes": 75, "last": 1732018667, "appid": 2427700, "installed": false}, {"name": "Cult of the Lamb", "hours": 1.2, "minutes": 73, "last": 1774762241, "appid": 1313140, "installed": false}, {"name": "Oblivion Override", "hours": 1.2, "minutes": 72, "last": 1745767090, "appid": 1952370, "installed": false}, {"name": "SWAT Commander: Prologue Playtest", "hours": 1.0, "minutes": 62, "last": 1692969303, "appid": 2473490, "installed": false}, {"name": "MiSide", "hours": 0.8, "minutes": 51, "last": 1735212279, "appid": 2527500, "installed": false}, {"name": "Ways of Alchemy", "hours": 0.8, "minutes": 51, "last": 1767008696, "appid": 2915380, "installed": false}, {"name": "Ring of Pain", "hours": 0.8, "minutes": 50, "last": 1705409181, "appid": 998740, "installed": true}, {"name": "To Be or Not to Be", "hours": 0.8, "minutes": 50, "last": 1715945996, "appid": 2190290, "installed": false}, {"name": "Monument Valley 2", "hours": 0.8, "minutes": 49, "last": 1728910177, "appid": 1927740, "installed": false}, {"name": "觅长生", "hours": 0.8, "minutes": 48, "last": 1754030487, "appid": 1189490, "installed": false}, {"name": "The Hungry Lamb: Traveling in the Late Ming Dynasty", "hours": 0.8, "minutes": 48, "last": 1719482970, "appid": 2593370, "installed": false}, {"name": "你的老婆", "hours": 0.8, "minutes": 47, "last": 1733707877, "appid": 3339420, "installed": false}, {"name": "Hollow Knight", "hours": 0.8, "minutes": 46, "last": 1715340837, "appid": 367520, "installed": false}, {"name": "ASTLIBRA ～生きた証～ Revision", "hours": 0.8, "minutes": 46, "last": 1715416358, "appid": 1718570, "installed": false}, {"name": "Divinity: Original Sin Enhanced Edition", "hours": 0.7, "minutes": 44, "last": 1703783411, "appid": 373420, "installed": false}, {"name": "Castle Crashers", "hours": 0.7, "minutes": 42, "last": 1753091873, "appid": 204360, "installed": false}, {"name": "Yarimono", "hours": 0.7, "minutes": 40, "last": 1736603613, "appid": 2696050, "installed": false}, {"name": "Wizard of Legend", "hours": 0.7, "minutes": 39, "last": 1698488997, "appid": 445980, "installed": false}, {"name": "UnderMine", "hours": 0.6, "minutes": 37, "last": 1720451442, "appid": 656350, "installed": true}, {"name": "Yet Another Zombie Survivors", "hours": 0.6, "minutes": 35, "last": 1728749822, "appid": 2163330, "installed": false}, {"name": "Neon Abyss", "hours": 0.5, "minutes": 32, "last": 1734791787, "appid": 788100, "installed": false}, {"name": "未知游戏（商店已查不到）", "hours": 0.5, "minutes": 32, "last": 1693298976, "appid": 1217410, "installed": false}, {"name": "Deep Rock Galactic", "hours": 0.5, "minutes": 30, "last": 1751455389, "appid": 548430, "installed": false}, {"name": "Sands of Salzaar", "hours": 0.5, "minutes": 29, "last": 1716728688, "appid": 1094520, "installed": false}, {"name": "Children of Morta", "hours": 0.5, "minutes": 27, "last": 1700730764, "appid": 330020, "installed": false}, {"name": "暖雪 Warm Snow", "hours": 0.5, "minutes": 27, "last": 1691595414, "appid": 1296830, "installed": false}, {"name": "未知游戏（商店已查不到）", "hours": 0.5, "minutes": 27, "last": 1692940198, "appid": 1377550, "installed": false}, {"name": "Left 4 Dead 2", "hours": 0.5, "minutes": 27, "last": 1751442510, "appid": 550, "installed": false}, {"name": "DAVE THE DIVER", "hours": 0.4, "minutes": 26, "last": 1745658860, "appid": 1868140, "installed": false}, {"name": "Stardew Valley", "hours": 0.4, "minutes": 25, "last": 1752247175, "appid": 413150, "installed": false}, {"name": "Sea of Stars: Sunset Edition", "hours": 0.4, "minutes": 25, "last": 1721294620, "appid": 1244090, "installed": false}, {"name": "鬼谷八荒 Tale of Immortal", "hours": 0.4, "minutes": 23, "last": 1720453697, "appid": 1468810, "installed": false}, {"name": "东方夜雀食堂 - Touhou Mystia's Izakaya", "hours": 0.4, "minutes": 22, "last": 1737111563, "appid": 1584090, "installed": false}, {"name": "Kingdom Rush Vengeance", "hours": 0.3, "minutes": 21, "last": 1715345285, "appid": 1367550, "installed": false}, {"name": "Rotwood", "hours": 0.3, "minutes": 21, "last": 1715787982, "appid": 2015270, "installed": false}, {"name": "Cultist Simulator", "hours": 0.3, "minutes": 21, "last": 1774428154, "appid": 718670, "installed": false}, {"name": "Curse of the Dead Gods", "hours": 0.3, "minutes": 20, "last": 1697343117, "appid": 1123770, "installed": false}, {"name": "异能重组", "hours": 0.3, "minutes": 18, "last": 1775315822, "appid": 3594590, "installed": false}, {"name": "eden*", "hours": 0.2, "minutes": 15, "last": 1705150020, "appid": 315810, "installed": false}, {"name": "Skul: The Hero Slayer", "hours": 0.2, "minutes": 14, "last": 1700990917, "appid": 1147560, "installed": true}, {"name": "Zoeti", "hours": 0.2, "minutes": 14, "last": 1729175735, "appid": 1434540, "installed": false}, {"name": "通神榜 Noobs Want to Live", "hours": 0.2, "minutes": 14, "last": 1707746217, "appid": 1737340, "installed": false}, {"name": "Greedland", "hours": 0.2, "minutes": 14, "last": 1723860312, "appid": 2218400, "installed": false}, {"name": "Frostpunk", "hours": 0.2, "minutes": 14, "last": 1780148241, "appid": 323190, "installed": false}, {"name": "Inkulinati", "hours": 0.2, "minutes": 13, "last": 1721293070, "appid": 957960, "installed": false}, {"name": "Terraria", "hours": 0.2, "minutes": 11, "last": 1692976788, "appid": 105600, "installed": false}, {"name": "NEEDY GIRL OVERDOSE", "hours": 0.2, "minutes": 10, "last": 1735551967, "appid": 1451940, "installed": false}, {"name": "鸡械绿洲", "hours": 0.2, "minutes": 10, "last": 1715859181, "appid": 2453360, "installed": false}, {"name": "Dome Keeper", "hours": 0.1, "minutes": 9, "last": 1728793161, "appid": 1637320, "installed": false}, {"name": "Foretales", "hours": 0.1, "minutes": 8, "last": 1721138953, "appid": 1170080, "installed": true}, {"name": "Volcano Princess", "hours": 0.1, "minutes": 8, "last": 1710751576, "appid": 1669980, "installed": false}, {"name": "Moonlighter", "hours": 0.1, "minutes": 7, "last": 1732019819, "appid": 606150, "installed": false}, {"name": "ATRI -My Dear Moments-", "hours": 0.1, "minutes": 7, "last": 1716903678, "appid": 1230140, "installed": false}, {"name": "Hadean Tactics", "hours": 0.1, "minutes": 7, "last": 1721401587, "appid": 1260590, "installed": false}, {"name": "未知游戏（商店已查不到）", "hours": 0.1, "minutes": 7, "last": 1717342087, "appid": 1920400, "installed": false}, {"name": "这是谐音梗", "hours": 0.1, "minutes": 7, "last": 1778076377, "appid": 4164310, "installed": false}, {"name": "Lobotomy Corporation", "hours": 0.1, "minutes": 6, "last": 1721294999, "appid": 568220, "installed": false}, {"name": "King Of The Castle", "hours": 0.1, "minutes": 6, "last": 1736514379, "appid": 1839880, "installed": false}, {"name": "Heretic's Fork", "hours": 0.1, "minutes": 6, "last": 1740317931, "appid": 2181610, "installed": false}, {"name": "Let's Minesweeper", "hours": 0.1, "minutes": 6, "last": 1727010975, "appid": 2865580, "installed": false}, {"name": "Rogue Glitch Ultra", "hours": 0.1, "minutes": 5, "last": 1698487126, "appid": 1092630, "installed": false}, {"name": "Lost Ruins", "hours": 0.1, "minutes": 5, "last": 1721292076, "appid": 1306630, "installed": false}, {"name": "Seek Girl Ⅶ", "hours": 0.1, "minutes": 5, "last": 1721295372, "appid": 1464930, "installed": false}, {"name": "Norland", "hours": 0.1, "minutes": 4, "last": 1724670139, "appid": 1857090, "installed": false}, {"name": "Yog-Sothoth's Yard", "hours": 0.1, "minutes": 4, "last": 1736521155, "appid": 2194530, "installed": false}, {"name": "Crypt of the NecroDancer", "hours": 0.1, "minutes": 3, "last": 1721291708, "appid": 247080, "installed": false}, {"name": "Astral Ascent", "hours": 0.1, "minutes": 3, "last": 1745752564, "appid": 1280930, "installed": true}, {"name": "Persona 5 Strikers", "hours": 0.1, "minutes": 3, "last": 1748877621, "appid": 1382330, "installed": false}, {"name": "Split Fiction", "hours": 0.1, "minutes": 3, "last": 1774757837, "appid": 2001120, "installed": false}, {"name": "Shadowverse", "hours": 0.0, "minutes": 2, "last": 1737355190, "appid": 453480, "installed": false}, {"name": "Rebel Inc: Escalation", "hours": 0.0, "minutes": 2, "last": 1721292246, "appid": 1088790, "installed": false}, {"name": "Don't Starve Together Dedicated Server", "hours": 0.0, "minutes": 1, "last": 1716699967, "appid": 343050, "installed": false}, {"name": "Kingdom Rush Frontiers", "hours": 0.0, "minutes": 1, "last": 1736596889, "appid": 458710, "installed": false}, {"name": "Ori and the Will of the Wisps", "hours": 0.0, "minutes": 1, "last": 1723885765, "appid": 1057090, "installed": false}, {"name": "《文字遊戲》", "hours": 0.0, "minutes": 1, "last": 1721386788, "appid": 1109570, "installed": false}, {"name": "Universe For Sale", "hours": 0.0, "minutes": 1, "last": 1737730154, "appid": 1627840, "installed": false}, {"name": "Clanfolk", "hours": 0.0, "minutes": 1, "last": 1721386685, "appid": 1700870, "installed": false}, {"name": "Palworld", "hours": 0.0, "minutes": 1, "last": 1783690454, "appid": 1623730, "installed": false}];
+const NONSTEAM = [{"name": "重返十八岁拿下巨乳校花—何度目かのはじめまして", "exe": "lapla-ai.exe"}, {"name": "Geometry Arena 2", "exe": "Geometry Arena 2.exe"}, {"name": "Forest Heroes", "exe": "Forest Heroes.exe"}, {"name": "超级好玩到爆炸的雪居之地", "exe": "Wildfrost.exe"}, {"name": "第九圣诗", "exe": "ANTHEM9.exe"}, {"name": "咩咩启示录", "exe": "Cult Of The Lamb.exe"}, {"name": "密教模拟器", "exe": "cultistsimulator.exe"}, {"name": "异能重组", "exe": "异能重组.exe"}, {"name": "万物皆可寄居蟹", "exe": "SAKURAA.exe"}, {"name": "对你说再见（さよならを教えて～comment te dire adieu～）", "exe": "对你说再见.exe"}, {"name": "Liminal_Border_Part_1", "exe": "Liminal_Border_Part_1.exe"}, {"name": "Liminal_Border_Part_3", "exe": "Liminal_Border_Part_3.exe"}, {"name": "Liminal_Border_Part_2", "exe": "Liminal_Border_Part_2.exe"}, {"name": "Liminal_Border_Part_4", "exe": "Liminal_Border_Part_4.exe"}, {"name": "多少兄弟", "exe": "HowManyDudes.exe"}, {"name": "与心爱的的你行至世界尽头", "exe": "hspy_chs.exe"}, {"name": "我是你裙子上的花", "exe": "Start.exe"}, {"name": "Balls", "exe": "Balls.exe"}, {"name": "Hole Is Mine", "exe": "Hole Is Mine.exe"}, {"name": "RuneCollseum", "exe": "RuneCollseum.exe"}, {"name": "羡慕羡慕羡慕羡慕羡慕羡慕羡慕", "exe": "Shroom and Gloom.exe"}, {"name": "王国保卫战：起源", "exe": "steamclient_loader.exe"}, {"name": "尖塔2 卡图工具", "exe": "SlaytheSpire2Drawing.exe"}];
+
+const pad = n => String(n).padStart(2, "0");
+const fmtDate = ts => {
+  if (!ts) return "—";
+  const d = new Date(ts * 1000);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+const fmtH = h => h >= 100 ? Math.round(h).toLocaleString() : h.toFixed(1);
+
+function tierOf(h) {
+  if (h >= 500) return ["无底洞", "#ffe1ec", "#c9457a"];
+  if (h >= 100) return ["常客", "#f3e6ff", "#7d5cc4"];
+  if (h >= 20)  return ["玩过一阵", "#e6f0ff", "#4a72c9"];
+  if (h >= 5)   return ["浅尝", "#e6faf1", "#2f9e77"];
+  return ["尝个味", "#f2f2f4", "#7c7c8a"];
+}
+
+const totalMin = DATA.reduce((s, g) => s + g.minutes, 0);
+const totalH = totalMin / 60;
+const over10 = DATA.filter(g => g.hours >= 10).length;
+const maxH = DATA.length ? DATA[0].hours : 0;
+
+const summary = [
+  ["游戏数量", DATA.length, "款"],
+  ["总时长", Math.round(totalH).toLocaleString(), "小时"],
+  ["折合", (totalH / 24).toFixed(0), "天"],
+  ["10 小时以上的", over10, "款"],
+];
+document.getElementById("cards").innerHTML = summary.map(([k, v, u]) =>
+  `<div class="card"><div class="k">${k}</div><div class="v">${v}<small>${u}</small></div></div>`
+).join("");
+
+const top = DATA.slice(0, 20);
+document.getElementById("top20").innerHTML = top.map((g, i) => {
+  const w = Math.max(2, (g.hours / maxH) * 100);
+  return `<div class="bar-row">
+    <div class="rank">${i + 1}</div>
+    <div class="bar-name">
+      <div class="nm" title="${g.name}">${g.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div>
+    </div>
+    <div class="hh">${fmtH(g.hours)} h</div>
+  </div>`;
+}).join("");
+
+let sortKey = "time";
+let query = "";
+
+function render() {
+  let rows = DATA.slice();
+  if (query) {
+    const q = query.toLowerCase();
+    rows = rows.filter(g => g.name.toLowerCase().includes(q));
+  }
+  if (sortKey === "time") rows.sort((a, b) => b.minutes - a.minutes);
+  else if (sortKey === "recent") rows.sort((a, b) => (b.last || 0) - (a.last || 0));
+  else rows.sort((a, b) => a.name.localeCompare(b.name, "zh"));
+
+  document.getElementById("count").textContent =
+    query ? `筛出 ${rows.length} / ${DATA.length} 款` : `共 ${DATA.length} 款`;
+  document.getElementById("empty").style.display = rows.length ? "none" : "block";
+
+  document.getElementById("list").innerHTML = rows.map(g => {
+    const [tier, bg, fg] = tierOf(g.hours);
+    return `<div class="item">
+      <div>
+        <div class="nm"><b title="${g.name}">${g.name}</b>
+          <span class="tier" style="background:${bg};color:${fg}">${tier}</span></div>
+        <div class="meta">最后游玩 ${fmtDate(g.last)} · appid ${g.appid}${g.installed ? "" : " · 已卸载"}</div>
+      </div>
+      <div class="hh">${fmtH(g.hours)} h</div>
+    </div>`;
+  }).join("");
+}
+
+document.getElementById("q").addEventListener("input", e => {
+  query = e.target.value.trim();
+  render();
+});
+document.getElementById("sortseg").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  sortKey = b.dataset.sort;
+  [...document.querySelectorAll("#sortseg button")].forEach(x => x.classList.toggle("on", x === b));
+  render();
+});
+render();
+
+document.getElementById("nonsteam").innerHTML = NONSTEAM.length
+  ? NONSTEAM.map(g => `<div class="ns-item"><span>${g.name}</span><span>${g.exe}</span></div>`).join("")
+  : '<div class="empty">没有记录</div>';
+})();
+</script>
+</body>
+</html>

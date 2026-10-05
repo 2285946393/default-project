@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#05070c" />
+<title>磁力沙盒 · Ising Sandbox</title>
+<!--
+  磁力沙盒 Ising Sandbox（中文单文件离线版）
+  二维伊辛模型：每个格子只有一个"朝上还是朝下"的选择，它只跟四个邻居比较，
+  多数派拉它、少数派推它——没有任何全局指挥，却会在某个温度突然集体站队。
+  物理：棋盘格 Metropolis 单点更新 + Wolff 团簇更新；Onsager 精确解作为对照曲线。
+  零依赖，双击即可离线运行。
+-->
+<style>
+  :root{
+    --ink:#eaf2ff; --dim:#8b99b4; --line:rgba(150,175,220,.14);
+    --glass:rgba(11,15,24,.62); --glass-solid:rgba(9,12,20,.94);
+    --accent:#ff6ad5; --accent2:#6ad5ff;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;background:#04060b;color:var(--ink);font-family:var(--font);user-select:none;}
+  #stage{position:fixed;inset:0;display:block;cursor:crosshair;touch-action:none;}
+
+  .glass{background:var(--glass);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+    border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 60px rgba(0,0,0,.5);}
+
+  .masthead{position:fixed;top:20px;left:24px;z-index:10;pointer-events:none;text-shadow:0 2px 14px #000;}
+  .wordmark{font-size:19px;font-weight:600;letter-spacing:.14em;}
+  .wordmark b{color:var(--accent);font-weight:700;}
+  .tagline{margin-top:5px;font-size:12px;color:var(--dim);letter-spacing:.06em;}
+
+  .panel{position:fixed;top:18px;right:18px;width:276px;max-height:calc(100vh - 36px);overflow-y:auto;
+    padding:14px 14px 15px;z-index:15;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;}
+  .panel::-webkit-scrollbar{width:7px;}.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:6px;}
+  .panel.hidden{opacity:0;transform:translateX(24px);pointer-events:none;}
+  .panel h2{font-size:12px;letter-spacing:.22em;color:var(--dim);font-weight:600;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .panel h2 b{color:var(--accent);letter-spacing:.08em;font-weight:600;}
+  .sec{border-top:1px solid var(--line);padding-top:11px;margin-top:11px;}
+  .sec-title{font-size:11px;letter-spacing:.18em;color:var(--dim);margin-bottom:8px;}
+
+  .preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+  .preset-btn{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font-family:var(--font);
+    font-size:11px;padding:8px 2px;border-radius:8px;cursor:pointer;transition:.15s;}
+  .preset-btn:hover{background:rgba(255,106,213,.12);border-color:rgba(255,106,213,.3);}
+  .preset-btn.on{background:linear-gradient(180deg,rgba(255,106,213,.22),rgba(255,106,213,.08));border-color:rgba(255,106,213,.4);color:var(--accent);}
+
+  .theme-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .theme-btn{width:30px;height:30px;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:.15s;}
+  .theme-btn:hover{transform:scale(1.1);}
+  .theme-btn.on{border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.4);}
+
+  .seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+  .seg button{flex:1;border:0;background:transparent;color:var(--dim);font-family:var(--font);
+    font-size:11.5px;padding:7px 3px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .seg button:hover{color:var(--ink);background:rgba(255,255,255,.05);}
+  .seg button.on{background:linear-gradient(180deg,rgba(255,106,213,.22),rgba(255,106,213,.08));color:var(--accent);}
+
+  .btnrow{display:flex;gap:6px;margin-top:8px;}
+  .btn{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font-family:var(--font);
+    font-size:12px;padding:7px 6px;border-radius:9px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .btn:hover{background:rgba(255,106,213,.12);border-color:rgba(255,106,213,.3);}
+  .btn.primary{background:linear-gradient(180deg,rgba(255,106,213,.22),rgba(255,106,213,.08));border-color:rgba(255,106,213,.34);color:var(--accent);}
+
+  .row{margin:8px 0;}
+  .row .lab{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-bottom:5px;}
+  .row .lab output{color:var(--ink);font-family:var(--mono);}
+  input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:rgba(255,255,255,.12);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff,var(--accent));cursor:pointer;box-shadow:0 0 8px rgba(255,106,213,.6);border:0;}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:var(--accent);cursor:pointer;}
+
+  .chkrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim);margin:7px 0;cursor:pointer;}
+  .chkrow input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;}
+
+  .note{font-size:10.5px;line-height:1.6;color:#697694;margin-top:7px;}
+  .note b{color:var(--accent2);font-weight:600;}
+
+  .chart{width:100%;height:106px;display:block;margin-top:8px;border:1px solid var(--line);
+    border-radius:10px;background:rgba(255,255,255,.03);}
+
+  .stats{position:fixed;left:22px;bottom:18px;z-index:10;font-family:var(--mono);font-size:11.5px;color:var(--dim);
+    line-height:1.75;text-shadow:0 1px 8px #000;pointer-events:none;}
+  .stats b{color:var(--ink);font-weight:600;}
+  .stats i{color:var(--accent);font-style:normal;}
+
+  .toolbar{position:fixed;right:18px;bottom:18px;z-index:14;display:flex;gap:7px;padding:7px;border-radius:13px;}
+  .iconbtn{width:36px;height:34px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+    color:var(--ink);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .iconbtn:hover{background:rgba(255,106,213,.14);border-color:rgba(255,106,213,.3);}
+
+  .veil{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;padding:20px;padding-right:308px;
+    background:radial-gradient(ellipse at center,rgba(4,6,11,.25),rgba(4,6,11,.82));transition:opacity .8s ease;cursor:pointer;}
+  .veil.gone{opacity:0;pointer-events:none;}
+  .veil .big{font-size:clamp(28px,6.6vw,68px);font-weight:200;letter-spacing:.24em;padding-left:.24em;
+    background:linear-gradient(180deg,#fff,#ffb3e8 55%,var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .veil .sub{margin-top:16px;color:var(--dim);font-size:clamp(12px,2.1vw,15px);line-height:1.85;max-width:560px;letter-spacing:.05em;}
+  .veil .sub b{color:var(--accent2);font-weight:600;}
+  .veil .hint{margin-top:24px;font-size:11px;letter-spacing:.2em;color:#5a6785;text-transform:uppercase;animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
+
+  .brush-cursor{position:fixed;pointer-events:none;z-index:20;border:1.5px solid rgba(255,255,255,.5);border-radius:50%;
+    transform:translate(-50%,-50%);mix-blend-mode:difference;display:none;}
+
+  @media (max-width:760px){
+    .panel{width:236px;right:10px;top:10px;}
+    .veil{padding:20px;}
+    .tagline{display:none;}
+    .stats{font-size:10.5px;}
+  }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<div class="brush-cursor" id="brushCursor"></div>
+
+<div class="masthead">
+  <div class="wordmark">磁力沙盒 · <b>ISING</b></div>
+  <div class="tagline">每个格子只跟邻居商量，却在某个温度集体站队</div>
+</div>
+
+<div class="panel glass" id="panel"></div>
+<div class="stats" id="stats"></div>
+
+<div class="toolbar glass">
+  <button class="iconbtn" id="tbPause" title="暂停 / 继续（空格）">⏸</button>
+  <button class="iconbtn" id="tbRandom" title="随机重置（R）">🎲</button>
+  <button class="iconbtn" id="tbSave" title="保存图片（P）">📷</button>
+  <button class="iconbtn" id="tbPanel" title="隐藏 / 显示面板（G）">⚙</button>
+</div>
+
+<div class="veil" id="veil">
+  <div>
+    <div class="big">磁力沙盒</div>
+    <div class="sub">屏幕里每个格子只有一件事要做：看看四个邻居朝哪边，再决定自己要不要翻面。<br>
+      没有谁在指挥，可它们会在某个温度——<b>突然全体站到同一边</b>。这就是相变。<br>
+      把温度从热调到冷，右边那条曲线会画出来。</div>
+    <div class="hint">点击任意处开始 · 按下拖动可改写自旋 · 滚轮调笔刷 · A 退火扫描</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   二维伊辛模型
+   能量 H = -J Σ<ij> s_i s_j - h Σ s_i ，自旋 s = ±1
+   单点翻转的接受概率 = exp(-ΔE/T)，ΔE = 2 s (J Σneighbors + h)
+   精确解（方格子、J=1、h=0）：Tc = 2/ln(1+√2) ≈ 2.2692
+============================================================ */
+const TC = 2 / Math.log(1 + Math.SQRT2);
+
+const params = {
+  T: 2.25, h: 0, J: 1,
+  mode: "wolff",
+  sweeps: 5,
+  cell: 5,
+  brush: 30,
+  smooth: true,
+  glow: true,
+  edges: false,
+  paused: false,
+  anneal: false,
+  annealRate: 0.30,
+};
+
+const THEMES = {
+  "玫瑰":  [[22,10,20],[92,32,74],[186,74,132],[246,146,186],[255,236,246]],
+  "霓虹":  [[4,10,30],[22,52,150],[44,178,222],[186,70,214],[255,196,255]],
+  "熔岩":  [[10,6,5],[96,22,12],[208,74,20],[252,176,60],[255,246,214]],
+  "极光":  [[3,12,16],[12,74,74],[34,196,152],[152,255,204],[242,255,248]],
+  "赛博":  [[8,2,24],[64,14,110],[176,44,168],[70,214,255],[240,252,255]],
+  "墨":    [[14,14,18],[64,64,72],[142,142,150],[212,212,218],[255,255,255]],
+};
+let curTheme = "玫瑰";
+let palette = null;
+
+const PRESETS = {
+  "有序":   {T:0.8,  h:0,    J:1},
+  "临界点": {T:TC,   h:0,    J:1},
+  "高温":   {T:3.6,  h:0,    J:1},
+  "反铁磁": {T:0.8,  h:0,    J:-1},
+  "外磁场": {T:1.7,  h:0.55, J:1},
+  "深冷":   {T:0.15, h:0,    J:1},
+};
+
+function buildPalette(name){
+  const stops = THEMES[name];
+  const out = new Uint8ClampedArray(256*3);
+  for(let i=0;i<256;i++){
+    const t = i/255*(stops.length-1);
+    const k = Math.min(stops.length-2, Math.floor(t));
+    const f = t-k, a = stops[k], b = stops[k+1];
+    out[i*3]   = a[0]+(b[0]-a[0])*f;
+    out[i*3+1] = a[1]+(b[1]-a[1])*f;
+    out[i*3+2] = a[2]+(b[2]-a[2])*f;
+  }
+  return out;
+}
+
+/* ============================================================
+   快速随机数（xorshift32）
+============================================================ */
+let rngState = 2463534242;
+function rnd(){
+  rngState ^= rngState<<13; rngState ^= rngState>>>17; rngState ^= rngState<<5;
+  return (rngState>>>0)*2.3283064365386963e-10;
+}
+
+/* ============================================================
+   网格
+============================================================ */
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+let W=0,H=0,dpr=1;
+let NX=0,NY=0,n=0;
+let spins,mark,stack,clusterList;
+let M=0;                 // 磁化总和 Σ s_i
+let expTab=null, expT=NaN, expH=NaN, expJ=NaN;
+let lastCluster=0;
+let offCanvas,offCtx,imgData;
+
+// 边长取偶数：反铁磁的交错上色和周期性边界才自洽（奇数会在环绕边留一条错位缝）
+function gridDims(){
+  return {
+    nx: Math.max(48, Math.floor(W/params.cell)) & ~1,
+    ny: Math.max(48, Math.floor(H/params.cell)) & ~1
+  };
+}
+
+function initGrid(keep){
+  const old = keep ? spins : null, oNX = NX, oNY = NY;
+  const d = gridDims();
+  NX = d.nx; NY = d.ny;
+  n = NX*NY;
+  spins = new Int8Array(n);
+  mark = new Uint8Array(n);
+  stack = new Int32Array(n);
+  clusterList = new Int32Array(n);
+  if(old){
+    // 尺寸变了就最近邻重采样，别把已经长出来的畴结构扔掉
+    let m = 0;
+    for(let y=0;y<NY;y++){
+      const sy = Math.min(oNY-1, (y*oNY/NY)|0), row = sy*oNX;
+      for(let x=0;x<NX;x++){
+        const s = old[row + Math.min(oNX-1, (x*oNX/NX)|0)];
+        spins[y*NX+x] = s; m += s;
+      }
+    }
+    M = m;
+  }else{
+    randomize();
+  }
+  offCanvas = document.createElement("canvas");
+  offCanvas.width = NX; offCanvas.height = NY;
+  offCtx = offCanvas.getContext("2d");
+  imgData = offCtx.createImageData(NX,NY);
+  expTab = null;
+  clearBins();
+}
+
+function randomize(){
+  let m = 0;
+  for(let i=0;i<n;i++){
+    const s = rnd()<0.5 ? -1 : 1;
+    spins[i] = s; m += s;
+  }
+  M = m;
+}
+
+function setAll(val){
+  spins.fill(val);
+  M = val*n;
+}
+
+function resize(){
+  dpr = Math.min(window.devicePixelRatio||1, 1.5);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.floor(W*dpr); canvas.height = Math.floor(H*dpr);
+  canvas.style.width = W+"px"; canvas.style.height = H+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  // 手机地址栏收放也会触发 resize，不该把世界清空：尺寸没变就什么都不做，变了就重采样
+  const d = gridDims();
+  if(spins && d.nx===NX && d.ny===NY) return;
+  initGrid(!!spins);
+}
+window.addEventListener("resize", resize);
+
+/* ============================================================
+   更新一步
+============================================================ */
+function buildExpTab(){
+  const T = params.T, h = params.h, J = params.J;
+  if(expTab && expT===T && expH===h && expJ===J) return;
+  expT = T; expH = h; expJ = J;
+  expTab = new Float32Array(10);
+  for(let si=0;si<2;si++){
+    const s = si===1?1:-1;
+    for(let k=0;k<5;k++){
+      const nb = k*2-4;
+      const dE = 2*s*(J*nb + h);
+      expTab[si*5+k] = dE<=0 ? 1 : Math.exp(-dE/T);
+    }
+  }
+}
+
+// 棋盘格：先.update 一个子格的全体（它们互不相邻），再更新另一个子格
+function metropolisSweep(){
+  buildExpTab();
+  let m = M;
+  for(let par=0;par<2;par++){
+    for(let y=0;y<NY;y++){
+      const up = (y===0?NY-1:y-1)*NX, dn = (y===NY-1?0:y+1)*NX, yc = y*NX;
+      for(let x=(y+par)&1;x<NX;x+=2){
+        const i = yc+x;
+        const s = spins[i];
+        const nb = spins[up+x]+spins[dn+x]+spins[yc+(x===0?NX-1:x-1)]+spins[yc+(x===NX-1?0:x+1)];
+        const p = expTab[(s>0?1:0)*5 + ((nb+4)>>1)];
+        if(p>=1 || rnd()<p){ spins[i] = -s; m -= 2*s; }
+      }
+    }
+  }
+  M = m;
+}
+
+// Wolff 团簇：随机抓一个格子，同向邻居以概率 p 一起入伙，整团一次性翻面
+function wolffStep(){
+  if(params.J<=0){ metropolisSweep(); return; }
+  const T = params.T, J = params.J;
+  const p = 1 - Math.exp(-2*J/T);
+  let top=0, cc=0;
+  const i0 = (rnd()*n)|0;
+  const s0 = spins[i0];
+  const ns = -s0;
+  stack[top++] = i0; mark[i0] = 1;
+  while(top>0){
+    const i = stack[--top];
+    clusterList[cc++] = i;
+    const x = i%NX, y = (i/NX)|0, yc = y*NX;
+    const up = (y===0?NY-1:y-1)*NX + x;
+    const dn = (y===NY-1?0:y+1)*NX + x;
+    const lf = yc + (x===0?NX-1:x-1);
+    const rt = yc + (x===NX-1?0:x+1);
+    if(!mark[up] && spins[up]===s0 && rnd()<p){ mark[up]=1; stack[top++]=up; }
+    if(!mark[dn] && spins[dn]===s0 && rnd()<p){ mark[dn]=1; stack[top++]=dn; }
+    if(!mark[lf] && spins[lf]===s0 && rnd()<p){ mark[lf]=1; stack[top++]=lf; }
+    if(!mark[rt] && spins[rt]===s0 && rnd()<p){ mark[rt]=1; stack[top++]=rt; }
+  }
+  for(let k=0;k<cc;k++){ const i=clusterList[k]; spins[i]=ns; mark[i]=0; }
+  M -= 2*s0*cc;
+  lastCluster = cc;
+}
+
+function advance(){
+  // Wolff 团簇只在"零场 + 铁磁"下成立：有外场时整团翻面的能量代价与场有关，
+  // 该算法没有考虑这一项，会算错，所以自动退回单点翻转。
+  if(params.mode==="wolff" && params.J>0 && params.h===0){
+    for(let i=0;i<params.sweeps;i++) wolffStep();
+  }else{
+    lastCluster = 0;
+    for(let i=0;i<params.sweeps;i++) metropolisSweep();
+  }
+}
+
+/* ============================================================
+   渲染
+============================================================ */
+function render(){
+  const data = imgData.data;
+  const smooth = params.smooth, edges = params.edges;
+  // 反铁磁的有序是"相邻格子反向"，画原始自旋会和像素格打架出摩尔纹，
+  // 所以按交错磁化显示：每格乘 (-1)^(x+y)，有序基态就变成了纯色。
+  const stagger = params.J < 0;
+  if(smooth){
+    for(let y=0;y<NY;y++){
+      const up = (y===0?NY-1:y-1)*NX, dn = (y===NY-1?0:y+1)*NX, yc = y*NX;
+      for(let x=0;x<NX;x++){
+        const i = yc+x, j = i*4;
+        const q = (stagger && ((x+y)&1)) ? -1 : 1;
+        const s = spins[i];
+        const xp = yc+(x===NX-1?0:x+1), xm = yc+(x===0?NX-1:x-1), dnI = dn+x;
+        if(edges && (q*s !== -q*spins[xp] || q*s !== -q*spins[dnI])){
+          data[j]=data[j+1]=data[j+2]=255;
+        }else{
+          let nb = spins[up+x]+spins[dnI]+spins[xm]+spins[xp];
+          if(stagger) nb = -nb;
+          let idx = (128 + q*(s+nb)*0.2*127)|0;
+          if(idx<0)idx=0; else if(idx>255)idx=255;
+          data[j]=palette[idx*3]; data[j+1]=palette[idx*3+1]; data[j+2]=palette[idx*3+2];
+        }
+        data[j+3]=255;
+      }
+    }
+  }else{
+    for(let y=0;y<NY;y++){
+      const dn = (y===NY-1?0:y+1)*NX, yc = y*NX;
+      for(let x=0;x<NX;x++){
+        const i = yc+x, j = i*4;
+        const q = (stagger && ((x+y)&1)) ? -1 : 1;
+        const sE = q*spins[i];
+        if(edges && (sE !== -q*spins[yc+(x===NX-1?0:x+1)] || sE !== -q*spins[dn+x])){
+          data[j]=data[j+1]=data[j+2]=255;
+        }else{
+          const idx = sE>0?255:0;
+          data[j]=palette[idx*3]; data[j+1]=palette[idx*3+1]; data[j+2]=palette[idx*3+2];
+        }
+        data[j+3]=255;
+      }
+    }
+  }
+  offCtx.putImageData(imgData,0,0);
+  ctx.clearRect(0,0,W,H);
+  ctx.imageSmoothingEnabled = smooth;
+  ctx.imageSmoothingQuality = "high";
+  if(params.glow){
+    ctx.globalAlpha = 0.42;
+    ctx.filter = "blur(7px)";
+    ctx.drawImage(offCanvas,0,0,W,H);
+    ctx.filter = "none";
+    ctx.globalAlpha = 1;
+  }
+  ctx.drawImage(offCanvas,0,0,W,H);
+}
+
+/* ============================================================
+   绘画：直接在格子上写自旋
+============================================================ */
+let painting=false, paintValue=1, lastPx=0, lastPy=0;
+const brushCursor = document.getElementById("brushCursor");
+
+function paintDot(px,py,val){
+  const cell = params.cell;
+  const r = params.brush/cell;
+  const gcx = Math.floor(px/cell), gcy = Math.floor(py/cell);
+  const R = Math.ceil(r);
+  let m = M;
+  for(let dy=-R;dy<=R;dy++){
+    const gy = gcy+dy;
+    if(gy<0||gy>=NY) continue;
+    for(let dx=-R;dx<=R;dx++){
+      if(dx*dx+dy*dy>r*r) continue;
+      const gx = gcx+dx;
+      if(gx<0||gx>=NX) continue;
+      const i = gy*NX+gx;
+      if(spins[i]!==val){ m += val-spins[i]; spins[i]=val; }
+    }
+  }
+  M = m;
+}
+function paintLine(x0,y0,x1,y1,val){
+  const dx=Math.abs(x1-x0), dy=Math.abs(y1-y0);
+  const steps = Math.max(1, Math.max(dx,dy)/(params.cell*0.7)|0);
+  for(let s=0;s<=steps;s++){
+    const t = s/steps;
+    paintDot(x0+(x1-x0)*t, y0+(y1-y0)*t, val);
+  }
+}
+
+canvas.addEventListener("pointerdown",e=>{
+  painting = true;
+  paintValue = (e.button===2 || e.shiftKey) ? -1 : 1;
+  lastPx = e.clientX; lastPy = e.clientY;
+  paintDot(e.clientX,e.clientY,paintValue);
+});
+canvas.addEventListener("pointermove",e=>{
+  brushCursor.style.display = "block";
+  brushCursor.style.left = e.clientX+"px";
+  brushCursor.style.top = e.clientY+"px";
+  const d = params.brush*2;
+  brushCursor.style.width = brushCursor.style.height = d+"px";
+  if(painting){
+    paintLine(lastPx,lastPy,e.clientX,e.clientY,paintValue);
+    lastPx = e.clientX; lastPy = e.clientY;
+  }
+});
+window.addEventListener("pointerup",()=>{ painting=false; });
+canvas.addEventListener("pointerleave",()=>{ brushCursor.style.display="none"; painting=false; });
+canvas.addEventListener("contextmenu",e=>e.preventDefault());
+canvas.addEventListener("wheel",e=>{
+  e.preventDefault();
+  params.brush = Math.max(6, Math.min(220, params.brush + (e.deltaY>0?-3:3)));
+  syncBrush();
+},{passive:false});
+
+/* ============================================================
+   退火扫描：一边降温一边记录 |M|，把相变曲线画出来
+============================================================ */
+const CHART_TMAX = 4.2, NBINS = 84;
+const binSum = new Float64Array(NBINS), binCnt = new Int32Array(NBINS);
+let annealHold = 0;
+
+function clearBins(){ binSum.fill(0); binCnt.fill(0); }
+function recordSample(){
+  if(params.J<=0) return;
+  const T = params.T;
+  if(T<0 || T>CHART_TMAX) return;
+  const b = Math.min(NBINS-1, (T/CHART_TMAX*NBINS)|0);
+  binSum[b] += Math.abs(M)/n;
+  binCnt[b]++;
+}
+// Onsager / Yang 精确解（方格子，J=1，h=0）：T 高于 Tc 时自发磁化为 0
+function onsager(T){
+  if(T>=TC) return 0;
+  const v = 1 - Math.pow(Math.sinh(2/T),-4);
+  return v>0 ? Math.pow(v,0.125) : 0;
+}
+
+const chart = document.createElement("canvas");
+chart.className = "chart";
+chart.width = 496; chart.height = 200;
+const cctx = chart.getContext("2d");
+let chartFont = null;
+
+function drawChart(){
+  const w=chart.width, h=chart.height;
+  const pl=26, pr=10, pt=12, pb=20;
+  const iw = w-pl-pr, ih = h-pt-pb;
+  const X = T => pl + T/CHART_TMAX*iw;
+  const Y = v => pt + (1-v)*ih;
+  cctx.clearRect(0,0,w,h);
+
+  if(!chartFont) chartFont = "11px " + getComputedStyle(document.body).getPropertyValue("--mono");
+  cctx.font = chartFont;
+  cctx.strokeStyle = "rgba(150,175,220,.18)";
+  cctx.lineWidth = 1;
+  cctx.beginPath();
+  cctx.moveTo(pl,pt); cctx.lineTo(pl,pt+ih); cctx.lineTo(pl+iw,pt+ih);
+  cctx.stroke();
+  cctx.fillStyle = "rgba(139,153,180,.85)";
+  cctx.textAlign = "left"; cctx.fillText("1", 8, pt+9);
+  cctx.fillText("|M|", 4, pt-1);
+  cctx.fillText("0", 8, pt+ih);
+  cctx.textAlign = "right"; cctx.fillText("T=4.2", pl+iw, pt+ih+15);
+
+  // 精确解参照线
+  cctx.strokeStyle = "rgba(139,153,180,.42)";
+  cctx.setLineDash([3,3]);
+  cctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const T = i/200*CHART_TMAX;
+    const px = X(T), py = Y(onsager(T));
+    i===0 ? cctx.moveTo(px,py) : cctx.lineTo(px,py);
+  }
+  cctx.stroke();
+  // 临界温度标记
+  cctx.strokeStyle = "rgba(106,213,255,.55)";
+  cctx.beginPath(); cctx.moveTo(X(TC),pt); cctx.lineTo(X(TC),pt+ih); cctx.stroke();
+  cctx.setLineDash([]);
+  cctx.fillStyle = "rgba(106,213,255,.8)";
+  cctx.textAlign = "center";
+  cctx.fillText("Tc", X(TC), pt+ih+15);
+
+  // 测量数据
+  cctx.fillStyle = "#ff6ad5";
+  cctx.strokeStyle = "rgba(255,106,213,.55)";
+  cctx.lineWidth = 1.5;
+  cctx.beginPath();
+  let started = false;
+  for(let b=0;b<NBINS;b++){
+    if(!binCnt[b]) { continue; }
+    const T = (b+0.5)/NBINS*CHART_TMAX;
+    const v = binSum[b]/binCnt[b];
+    const px = X(T), py = Y(Math.min(1,v));
+    if(!started){ cctx.moveTo(px,py); started = true; } else cctx.lineTo(px,py);
+  }
+  cctx.stroke();
+  for(let b=0;b<NBINS;b++){
+    if(!binCnt[b]) continue;
+    const T = (b+0.5)/NBINS*CHART_TMAX;
+    const v = Math.min(1, binSum[b]/binCnt[b]);
+    const px = X(T), py = Y(v);
+    cctx.beginPath(); cctx.arc(px,py,2.4,0,6.2832); cctx.fill();
+  }
+  // 当前温度游标
+  cctx.strokeStyle = "rgba(255,255,255,.6)";
+  cctx.lineWidth = 1;
+  cctx.beginPath(); cctx.moveTo(X(params.T),pt); cctx.lineTo(X(params.T),pt+ih); cctx.stroke();
+}
+
+/* ============================================================
+   状态读数
+============================================================ */
+let energy = 0;
+function updateState(){
+  let bond = 0, sSum = 0;
+  for(let y=0;y<NY;y++){
+    const up = (y===0?NY-1:y-1)*NX, dn = (y===NY-1?0:y+1)*NX, yc = y*NX;
+    for(let x=0;x<NX;x++){
+      const i = yc+x, s = spins[i];
+      bond += s*(spins[up+x]+spins[dn+x]+spins[yc+(x===0?NX-1:x-1)]+spins[yc+(x===NX-1?0:x+1)]);
+      sSum += s;
+    }
+  }
+  M = sSum;
+  energy = (-params.J*0.5*bond - params.h*sSum)/n;
+}
+
+function phaseLabel(){
+  if(params.J<0) return "反铁磁";
+  if(params.T>TC+0.35) return "顺磁 · 无序";
+  if(params.T>TC-0.30) return "临界区";
+  return "铁磁 · 有序";
+}
+
+/* ============================================================
+   面板
+============================================================ */
+const panel = document.getElementById("panel");
+const ui = {};
+
+function el(tag,attrs,...kids){
+  const e = document.createElement(tag);
+  attrs = attrs||{};
+  for(const k in attrs){
+    if(k==="class") e.className = attrs[k];
+    else if(k==="style" && typeof attrs[k]==="object") Object.assign(e.style,attrs[k]);
+    else e[k] = attrs[k];
+  }
+  for(const kid of kids){ if(kid!=null) e.append(kid); }
+  return e;
+}
+function fmt(v){ return Number.isInteger(v) ? ""+v : ""+Math.round(v*1000)/1000; }
+function btn(text,fn,primary){ return el("button",{class:"btn"+(primary?" primary":""),textContent:text,onclick:fn}); }
+function slider(label,val,min,max,step,fn,suffix){
+  const out = el("output",{textContent:fmt(val)+(suffix||"")});
+  const inp = el("input",{type:"range",min,max,step,value:val});
+  inp.oninput = ()=>{ const v = parseFloat(inp.value); out.textContent = fmt(v)+(suffix||""); fn(v); };
+  return {node: el("div",{class:"row"},el("div",{class:"lab"},el("span",{textContent:label}),out),inp), inp, out};
+}
+function seg(options,cur,fn){
+  const wrap = el("div",{class:"seg"});
+  const btns = {};
+  options.forEach(o=>{
+    const b = el("button",{class:(o[0]===cur?"on":""),textContent:o[1]});
+    b.onclick = ()=>{
+      Object.values(btns).forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      fn(o[0]);
+    };
+    btns[o[0]] = b; wrap.append(b);
+  });
+  wrap.btns = btns;
+  return wrap;
+}
+
+function buildPanel(){
+  panel.innerHTML = "";
+  ui.phase = el("b",{textContent:phaseLabel()});
+  panel.append(el("h2",{},"磁力沙盒控制台", ui.phase));
+
+  // 预设
+  const s1 = el("div",{class:"sec"});
+  s1.append(el("div",{class:"sec-title"},"世界状态"));
+  const pg = el("div",{class:"preset-grid"});
+  ui.presetBtns = pg;
+  Object.keys(PRESETS).forEach(name=>{
+    const b = el("button",{class:"preset-btn",textContent:name});
+    b.onclick = ()=>{ applyPreset(name); markPreset(b); };
+    pg.append(b);
+  });
+  s1.append(pg);
+  panel.append(s1);
+
+  // 参数
+  const s2 = el("div",{class:"sec"});
+  s2.append(el("div",{class:"sec-title"},"世界参数"));
+  ui.T = slider("温度 T", params.T, 0.05, 4.2, 0.01, v=>{
+    params.T = v; if(!params.anneal) markPreset(null);
+  }, "");
+  s2.append(ui.T.node);
+  s2.append(el("div",{class:"note",textContent:"Tc ≈ 2.2692 是二维方格子的临界温度：低于它，全体会站到同一边；高于它，热噪声把秩序打散。"}));
+  ui.h = slider("外磁场 h", params.h, -1, 1, 0.01, v=>{ params.h = v; markPreset(null); refreshNote(); }, "");
+  s2.append(ui.h.node);
+  s2.append(el("div",{class:"sec-title",style:{marginTop:"10px"}},"邻居关系 J"));
+  ui.J = seg([["1","铁磁 · 喜欢同向"],["-1","反铁磁 · 喜欢反向"]], "1", v=>{
+    params.J = parseFloat(v); markPreset(null); refreshNote();
+  });
+  s2.append(ui.J);
+  s2.append(el("div",{class:"sec-title",style:{marginTop:"10px"}},"更新方式"));
+  ui.mode = seg([["wolff","团簇翻转"],["metro","单点翻转"]], "wolff", v=>{ params.mode = v; markPreset(null); });
+  s2.append(ui.mode);
+  ui.note = el("div",{class:"note"});
+  s2.append(ui.note);
+  ui.sweeps = slider("每帧步数", params.sweeps, 1, 40, 1, v=>{ params.sweeps = v|0; }, "");
+  s2.append(ui.sweeps.node);
+  panel.append(s2);
+
+  // 退火扫描
+  const s3 = el("div",{class:"sec"});
+  s3.append(el("div",{class:"sec-title"},"相变扫描"));
+  ui.annealBtn = btn("▶ 开始降温扫描", ()=>{ toggleAnneal(); }, true);
+  s3.append(el("div",{class:"btnrow"}, ui.annealBtn));
+  ui.rate = slider("降温速度", params.annealRate, 0.05, 0.8, 0.01, v=>{ params.annealRate = v; }, " /秒");
+  s3.append(ui.rate.node);
+  s3.append(chart);
+  s3.append(el("div",{class:"note",textContent:"粉点 = 实测 |M|；灰虚线 = Onsager 精确解。降到最冷后会自动回到高温重新扫一遍。"}));
+  panel.append(s3);
+
+  // 显示
+  const s4 = el("div",{class:"sec"});
+  s4.append(el("div",{class:"sec-title"},"显示"));
+  const tr = el("div",{class:"theme-row"});
+  Object.keys(THEMES).forEach(name=>{
+    const stops = THEMES[name];
+    const grad = "linear-gradient(90deg," + stops.map((c,i)=>"rgb("+c[0]+","+c[1]+","+c[2]+") "+(i/(stops.length-1)*100).toFixed(0)+"%").join(",") + ")";
+    const b = el("div",{class:"theme-btn"+(name===curTheme?" on":""),style:{background:grad},title:name});
+    b.onclick = ()=>{ curTheme = name; palette = buildPalette(name); [...tr.children].forEach(x=>x.classList.remove("on")); b.classList.add("on"); };
+    tr.append(b);
+  });
+  s4.append(tr);
+  s4.append(el("div",{class:"sec-title",style:{marginTop:"11px"}},"格子大小"));
+  s4.append(seg([["3","细腻"],["5","标准"],["8","省电"]], String(params.cell), v=>{ params.cell = parseInt(v); resize(); }));
+  s4.append(el("label",{class:"chkrow"},
+    el("input",{type:"checkbox",checked:params.smooth,onchange:e=>params.smooth=e.target.checked}),
+    el("span",{textContent:"柔化过渡（按局部磁化上色）"})
+  ));
+  s4.append(el("label",{class:"chkrow"},
+    el("input",{type:"checkbox",checked:params.glow,onchange:e=>params.glow=e.target.checked}),
+    el("span",{textContent:"发光效果"})
+  ));
+  s4.append(el("label",{class:"chkrow"},
+    el("input",{type:"checkbox",checked:params.edges,onchange:e=>params.edges=e.target.checked}),
+    el("span",{textContent:"画出畴壁（相界）"})
+  ));
+  panel.append(s4);
+
+  // 操作
+  const s5 = el("div",{class:"sec"});
+  s5.append(el("div",{class:"sec-title"},"操作"));
+  s5.append(el("div",{class:"btnrow"},
+    btn("🎲 随机重置", ()=>{ randomize(); }),
+    btn("⬆ 全体朝上", ()=>{ setAll(1); }),
+    btn("⬇ 全体朝下", ()=>{ setAll(-1); })
+  ));
+  ui.brush = slider("笔刷大小", params.brush, 6, 220, 1, v=>{ params.brush = v|0; }, " px");
+  s5.append(ui.brush.node);
+  s5.append(el("div",{class:"note",textContent:"左键拖动 = 写 +1，右键 / Shift 拖动 = 写 -1。"}));
+  panel.append(s5);
+
+  refreshNote();
+  drawChart();
+}
+function syncBrush(){ if(ui.brush){ ui.brush.inp.value = params.brush; ui.brush.out.textContent = params.brush+" px"; } }
+function refreshNote(){
+  if(params.J<0){
+    ui.note.innerHTML = "反铁磁的有序是相邻格子「错开」，画面按<b>交错磁化</b>上色，所以有序处是纯色。<b>团簇翻转</b>不适用，会自动改用单点翻转。";
+  }else if(params.h!==0){
+    ui.note.innerHTML = "外磁场不为 0 时，<b>团簇翻转</b>会算错（整团翻面的能量代价与场有关），已自动改用单点翻转。";
+  }else{
+    ui.note.innerHTML = "团簇翻转在临界点附近效率高得多——它会一次翻掉一大片同向的格子。";
+  }
+}
+function markPreset(btnEl){
+  [...ui.presetBtns.children].forEach(x=>x.classList.remove("on"));
+  if(btnEl) btnEl.classList.add("on");
+}
+function syncAll(){
+  ui.T.inp.value = params.T; ui.T.out.textContent = fmt(Math.round(params.T*1000)/1000);
+  ui.h.inp.value = params.h; ui.h.out.textContent = fmt(params.h);
+  Object.values(ui.J.btns).forEach(b=>b.classList.remove("on"));
+  ui.J.btns[String(params.J)].classList.add("on");
+  Object.values(ui.mode.btns).forEach(b=>b.classList.remove("on"));
+  ui.mode.btns[params.mode].classList.add("on");
+  ui.phase.textContent = phaseLabel();
+}
+function applyPreset(name){
+  const p = PRESETS[name];
+  params.T = p.T; params.h = p.h; params.J = p.J;
+  params.anneal = false; setAnnealBtn();
+  syncAll(); refreshNote();
+}
+
+function toggleAnneal(){
+  params.anneal = !params.anneal;
+  if(params.anneal){
+    params.T = CHART_TMAX*0.95; annealHold = 0; clearBins();
+    markPreset(null);
+  }
+  setAnnealBtn(); syncAll();
+}
+function setAnnealBtn(){
+  ui.annealBtn.textContent = params.anneal ? "⏸ 停止扫描" : "▶ 开始降温扫描";
+  ui.annealBtn.className = "btn" + (params.anneal ? "" : " primary");
+}
+
+/* ============================================================
+   工具栏 & 快捷键
+============================================================ */
+document.getElementById("tbPause").onclick = togglePause;
+document.getElementById("tbRandom").onclick = ()=>randomize();
+document.getElementById("tbSave").onclick = savePNG;
+document.getElementById("tbPanel").onclick = ()=>panel.classList.toggle("hidden");
+function togglePause(){
+  params.paused = !params.paused;
+  document.getElementById("tbPause").textContent = params.paused ? "▶" : "⏸";
+}
+function savePNG(){
+  const a = document.createElement("a");
+  a.download = "磁力沙盒_" + Date.now() + ".png";
+  a.href = canvas.toDataURL("image/png");
+  a.click();
+}
+window.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT") return;
+  switch(e.key.toLowerCase()){
+    case " ": e.preventDefault(); togglePause(); break;
+    case "g": panel.classList.toggle("hidden"); break;
+    case "p": savePNG(); break;
+    case "r": randomize(); break;
+    case "a": toggleAnneal(); break;
+    case "c": setAll(1); break;
+    case "[": params.brush=Math.max(6,params.brush-4); syncBrush(); break;
+    case "]": params.brush=Math.min(220,params.brush+4); syncBrush(); break;
+  }
+});
+
+/* ============================================================
+   开场遮罩
+============================================================ */
+const veil = document.getElementById("veil");
+veil.addEventListener("click",()=>{
+  veil.classList.add("gone");
+  setTimeout(()=>{ veil.style.display="none"; },900);
+});
+
+/* ============================================================
+   主循环
+============================================================ */
+const statsEl = document.getElementById("stats");
+let last = performance.now(), fps = 0, statTick = 0;
+
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05,(now-last)/1000); last = now;
+  if(dt>0) fps = fps*0.92 + (1/dt)*0.08;
+
+  if(params.anneal){
+    params.T -= params.annealRate*dt;
+    if(params.T<=0.12){
+      params.T = 0.12;
+      annealHold += dt;
+      if(annealHold>1.2){ params.T = CHART_TMAX*0.95; annealHold = 0; clearBins(); }
+    }
+    ui.T.inp.value = params.T; ui.T.out.textContent = fmt(Math.round(params.T*1000)/1000);
+    ui.phase.textContent = phaseLabel();
+  }
+
+  if(!params.paused) advance();
+  render();
+
+  if(params.anneal) recordSample();
+  drawChart();
+
+  if((statTick++ % 5)===0) updateState();
+  if((statTick % 3)===0){
+    const m = M/n;
+    statsEl.innerHTML =
+      "网格 <b>"+NX+"×"+NY+"</b> · <b>"+fps.toFixed(0)+"</b> fps · "+(params.mode==="wolff"&&params.J>0&&params.h===0?"团簇":"单点")+
+      "<br>T <b>"+params.T.toFixed(3)+"</b> (Tc "+TC.toFixed(3)+") · h <b>"+params.h.toFixed(2)+"</b> · J <b>"+(params.J>0?"+1":"-1")+"</b>"+
+      "<br>磁化 M <i>"+m.toFixed(3)+"</i> · |M| <b>"+Math.abs(m).toFixed(3)+"</b> · 能量 <b>"+energy.toFixed(3)+"</b>"+
+      (lastCluster?"<br>最近团簇 <b>"+lastCluster+"</b> 格":"");
+  }
+}
+
+/* ============================================================
+   启动
+============================================================ */
+palette = buildPalette(curTheme);
+resize();
+buildPanel();
+syncAll();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

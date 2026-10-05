@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>有花无实的收藏夹</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#3d3440; --sub:#8b7f8a; --line:rgba(180,150,175,.18);
+  --rose:#f7a8c4; --mint:#8fd3a8; --card:#fffdfe;
+}
+body{
+  min-height:100vh; color:var(--ink);
+  font-family:-apple-system,"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  background:
+    radial-gradient(900px 500px at 12% -8%,rgba(247,168,196,.30),transparent 60%),
+    radial-gradient(800px 480px at 92% 4%,rgba(143,211,168,.24),transparent 62%),
+    radial-gradient(700px 420px at 50% 100%,rgba(195,166,240,.18),transparent 65%),
+    linear-gradient(165deg,#fff8fa,#fefaf4 45%,#f5fbf7);
+  background-attachment:fixed;
+  padding:34px 20px 70px;
+}
+.wrap{max-width:1240px;margin:0 auto}
+header{text-align:center;margin-bottom:26px}
+h1{font-size:29px;letter-spacing:.5px;font-weight:800}
+h1 .dot{color:var(--rose)}
+.sub{margin-top:9px;color:var(--sub);font-size:13.5px}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.stat{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:13px;
+  padding:8px 15px;font-size:12.5px;color:var(--sub);backdrop-filter:blur(10px)}
+.stat b{color:var(--ink);font-size:15px;margin-right:3px}
+
+.tools{position:sticky;top:0;z-index:20;padding:14px 0 12px;margin-bottom:6px;
+  background:linear-gradient(180deg,rgba(255,250,252,.94),rgba(255,250,252,.78),transparent)}
+.search{width:100%;padding:14px 18px;font-size:15px;color:var(--ink);
+  background:rgba(255,255,255,.9);border:1.5px solid var(--line);border-radius:15px;
+  outline:none;transition:.2s;box-shadow:0 6px 22px rgba(190,160,185,.13)}
+.search:focus{border-color:var(--rose);box-shadow:0 8px 26px rgba(247,168,196,.28)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:20px;
+  border:1.5px solid var(--line);background:rgba(255,255,255,.78);color:var(--sub);transition:.18s}
+.chip:hover{transform:translateY(-1px);color:var(--ink)}
+.chip.on{color:#fff;border-color:transparent;font-weight:600}
+.chip .n{opacity:.72;font-size:11.5px;margin-left:5px}
+
+.grid{display:grid;gap:13px;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));margin-top:20px}
+.card{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:16px;
+  background:var(--card);border:1px solid var(--line);text-decoration:none;color:inherit;
+  transition:transform .18s,box-shadow .18s,border-color .18s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(190,160,185,.20);border-color:rgba(247,168,196,.5)}
+.ava{flex:0 0 38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:15px;letter-spacing:-.5px}
+.meta{min-width:0;flex:1}
+.tit{font-size:13.6px;font-weight:600;line-height:1.42;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dom{margin-top:4px;font-size:11.5px;color:var(--sub);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tag{font-size:10.5px;padding:2px 7px;border-radius:9px;background:rgba(0,0,0,.045)}
+.badge{position:absolute;top:9px;right:10px;font-size:10px;color:#fff;background:var(--rose);
+  padding:1px 6px;border-radius:8px;font-weight:700}
+.empty{text-align:center;color:var(--sub);padding:70px 0;font-size:14px;display:none}
+footer{text-align:center;margin-top:46px;color:var(--sub);font-size:12px;line-height:1.9}
+footer .warn{color:#c96b7f}
+
+.privbar{display:flex;align-items:center;justify-content:center;gap:10px;margin:26px auto 0;
+  max-width:430px;padding:11px 16px;border-radius:14px;font-size:13px;
+  background:rgba(107,91,115,.08);border:1px dashed rgba(107,91,115,.35);color:#6b5b73}
+.privbar button{cursor:pointer;font:inherit;font-size:12.5px;padding:6px 14px;border-radius:10px;
+  border:none;background:#6b5b73;color:#fff;transition:.18s}
+.privbar button:hover{opacity:.86}
+body:not(.show-priv) .card.priv .tit,
+body:not(.show-priv) .card.priv .dom{filter:blur(6.5px);user-select:none}
+body:not(.show-priv) .card.priv .ava{filter:blur(3px)}
+.card.priv{border-color:rgba(107,91,115,.22)}
+@media(max-width:520px){
+  body{padding:22px 13px 50px}
+  h1{font-size:23px}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🌸 有花无实的收藏夹<span class="dot">.</span></h1>
+    <div class="sub">从 Chrome 书签导出 · 已去重并按主题归好类</div>
+    <div class="stats">
+      <div class="stat"><b>212</b>条收藏</div>
+      <div class="stat"><b>279</b>条原始</div>
+      <div class="stat"><b>67</b>条重复已合并</div>
+      <div class="stat"><b>10</b>个分类</div>
+    </div>
+  </header>
+
+  <div class="tools">
+    <input id="q" class="search" type="search" placeholder="🔍  搜索标题 / 域名 / 网址…">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="privbar" id="privbar" style="display:none">
+    <span>🔒 这里有一批私密收藏，默认打码</span>
+    <button id="privbtn">显示</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">没有匹配的收藏 🌱</div>
+
+  <footer>
+    <div>共 212 条 · 生成于本地，单文件离线可用</div>
+    <div class="warn">⚠️ 含机场邀请码与私密内容，请勿公开分享或上传到公开仓库</div>
+  </footer>
+</div>
+
+<script>
+const DATA = [{"t":"academic.aiearth.dev","u":"https://academic.aiearth.dev/","h":"academic.aiearth.dev","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"DigiBB 数码宝贝｜免费ChatGPT 账号共享","u":"https://aiai.info/chatgpt/","h":"aiai.info","c":"ai","f":"书签栏","dup":1},{"t":"Google AI Studio","u":"https://aistudio.google.com/app/apikey","h":"aistudio.google.com","c":"ai","f":"书签栏 / ai","dup":3},{"t":"Untitled prompt | Google AI Studio","u":"https://aistudio.google.com/app/prompts/new_chat","h":"aistudio.google.com","c":"ai","f":"书签栏","dup":2},{"t":"Slack","u":"https://app.slack.com/client/T06NTD27E9J/D06P3LASVL1","h":"app.slack.com","c":"ai","f":"书签栏 / ai","dup":2},{"t":"blameupstream ai","u":"https://blameupstream.top/","h":"blameupstream.top","c":"ai","f":"书签栏","dup":1},{"t":"AIchatOS","u":"https://c.binjie.fun/?entryScene=zhida_05_001&jump_from=1_13_18_00#/chat/1697646668324","h":"c.binjie.fun","c":"ai","f":"书签栏 / 有花无诗 / toolbar","dup":2},{"t":"EasyChat","u":"https://chat-us.eqing.tech/#/","h":"chat-us.eqing.tech","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"智慧地球（AI•Earth）社区","u":"https://chat.aiearth.dev/#/chat","h":"chat.aiearth.dev","c":"ai","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"BAI","u":"https://chat.b.ai/chat","h":"chat.b.ai","c":"ai","f":"书签栏","dup":1},{"t":"DeepSeek - 探索未至之境","u":"https://chat.deepseek.com/","h":"chat.deepseek.com","c":"ai","f":"书签栏","dup":1},{"t":"花火 | AIGC","u":"https://chat.flowerfire.net/","h":"chat.flowerfire.net","c":"ai","f":"书签栏 / 有花无诗 / toolbar","dup":2},{"t":"ChatGPT","u":"https://chat.openai.com/","h":"chat.openai.com","c":"ai","f":"书签栏","dup":1},{"t":"机械狗概述","u":"https://chat.openai.com/c/50bbff0c-977b-41f0-a347-b89e1284b67c","h":"chat.openai.com","c":"ai","f":"书签栏 / 有花无诗 / toolbar / ai","dup":1},{"t":"美女肖像生成","u":"https://chat.openai.com/c/36facfa2-5505-44c8-a00b-1992f054571b","h":"chat.openai.com","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"智谱清言","u":"https://chatglm.cn/?redirect=%2Fmain%2Falltoolsdetail","h":"chatglm.cn","c":"ai","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"ChatGPT","u":"https://chatgpt.com/","h":"chatgpt.com","c":"ai","f":"书签栏","dup":1},{"t":"Claude","u":"https://claude.ai/onboarding?returnTo=%2F","h":"claude.ai","c":"ai","f":"书签栏 / ai","dup":3},{"t":"Gemini - Google DeepMind","u":"https://deepmind.google/technologies/gemini/#introduction","h":"deepmind.google","c":"ai","f":"书签栏 / ai","dup":3},{"t":"ChatGPT Next Web","u":"https://free.netfly.top/","h":"free.netfly.top","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"ChatGPT Next Web","u":"https://free.netfly.top/#/","h":"free.netfly.top","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"Gemini Pro Chat","u":"https://gemini-pro-chat-henna-eight-24.vercel.app/","h":"gemini-pro-chat-henna-eight-24.vercel.app","c":"ai","f":"书签栏 / 有花无诗 / toolbar / ai","dup":2},{"t":"Google Gemini","u":"https://gemini.google.com/app?is_sa=1&is_sa=1&android-min-version=301356232&ios-min-version=322.0&campaign_id=skws&utm_source=sem&utm_medium=paid-media&utm_campaign=skws&pt=9008&mt=8&ct=p-growth-sem-skws&gclsrc=aw.ds&gad_source=1&gad_campaignid=22326675744&gbraid=0AAAAApk5Bhnx64Ci9nlK2OBv5ku5x2feH&gclid=CjwKCAiAmp3LBhAkEiwAJM2JUPAhnvv5cbdV8Fo7TGhIfCjA8B7bdPpou9_ayYfsO8VtBFNUBv4RuxoCsXkQAvD_BwE","h":"gemini.google.com","c":"ai","f":"书签栏","dup":1},{"t":"Gemini Pro Chat","u":"https://geminiprochat.com/","h":"geminiprochat.com","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":1},{"t":"GPT China","u":"https://gptchina.io/c/new","h":"gptchina.io","c":"ai","f":"书签栏","dup":2},{"t":"New Chat","u":"https://hai.dongstop.link/","h":"hai.dongstop.link","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"为任何人制作动画","u":"https://humanaigc.github.io/animate-anyone/","h":"humanaigc.github.io","c":"ai","f":"书签栏 / 有花无诗 / toolbar / ai","dup":1},{"t":"ChatBot","u":"https://ibot3.bus1.skybyte.me/#/chat/1002","h":"ibot3.bus1.skybyte.me","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"Kimi.ai - 帮你看更大的世界","u":"https://kimi.moonshot.cn/chat/cos5jp9kqq4s2lfki44g","h":"kimi.moonshot.cn","c":"ai","f":"书签栏","dup":1},{"t":"奇妙之旅","u":"https://kovenyu.com/wonderjourney/","h":"kovenyu.com","c":"ai","f":"书签栏 / ai","dup":3},{"t":"Latent Box","u":"https://latentbox.com/zh","h":"latentbox.com","c":"ai","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"Microsoft Copilot","u":"https://m365.cloud.microsoft/projects?fromcode=cmmyr718qsb&es=Click&redirfrom=cosmicRingCookie","h":"m365.cloud.microsoft","c":"ai","f":"书签栏","dup":1},{"t":"秘塔AI搜索","u":"https://metaso.cn/search/8458047111694397440","h":"metaso.cn","c":"ai","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"ChatGPT - Lea","u":"https://newpc.icoding.ink/","h":"newpc.icoding.ink","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"ChatYY","u":"https://no.chatyy.com/","h":"no.chatyy.com","c":"ai","f":"书签栏 / 有花无诗 / 杂物","dup":1},{"t":"LingYu-Status","u":"https://status.leafyrain.com/status/main","h":"status.leafyrain.com","c":"ai","f":"书签栏 / 有花无诗 / toolbar / ai","dup":1},{"t":"配备 GPT-4 的必应聊天","u":"https://www.bing.com/search?iscopilotedu=1&sendquery=1&q=%E6%88%91%E6%83%B3%E8%A6%81%E5%81%9A%E4%B8%80%E9%A1%BF%E5%BE%AE%E8%BE%A3%E7%9A%84%E6%B5%B7%E9%B2%9C%E6%99%9A%E9%A4%90%EF%BC%8C%E4%BD%A0%E5%B8%AE%E6%88%91%E5%86%99%E4%B8%AA%E8%B4%AD%E7%89%A9%E6%B8%85%E5%8D%95%E3%80%82&form=MA13G9&showconv=1","h":"www.bing.com","c":"ai","f":"书签栏 / 有花无诗 / toolbar","dup":2},{"t":"Hello from ChatGPT最佳中文学习网站 | ChatGPT最佳中文学习网站","u":"https://www.bookai.top/","h":"www.bookai.top","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"第一份「生成式人工智能证书」来了，附参考答案 | ChatGPT最佳中文学习网站","u":"https://www.bookai.top/docs/another-tutorial/career-essentials-in-generative-ai-by-microsoft-and-linkedin","h":"www.bookai.top","c":"ai","f":"书签栏 / ai","dup":3},{"t":"FREEGPT","u":"https://zz.aifree.site/","h":"zz.aifree.site","c":"ai","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"Try NVIDIA NIM APIs","u":"https://build.nvidia.com/z-ai/glm-5.1","h":"build.nvidia.com","c":"art","f":"其他书签","dup":1},{"t":"即梦AI - 一站式AI创作平台","u":"https://jimeng.jianying.com/ai-tool/home","h":"jimeng.jianying.com","c":"art","f":"书签栏","dup":1},{"t":"Luma AI - 精灵","u":"https://lumalabs.ai/genie?view=create","h":"lumalabs.ai","c":"art","f":"书签栏 / ai","dup":3},{"t":"随机信号处理 |美人鱼排行榜 --- Random Signal Processing | Mermaid Chart","u":"https://mermaid.ai/app/projects/ef0b80de-070b-4813-a72d-b6575352d7e0/diagrams/5269bbcc-aacb-4476-a02d-257c731935ce/version/v0.1/edit","h":"mermaid.ai","c":"art","f":"其他书签","dup":1},{"t":"Discover iOS apps | Mobbin","u":"https://mobbin.com/discover/apps/ios/latest","h":"mobbin.com","c":"art","f":"书签栏","dup":1},{"t":"Awwwards——网站大奖——最佳网页设计趋势 --- Awwwards - Website Awards - Best Web Design Trends","u":"https://www.awwwards.com/","h":"www.awwwards.com","c":"art","f":"书签栏","dup":1},{"t":"Midjourney Feed","u":"https://www.midjourney.com/showcase?tab=random","h":"www.midjourney.com","c":"art","f":"书签栏 / ai","dup":2},{"t":"RMBG Studio · 创空间","u":"https://www.modelscope.cn/studios/lf3000y/RMBG-2.0","h":"www.modelscope.cn","c":"art","f":"书签栏","dup":1},{"t":"PromptTool词图 游戏资产AIGC","u":"https://www.prompttool.com/home/NovelAI","h":"www.prompttool.com","c":"art","f":"书签栏 / ai","dup":2},{"t":"免费 AI 艺术创作 - SeaArt AI","u":"https://www.seaart.ai/zhCN?u_code=KLHTP7","h":"www.seaart.ai","c":"art","f":"书签栏 / ai","dup":3},{"t":"ReleaseNotes.html","u":"file:///D:/software/git/Git/ReleaseNotes.html","h":"","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"M365 Copilot2API","u":"http://127.0.0.1:4141/","h":"127.0.0.1:4141","c":"api","f":"书签栏","dup":1},{"t":"阿里云登录页","u":"https://account.aliyun.com/login/login.htm?spm=5176.29619931.J_4VYgf18xNlTAyFFbOuOQe.d_login.74cd10d75dLeN9&oauth_callback=https%3A%2F%2Fwww.aliyun.com%2Fproduct%2Fbailian","h":"account.aliyun.com","c":"api","f":"书签栏","dup":1},{"t":"Agent Router","u":"https://agentrouter.org/console/topup","h":"agentrouter.org","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"Agent Router","u":"https://agentrouter.org/console","h":"agentrouter.org","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"霸气公益平台","u":"https://ai.121628.xyz/profile","h":"ai.121628.xyz","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"词元站","u":"https://ai.962831.xyz/profile","h":"ai.962831.xyz","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"仪表盘 - GGBOOM公益站","u":"https://ai.qaq.al/dashboard","h":"ai.qaq.al","c":"api","f":"书签栏","dup":1},{"t":"大肘子API","u":"https://api.dzzi.ai/profile","h":"api.dzzi.ai","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"星期五API","u":"https://api.fri5.top/keys","h":"api.fri5.top","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"芙卡卡の小食堂","u":"https://api.fuka.win/usage-logs/common","h":"api.fuka.win","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"GoRun","u":"https://api.gorun.cc/dashboard/overview","h":"api.gorun.cc","c":"api","f":"书签栏","dup":1},{"t":"天才隱藏窩","u":"https://api.sld.lol/console","h":"api.sld.lol","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"New API","u":"https://az.zlapi.vip/console/token","h":"az.zlapi.vip","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"大模型服务平台百炼控制台","u":"https://bailian.console.aliyun.com/cn-beijing?spm=5176.29619931.J_egCN4Yq1EkFrYZT7V5X0j.d_primary.74cd10d7uIYbBv#/efm/model_experience_center/wan3.0/first_last_frame","h":"bailian.console.aliyun.com","c":"api","f":"书签栏","dup":1},{"t":"大模型服务平台百炼控制台","u":"https://bailian.console.aliyun.com/cn-beijing?spm=5176.29619931.J_egCN4Yq1EkFrYZT7V5X0j.d_primary.74cd10d7ZafA3I&tab=model#/efm/model_experience_center/text","h":"bailian.console.aliyun.com","c":"api","f":"其他书签","dup":1},{"t":"Liminality","u":"https://beizhi.sylu.cc/profile","h":"beizhi.sylu.cc","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"BlazeAPI — Premium AI Access","u":"https://blazeapi.org/dashboard","h":"blazeapi.org","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"New API","u":"https://cli.999554.xyz/console","h":"cli.999554.xyz","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"百度智能云千帆杯AI原生应用开发挑战赛｜赛事规则解读视频 - 百度智能云千帆社区","u":"https://cloud.baidu.com/qianfandev/topic/268425","h":"cloud.baidu.com","c":"api","f":"书签栏 / ai","dup":2},{"t":"硅基流动 SiliconFlow - 致力于成为全球领先的 AI 能力提供商","u":"https://cloud.siliconflow.cn/me/playground/image","h":"cloud.siliconflow.cn","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"简介 - Radeon Cloud --- Profile - Radeon Cloud","u":"https://developer.amd.com.cn/radeon/profile","h":"developer.amd.com.cn","c":"api","f":"书签栏","dup":1},{"t":"New API","u":"https://docode.cc/console/personal","h":"docode.cc","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"肖恩AI - 免费大模型API","u":"https://free.supxh.xin/dashboard/models","h":"free.supxh.xin","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"免费大模型 API 公益站合集","u":"https://htmlpreview.github.io/?https://raw.githubusercontent.com/AX7795/free-api-sites/main/index.html","h":"htmlpreview.github.io","c":"api","f":"书签栏","dup":1},{"t":"仪表盘 - WeCoding","u":"https://image.yuzapi.fun/dashboard","h":"image.yuzapi.fun","c":"api","f":"其他书签","dup":1},{"t":"JuCodex.com","u":"https://jucodex.com/console/playground","h":"jucodex.com","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"New API","u":"https://juziqishui.net/console/topup","h":"juziqishui.net","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"模型榜单 · 各中转站一致性评分排行｜MODELOC","u":"https://modeloc.com/board","h":"modeloc.com","c":"api","f":"书签栏","dup":1},{"t":"模型服务","u":"https://opc.fiime.cn/zh-cn/model-service?tab=models","h":"opc.fiime.cn","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"Clodesen","u":"https://pai.zaiduyu.top/#/wallet","h":"pai.zaiduyu.top","c":"api","f":"书签栏","dup":1},{"t":"Agnes","u":"https://platform.agnes-ai.com/settings/apiKeys","h":"platform.agnes-ai.com","c":"api","f":"书签栏","dup":1},{"t":"SenseNova · LLM API 服务平台","u":"https://platform.sensenova.cn/console","h":"platform.sensenova.cn","c":"api","f":"书签栏","dup":1},{"t":"API Key","u":"https://portal.qiniu.com/ai-inference/api-key","h":"portal.qiniu.com","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"洋柿子api","u":"https://ruiflux.sbs/playground","h":"ruiflux.sbs","c":"api","f":"书签栏","dup":1},{"t":"SeekAi","u":"https://seekai.cc/dashboard/overview","h":"seekai.cc","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"New API","u":"https://shufulei.net/console/personal","h":"shufulei.net","c":"api","f":"书签栏 / 公益站 / 顶级或者签到","dup":1},{"t":"TaBiAI","u":"https://tabitoken.com/dashboard/overview","h":"tabitoken.com","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"基元律动 AI API Platform","u":"https://tokenrhythm.studio/account/keys","h":"tokenrhythm.studio","c":"api","f":"书签栏 / 公益站","dup":1},{"t":"【新人专享】您的好友送您300万Token，可调用50+全球AI大模型 - 七牛云官网 - 七牛云","u":"https://www.qiniu.com/ai/promotion/invited?cps_key=1hda2sssdn42a","h":"www.qiniu.com","c":"api","f":"书签栏","dup":1},{"t":"GcmodAi","u":"https://zc.gcmod.cn/dashboard/overview","h":"zc.gcmod.cn","c":"api","f":"书签栏","dup":1},{"t":"frontend","u":"http://127.0.0.1:8000/settings?tab=general","h":"127.0.0.1:8000","c":"dev","f":"书签栏","dup":1},{"t":"Anaconda 云 --- Anaconda Cloud","u":"https://anaconda.cloud/?error=request_forbidden&error_description=The%20request%20is%20not%20allowed.%20The%20CSRF%20value%20from%20the%20token%20does%20not%20match%20the%20CSRF%20value%20from%20the%20data%20store.&state=f1653baf-fd58-4a6e-9a8b-0657efe7af3b","h":"anaconda.cloud","c":"dev","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"数据统计 · LobeHub","u":"https://app.lobehub.com/settings/stats","h":"app.lobehub.com","c":"dev","f":"其他书签","dup":1},{"t":"Workers 和 Pages | Zjj357951@gmail.com's Account | Cloudflare","u":"https://dash.cloudflare.com/d9e4be28924074043f6f46f084807b15/workers/services/view/xinghuisamablogs/production/domains","h":"dash.cloudflare.com","c":"dev","f":"书签栏","dup":1},{"t":"DigitalPlat Dashboard","u":"https://dash.domain.digitalplat.org/dashboard","h":"dash.domain.digitalplat.org","c":"dev","f":"书签栏","dup":1},{"t":"DigitalPlat Dashboard","u":"https://dashboard.digitalplat.org/dashboard","h":"dashboard.digitalplat.org","c":"dev","f":"书签栏","dup":1},{"t":"DigitalPlat Dashboard","u":"https://dashboard.digitalplat.org/domains/ephemeralbloom.dpdns.org","h":"dashboard.digitalplat.org","c":"dev","f":"书签栏","dup":1},{"t":"CUDA Toolkit 12.4 Update 1 Downloads | NVIDIA Developer","u":"https://developer.nvidia.com/cuda-downloads","h":"developer.nvidia.com","c":"dev","f":"书签栏 / 有花无诗 / toolbar / 深度学习","dup":1},{"t":"Experiments","u":"chrome://flags/#chrome-refresh-2023","h":"flags","c":"dev","f":"其他书签","dup":1},{"t":"ChatGPTNextWeb/ChatGPT-Next-Web: A cross-platform ChatGPT/Gemini UI (Web / PWA / Linux / Win / MacOS). 一键拥有你自己的跨平台 ChatG","u":"https://github.com/ChatGPTNextWeb/ChatGPT-Next-Web#keep-updated","h":"github.com","c":"dev","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"LiLittleCat/awesome-free-chatgpt: 🆓免费的 ChatGPT 镜像网站列表，持续更新。List of free ChatGPT mirror sites, continuously updated.","u":"https://github.com/LiLittleCat/awesome-free-chatgpt","h":"github.com","c":"dev","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"Sign in to GitHub · GitHub","u":"https://github.com/login","h":"github.com","c":"dev","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"Greasy Fork - 安全、实用的用户脚本大全","u":"https://greasyfork.org/zh-CN","h":"greasyfork.org","c":"dev","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"JLCEDA（标准）——一种简单且强大的电子电路设计工具 --- JLCEDA(Standard) - A Simple and Powerful Electronic Circuit Design Tool","u":"https://lceda.cn/editor","h":"lceda.cn","c":"dev","f":"书签栏","dup":1},{"t":"untitled.py","u":"http://localhost:8889/consoles/untitled.py","h":"localhost:8889","c":"dev","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"MotionGo官网_原PPT动画插件口袋动画_免费商用PPT插件","u":"https://motion.yoo-ai.com/","h":"motion.yoo-ai.com","c":"dev","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"Office 自助注册","u":"https://office.965007.xyz/","h":"office.965007.xyz","c":"dev","f":"书签栏","dup":1},{"t":"Previous PyTorch Versions | PyTorch","u":"https://pytorch.org/get-started/previous-versions/#linux-and-windows-18","h":"pytorch.org","c":"dev","f":"书签栏 / 有花无诗 / toolbar / 深度学习","dup":1},{"t":"gemini-pro-chat – Deployment Overview – Vercel","u":"https://vercel.com/2285946393s-projects/gemini-pro-chat/ZPR4gUdsWBeg8BbKAoQ3vncvCNRW","h":"vercel.com","c":"dev","f":"书签栏 / ai","dup":3},{"t":"维塞尔 – 维塞尔","u":"https://vercel.com/2285946393s-projects","h":"vercel.com","c":"dev","f":"书签栏 / 有花无诗 / toolbar / ai","dup":1},{"t":"Download Success - post download | Anaconda","u":"https://www.anaconda.com/download-success","h":"www.anaconda.com","c":"dev","f":"书签栏","dup":1},{"t":"GitHub中文社区 | GitHub中文网首页","u":"https://www.github-zh.com/","h":"www.github-zh.com","c":"dev","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"下载文件 | iLovePDF","u":"https://www.ilovepdf.com/zh-cn/download/pvs16f0w011x4gy52dq6s47gkjwn4htvqbAbt47fw91gl70vq4hx2mx3hzA61gc9fqpf7zxs7nrkh4ncg6ky4xyrxA4zl86bxkvx1724sxq78k3fs8d79lz3wkb8l2q39r6c74qkjAzq1jn7wrjz0dA95y3vscghAd85ftnwsA8bytmmg0Aq/11w","h":"www.ilovepdf.com","c":"dev","f":"其他书签","dup":1},{"t":"在线简历制作_简历本","u":"https://www.jianliben.com/resume/detail/5065783","h":"www.jianliben.com","c":"dev","f":"其他书签","dup":1},{"t":"Word 转 Markdown 在线转换器 | 快速、安全、无需上传","u":"https://www.word2md.net/zh","h":"www.word2md.net","c":"dev","f":"其他书签","dup":1},{"t":"搞定的空间站 | Claude Code、Vibe Coding 图文教程与实操演练","u":"https://gaodingpm.com/?section=tutorials","h":"gaodingpm.com","c":"study","f":"书签栏","dup":1},{"t":"电气与信息工程学院_湖南交通工程学院","u":"https://hnjt.edu.cn/list/739.html#","h":"hnjt.edu.cn","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"云就业-首页-学生信息平台","u":"https://hnjtgcxy.bysjy.com.cn/student","h":"hnjtgcxy.bysjy.com.cn","c":"study","f":"书签栏","dup":1},{"t":"湖南交通工程学院","u":"https://i.mooc.chaoxing.com/space/index?t=1749552826160","h":"i.mooc.chaoxing.com","c":"study","f":"书签栏","dup":1},{"t":"湖南交通工程学院教务网络管理系统","u":"http://jw.hnjt.edu.cn/","h":"jw.hnjt.edu.cn","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"湖南交通工程学院教务网络管理系统","u":"http://jw.hnjt.edu.cn/MAINFRM.aspx","h":"jw.hnjt.edu.cn","c":"study","f":"书签栏","dup":1},{"t":"共享站（登录及使用教程） - 飞书云文档","u":"https://nvhb2c9uzt4.feishu.cn/wiki/HB2fwCO9Ui16ZQkbmfvcqO0CnXg","h":"nvhb2c9uzt4.feishu.cn","c":"study","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"2023版Adobe全家桶（已破解）介绍及免费下载安装 - 一池寒潭 - 博客园","u":"https://www.cnblogs.com/FRIM/p/12911797.html","h":"www.cnblogs.com","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"一池寒潭 - 博客园","u":"https://www.cnblogs.com/FRIM/","h":"www.cnblogs.com","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"数字中国创新大赛","u":"https://www.dcic-china.com/competitions?raceTagFilterId=0&keyword=&signUpStatus=CAN_SIGN&cmptType=&cmptTag=&industry=","h":"www.dcic-china.com","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":1},{"t":"集思吧 | 一个靠谱的问卷调查赚钱平台","u":"https://www.jisiba.com/invite?code=d3kv2k","h":"www.jisiba.com","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"配置ClaudeCode国内直连","u":"https://www.yuque.com/xiaomuai/acaeth/hmgu1rnaru7wtio8","h":"www.yuque.com","c":"study","f":"书签栏","dup":1},{"t":"(6 封私信) 抖店，如何开抖店？怎样操作？ - 知乎","u":"https://www.zhihu.com/question/451833154/answer/3227669305","h":"www.zhihu.com","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"(8 封私信 / 18 条消息) 首页 - 知乎","u":"https://www.zhihu.com/","h":"www.zhihu.com","c":"study","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"你写论文时发现了哪些非常神的网站？ - 知乎","u":"https://www.zhihu.com/question/35931336/answer/3436175724?utm_psn=1753521896547872768","h":"www.zhihu.com","c":"study","f":"书签栏 / 有花无诗 / 杂物","dup":1},{"t":"🎤小源变声器资源分享（永久更新） - Feishu Docs","u":"https://yuanxingai.feishu.cn/docx/Y3B3daJ0vom57VxQTmzcpuQWnxg","h":"yuanxingai.feishu.cn","c":"study","f":"其他书签","dup":1},{"t":"游戏_单机游戏_游戏下载_最新单机游戏下载 - Powered by Discuz!","u":"https://bbs.3dmgame.com/game0day","h":"bbs.3dmgame.com","c":"game","f":"其他书签 / game / 不许","dup":1},{"t":"社区版块分类 游戏-安和鱼社区","u":"https://cd.anheyu.com/plate_cat/%E6%B8%B8%E6%88%8F/","h":"cd.anheyu.com","c":"game","f":"其他书签 / game","dup":1},{"t":"IACG.RIP 社区","u":"https://community.acg-c.net/","h":"community.acg-c.net","c":"game","f":"其他书签 / game / 不许","dup":1},{"t":"密教模拟器中文维基 - 灰机wiki - 北京嘉闻杰诺网络科技有限公司","u":"https://cultist.huijiwiki.com/wiki/%E9%A6%96%E9%A1%B5","h":"cultist.huijiwiki.com","c":"game","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"单机资源下载_一键下载安装游戏资源,辅助工具_3DM下载","u":"https://dl.3dmgame.com/","h":"dl.3dmgame.com","c":"game","f":"其他书签 / game","dup":1},{"t":"单机资源下载_一键下载安装游戏资源,辅助工具_3DM下载","u":"https://dl.3dmgame.com/all_all_1_hot/","h":"dl.3dmgame.com","c":"game","f":"其他书签 / game","dup":1},{"t":"暗黑地牢2下载-暗黑地牢2免安装绿色中文版v2.02.79122下载_游侠网","u":"https://down.ali213.net/pcgame/darkestdun2.html","h":"down.ali213.net","c":"game","f":"其他书签 / game","dup":1},{"t":"FLiNG Trainer - PC 游戏秘籍和模组 --- FLiNG Trainer - PC Game Cheats and Mods","u":"https://flingtrainer.com/","h":"flingtrainer.com","c":"game","f":"其他书签 / game","dup":1},{"t":"绮梦ACG - 免费galgame资源下载","u":"https://game.acgs.one/","h":"game.acgs.one","c":"game","f":"其他书签 / game","dup":1},{"t":"Stacklands 堆叠大陆 [DLC 解锁] [DLC Unlock] [Steam] [Windows & SteamOS & macOS]","u":"https://h.juij.fun/game/stacklands-%E5%A0%86%E5%8F%A0%E5%A4%A7%E9%99%86/","h":"h.juij.fun","c":"game","f":"其他书签","dup":1},{"t":"NekoNyan Patches","u":"https://patches.nekonyansoft.com/","h":"patches.nekonyansoft.com","c":"game","f":"其他书签 / game","dup":1},{"t":"莉可POI - 你身边的二次元导航姬 - 及时收录动漫网站及资讯、宅网站、萌网站、动画、漫画、游戏等内容。让您获得更加简单快捷的二次元体验！","u":"https://s.lycopoi.club/","h":"s.lycopoi.club","c":"game","f":"其他书签 / game","dup":1},{"t":"誠也の部屋【プレイ！プレイ！プレイ！GO！　攻略】","u":"https://seiya-saiga.com/game/valkyria/play5.html","h":"seiya-saiga.com","c":"game","f":"其他书签 / game","dup":1},{"t":"誠也の部屋【百奇繚乱の館　攻略】","u":"https://seiya-saiga.com/game/astronauts/hyakkiryoran.html","h":"seiya-saiga.com","c":"game","f":"其他书签 / game","dup":1},{"t":"ADV | ACG港湾","u":"https://www.acggw.me/adv","h":"www.acggw.me","c":"game","f":"其他书签 / game / 不许","dup":1},{"t":"中国地区-全部动画-全部年-全部首字母-全部季度-全部状态-全部类型-全部资源 - 动漫目录 - AGE动漫","u":"https://www.agedm.io/catalog/all-all-all-all-all-time-1-%E4%B8%AD%E5%9B%BD-all-all","h":"www.agedm.io","c":"game","f":"其他书签 / game","dup":1},{"t":"单机游戏_单机游戏下载_单机游戏门户_游侠网","u":"https://www.ali213.net/","h":"www.ali213.net","c":"game","f":"书签栏 / 有花无诗 / 杂物","dup":1},{"t":"Game520游戏MOD库--专注单机游戏试玩及正版推荐-搜集精品MOD资源--游戏大全-game520-免费资源分享-手柄游戏","u":"https://www.game520.shop/","h":"www.game520.shop","c":"game","f":"其他书签 / game / 不许","dup":1},{"t":"凛冬前线 FrostBound|官方中文|Build.20986326|解压即撸|-Switch520","u":"https://www.gamer520.com/102910.html","h":"www.gamer520.com","c":"game","f":"其他书签","dup":1},{"t":"萌幻之乡 – -新的起点","u":"https://www.hmoeh.com/","h":"www.hmoeh.com","c":"game","f":"其他书签 / game","dup":1},{"t":"アトリエかぐや BARE＆BUNNY 会社 - 鲲 Galgame 论坛 🐳 开源 Galgame 网站","u":"https://www.kungal.com/galgame/official/13440","h":"www.kungal.com","c":"game","f":"其他书签 / game / 不许","dup":1},{"t":"Galgame 列表 - 鲲 Galgame 补丁","u":"https://www.moyu.moe/galgame?page=2","h":"www.moyu.moe","c":"game","f":"其他书签 / game / 不许","dup":1},{"t":"补丁","u":"https://www.moyu.moe/","h":"www.moyu.moe","c":"game","f":"其他书签 / game","dup":1},{"t":"青桔网-由青桔移植组建立的非盈利型galgame免费分享平台","u":"https://www.qingju.org/","h":"www.qingju.org","c":"game","f":"其他书签 / game","dup":1},{"t":"(*´∇｀*) 被你發現啦~","u":"https://www.tiangal.com/category/ps4","h":"www.tiangal.com","c":"game","f":"其他书签 / game","dup":1},{"t":"TouchGal - 一站式Galgame文化社区!","u":"https://www.touchgal.ink/","h":"www.touchgal.ink","c":"game","f":"其他书签 / game / 不许","dup":1},{"t":"神秘领域-TouchGAL-第24页","u":"https://www.touchgal.me/3fc40w2yc8jgng7/page/24?orderby=views","h":"www.touchgal.me","c":"game","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"资源区-游戏 - 维咔VikACG[V站]","u":"https://www.vikacg.com/resources/game?type=adv","h":"www.vikacg.com","c":"game","f":"其他书签 / game","dup":1},{"t":"吾次元-高质量二次元追番小站","u":"https://www.wcydm.com/","h":"www.wcydm.com","c":"game","f":"其他书签 / game","dup":1},{"t":"冰汽时代 v1.61 年度收藏版 中文（解压即玩）-小白游戏网","u":"https://www.xbgame.net/2475.html","h":"www.xbgame.net","c":"game","f":"书签栏 / 有花无诗 / 杂物","dup":1},{"t":"XDGAME - 专注单机游戏试玩及正版推荐！","u":"https://www.xdgame.com/","h":"www.xdgame.com","c":"game","f":"其他书签 / game","dup":1},{"t":"樱花动漫","u":"https://www.yinhuadm.cc/","h":"www.yinhuadm.cc","c":"game","f":"书签栏","dup":1},{"t":"樱花动漫","u":"https://www.yinhuadm.vip/","h":"www.yinhuadm.vip","c":"game","f":"书签栏 / 有花无诗 / toolbar","dup":2},{"t":"游戏天堂-全球游戏下载基地","u":"https://www.zzzzz688.com/","h":"www.zzzzz688.com","c":"game","f":"其他书签 / game","dup":1},{"t":"首页 | 阿呆的小店","u":"https://faka.shengadai.store/","h":"faka.shengadai.store","c":"media","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"Adai | Yu","u":"https://fh.shengadai.shop/list","h":"fh.shengadai.shop","c":"media","f":"书签栏 / 有花无诗 / toolbar / ai","dup":1},{"t":"ChatGPT","u":"https://fh.shengadai.shop/","h":"fh.shengadai.shop","c":"media","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"ChatGPT - Diagrams & Data: Research, Analyze, Visualize","u":"https://fh.shengadai.shop/g/g-jBdvgesNC-diagrams-data-research-analyze-visualize/c/f94d2b9f-917f-4cee-b38b-dbf12e89002b","h":"fh.shengadai.shop","c":"media","f":"书签栏 / 有花无诗 / toolbar","dup":2},{"t":"Chat GPT","u":"https://share.58aai.com/list","h":"share.58aai.com","c":"media","f":"书签栏 / ai","dup":2},{"t":"Planetarium. (BIG ROOM EPIC ANTHEM) - DAISHI DANCE | MyFreeMP3","u":"https://tool.liumingye.cn/music/#/","h":"tool.liumingye.cn","c":"media","f":"书签栏 / 有花无诗 / 杂物","dup":1},{"t":"Oopz","u":"https://web.oopz.cn/","h":"web.oopz.cn","c":"media","f":"书签栏","dup":1},{"t":"我的关注 - 个人中心 - 斗鱼","u":"https://www.douyu.com/room/follow","h":"www.douyu.com","c":"media","f":"书签栏 / 有花无诗 / toolbar","dup":1},{"t":"coffee-相关MP3查找结果-歌曲海-海量高品质MP3音乐免费下载","u":"https://www.gequhai.com/s/coffee","h":"www.gequhai.com","c":"media","f":"书签栏","dup":1},{"t":"PayPal：总结 --- PayPal: Summary","u":"https://www.paypal.com/myaccount","h":"www.paypal.com","c":"media","f":"书签栏 / ai","dup":1},{"t":"AI - Starfall的AI小店 - 网程发卡平台","u":"https://www.wcfaka.com/liebiao/BBBA4AC7B34E0E7B","h":"www.wcfaka.com","c":"media","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"贝贝云","u":"https://beibeicloud.shop/#/register?path=register&code=qwqDFEUW","h":"beibeicloud.shop","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":1},{"t":"购买订阅 | 贝贝云","u":"https://beibeicloud.shop/#/plan","h":"beibeicloud.shop","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":1},{"t":"飞鸟云","u":"https://fn1.595780.xyz/#/plan","h":"fn1.595780.xyz","c":"vpn","f":"书签栏","dup":1},{"t":"首页 — iKuuu VPN","u":"https://ikuuu.de/user#","h":"ikuuu.de","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":1},{"t":"用户中心 - KyCloud","u":"https://my.cloudn.cc/clientarea.php","h":"my.cloudn.cc","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":1},{"t":"购物车 - KyCloud","u":"https://my.cloudn.cc/cart.php","h":"my.cloudn.cc","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":1},{"t":"MAX加速","u":"https://sa.maxgogo.win/#/plan","h":"sa.maxgogo.win","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":2},{"t":"Scamalytics","u":"https://scamalytics.com/","h":"scamalytics.com","c":"vpn","f":"书签栏 / ai","dup":3},{"t":"SMS-Activate是在线接受短信的虚拟号码服务","u":"https://sms-activate.org/cn","h":"sms-activate.org","c":"vpn","f":"书签栏 / ai","dup":3},{"t":"Freecat 🐾自由猫","u":"https://us.freecat.cloud/index.php#/knowledge","h":"us.freecat.cloud","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN / VPN","dup":2},{"t":"Freecat 🐾自由猫 - 全球网络加速服务商","u":"https://us.freecat.cloud/","h":"us.freecat.cloud","c":"vpn","f":"其他书签","dup":1},{"t":"v2rayN文档 - 第8页 | Windows v2ray节点免费订阅使用教程、安卓版下载以及ss机场推荐等","u":"https://v2rayss.com/page/8/","h":"v2rayss.com","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":2},{"t":"What Is My IP Address - See Your Public Address - IPv4 & IPv6","u":"https://whatismyipaddress.com/","h":"whatismyipaddress.com","c":"vpn","f":"书签栏 / ai","dup":3},{"t":"XFX","u":"https://xfx.icu/#/register?code=yEvtCLDd","h":"xfx.icu","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":2},{"t":"八戒","u":"https://xn--45qv91b.xn--wlqp5rsqg3lw.com/#/dashboard","h":"xn--45qv91b.xn--wlqp5rsqg3lw.com","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":2},{"t":"一元机场","u":"https://xn--4gq62f52gdss.click/#/register?code=ZniCqom0","h":"xn--4gq62f52gdss.click","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":2},{"t":"一元机场","u":"https://xn--4gq62f52gdss.click/#/dashboard","h":"xn--4gq62f52gdss.click","c":"vpn","f":"书签栏 / 有花无诗 / unfiled / VPN","dup":2},{"t":"Rask","u":"https://app.rask.ai/","h":"app.rask.ai","c":"misc","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"StarfallChat-GPT4 2元万字，支持识图绘图，PDF读取","u":"https://blog.starfall.love/archives/1693397935671","h":"blog.starfall.love","c":"misc","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"有花无实の小站","u":"https://ephemeralbloom.dpdns.org/","h":"ephemeralbloom.dpdns.org","c":"misc","f":"书签栏","dup":1},{"t":"AIGC+","u":"https://go.aigcplus.cc/home","h":"go.aigcplus.cc","c":"misc","f":"书签栏 / 有花无诗 / 杂物","dup":1},{"t":"越往下文字越靠右又是什么bug啊！！！！！！！！！！ · Kondius Blog","u":"http://kondius.cn/article.html?id=u1788228810904","h":"kondius.cn","c":"misc","f":"书签栏","dup":1},{"t":"EasyGPT地址发布页","u":"https://site.easygpt.work/","h":"site.easygpt.work","c":"misc","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"AIGC工具导航 | 生成式AI导航-全品类AI工具集合平台!","u":"https://www.aigc.cn/","h":"www.aigc.cn","c":"misc","f":"书签栏 / 有花无诗 / 杂物","dup":1},{"t":"有花无实の小站","u":"https://youhuawushi-blog.vercel.app/","h":"youhuawushi-blog.vercel.app","c":"misc","f":"书签栏","dup":1},{"t":"人工智能驱动的视频配音只需1美元/分钟 - 现在就试试吧","u":"https://zh.rask.ai/pricing","h":"zh.rask.ai","c":"misc","f":"书签栏 / 有花无诗 / unfiled / 学习","dup":2},{"t":"全游戏无码化计划（自己做了Ai去码的游戏）_2DFan","u":"https://2dfan.com/lists/4708","h":"2dfan.com","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"RJ01333448 【简体中文版】母亲失格～性欲异常旺盛的继母以怀孕为目标、疯狂地与自己进行内射做爱的日常～ - ASMR Online","u":"https://asmr.one/work/RJ01333448","h":"asmr.one","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"Search by tag:后宫 | Page 1 - ASMR Online","u":"https://asmr.one/works?keyword=%24tag%3A%E5%90%8E%E5%AE%AB%24","h":"asmr.one","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"Search by va:分倍河原シホ | Page 1 - ASMR Online","u":"https://asmr.one/works?keyword=%24va%3A%E5%88%86%E5%80%8D%E6%B2%B3%E5%8E%9F%E3%82%B7%E3%83%9B%24","h":"asmr.one","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"搜尋 - 2D動畫 - Hanime1.me","u":"https://hanime1.me/search?genre=2D%E5%8B%95%E7%95%AB","h":"hanime1.me","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"4KHD - 高清美丽女孩 --- 4KHD - HD Beautiful Girls","u":"https://kmngw.uuss.uk/?query-3-page=3","h":"kmngw.uuss.uk","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"【新提醒】SLG - 游戏下载区 (黄油)游戏&&软件下载区_老王论坛","u":"https://laowang.vip/forum.php?mod=forumdisplay&fid=65&filter=heat_index&orderby=heat_index&typeid=920","h":"laowang.vip","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"端游 - 游戏下载区游戏&&软件下载区_老王论坛_第2页","u":"https://laowang.vip/forum.php?mod=forumdisplay&fid=65&typeid=60&filter=typeid&typeid=60&page=2","h":"laowang.vip","c":"private","f":"其他书签 / game / 不许","dup":1},{"t":"[无码破解]CJOD-468 四位淫荡巨乳姐妹在乡下消磨时光，整天对我们亲戚们淫荡。爆炸性乳房随着活塞式撞击而震动，女上位超火辣！天月亚津，姬咲花，宮户里穗，有冈美羽","u":"https://supjav.com/zh/356362.html","h":"supjav.com","c":"private","f":"其他书签 / game / 不许","dup":1}];
+const CATS = [["ai", "AI 对话与模型", "💬", "#f7a8c4", 40], ["art", "AI 绘画与创作", "🎨", "#c3a6f0", 10], ["api", "公益 API / 中转站", "🔌", "#7ec8e3", 41], ["dev", "开发与部署", "🛠️", "#8fd3a8", 25], ["study", "学习与校园", "📚", "#f5c26b", 16], ["game", "游戏与动漫", "🎮", "#f08a8a", 34], ["media", "影音与资源", "🎵", "#e8a87c", 11], ["vpn", "网络与加速器", "✈️", "#9bb7d4", 17], ["misc", "其他", "📦", "#b8b0bd", 9], ["private", "私密收藏", "🔒", "#6b5b73", 9]];
+const CMAP = {};
+CATS.forEach(c => CMAP[c[0]] = { name: c[1], icon: c[2], color: c[3], n: c[4] });
+
+const PALETTE = ['#f7a8c4','#8fd3a8','#c3a6f0','#7ec8e3','#f5c26b','#f08a8a','#e8a87c','#9bb7d4','#b8a6c9','#a3c9a8'];
+
+function hash(str){
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+function color(host){ return PALETTE[hash(host) % PALETTE.length]; }
+function initial(host){
+  const s = host.replace(/^www\./, '');
+  return (s[0] || '?').toUpperCase();
+}
+
+const grid = document.getElementById('grid');
+const chips = document.getElementById('chips');
+const empty = document.getElementById('empty');
+const q = document.getElementById('q');
+let cur = 'all';
+
+function buildChips(){
+  const all = document.createElement('div');
+  all.className = 'chip on';
+  all.dataset.c = 'all';
+  all.innerHTML = '全部<span class="n">' + DATA.length + '</span>';
+  all.style.background = '#f7a8c4';
+  chips.appendChild(all);
+  CATS.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.dataset.c = c[0];
+    el.innerHTML = c[2] + ' ' + c[1] + '<span class="n">' + c[4] + '</span>';
+    chips.appendChild(el);
+  });
+  chips.addEventListener('click', e => {
+    const t = e.target.closest('.chip');
+    if (!t) return;
+    cur = t.dataset.c;
+    [...chips.children].forEach(x => {
+      x.classList.toggle('on', x === t);
+      x.style.background = (x === t) ? (CMAP[x.dataset.c] ? CMAP[x.dataset.c].color : '#f7a8c4') : '';
+      x.style.color = (x === t) ? '#fff' : '';
+    });
+    render();
+  });
+  chips.children[0].style.color = '#fff';
+}
+
+function render(){
+  const kw = q.value.trim().toLowerCase();
+  const frag = document.createDocumentFragment();
+  let n = 0;
+  for (const it of DATA){
+    if (cur !== 'all' && it.c !== cur) continue;
+    if (kw && !(it.t.toLowerCase().includes(kw) || it.u.toLowerCase().includes(kw) || it.h.includes(kw))) continue;
+    n++;
+    const a = document.createElement('a');
+    a.className = 'card' + (it.c === 'private' ? ' priv' : '');
+    a.href = it.u;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.title = it.t + '\n' + it.u + '\n来自：' + it.f;
+    const c = CMAP[it.c];
+    a.innerHTML =
+      '<div class="ava" style="background:' + color(it.h) + '">' + initial(it.h) + '</div>' +
+      '<div class="meta">' +
+        '<div class="tit">' + escapeHtml(it.t || it.h) + '</div>' +
+        '<div class="dom">' +
+          '<span>' + escapeHtml(it.h) + '</span>' +
+          '<span class="tag" style="color:' + c.color + '">' + c.icon + ' ' + c.name + '</span>' +
+        '</div>' +
+      '</div>' +
+      (it.dup > 1 ? '<span class="badge">×' + it.dup + '</span>' : '');
+    frag.appendChild(a);
+  }
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+  empty.style.display = n ? 'none' : 'block';
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+buildChips();
+render();
+q.addEventListener('input', render);
+
+const privbar = document.getElementById('privbar');
+const privbtn = document.getElementById('privbtn');
+if (DATA.some(d => d.c === 'private')) privbar.style.display = 'flex';
+privbtn.addEventListener('click', () => {
+  const on = document.body.classList.toggle('show-priv');
+  privbtn.textContent = on ? '隐藏' : '显示';
+});
+</script>
+</body>
+</html>

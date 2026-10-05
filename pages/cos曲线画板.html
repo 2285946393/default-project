@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cos 曲线画板</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: #14121c;
+    color: #efe8ff;
+    font-family: system-ui, "Microsoft YaHei", sans-serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 14px; padding: 16px;
+  }
+  h1 { font-size: 17px; margin: 0; font-weight: 600; letter-spacing: .5px; }
+  h1 span { color: #ff9ecf; }
+  #wrap {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(255,120,190,.18), 0 0 0 1px rgba(255,158,207,.25) inset;
+    background: #0f0d16;
+    max-width: 100%;
+  }
+  canvas { display: block; max-width: 100%; height: auto; }
+  .bar {
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+    font-size: 13px; color: #cbbfe6; justify-content: center;
+  }
+  .bar label { display: flex; align-items: center; gap: 6px; }
+  input[type=range] { width: 110px; accent-color: #ff9ecf; }
+  .val { color: #ffd86b; font-variant-numeric: tabular-nums; min-width: 34px; }
+  .hint { font-size: 12px; color: #8d82a6; }
+</style>
+</head>
+<body>
+
+<h1>用 <span>Canvas 2D</span> 画一条 <span>y = cos(x)</span></h1>
+
+<div id="wrap">
+  <canvas id="cv" width="900" height="460"></canvas>
+</div>
+
+<div class="bar">
+  <label>振幅 A <input id="amp" type="range" min="20" max="140" value="90"><span class="val" id="ampV">90</span></label>
+  <label>频率 k <input id="freq" type="range" min="0.5" max="5" step="0.1" value="1"><span class="val" id="freqV">1.0</span></label>
+  <label>速度 <input id="spd" type="range" min="0" max="3" step="0.1" value="1"><span class="val" id="spdV">1.0</span></label>
+  <label><input id="glow" type="checkbox" checked> 发光</label>
+</div>
+<div class="hint">拖动滑块看曲线怎么变 · 鼠标在画布上移动看读数</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const cx = W / 2, cy = H / 2;
+
+  const amp  = document.getElementById('amp');
+  const freq = document.getElementById('freq');
+  const spd  = document.getElementById('spd');
+  const glow = document.getElementById('glow');
+  const ampV = document.getElementById('ampV');
+  const freqV= document.getElementById('freqV');
+  const spdV = document.getElementById('spdV');
+
+  // 鼠标位置（用来显示读数）
+  let mouseX = null;
+  cv.addEventListener('mousemove', e => {
+    const r = cv.getBoundingClientRect();
+    mouseX = (e.clientX - r.left) * (W / r.width);
+  });
+  cv.addEventListener('mouseleave', () => mouseX = null);
+
+  // 每个像素对应的"角度"跨度：整块画布显示 k 个完整周期
+  const SPAN = Math.PI * 4;   // 两整圈
+
+  let phase = 0;   // 相位随时间推进，曲线就会"流动"
+  let last = performance.now();
+
+  function grid() {
+    ctx.clearRect(0, 0, W, H);
+
+    // 背景渐变
+    const bg = ctx.createRadialGradient(cx, cy, 40, cx, cy, W * 0.7);
+    bg.addColorStop(0, '#1b1728');
+    bg.addColorStop(1, '#0d0b13');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // 细网格
+    ctx.strokeStyle = 'rgba(255,158,207,.07)';
+    ctx.lineWidth = 1;
+    const g = 45;
+    ctx.beginPath();
+    for (let x = cx % g; x < W; x += g) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (let y = cy % g; y < H; y += g) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+
+    // 坐标轴
+    ctx.strokeStyle = 'rgba(255,158,207,.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+    ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+    ctx.stroke();
+
+    // 轴刻度文字
+    ctx.fillStyle = 'rgba(203,191,230,.55)';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('x', W - 14, cy - 8);
+    ctx.fillText('-2π', cx - W / 2 + 18, cy + 18);
+    ctx.fillText('0', cx + 12, cy + 18);
+    ctx.fillText('2π', cx + W / 2 - 18, cy + 18);
+    ctx.textAlign = 'left';
+    ctx.fillText('y', cx + 10, 16);
+  }
+
+  // 画一条三角函数的曲线
+  function curve(fn, color, lineW, shiftPhase) {
+    const A = +amp.value, K = +freq.value;
+    ctx.beginPath();
+    for (let px = 0; px <= W; px++) {
+      // px -> 角度
+      const t = (px - cx) / (W / 2) * (SPAN / 2);
+      const y = cy - A * fn(K * t + phase * shiftPhase);
+      px === 0 ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+    }
+    ctx.lineWidth = lineW;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    if (glow.checked) {
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = color;
+    }
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  function readout() {
+    if (mouseX === null) return;
+    const A = +amp.value, K = +freq.value;
+    const t = (mouseX - cx) / (W / 2) * (SPAN / 2);
+    const y = A * Math.cos(K * t + phase);
+
+    ctx.save();
+    // 竖线 + 点
+    ctx.strokeStyle = 'rgba(255,216,107,.5)';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(mouseX, cy); ctx.lineTo(mouseX, cy - y);
+    ctx.lineTo(cx, cy - y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#ffd86b';
+    ctx.beginPath();
+    ctx.arc(mouseX, cy - y, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 标签
+    const txt = `x=${(K * t + phase).toFixed(2)}  cos=${Math.cos(K * t + phase).toFixed(2)}`;
+    ctx.font = '13px system-ui';
+    const tw = ctx.measureText(txt).width + 16;
+    let bx = mouseX + 12;
+    if (bx + tw > W - 8) bx = mouseX - 12 - tw;
+    ctx.fillStyle = 'rgba(20,18,28,.88)';
+    ctx.fillRect(bx, 12, tw, 26);
+    ctx.strokeStyle = 'rgba(255,216,107,.5)';
+    ctx.strokeRect(bx, 12, tw, 26);
+    ctx.fillStyle = '#ffd86b';
+    ctx.fillText(txt, bx + 8, 30);
+    ctx.restore();
+  }
+
+  function loop(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    phase += dt * +spd.value * 1.2;
+
+    grid();
+    // 先画一条淡的 sin 作对比，再画主曲线 cos
+    curve(Math.sin, 'rgba(120,200,255,.45)', 2, 1);
+    curve(Math.cos, '#ff9ecf', 3.2, 1);
+    readout();
+
+    // 左上角公式
+    ctx.fillStyle = 'rgba(239,232,255,.9)';
+    ctx.font = '15px system-ui';
+    ctx.fillText(`y = ${(+amp.value).toFixed(0)} · cos(${(+freq.value).toFixed(1)}x + t)`, 16, 30);
+    ctx.fillStyle = 'rgba(120,200,255,.7)';
+    ctx.font = '12px system-ui';
+    ctx.fillText('蓝 = sin(x)  比对用', 16, 50);
+
+    requestAnimationFrame(loop);
+  }
+
+  for (const el of [amp, freq, spd]) {
+    el.addEventListener('input', () => {
+      ampV.textContent = amp.value;
+      freqV.textContent = (+freq.value).toFixed(1);
+      spdV.textContent = (+spd.value).toFixed(1);
+    });
+  }
+
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

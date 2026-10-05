@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#05070e" />
+<meta name="description" content="有花无实的小站：浏览器里能自己动的那些作品。" />
+<link rel="icon" href="data:," />
+<title>有花无实 · 小站</title>
+<style>
+  :root {
+    --bg: #05070e;
+    --ink: #f2f7ff;
+    --dim: #9fb3cc;
+    --line: rgba(160, 200, 255, .14);
+    --line-2: rgba(160, 200, 255, .3);
+    --hot: #7cc9ff;
+    --warm: #ffab63;
+    --panel: rgba(255, 255, 255, .045);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); overflow-x: hidden;
+    font-family: "MiSans", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.65;
+    background-image:
+      radial-gradient(900px 620px at 6% -8%, rgba(124, 201, 255, .13), transparent 60%),
+      radial-gradient(760px 620px at 96% 6%, rgba(255, 171, 99, .1), transparent 58%);
+  }
+  a { color: inherit; }
+
+  .nav {
+    position: fixed; z-index: 20; left: 50%; top: 16px; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 20px; padding: 9px 10px 9px 20px;
+    border-radius: 999px; border: 1px solid var(--line); background: rgba(8, 12, 22, .58);
+    backdrop-filter: blur(16px) saturate(1.2);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .06);
+  }
+  .nav .logo { font-size: 13.5px; letter-spacing: 3px; }
+  .nav .logo b { color: var(--hot); font-weight: 600; }
+  .nav nav { display: flex; gap: 18px; font-size: 13px; color: var(--dim); }
+  .nav nav a { text-decoration: none; transition: color .2s ease; }
+  .nav nav a:hover { color: var(--ink); }
+  .nav .go {
+    font-size: 13px; padding: 9px 18px; border-radius: 999px; text-decoration: none; font-weight: 600;
+    color: #06131f; background: linear-gradient(120deg, var(--hot), var(--warm));
+    box-shadow: 0 6px 20px rgba(124, 201, 255, .28);
+  }
+
+  .hero {
+    max-width: 1240px; margin: 0 auto; padding: 132px 26px 74px;
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+    gap: 40px; align-items: center;
+  }
+  .hero .hello { font-size: 13px; letter-spacing: 4px; color: var(--dim); }
+  .hero h1 {
+    margin: 16px 0 0; font-size: clamp(34px, 5.6vw, 74px); line-height: 1.08;
+    letter-spacing: -1px; font-weight: 600;
+  }
+  .hero h1 em {
+    font-style: normal; background: linear-gradient(100deg, #a9e2ff, #ffbb85);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero .lede { margin: 22px 0 0; max-width: 46ch; color: #c2d3e6; font-size: 16px; line-height: 1.9; }
+  .hero .lede b { color: var(--ink); }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+  .cta a {
+    text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 28px; border-radius: 999px;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .cta .primary { color: #06131f; background: linear-gradient(120deg, var(--hot), var(--warm)); box-shadow: 0 14px 36px rgba(124, 201, 255, .28); }
+  .cta .ghost { border: 1px solid var(--line-2); background: rgba(10, 16, 28, .5); }
+  .cta a:hover { transform: translateY(-2px); }
+
+  /* 圆形实时黑洞：英雄区的"动"就靠它 */
+  .orb { position: relative; width: 100%; max-width: 420px; aspect-ratio: 1 / 1; margin: 0 auto; }
+  .orb::after {
+    content: ""; position: absolute; inset: -12%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(124, 201, 255, .16), transparent 72%);
+  }
+  .orb .ring { position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+    border: 1px solid var(--line-2); box-shadow: 0 30px 80px rgba(0, 0, 0, .6), inset 0 0 60px rgba(0, 0, 0, .6); }
+  #bh { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .orb .tag {
+    position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%);
+    font-size: 11.5px; letter-spacing: 2px; color: var(--dim); white-space: nowrap;
+    background: rgba(6, 10, 20, .8); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px;
+  }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 0 26px 40px; }
+  .sec-head { display: flex; align-items: baseline; gap: 16px; padding-top: 40px; border-top: 1px solid var(--line); }
+  .sec-head h2 { margin: 0; font-size: clamp(20px, 2.4vw, 30px); letter-spacing: -.4px; font-weight: 600; }
+  .sec-head span { font-size: 12.5px; color: var(--dim); letter-spacing: 2px; }
+  .sec-head .more-link { margin-left: auto; font-size: 13px; color: var(--hot); text-decoration: none; }
+
+  .works { display: grid; grid-template-columns: repeat(auto-fit, minmax(288px, 1fr)); gap: 16px; margin-top: 26px; }
+  .work {
+    position: relative; display: block; padding: 24px; border-radius: 20px; text-decoration: none;
+    border: 1px solid var(--line); background: var(--panel); overflow: hidden;
+    transition: transform .26s cubic-bezier(.22, .9, .3, 1), border-color .26s ease, background .26s ease;
+  }
+  .work:hover { transform: translateY(-4px); border-color: var(--line-2); background: rgba(255, 255, 255, .06); }
+  .work .glow {
+    position: absolute; right: -40px; top: -40px; width: 170px; height: 170px; border-radius: 50%;
+    background: radial-gradient(closest-side, var(--g, rgba(124, 201, 255, .3)), transparent 70%);
+    opacity: .8; pointer-events: none;
+  }
+  .work h3 { margin: 0; font-size: 19px; letter-spacing: -.2px; }
+  .work p { margin: 9px 0 0; font-size: 13.5px; line-height: 1.8; color: #a9bdd4; min-height: 3.6em; }
+  .tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 16px; }
+  .tags i {
+    font-style: normal; font-size: 11.5px; color: #bcd2e8; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line); background: rgba(255, 255, 255, .04);
+  }
+  .work .new { position: absolute; right: 18px; top: 20px; font-size: 11px; letter-spacing: 1px;
+    color: #06131f; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+    background: linear-gradient(120deg, var(--hot), var(--warm)); }
+
+  .about { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 26px 40px; margin-top: 26px; }
+  .about p { margin: 0; font-size: 14.5px; line-height: 1.95; color: #b6c7db; }
+  .about p b { color: var(--ink); }
+
+  footer {
+    border-top: 1px solid var(--line); margin-top: 56px; padding: 30px 26px 46px;
+    max-width: 1240px; margin-left: auto; margin-right: auto;
+    display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    font-size: 12.5px; color: #7f93ab;
+  }
+  footer a { text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+
+  .reveal { opacity: 0; transform: translateY(16px); }
+  .reveal.in { opacity: 1; transform: none; transition: opacity .7s ease, transform .7s cubic-bezier(.22, .9, .3, 1); }
+  a:focus-visible { outline: 2px solid var(--hot); outline-offset: 3px; border-radius: 14px; }
+
+  @media (max-width: 900px) {
+    .nav { gap: 12px; padding: 8px 9px 8px 16px; }
+    .nav nav { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 104px 18px 48px; gap: 34px; }
+    .orb { max-width: 320px; order: -1; }
+    main { padding: 0 18px 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="logo">有花无实<b>·</b>小站</span>
+  <nav>
+    <a href="#works">作品</a>
+    <a href="#about">关于</a>
+    <a href="/">回博客</a>
+  </nav>
+  <a class="go" href="./event-horizon.html">看黑洞</a>
+</div>
+
+<header class="hero">
+  <div>
+    <div class="hello">HELLO，我是有花无实</div>
+    <h1>我做<em>能自己动</em>的网页</h1>
+    <p class="lede">
+      全都是一张 <b>HTML 文件</b>：双击就开、不联网、不依赖任何东西。
+      这里挑了我最想给你看的几个——有实时渲染的黑洞，有能涂抹频谱的傅里叶，也有能转着玩的全息卡册。
+    </p>
+    <div class="cta">
+      <a class="primary" href="#works">看作品</a>
+      <a class="ghost" href="./event-horizon.html">从最亮的开始</a>
+    </div>
+  </div>
+  <div class="orb">
+    <div class="ring"><canvas id="bh"></canvas></div>
+    <span class="tag">这里是实时算的，不是视频</span>
+  </div>
+</header>
+
+<main>
+  <section id="works">
+    <div class="sec-head">
+      <h2>作品</h2>
+      <span id="work-count">8 件</span>
+      <a class="more-link" href="/projects">看全部（博客的工程页）</a>
+    </div>
+    <div class="works" id="work-grid"></div>
+  </section>
+
+  <section id="about" style="padding-top:56px">
+    <div class="sec-head"><h2>关于</h2><span>一点点背景</span></div>
+    <div class="about">
+      <p>
+        电子信息工程专业，大四。<b>前端是自学的</b>，所以我的作品有个共同点：
+        尽量做到一个文件、零依赖、双击就能跑——面试官不用装任何环境也能打开看。
+      </p>
+      <p>
+        偏好能"算"出来的东西：着色器、傅里叶、粒子、程序化生成。
+        不太会画人物，但愿意把数学算到画面里。
+      </p>
+      <p>
+        除了这里的作品，我还在写一个博客，记录踩过的坑和做过的东西。
+        <a href="/" style="color:var(--hot)">去博客看看</a>。
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>有花无实 · 单文件作品小站</span>
+  <span><a href="/">博客</a> · <a href="/projects">工程</a> · <a href="./index.html#works">回到顶部</a></span>
+</footer>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+uniform vec2 uRes; uniform float uTime; uniform vec3 uCam; uniform float uFov;
+float hash13(vec3 p) { p = fract(p * 0.3183099 + vec3(0.71, 0.113, 0.419)); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float noise3(vec3 x) {
+  vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  float a = hash13(i), b = hash13(i + vec3(1, 0, 0)), c = hash13(i + vec3(0, 1, 0)), d = hash13(i + vec3(1, 1, 0));
+  float e = hash13(i + vec3(0, 0, 1)), g = hash13(i + vec3(1, 0, 1)), h = hash13(i + vec3(0, 1, 1)), k = hash13(i + vec3(1, 1, 1));
+  return mix(mix(mix(a, b, f.x), mix(c, d, f.x), f.y), mix(mix(e, g, f.x), mix(h, k, f.x), f.y), f.z);
+}
+float fbm(vec3 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 3; i++) { s += a * noise3(p); p *= 2.03; a *= 0.5; } return s; }
+vec3 aces(vec3 x) { return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }
+vec3 sky(vec3 d) {
+  vec3 p = d * 220.0, id = floor(p), f = fract(p) - 0.5;
+  float h = hash13(id), core = smoothstep(0.44, 0.0, length(f));
+  vec3 col = core * step(0.982, h) * (0.3 + 1.7 * hash13(id + 3.7)) *
+             mix(vec3(.7, .8, 1.), vec3(1., .85, .68), hash13(id + 11.3)) * 1.15;
+  float n = fbm(d * 80.0);
+  col += mix(vec3(.09, .15, .40), vec3(.40, .13, .38), smoothstep(.45, .86, n)) * pow(smoothstep(.42, .96, n), 2.3) * .28;
+  return col;
+}
+void main() {
+  vec2 fc = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
+  vec3 ww = normalize(-uCam), uu = normalize(cross(vec3(0.0, 1.0, 0.0), ww)), vv = cross(ww, uu);
+  vec3 dir = normalize(fc.x * uu + fc.y * vv + (1.0 / tan(radians(uFov) * 0.5)) * ww);
+  vec3 pos = uCam;
+  float h2 = dot(cross(pos, dir), cross(pos, dir));
+  float diskIn = 2.35, diskOut = 9.0, thick = 0.24;
+  vec3 col = vec3(0.0); float trans = 1.0; bool captured = false;
+  for (int i = 0; i < 260; i++) {
+    float r2 = dot(pos, pos), r = sqrt(r2);
+    if (r < 1.0) { captured = true; break; }
+    if (r > 74.0 && dot(pos, dir) > 0.0) break;
+    float dt = clamp(0.05 * r, 0.02, 0.5);
+    if (abs(pos.y) < thick * 3.0 && r < diskOut * 1.25 && r > diskIn * 0.55) dt = min(dt, 0.09);
+    vec3 acc = -1.5 * h2 * pos / (r2 * r2 * r);
+    vec3 npos = pos + dir * dt + 0.5 * acc * dt * dt;
+    vec3 ndir = normalize(dir + acc * dt);
+    if (abs(pos.y) < thick * 3.0) {
+      float rp = length(pos.xz);
+      if (rp > diskIn && rp < diskOut) {
+        float u = (rp - diskIn) / (diskOut - diskIn);
+        float vert = exp(-pow(pos.y / thick, 2.0));
+        float ang = atan(pos.z, pos.x);
+        float spiral = ang * 2.0 + rp * 0.85 - uTime * 0.9;
+        float streak = fbm(vec3(cos(spiral) * 1.7, sin(spiral) * 1.7, rp * 0.5 - uTime * 0.35));
+        float grain = fbm(vec3(rp * 1.7, ang * 3.6, uTime * 0.5));
+        float dens = smoothstep(0.30, 0.92, streak * 0.62 + grain * 0.55)
+                   * smoothstep(0.0, 0.14, u) * (1.0 - smoothstep(0.42, 1.0, u));
+        vec3 radial = normalize(vec3(pos.x, 0.0, pos.z));
+        vec3 tangent = normalize(cross(vec3(0.0, 1.0, 0.0), radial));
+        vec3 vel = tangent * (0.72 / sqrt(max(rp, 1.0))) * 3.4;
+        float dop = clamp(1.0 / max(0.28, 1.0 - dot(vel, normalize(-dir)) * 1.25), 0.4, 2.1);
+        vec3 hot = vec3(1.34, 1.18, .94), mid = vec3(.95, .46, .16), cold = vec3(.36, .12, .04);
+        vec3 dcol = mix(mix(hot, mid, smoothstep(0.0, 0.45, u)), cold, smoothstep(0.45, 1.0, u));
+        dcol *= mix(1.0, dop * dop, 0.9);
+        float a = 1.0 - exp(-dens * vert * 1.15 * dt * 2.6);
+        col += dcol * a * trans * 1.7;
+        trans *= (1.0 - a);
+        if (trans < 0.02) break;
+      }
+    }
+    pos = npos; dir = ndir;
+  }
+  if (!captured && trans > 0.001) col += sky(normalize(dir)) * trans;
+  if (captured) col *= 0.0;
+  col = aces(col * 1.1);
+  col = pow(clamp(col, 0.0, 1.0), vec3(0.92));
+  gl_FragColor = vec4(col, 1.0);
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------------------------------------------------------------- 作品清单
+  // 每一条都能打开；带 new:true 的会挂"新"标
+  var WORKS = [
+    { t: "视界 · 实时黑洞", d: "光线被引力掰弯、吸积盘多普勒增亮，全在浏览器里实时解出来。一个文件，无依赖。",
+      tags: ["WebGL", "物理", "实时渲染"], url: "./event-horizon.html", g: "rgba(255,171,99,.34)", isNew: true },
+    { t: "傅里叶游乐场", d: "右边是频谱，你用鼠标抹掉哪一块，左边就少掉哪部分信息——每一笔都是一次真正的逆变换。",
+      tags: ["算法", "FFT", "交互"], url: "./fourier.html", g: "rgba(124,201,255,.34)", isNew: true },
+    { t: "全息典藏卡册", d: "五张徽记卡，能转能翻面，珠光/银箔/烫金四种卡面，鼠标一晃镭射彩虹跟着走。",
+      tags: ["3D", "卡片", "材质"], url: "./holo-cards.html", g: "rgba(255,140,190,.3)", isNew: true },
+    { t: "极光流体", d: "纯 WebGL 实时流体，鼠标搅动出一整片极光。",
+      tags: ["WebGL", "流体"], url: "./aurora.html", g: "rgba(120,255,214,.3)" },
+    { t: "深渊塔", d: "15 层爬塔，策略战斗与随机事件，背景会随下潜深度一点点变暗。",
+      tags: ["游戏", "策略"], url: "./abyss.html", g: "rgba(180,120,255,.3)" },
+    { t: "小鲸鱼岛", d: "一座能逛的小岛，鲸鱼娘住在上面。",
+      tags: ["互动", "可爱"], url: "./whaleisland.html", g: "rgba(124,201,255,.28)" },
+    { t: "人生重开", d: "把一辈子压缩成几分钟，看你的选择把人生带到哪儿。",
+      tags: ["游戏", "选择"], url: "./liferestart.html", g: "rgba(255,171,99,.26)" },
+    { t: "引力沙盒", d: "扔几颗星星进去，看它们自己纠缠成星系。",
+      tags: ["物理", "模拟"], url: "./gravity-sandbox.html", g: "rgba(160,200,255,.26)" },
+  ];
+
+  var grid = document.getElementById("work-grid");
+  var count = document.getElementById("work-count");
+  if (count) count.textContent = WORKS.length + " 件";
+  WORKS.forEach(function (w) {
+    var a = document.createElement("a");
+    a.className = "work reveal";
+    a.href = w.url;
+    a.style.setProperty("--g", w.g);
+    var glow = document.createElement("span");
+    glow.className = "glow";
+    a.appendChild(glow);
+    if (w.isNew) {
+      var n = document.createElement("span");
+      n.className = "new"; n.textContent = "NEW";
+      a.appendChild(n);
+    }
+    var h = document.createElement("h3"); h.textContent = w.t;
+    var p = document.createElement("p"); p.textContent = w.d;
+    var tags = document.createElement("div"); tags.className = "tags";
+    w.tags.forEach(function (t) { var i = document.createElement("i"); i.textContent = t; tags.appendChild(i); });
+    a.appendChild(h); a.appendChild(p); a.appendChild(tags);
+    grid.appendChild(a);
+  });
+
+  // ---------------------------------------------------------------- 滚动进场
+  var items = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -10% 0px", threshold: 0.1 });
+    Array.prototype.forEach.call(items, function (el) { io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(items, function (el) { el.classList.add("in"); });
+  }
+
+  // ---------------------------------------------------------------- 英雄区的实时黑洞
+  var canvas = document.getElementById("bh");
+  var attrs = { antialias: false, alpha: false, depth: false, powerPreference: "high-performance" };
+  var gl = canvas.getContext("webgl2", attrs) || canvas.getContext("webgl", attrs);
+  if (!gl) { canvas.style.display = "none"; return; }
+  function compile(t, src) {
+    var s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  var prog;
+  try {
+    prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, document.getElementById("vs").textContent));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, document.getElementById("fs").textContent));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  } catch (e) { canvas.style.display = "none"; return; }
+  gl.useProgram(prog);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, "aPos");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var U = {};
+  ["uRes", "uTime", "uCam", "uFov"].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var visible = true, yaw = 0.7, pitch = 0.22, cw = 0, ch = 0;
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.4);
+    var w = Math.max(220, Math.floor(canvas.clientWidth * dpr));
+    var h = Math.max(220, Math.floor(canvas.clientHeight * dpr));
+    if (w === cw && h === ch) return;
+    cw = w; ch = h; canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h);
+  }
+  window.addEventListener("resize", resize);
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }, { threshold: 0.02 }).observe(canvas);
+  }
+  var t0 = performance.now(), drawn = false;
+  function frame(now) {
+    var t = (now - t0) / 1000;
+    if (visible && !document.hidden) {
+      if (!reduce) yaw += 0.0022;
+      var cp = Math.cos(pitch), sp = Math.sin(pitch), d = 33;
+      gl.uniform2f(U.uRes, cw, ch);
+      gl.uniform1f(U.uTime, t);
+      gl.uniform3f(U.uCam, Math.sin(yaw) * cp * d, sp * d, Math.cos(yaw) * cp * d);
+      gl.uniform1f(U.uFov, 50);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      drawn = true;
+    }
+    if (!drawn || !reduce) requestAnimationFrame(frame);
+  }
+  resize();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

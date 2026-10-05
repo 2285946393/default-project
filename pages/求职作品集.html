@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有花无实 · 前端开发求职作品集</title>
+<meta name="description" content="有花无实的前端开发求职作品集：28 个单文件 Web 作品，涵盖 WebGL 图形、游戏、交互可视化与教育工具。">
+<meta name="theme-color" content="#f7f3f4">
+<style>
+:root{
+  --bg:#f7f3f4; --card:#fdfbfb; --ink:#362f42; --mist:#7d7590;
+  --line:#e8dfe3; --rose:#b5486c; --rose-soft:#f6e7ec; --gold:#b98a2e;
+  --shadow:0 10px 30px rgba(54,47,66,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--rose);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:900px;margin:0 auto;padding:0 26px}
+
+/* ---------- 头部 ---------- */
+.hero{padding:54px 0 34px;border-bottom:1px solid var(--line)}
+.hero .name{font-size:38px;font-weight:800;letter-spacing:.02em}
+.hero .role{display:inline-block;margin-top:10px;padding:5px 14px;border-radius:999px;background:var(--rose-soft);color:var(--rose);font-size:14px;font-weight:700}
+.hero .tagline{margin-top:16px;color:var(--mist);font-size:15px}
+.contact{list-style:none;display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:20px;font-size:14px}
+.contact li{color:var(--mist)}
+.contact b{color:var(--ink);font-weight:600}
+
+/* ---------- 数字条 ---------- */
+.stats{display:flex;gap:14px;margin:26px 0 0;flex-wrap:wrap}
+.stat{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:26px;font-weight:800;color:var(--rose)}
+.stat span{font-size:13px;color:var(--mist)}
+
+/* ---------- 区块 ---------- */
+section{padding:34px 0}
+h2{font-size:20px;font-weight:800;margin-bottom:6px}
+h2 .en{color:var(--rose);font-size:12px;font-weight:600;letter-spacing:.14em;margin-left:8px;text-transform:uppercase}
+.sub{color:var(--mist);font-size:13.5px;margin-bottom:18px}
+
+/* ---------- 技能 ---------- */
+.tags{display:flex;flex-wrap:wrap;gap:9px}
+.tag{padding:6px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--ink)}
+.tag.hot{background:var(--rose-soft);border-color:#eccfd9;color:var(--rose);font-weight:600}
+
+/* ---------- 作品 ---------- */
+.works{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.work{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);transition:.22s;display:flex;flex-direction:column}
+.work:hover{transform:translateY(-4px);border-color:#d8bccb;box-shadow:0 18px 42px rgba(54,47,66,.12)}
+.work .head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.work h3{font-size:17px;font-weight:800}
+.work .cat{font-size:11px;font-weight:700;color:var(--rose);background:var(--rose-soft);padding:2px 9px;border-radius:999px}
+.work p{margin-top:9px;font-size:13.5px;color:var(--mist);flex:1}
+.work .stack{margin-top:12px;font-size:12px;color:var(--gold);font-weight:600;letter-spacing:.02em}
+.work .go{margin-top:10px;font-size:13px;font-weight:700}
+
+/* ---------- 更多作品 ---------- */
+.more{display:grid;grid-template-columns:1fr 1fr;gap:8px 26px;font-size:13.5px}
+.more div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:8px 0}
+.more span:first-child{color:var(--ink);font-weight:600}
+.more span:last-child{color:var(--mist);font-size:12.5px;text-align:right}
+
+/* ---------- 教育 / 自评 ---------- */
+.edu{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow)}
+.edu .row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.edu .row b{font-size:15px}
+.edu .row span{color:var(--mist);font-size:13px}
+.edu p{margin-top:8px;color:var(--mist);font-size:13.5px}
+.hl{color:var(--rose);font-weight:700}
+.note{margin-top:14px;font-size:12.5px;color:var(--mist);background:var(--rose-soft);border-radius:12px;padding:10px 14px}
+
+footer{border-top:1px solid var(--line);padding:26px 0 44px;color:var(--mist);font-size:12.5px;text-align:center}
+
+@media (max-width:720px){
+  .works,.more{grid-template-columns:1fr}
+  .hero .name{font-size:30px}
+}
+/* ---------- 打印（Ctrl+P 存 PDF） ---------- */
+@media print{
+  :root{--bg:#fff}
+  body{background:#fff}
+  .work,.stat,.edu{box-shadow:none;break-inside:avoid}
+  .work:hover{transform:none}
+  a{color:var(--rose)}
+  section{padding:20px 0}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="name">有花无实</div>
+    <div class="role">前端开发 / 独立开发者</div>
+    <p class="tagline">一个人，一个 HTML 文件，造一个小世界 —— 从 WebGL 流体渲染到爬塔游戏，全部从零手写、零依赖。</p>
+    <ul class="contact">
+      <li>📮 <b>2285946393@qq.com</b></li>
+      <li>🔗 <a href="https://ephemeralbloom.dpdns.org/">ephemeralbloom.dpdns.org</a></li>
+      <li>💬 QQ 群 <b>574612434</b>（小鲸鱼岛）</li>
+    </ul>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>28</b><span>个已上线作品</span></div>
+    <div class="stat"><b>1</b><span>个文件 = 一个完整作品</span></div>
+    <div class="stat"><b>0</b><span>安装 / 构建 / 依赖</span></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>技能栈<span class="en">Skills</span></h2>
+    <p class="sub">以原生 Web 技术为主，能独立完成从视觉、交互到部署的全流程。</p>
+    <div class="tags">
+      <span class="tag hot">JavaScript (ES6+)</span>
+      <span class="tag hot">WebGL / GLSL</span>
+      <span class="tag hot">Canvas 2D</span>
+      <span class="tag">Web Audio API</span>
+      <span class="tag">HTML5 / CSS3</span>
+      <span class="tag">响应式布局</span>
+      <span class="tag">Rust / WebAssembly</span>
+      <span class="tag">Next.js / React</span>
+      <span class="tag">Tailwind CSS</span>
+      <span class="tag">Git</span>
+      <span class="tag">Python（基础）</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>精选作品<span class="en">Selected Works</span></h2>
+    <p class="sub">点击标题即可在线试玩（部署在 Cloudflare，无需安装）。</p>
+    <div class="works">
+
+      <article class="work">
+        <div class="head"><h3>极光流体</h3><span class="cat">WebGL</span></div>
+        <p>纯 WebGL 手写 shader 的实时流体模拟，鼠标搅动出一整片极光。零依赖、单文件。</p>
+        <div class="stack">WebGL · GLSL · JavaScript</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/aurora.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>元素秘境</h3><span class="cat">Rust + WASM</span></div>
+        <p>落沙元素的暗黑幻想沙盒：移植改造 sandspiel（MIT）的 Rust/WASM 内核，手写 wasm-bindgen glue 与原生 WebGL 渲染，76KB 单文件。</p>
+        <div class="stack">Rust · WebAssembly · WebGL</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/element.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>深渊塔</h3><span class="cat">游戏</span></div>
+        <p>15 层爬塔 roguelike：3 种进攻策略、随机事件分支与双结局，背景随下潜深度实时变色。</p>
+        <div class="stack">JavaScript · 数据驱动 · 数值设计</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/abyss.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>声音的诞生</h3><span class="cat">Web Audio</span></div>
+        <p>一根物理建模的人造声带：拖舌头、按声带，它能真的开口说出 a-u-k-t-n。</p>
+        <div class="stack">Web Audio API · 物理建模 · Canvas</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/trombone/index.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>菌丝世界</h3><span class="cat">WebGL</span></div>
+        <p>基于多智能体模拟的菌丝生长：同一颗种子，每次都能长出一张不同的有机网络。</p>
+        <div class="stack">WebGL · GLSL · 多智能体模拟</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/mycelia.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>通信调制实验室</h3><span class="cat">教育可视化</span></div>
+        <p>把 AM / FM 调制解调变成看得见的波形实验，可实时调参对比。</p>
+        <div class="stack">Canvas · 信号处理 · 交互可视化</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/modlab.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>人生重开</h3><span class="cat">游戏</span></div>
+        <p>数据驱动的文字人生模拟：184 天赋、1720 事件，抽天赋分属性、逐年事件流。</p>
+        <div class="stack">JavaScript · 数据驱动 · 状态管理</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/liferestart.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>墨</h3><span class="cat">Canvas</span></div>
+        <p>鼠标为笔、屏幕为纸，墨迹自动晕染、渗透、生长，画一幅水墨。</p>
+        <div class="stack">Canvas 2D · 粒子扩散</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/ink.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>边界千年</h3><span class="cat">数据可视化</span></div>
+        <p>从智人到 2010 年，54 个切片的世界历史地图册。按下播放，看帝国像潮水漫上来又退下去。</p>
+        <div class="stack">JavaScript · SVG / Canvas · 数据处理</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/histmap/index.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>弹球磁砖</h3><span class="cat">游戏</span></div>
+        <p>拖动瞄准、弹球海洗磁砖。99KB 单文件里塞满物理、粒子与音效。</p>
+        <div class="stack">Canvas · 物理碰撞 · 粒子系统</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/brickball.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>球藻</h3><span class="cat">WebGL</span></div>
+        <p>一颗安静的水草球，在水里轻轻晃动、冒泡、进行光合作用 —— 治愈系桌面小宠物。</p>
+        <div class="stack">WebGL · GLSL · 实时渲染</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/marimo/index.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+      <article class="work">
+        <div class="head"><h3>消逝进行时</h3><span class="cat">内容企划</span></div>
+        <p>给正在消失的中国日常写倒计时：报刊亭、绿皮慢车、录像厅…… 每件标本由所有人预言还能活几年。</p>
+        <div class="stack">JavaScript · 本地存储 · 内容设计</div>
+        <a class="go" href="https://ephemeralbloom.dpdns.org/lab/xiaoshi.html" target="_blank" rel="noopener">在线试玩 →</a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>更多作品<span class="en">More</span></h2>
+    <p class="sub">全部为单文件 HTML，浏览器双击即可运行。</p>
+    <div class="more">
+      <div><span>次元召唤</span><span>抽卡机 · Canvas</span></div>
+      <div><span>节奏抽卡</span><span>音游 + 抽卡 · Web Audio</span></div>
+      <div><span>虚拟歌姬</span><span>音乐可视化 · Web Audio</span></div>
+      <div><span>星尘</span><span>粒子星系 · Canvas</span></div>
+      <div><span>粒子生命</span><span>粒子模拟 · WebGL</span></div>
+      <div><span>引力沙盒</span><span>物理沙盒 · Canvas</span></div>
+      <div><span>反应扩散</span><span>图灵斑图 · WebGL</span></div>
+      <div><span>创作者画像</span><span>数据可视化</span></div>
+      <div><span>GIT 时间穿梭迷宫</span><span>教学游戏 · Canvas</span></div>
+      <div><span>抉择回响</span><span>文字企划 · 状态机</span></div>
+      <div><span>时光轴</span><span>时间轴页面</span></div>
+      <div><span>全能工具箱</span><span>工具集合</span></div>
+      <div><span>弹球乐园</span><span>挂机弹球 · Canvas</span></div>
+      <div><span>沙雕工具箱</span><span>摸鱼解压合集</span></div>
+      <div><span>鲸鱼娘干饭中</span><span>交互动画 · SVG</span></div>
+      <div><span>小鲸鱼岛</span><span>社群推广页</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>教育背景<span class="en">Education</span></h2>
+    <div class="edu">
+      <div class="row">
+        <b>电子信息工程 · 本科</b>
+        <span>2023.09 – 2027.06</span>
+      </div>
+      <p>在校期间自学前端与图形编程，独立完成 <span class="hl">28 个</span> Web 作品并全部部署上线，涵盖图形渲染、游戏开发、交互可视化与教育工具。</p>
+      <div class="note">💡 说明：本页所有作品均为单文件 HTML，零安装、零依赖，双击即玩 —— 我想证明的是「用最朴素的技术栈，也能把想法完整做出来」。</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    有花无实 · 前端开发求职作品集 &nbsp;|&nbsp; 在线版：<a href="https://ephemeralbloom.dpdns.org/">ephemeralbloom.dpdns.org</a><br>
+    本页可直接 Ctrl+P / ⌘P 另存为 PDF
+  </div>
+</footer>
+
+</body>
+</html>

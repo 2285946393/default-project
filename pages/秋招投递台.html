@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>秋招投递台 · 有花无实</title>
+<style>
+:root{
+  --ink:#3d3440; --sub:#8b7f8a; --line:rgba(180,150,175,.22);
+  --rose:#f7a8c4; --rose-deep:#e07ba0; --mint:#8fd3a8; --card:#fffdfe;
+  --warn:#f0b429; --bad:#e57373; --ok:#5cb98a;
+  --bg:#fdf6f9;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--ink);min-height:100vh;padding:22px 16px 60px;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* 头部 */
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.hd h1{font-size:21px;font-weight:800;letter-spacing:.02em}
+.hd h1 span{color:var(--rose-deep)}
+.hd .sub{font-size:12.5px;color:var(--sub);margin-top:3px}
+.hd .today{font-size:12.5px;color:var(--sub);text-align:right}
+.hd .today b{color:var(--rose-deep);font-size:17px}
+
+/* 统计卡 */
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:center}
+.stat .n{font-size:22px;font-weight:800;line-height:1.15}
+.stat .l{font-size:11.5px;color:var(--sub);margin-top:2px}
+.stat.s-total .n{color:var(--ink)}
+.stat.s-wait .n{color:var(--warn)}
+.stat.s-interview .n{color:var(--rose-deep)}
+.stat.s-offer .n{color:var(--ok)}
+.stat.s-dead .n{color:var(--bad)}
+
+/* 工具条 */
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.btn{
+  border:1px solid var(--line);background:var(--card);color:var(--ink);
+  padding:7px 14px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:.15s;
+}
+.btn:hover{border-color:var(--rose);background:#fff5f9}
+.btn.primary{background:var(--rose-deep);color:#fff;border-color:var(--rose-deep)}
+.btn.primary:hover{background:#d06b90}
+.btn.on{background:var(--rose);border-color:var(--rose);color:#fff}
+.spacer{flex:1}
+.search{
+  border:1px solid var(--line);background:var(--card);border-radius:9px;
+  padding:7px 12px;font-size:13px;font-family:inherit;color:var(--ink);min-width:150px;
+}
+.search:focus{outline:none;border-color:var(--rose)}
+
+/* 表格 */
+.tablewrap{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{
+  text-align:left;font-size:11.5px;font-weight:700;color:var(--sub);
+  padding:10px 12px;background:#fdf2f7;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fffafc}
+
+.co{font-weight:700}
+.pos{font-size:12px;color:var(--sub)}
+.note{font-size:12px;color:var(--sub);max-width:200px}
+
+/* 状态徽章 */
+.st{
+  display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700;
+  cursor:pointer;white-space:nowrap;border:1px solid transparent;user-select:none;
+}
+.st.wait{background:#fff7e6;color:#b8860b;border-color:#f5dfa8}
+.st.sent{background:#eef4ff;color:#4a6fa5;border-color:#cddffa}
+.st.interview{background:#fdeef4;color:var(--rose-deep);border-color:#f8cfe0}
+.st.offer{background:#eaf9f1;color:#2f8f63;border-color:#bfe8d3}
+.st.dead{background:#f5f5f5;color:#999;border-color:#e2e2e2}
+
+.act{display:flex;gap:5px}
+.mini{
+  border:1px solid var(--line);background:transparent;border-radius:6px;
+  width:24px;height:24px;cursor:pointer;font-size:12px;line-height:1;
+  color:var(--sub);font-family:inherit;transition:.15s;
+}
+.mini:hover{border-color:var(--rose);color:var(--rose-deep);background:#fff5f9}
+
+.empty{padding:44px 20px;text-align:center;color:var(--sub);font-size:13.5px}
+.empty .big{font-size:34px;margin-bottom:10px}
+
+/* 弹窗 */
+.mask{
+  position:fixed;inset:0;background:rgba(61,52,64,.34);display:none;
+  align-items:center;justify-content:center;padding:18px;z-index:50;
+}
+.mask.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:420px;box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.modal h3{font-size:16px;margin-bottom:14px}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:12px;color:var(--sub);margin-bottom:4px;font-weight:600}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 11px;
+  font-size:13.5px;font-family:inherit;color:var(--ink);background:#fffdfe;
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--rose)}
+.field textarea{resize:vertical;min-height:56px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal .btns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
+.tipbar{
+  margin-top:14px;font-size:12px;color:var(--sub);background:#fff5f9;
+  border:1px solid var(--line);border-radius:11px;padding:10px 13px;
+}
+.tipbar b{color:var(--rose-deep)}
+
+@media (max-width:720px){
+  body{padding:14px 10px 50px}
+  .hd{flex-direction:column;align-items:flex-start;gap:8px}
+  .hd h1{font-size:18px}
+  .hd .today{text-align:left}
+  /* 5 张卡在窄屏排 2 列；minmax(0,1fr) 才能让格子真正收缩，否则内容会撑破屏幕 */
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .stat{min-width:0;padding:9px 6px}
+  .stat .n{font-size:18px}
+  .bar{gap:6px}
+  .btn{padding:6px 11px;font-size:12.5px}
+  .search{min-width:0;width:100%;order:10}
+  .spacer{display:none}
+  /* 窄屏把表格转成卡片 */
+  .tablewrap{border:none;background:transparent;overflow:visible}
+  table,thead,tbody,tr,td{display:block;width:100%}
+  thead{display:none}
+  tr{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:9px;padding:10px 12px}
+  td{border:none;padding:3px 0}
+  td::before{content:attr(data-l);display:inline-block;min-width:56px;font-size:11.5px;color:var(--sub);font-weight:600}
+  .note{max-width:none}
+  .act{margin-top:6px}
+}
+@media (max-width:400px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat{padding:8px 6px}
+  .stat .n{font-size:17px}
+  .modal{padding:16px}
+  .row2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <div>
+      <h1>秋招投递台 <span>✦</span></h1>
+      <div class="sub">投递量 = 机会量。每天记一下，别让通知漏在过去。</div>
+    </div>
+    <div class="today">
+      今天已投 <b id="todayCount">0</b> 家<br>
+      <span id="todayHint">还没开始，去投第一份吧</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat s-total"><div class="n" id="stTotal">0</div><div class="l">总投递</div></div>
+    <div class="stat s-wait"><div class="n" id="stWait">0</div><div class="l">待反馈</div></div>
+    <div class="stat s-interview"><div class="n" id="stInterview">0</div><div class="l">面试中</div></div>
+    <div class="stat s-offer"><div class="n" id="stOffer">0</div><div class="l">Offer</div></div>
+    <div class="stat s-dead"><div class="n" id="stDead">0</div><div class="l">已结束</div></div>
+  </div>
+
+  <div class="bar">
+    <button class="btn primary" id="btnAdd">＋ 记一笔投递</button>
+    <button class="btn" data-f="all">全部</button>
+    <button class="btn" data-f="wait">待反馈</button>
+    <button class="btn" data-f="interview">面试中</button>
+    <button class="btn" data-f="offer">Offer</button>
+    <div class="spacer"></div>
+    <input class="search" id="search" placeholder="搜公司 / 岗位…">
+    <button class="btn" id="btnExport">导出备份</button>
+    <button class="btn" id="btnImport">导入</button>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>公司</th><th>岗位</th><th>投递日</th><th>状态</th><th>跟进</th><th>备注</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty">
+      <div class="big">📮</div>
+      <div class="msg">还没有记录。点「记一笔投递」开始，</div>
+    </div>
+  </div>
+
+  <div class="tipbar">
+    <b>用法</b>：数据存在这台电脑的浏览器里，不上传任何地方。点状态徽章可以快速切换。
+    每周导出一次备份，换电脑时点「导入」恢复。
+  </div>
+
+</div>
+
+<!-- 新增 / 编辑弹窗 -->
+<div class="mask" id="mask">
+  <div class="modal">
+    <h3 id="modalTitle">记一笔投递</h3>
+    <div class="field">
+      <label>公司名 *</label>
+      <input id="fCo" placeholder="例：字节跳动 / 国家电网">
+    </div>
+    <div class="field">
+      <label>岗位</label>
+      <input id="fPos" placeholder="例：AI 应用开发 / 前端">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>投递日期</label>
+        <input id="fDate" type="date">
+      </div>
+      <div class="field">
+        <label>状态</label>
+        <select id="fSt">
+          <option value="wait">待反馈</option>
+          <option value="sent">已投递</option>
+          <option value="interview">面试中</option>
+          <option value="offer">Offer</option>
+          <option value="dead">已结束</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>下次跟进日（选填）</label>
+      <input id="fFollow" type="date">
+    </div>
+    <div class="field">
+      <label>备注（选填）</label>
+      <textarea id="fNote" placeholder="笔试时间、HR 联系方式、面经要点…"></textarea>
+    </div>
+    <div class="btns">
+      <button class="btn" id="btnCancel">取消</button>
+      <button class="btn primary" id="btnSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var KEY = 'jobtracker:v1';
+  var LABEL = { wait:'待反馈', sent:'已投递', interview:'面试中', offer:'Offer', dead:'已结束' };
+  var ORDER = ['wait','sent','interview','offer','dead'];
+
+  var state = { list: [], filter: 'all', q: '', editing: null };
+
+  /* ---------- 存取 ---------- */
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){ return []; }
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(state.list)); }
+    catch(e){ alert('保存失败：浏览器存储可能已满'); }
+  }
+
+  /* ---------- 工具 ---------- */
+  function today(){
+    var d = new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function uid(){
+    return 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  }
+  // 距今天数
+  function daysAgo(ds){
+    if(!ds) return null;
+    var t = new Date(ds + 'T00:00:00');
+    if(isNaN(t.getTime())) return null;
+    var n = new Date(today() + 'T00:00:00');
+    return Math.round((n - t) / 86400000);
+  }
+
+  /* ---------- 渲染 ---------- */
+  function visible(){
+    var q = state.q.trim().toLowerCase();
+    return state.list.filter(function(it){
+      if(state.filter !== 'all' && it.status !== state.filter) return false;
+      if(!q) return true;
+      return (it.company||'').toLowerCase().indexOf(q) >= 0
+          || (it.position||'').toLowerCase().indexOf(q) >= 0;
+    }).sort(function(a,b){
+      return (b.date||'').localeCompare(a.date||'');
+    });
+  }
+
+  function render(){
+    var list = visible();
+    var tb = document.getElementById('tbody');
+    var html = '';
+
+    list.forEach(function(it){
+      var d = daysAgo(it.date);
+      var age = d === null ? '' : (d === 0 ? '今天' : d + ' 天前');
+      var fu = '';
+      if(it.follow){
+        var fd = daysAgo(it.follow);
+        if(fd !== null && fd >= 0 && it.status !== 'dead' && it.status !== 'offer'){
+          fu = '<span style="color:var(--rose-deep);font-weight:700">今天该跟进</span>';
+        } else {
+          fu = esc(it.follow);
+        }
+      }
+      html += '<tr data-id="' + it.id + '">'
+        + '<td data-l="公司"><div class="co">' + esc(it.company) + '</div></td>'
+        + '<td data-l="岗位"><div class="pos">' + esc(it.position || '—') + '</div></td>'
+        + '<td data-l="投递日">' + esc(it.date || '—')
+          + (age ? '<div class="pos">' + age + '</div>' : '') + '</td>'
+        + '<td data-l="状态"><span class="st ' + it.status + '" data-cyc="1">'
+          + (LABEL[it.status] || it.status) + '</span></td>'
+        + '<td data-l="跟进">' + (fu || '—') + '</td>'
+        + '<td data-l="备注"><div class="note">' + esc(it.note || '—') + '</div></td>'
+        + '<td><div class="act">'
+          + '<button class="mini" data-edit="1" title="编辑">✎</button>'
+          + '<button class="mini" data-del="1" title="删除">✕</button>'
+        + '</div></td>'
+      + '</tr>';
+    });
+
+    tb.innerHTML = html;
+    var emptyEl = document.getElementById('empty');
+    if(list.length){
+      emptyEl.style.display = 'none';
+    } else {
+      emptyEl.style.display = 'block';
+      // 区分「真的没数据」和「筛掉了」——否则会让人以为记录丢了
+      var filtered = state.list.length > 0;
+      emptyEl.querySelector('.big').textContent = filtered ? '🔍' : '📮';
+      emptyEl.querySelector('.msg').textContent = filtered
+        ? '没有符合条件的结果。换个关键词，或点「全部」看所有记录。'
+        : '还没有记录。点「记一笔投递」开始，';
+    }
+
+    // 统计基于全量
+    var all = state.list;
+    document.getElementById('stTotal').textContent = all.length;
+    ORDER.forEach(function(k){
+      var n = all.filter(function(i){ return i.status === k; }).length;
+      var el = { wait:'stWait', interview:'stInterview', offer:'stOffer', dead:'stDead' }[k];
+      if(el) document.getElementById(el).textContent = n;
+    });
+
+    // 今日
+    var td = all.filter(function(i){ return i.date === today(); }).length;
+    document.getElementById('todayCount').textContent = td;
+    document.getElementById('todayHint').textContent =
+      td === 0 ? '还没开始，去投第一份吧'
+      : (td < 10 ? '目标 10 家，还差 ' + (10 - td) + ' 家' : '达标了，厉害 ✦');
+  }
+
+  /* ---------- 弹窗 ---------- */
+  function openModal(item){
+    state.editing = item ? item.id : null;
+    document.getElementById('modalTitle').textContent = item ? '编辑记录' : '记一笔投递';
+    document.getElementById('fCo').value = item ? item.company : '';
+    document.getElementById('fPos').value = item ? (item.position||'') : '';
+    document.getElementById('fDate').value = item ? (item.date||'') : today();
+    document.getElementById('fSt').value = item ? item.status : 'wait';
+    document.getElementById('fFollow').value = item ? (item.follow||'') : '';
+    document.getElementById('fNote').value = item ? (item.note||'') : '';
+    document.getElementById('mask').classList.add('show');
+    document.getElementById('fCo').focus();
+  }
+  function closeModal(){
+    document.getElementById('mask').classList.remove('show');
+    state.editing = null;
+  }
+
+  function submit(){
+    var co = document.getElementById('fCo').value.trim();
+    if(!co){ alert('公司名不能为空'); return; }
+    var data = {
+      company: co,
+      position: document.getElementById('fPos').value.trim(),
+      date: document.getElementById('fDate').value || today(),
+      status: document.getElementById('fSt').value,
+      follow: document.getElementById('fFollow').value,
+      note: document.getElementById('fNote').value.trim()
+    };
+    if(state.editing){
+      state.list = state.list.map(function(i){
+        return i.id === state.editing ? Object.assign({}, i, data) : i;
+      });
+    } else {
+      state.list.push(Object.assign({ id: uid() }, data));
+    }
+    save(); closeModal(); render();
+  }
+
+  /* ---------- 事件 ---------- */
+  document.getElementById('btnAdd').addEventListener('click', function(){ openModal(null); });
+  document.getElementById('btnCancel').addEventListener('click', closeModal);
+  document.getElementById('btnSave').addEventListener('click', submit);
+  document.getElementById('mask').addEventListener('click', function(e){
+    if(e.target === this) closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeModal();
+    // 弹窗内 Ctrl+Enter 保存
+    if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)
+       && document.getElementById('mask').classList.contains('show')) submit();
+  });
+
+  // 筛选
+  document.querySelectorAll('[data-f]').forEach(function(b){
+    b.addEventListener('click', function(){
+      state.filter = this.getAttribute('data-f');
+      document.querySelectorAll('[data-f]').forEach(function(x){ x.classList.remove('on'); });
+      this.classList.add('on');
+      render();
+    });
+  });
+  document.querySelector('[data-f="all"]').classList.add('on');
+
+  // 搜索
+  document.getElementById('search').addEventListener('input', function(){
+    state.q = this.value; render();
+  });
+
+  // 表格内操作（事件委托）
+  document.getElementById('tbody').addEventListener('click', function(e){
+    var tr = e.target.closest('tr');
+    if(!tr) return;
+    var id = tr.getAttribute('data-id');
+    var item = state.list.filter(function(i){ return i.id === id; })[0];
+    if(!item) return;
+
+    if(e.target.hasAttribute('data-cyc')){
+      var i = ORDER.indexOf(item.status);
+      // 已投递 与 待反馈 合并循环（实际含义接近）
+      var next = ORDER[(i + 1) % ORDER.length];
+      item.status = next; save(); render(); return;
+    }
+    if(e.target.hasAttribute('data-edit')){ openModal(item); return; }
+    if(e.target.hasAttribute('data-del')){
+      if(confirm('删除「' + item.company + '」这条记录？')){
+        state.list = state.list.filter(function(i){ return i.id !== id; });
+        save(); render();
+      }
+    }
+  });
+
+  // 导出
+  document.getElementById('btnExport').addEventListener('click', function(){
+    var blob = new Blob([JSON.stringify(state.list, null, 2)], { type:'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '秋招投递备份-' + today() + '.json';
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  });
+
+  // 导入
+  document.getElementById('btnImport').addEventListener('click', function(){
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.json,application/json';
+    inp.addEventListener('change', function(){
+      var f = inp.files && inp.files[0];
+      if(!f) return;
+      var r = new FileReader();
+      r.onload = function(){
+        try{
+          var arr = JSON.parse(r.result);
+          if(!Array.isArray(arr)) throw new Error('格式不对');
+          var mode = confirm('点「确定」= 合并到现有记录\n点「取消」= 直接覆盖');
+          if(mode){
+            var ids = {};
+            state.list.forEach(function(i){ ids[i.id] = 1; });
+            arr.forEach(function(i){
+              if(!i.id || ids[i.id]) i.id = uid();
+              state.list.push(i);
+            });
+          } else {
+            state.list = arr;
+          }
+          save(); render();
+        }catch(err){ alert('导入失败：' + err.message); }
+      };
+      r.readAsText(f);
+    });
+    inp.click();
+  });
+
+  /* ---------- 启动 ---------- */
+  state.list = load();
+  render();
+})();
+</script>
+</body>
+</html>

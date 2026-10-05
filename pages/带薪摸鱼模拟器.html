@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>带薪摸鱼模拟器</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(1200px 700px at 50% -10%, #1b2540 0%, #0a0f1e 55%, #05070f 100%);
+    font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color:#eef3fb; overflow:hidden; user-select:none;
+    padding:16px;
+  }
+  .game {
+    position:relative;
+    width:min(96vw, 920px);
+    height:min(78vh, 560px);
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06) inset;
+    touch-action:none; cursor:pointer;
+  }
+  canvas { display:block; }
+
+  /* HUD */
+  .hud {
+    position:absolute; top:0; left:0; right:0;
+    display:flex; gap:10px; padding:14px 16px;
+    pointer-events:none;
+  }
+  .stat {
+    background:rgba(10,16,30,.55); backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:12px; padding:6px 12px; min-width:86px;
+  }
+  .stat .k { display:block; font-size:11px; letter-spacing:.06em; color:#9fb0d0; }
+  .stat .v { display:block; font-size:19px; font-weight:800; color:#ffd98a; font-variant-numeric:tabular-nums; }
+  .stat.strikes .v { letter-spacing:2px; }
+
+  .msg {
+    position:absolute; top:86px; left:50%; transform:translateX(-50%);
+    padding:8px 18px; border-radius:999px;
+    background:rgba(214,74,74,.9); color:#fff; font-weight:700; font-size:15px;
+    box-shadow:0 8px 24px rgba(214,74,74,.4);
+    opacity:0; transition:opacity .18s ease; pointer-events:none; white-space:nowrap;
+  }
+  .msg.on { opacity:1; }
+
+  .statusTag {
+    position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+    font-size:13px; color:#9fb0d0; background:rgba(10,16,30,.5);
+    padding:5px 14px; border-radius:999px; pointer-events:none;
+    border:1px solid rgba(255,255,255,.07); transition:color .2s;
+  }
+
+  /* overlays */
+  .overlay {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:28px;
+    background: radial-gradient(600px 400px at 50% 40%, rgba(20,28,52,.72), rgba(6,9,18,.92));
+    backdrop-filter:blur(3px);
+    transition:opacity .28s ease;
+  }
+  .overlay.hidden { opacity:0; pointer-events:none; }
+  .overlay h1 {
+    font-size:clamp(26px,4.6vw,40px); font-weight:900; letter-spacing:.02em;
+    background:linear-gradient(180deg,#fff,#ffd98a);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin-bottom:14px;
+  }
+  .overlay h2 { font-size:clamp(20px,3.4vw,30px); font-weight:900; color:#ffb3c7; margin-bottom:6px; }
+  .overlay p { max-width:520px; line-height:1.75; color:#c7d3ea; font-size:15px; }
+  .overlay .hint { margin-top:12px; font-size:13px; color:#8296b8; }
+  .hint kbd {
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+    border-radius:6px; padding:1px 7px; font-family:inherit; font-size:12px;
+  }
+  button {
+    margin-top:22px; cursor:pointer; border:none;
+    padding:13px 40px; border-radius:999px;
+    font-size:17px; font-weight:800; letter-spacing:.03em;
+    color:#2a1307;
+    background:linear-gradient(180deg,#ffe0a3,#ffc46b);
+    box-shadow:0 10px 26px rgba(255,190,90,.35);
+    transition:transform .12s ease, box-shadow .12s ease; font-family:inherit;
+  }
+  button:hover { transform:translateY(-2px); box-shadow:0 14px 30px rgba(255,190,90,.45); }
+  button:active { transform:translateY(0) scale(.98); }
+
+  .report {
+    margin-top:18px; display:grid; grid-template-columns:1fr 1fr;
+    gap:8px 22px; max-width:420px; width:100%;
+  }
+  .report .line {
+    display:flex; justify-content:space-between; gap:14px;
+    border-bottom:1px dashed rgba(255,255,255,.12); padding:7px 2px; font-size:15px;
+  }
+  .report .line b { color:#ffd98a; font-variant-numeric:tabular-nums; }
+  .report .verdict {
+    grid-column:1/-1; margin-top:12px; padding:14px; border-radius:14px;
+    background:rgba(242,126,163,.12); border:1px solid rgba(242,126,163,.3);
+    color:#ffd0dd; font-size:14px; line-height:1.6;
+  }
+  .report .verdict b { color:#ff9fbe; font-size:16px; display:block; margin-bottom:4px; }
+
+  .sound {
+    position:absolute; top:14px; right:14px;
+    width:38px; height:38px; border-radius:50%; margin:0; padding:0;
+    font-size:17px; background:rgba(10,16,30,.6); color:#eef3fb;
+    box-shadow:none; border:1px solid rgba(255,255,255,.12);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .sound:hover { transform:none; box-shadow:none; background:rgba(20,28,52,.8); }
+</style>
+</head>
+<body>
+<div class="game" id="game">
+  <canvas id="cv"></canvas>
+
+  <div class="hud">
+    <div class="stat"><span class="k">摸鱼值</span><span class="v" id="uiScore">¥0</span></div>
+    <div class="stat"><span class="k">工龄</span><span class="v" id="uiLevel">Lv.1</span></div>
+    <div class="stat strikes"><span class="k">状态</span><span class="v" id="uiStrikes">😴😴😴</span></div>
+  </div>
+
+  <div class="msg" id="uiMsg"></div>
+  <div class="statusTag" id="uiStatus">老板背对着你</div>
+
+  <div class="overlay" id="startOverlay">
+    <h1>带薪摸鱼模拟器</h1>
+    <p>老板背对你的时候，<b>按住鼠标（或空格）</b>摸鱼赚外快。<br>
+       他要是回头，你必须立刻松手。<br>
+       被逮到三次，今天的工资就没了。</p>
+    <button id="startBtn">开始摸鱼</button>
+    <p class="hint">按住不放 = 摸鱼 · 松手 = 假装认真工作 · <kbd>空格</kbd> 同样可用</p>
+  </div>
+
+  <div class="overlay hidden" id="overOverlay">
+    <h2 id="overTitle">被老板抓包了</h2>
+    <div class="report" id="uiReport"></div>
+    <button id="againBtn">再摸一天</button>
+  </div>
+
+  <button class="sound" id="soundBtn" title="声音">🔊</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var cv = document.getElementById('cv');
+  var ctx = cv.getContext('2d');
+  var gameEl = document.getElementById('game');
+  var W = 0, H = 0, DPR = 1;
+
+  function resize(){
+    var r = gameEl.getBoundingClientRect();
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(320, Math.floor(r.width));
+    H = Math.max(320, Math.floor(r.height));
+    cv.width = W * DPR; cv.height = H * DPR;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+
+  // ---------- audio ----------
+  var audioOn = true, actx = null;
+  function beep(freq, dur, type, vol){
+    if(!audioOn) return;
+    try{
+      if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.type = type || 'sine'; o.frequency.value = freq;
+      o.connect(g); g.connect(actx.destination);
+      var t = actx.currentTime, v = vol || 0.05;
+      g.gain.setValueAtTime(v, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.start(t); o.stop(t + dur + 0.02);
+    }catch(e){}
+  }
+
+  // ---------- state ----------
+  function loadBest(){
+    try{ return parseInt(localStorage.getItem('moyu_best') || '0', 10) || 0; }catch(e){ return 0; }
+  }
+  function saveBest(v){ try{ localStorage.setItem('moyu_best', String(v)); }catch(e){} }
+
+  function newGame(mode){
+    return {
+      mode: mode,
+      time: 0, score: 0, strikes: 0, level: 1,
+      resting: false, lock: false, stunned: 0,
+      phase: 'back', phaseT: 0, phaseDur: 2.2, facing: -1,
+      restTime: 0, shake: 0, msgT: 0,
+      bubbles: [], floats: [],
+      best: loadBest()
+    };
+  }
+  var G = newGame('idle');
+
+  var elScore   = document.getElementById('uiScore');
+  var elLevel   = document.getElementById('uiLevel');
+  var elStrikes = document.getElementById('uiStrikes');
+  var elMsg     = document.getElementById('uiMsg');
+  var elStatus  = document.getElementById('uiStatus');
+  var startOverlay = document.getElementById('startOverlay');
+  var overOverlay  = document.getElementById('overOverlay');
+  var elReport  = document.getElementById('uiReport');
+  var elOverTitle = document.getElementById('overTitle');
+
+  // ---------- difficulty ----------
+  function warnTime(){ return Math.max(0.34, 0.95 - (G.level - 1) * 0.06); }
+  function backTime(){
+    var mn = Math.max(0.7, 1.9 - (G.level - 1) * 0.12);
+    var mx = Math.max(mn + 0.5, 3.4 - (G.level - 1) * 0.2);
+    return mn + Math.random() * (mx - mn);
+  }
+
+  // ---------- effects ----------
+  var FISH = ['🐟','💤','🎮','📱','☕','🥟'];
+  function spawnBubble(){
+    if(G.bubbles.length > 22) return;
+    G.bubbles.push({
+      x: W * 0.5 + (Math.random() - 0.5) * W * 0.22,
+      y: H * 0.66,
+      vy: -28 - Math.random() * 30,
+      a: 1,
+      c: FISH[(Math.random() * FISH.length) | 0],
+      s: 16 + Math.random() * 14
+    });
+  }
+  function spawnFloat(text){
+    if(G.floats.length > 12) return;
+    G.floats.push({
+      x: W * 0.5 + (Math.random() - 0.5) * W * 0.2,
+      y: H * 0.6,
+      vy: -46, a: 1, text: text
+    });
+  }
+
+  // ---------- game logic ----------
+  function caught(){
+    G.strikes++;
+    G.lock = true;          // must release before you can fish again
+    G.resting = false;
+    G.stunned = 1.1;
+    G.shake = 1;
+    G.phase = 'back'; G.phaseT = 0; G.facing = -1; G.phaseDur = 1.3;
+    if(G.strikes >= 3){ beep(120, 0.4, 'sawtooth', 0.09); gameOver(); return; }
+    G.score = Math.round(G.score * 0.7);
+    beep(150, 0.22, 'sawtooth', 0.08);
+    var lines = ['老板瞅了你一眼 👀','差点被抓！快“认真工作”','咳…你被盯上了 💢'];
+    showMsg(lines[(Math.random() * lines.length) | 0]);
+  }
+
+  function showMsg(t){
+    elMsg.textContent = t;
+    elMsg.classList.add('on');
+    G.msgT = 1.5;
+  }
+
+  function gameOver(){
+    G.mode = 'over';
+    var rest = G.restTime;
+    var hourly = rest > 0 ? G.score / rest * 3600 : 0;
+    if(G.score > G.best){ G.best = G.score; saveBest(G.best); }
+    var v = verdict(G.score);
+    elOverTitle.textContent = '被老板抓包了';
+    elReport.innerHTML =
+      '<div class="line"><span>本次摸鱼值</span><b>¥' + Math.round(G.score) + '</b></div>' +
+      '<div class="line"><span>折算时薪</span><b>¥' + Math.round(hourly) + '/h</b></div>' +
+      '<div class="line"><span>摸鱼总时长</span><b>' + rest.toFixed(1) + ' 秒</b></div>' +
+      '<div class="line"><span>最高纪录</span><b>¥' + Math.round(G.best) + '</b></div>' +
+      '<div class="verdict"><b>' + v[0] + '</b>' + v[1] + '</div>';
+    overOverlay.classList.remove('hidden');
+  }
+
+  function verdict(score){
+    if(score < 300)  return ['老板的私人秘书', '一分钱没摸到，工位算是白坐了。'];
+    if(score < 900)  return ['平平无奇的打工人', '摸了，但不多。老板表示没看见。'];
+    if(score < 1800) return ['摸鱼界中坚力量', '稳中带皮，老板怎么也抓不到你。'];
+    if(score < 3200) return ['带薪摸鱼大师', '这波工资拿得心安理得。'];
+    return ['资本家看了都流泪', '建议下一步直接把公司买下来摸。'];
+  }
+
+  function update(dt){
+    // effects always animate
+    var i, b, f;
+    for(i = G.bubbles.length - 1; i >= 0; i--){
+      b = G.bubbles[i]; b.y += b.vy * dt; b.a -= dt * 0.6;
+      if(b.a <= 0) G.bubbles.splice(i, 1);
+    }
+    for(i = G.floats.length - 1; i >= 0; i--){
+      f = G.floats[i]; f.y += f.vy * dt; f.a -= dt * 0.8;
+      if(f.a <= 0) G.floats.splice(i, 1);
+    }
+    if(G.msgT > 0){
+      G.msgT -= dt;
+      if(G.msgT <= 0) elMsg.classList.remove('on');
+    }
+    if(G.shake > 0) G.shake = Math.max(0, G.shake - dt * 2.4);
+
+    if(G.mode !== 'play') return;
+
+    G.time += dt;
+    G.level = 1 + Math.floor(G.time / 12);
+    if(G.stunned > 0) G.stunned = Math.max(0, G.stunned - dt);
+
+    var fishing = G.resting && G.stunned <= 0;
+    if(fishing && (G.phase === 'back' || G.phase === 'warn')){
+      var rate = 8 + G.level * 2.5;
+      G.score += rate * dt;
+      G.restTime += dt;
+      if(Math.random() < dt * 7) spawnBubble();
+      if(Math.random() < dt * 1.3) spawnFloat('+' + Math.round(rate));
+    }
+
+    G.phaseT += dt;
+    if(G.phase === 'back'){
+      G.facing = -1;
+      if(G.phaseT >= G.phaseDur){
+        G.phase = 'warn'; G.phaseT = 0; G.phaseDur = warnTime();
+        beep(680, 0.07, 'triangle', 0.03);
+      }
+    } else if(G.phase === 'warn'){
+      var p = Math.min(1, G.phaseT / G.phaseDur);
+      G.facing = -1 + 2 * p;
+      if(G.phaseT >= G.phaseDur){
+        if(G.resting && G.stunned <= 0){ caught(); }
+        else { G.phase = 'face'; G.phaseT = 0; G.phaseDur = 0.8 + Math.random() * 0.5; G.facing = 1; }
+      }
+    } else if(G.phase === 'face'){
+      G.facing = 1;
+      if(G.resting && G.stunned <= 0){ caught(); }
+      else if(G.phaseT >= G.phaseDur){
+        G.phase = 'back'; G.phaseT = 0; G.facing = -1; G.phaseDur = backTime();
+      }
+    }
+  }
+
+  // ---------- drawing ----------
+  function rr(x, y, w, h, r){
+    if(r > w / 2) r = w / 2;
+    if(r > h / 2) r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawScene(now){
+    var shakeX = 0, shakeY = 0;
+    if(G.shake > 0){
+      var s = G.shake * 10;
+      shakeX = (Math.random() - 0.5) * s;
+      shakeY = (Math.random() - 0.5) * s;
+    }
+    ctx.save();
+    ctx.translate(shakeX, shakeY);
+
+    // night sky
+    var sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, '#0d1630');
+    sky.addColorStop(1, '#1b2743');
+    ctx.fillStyle = sky;
+    ctx.fillRect(-24, -24, W + 48, H + 48);
+
+    // stars (twinkle)
+    for(var i = 0; i < 26; i++){
+      var sx = ((i * 137.5) % 100) / 100 * W;
+      var sy = ((i * 61.8) % 42) / 100 * H;
+      var tw = 0.35 + 0.65 * Math.abs(Math.sin(now / 900 + i));
+      ctx.globalAlpha = tw * 0.8;
+      ctx.fillStyle = '#dfe8ff';
+      ctx.beginPath(); ctx.arc(sx, sy, 1.2, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // window with moon
+    var wx = W * 0.06, wy = H * 0.08, ww = W * 0.26, wh = H * 0.34;
+    ctx.fillStyle = '#0a1226';
+    rr(wx, wy, ww, wh, 14); ctx.fill();
+    ctx.fillStyle = '#f6e4ad';
+    ctx.beginPath(); ctx.arc(wx + ww * 0.68, wy + wh * 0.32, Math.min(ww, wh) * 0.16, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0a1226';
+    ctx.beginPath(); ctx.arc(wx + ww * 0.61, wy + wh * 0.28, Math.min(ww, wh) * 0.13, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(160,185,230,.35)'; ctx.lineWidth = 3;
+    ctx.strokeRect(wx, wy, ww, wh);
+    ctx.beginPath(); ctx.moveTo(wx + ww / 2, wy); ctx.lineTo(wx + ww / 2, wy + wh); ctx.stroke();
+
+    // floor
+    var floorY = H * 0.61;
+    var fl = ctx.createLinearGradient(0, floorY, 0, H);
+    fl.addColorStop(0, '#141d33'); fl.addColorStop(1, '#0a1020');
+    ctx.fillStyle = fl;
+    ctx.fillRect(0, floorY, W, H - floorY);
+
+    // lamp glow (right)
+    var gl = ctx.createRadialGradient(W * 0.88, H * 0.5, 10, W * 0.88, H * 0.5, H * 0.5);
+    gl.addColorStop(0, 'rgba(255,196,107,.22)');
+    gl.addColorStop(1, 'rgba(255,196,107,0)');
+    ctx.fillStyle = gl;
+    ctx.fillRect(0, 0, W, H);
+
+    // boss
+    var bossH = H * 0.42;
+    drawBoss(W * 0.5, floorY, bossH, G.facing, G.phase);
+
+    // desk + player
+    drawDesk();
+    drawPlayer(W * 0.5, H * 0.715, H * 0.17, G.resting && G.stunned <= 0);
+
+    // bubbles / floats
+    var k;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for(k = 0; k < G.bubbles.length; k++){
+      var bb = G.bubbles[k];
+      ctx.globalAlpha = Math.max(0, bb.a) * 0.95;
+      ctx.font = bb.s + 'px "Segoe UI Emoji","Segoe UI Symbol",sans-serif';
+      ctx.fillText(bb.c, bb.x, bb.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.font = '700 18px system-ui,"Microsoft YaHei",sans-serif';
+    for(k = 0; k < G.floats.length; k++){
+      var ff = G.floats[k];
+      ctx.globalAlpha = Math.max(0, ff.a);
+      ctx.fillStyle = '#8ef0b0';
+      ctx.fillText(ff.text, ff.x, ff.y);
+    }
+    ctx.globalAlpha = 1;
+
+    // caught flash
+    if(G.stunned > 0 && G.mode === 'play'){
+      ctx.fillStyle = 'rgba(214,74,74,' + (G.stunned / 1.1 * 0.28) + ')';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    ctx.restore();
+  }
+
+  function drawBoss(cx, feetY, h, facing, phase){
+    var s = facing;
+    if(Math.abs(s) < 0.07) s = (s < 0 ? -1 : 1) * 0.07;
+    var front = s > 0;
+
+    ctx.save();
+    ctx.translate(cx, feetY);
+    ctx.scale(s, 1);
+
+    // shadow
+    ctx.fillStyle = 'rgba(0,0,0,.3)';
+    ctx.beginPath(); ctx.ellipse(0, 0, h * 0.26, h * 0.045, 0, 0, Math.PI * 2); ctx.fill();
+
+    // legs
+    ctx.fillStyle = '#2a2f47';
+    rr(-h * 0.15, -h * 0.34, h * 0.11, h * 0.34, h * 0.03); ctx.fill();
+    rr(h * 0.04, -h * 0.34, h * 0.11, h * 0.34, h * 0.03); ctx.fill();
+    ctx.fillStyle = '#1a1f34';
+    rr(-h * 0.17, -h * 0.05, h * 0.15, h * 0.05, h * 0.02); ctx.fill();
+    rr(h * 0.02, -h * 0.05, h * 0.15, h * 0.05, h * 0.02); ctx.fill();
+
+    // body
+    var bg = ctx.createLinearGradient(0, -h * 0.8, 0, -h * 0.3);
+    bg.addColorStop(0, '#4d5a88'); bg.addColorStop(1, '#3a4468');
+    ctx.fillStyle = bg;
+    rr(-h * 0.24, -h * 0.80, h * 0.48, h * 0.50, h * 0.09); ctx.fill();
+
+    // head
+    var headY = -h * 0.94, headR = h * 0.165;
+    ctx.fillStyle = '#f0c6a3';
+    ctx.beginPath(); ctx.arc(0, headY, headR, 0, Math.PI * 2); ctx.fill();
+
+    if(front){
+      // shirt V + tie
+      ctx.fillStyle = '#eef3fb';
+      ctx.beginPath();
+      ctx.moveTo(-h * 0.10, -h * 0.80);
+      ctx.lineTo(h * 0.10, -h * 0.80);
+      ctx.lineTo(0, -h * 0.60);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#c8556d';
+      ctx.beginPath();
+      ctx.moveTo(0, -h * 0.80);
+      ctx.lineTo(-h * 0.032, -h * 0.74);
+      ctx.lineTo(0, -h * 0.62);
+      ctx.lineTo(h * 0.032, -h * 0.74);
+      ctx.closePath(); ctx.fill();
+
+      // hair cap (front)
+      ctx.fillStyle = '#20243a';
+      ctx.beginPath();
+      ctx.arc(0, headY - headR * 0.10, headR * 1.02, Math.PI * 1.02, Math.PI * 1.98);
+      ctx.fill();
+
+      // angry brows
+      var eyeY = headY - headR * 0.02;
+      ctx.strokeStyle = '#20243a';
+      ctx.lineWidth = Math.max(1.6, h * 0.014);
+      ctx.beginPath(); ctx.moveTo(-headR * 0.58, eyeY - headR * 0.36); ctx.lineTo(-headR * 0.14, eyeY - headR * 0.16); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(headR * 0.58, eyeY - headR * 0.36); ctx.lineTo(headR * 0.14, eyeY - headR * 0.16); ctx.stroke();
+
+      // eyes
+      ctx.fillStyle = '#20243a';
+      ctx.beginPath(); ctx.arc(-headR * 0.34, eyeY, headR * 0.13, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headR * 0.34, eyeY, headR * 0.13, 0, Math.PI * 2); ctx.fill();
+
+      // frown
+      ctx.strokeStyle = '#8a3f3f'; ctx.lineWidth = Math.max(1.6, h * 0.013);
+      ctx.beginPath(); ctx.arc(0, headY + headR * 0.52, headR * 0.34, Math.PI * 1.12, Math.PI * 1.88); ctx.stroke();
+    } else {
+      // back of head: hair + bald patch
+      ctx.fillStyle = '#20243a';
+      ctx.beginPath(); ctx.arc(0, headY, headR * 1.04, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#e9c7a6';
+      ctx.beginPath(); ctx.arc(headR * 0.18, headY + headR * 0.18, headR * 0.4, 0, Math.PI * 2); ctx.fill();
+      // collar
+      ctx.fillStyle = '#eef3fb';
+      rr(-h * 0.10, -h * 0.83, h * 0.20, h * 0.06, h * 0.02); ctx.fill();
+    }
+
+    ctx.restore();
+
+    // alert bar (world space, above boss)
+    if(phase === 'warn' && G.mode === 'play'){
+      var p = Math.min(1, G.phaseT / G.phaseDur);
+      var bw = h * 0.72, bx = cx - bw / 2, by = feetY - h * 1.30;
+      ctx.fillStyle = 'rgba(6,10,20,.55)';
+      rr(bx - 4, by - 8, bw + 8, 16, 8); ctx.fill();
+      var col = p < 0.5 ? '#7fd18b' : (p < 0.8 ? '#f2c14e' : '#f2555f');
+      ctx.fillStyle = col;
+      rr(bx, by - 4, Math.max(6, bw * p), 8, 4); ctx.fill();
+
+      ctx.globalAlpha = 0.55 + 0.45 * Math.abs(Math.sin(performance.now() / 90));
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = Math.round(h * 0.26) + 'px "Segoe UI Emoji",sans-serif';
+      ctx.fillText('❗', cx, by - h * 0.22);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawDesk(){
+    var dy = H * 0.70;
+    // desk body
+    var dg = ctx.createLinearGradient(0, dy, 0, H);
+    dg.addColorStop(0, '#43364c'); dg.addColorStop(1, '#2a2132');
+    ctx.fillStyle = dg;
+    rr(W * 0.015, dy, W * 0.97, H - dy + 4, 18); ctx.fill();
+    // edge highlight
+    ctx.fillStyle = 'rgba(255,255,255,.10)';
+    rr(W * 0.015, dy, W * 0.97, 6, 3); ctx.fill();
+
+    // laptop in front of player
+    var lw = W * 0.20, lh = H * 0.075, lx = W * 0.5 - lw / 2, ly = H * 0.735;
+    ctx.fillStyle = '#c7d2e6';
+    rr(lx, ly, lw, lh, 5); ctx.fill();       // screen back
+    ctx.fillStyle = '#8b98b5';
+    rr(lx - lw * 0.08, ly + lh, lw * 1.16, 6, 3); ctx.fill();  // keyboard
+  }
+
+  function drawPlayer(cx, baseY, h, resting){
+    ctx.save();
+    ctx.translate(cx, baseY);
+
+    // shoulders
+    ctx.fillStyle = '#d76a8b';
+    rr(-h * 0.55, -h * 0.10, h * 1.10, h * 0.55, h * 0.14); ctx.fill();
+
+    // head (seen from behind)
+    var headY = -h * 0.46, headR = h * 0.32;
+    ctx.fillStyle = '#f0c6a3';
+    ctx.beginPath(); ctx.arc(0, headY, headR, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#2b2f4a';
+    ctx.beginPath(); ctx.arc(0, headY, headR * 1.03, Math.PI * 0.92, Math.PI * 2.08); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, headY - headR * 0.92, headR * 0.4, 0, Math.PI * 2); ctx.fill(); // bun
+
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if(resting){
+      ctx.font = Math.round(h * 0.55) + 'px "Segoe UI Emoji",sans-serif';
+      ctx.fillText('📱', 0, headY - headR * 2.4);
+      ctx.globalAlpha = 0.5 + 0.5 * Math.abs(Math.sin(performance.now() / 300));
+      ctx.font = '700 ' + Math.round(h * 0.30) + 'px system-ui,sans-serif';
+      ctx.fillStyle = '#ffd98a';
+      ctx.fillText('Z z z', headR * 1.5, headY - headR * 1.2);
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+  }
+
+  // ---------- HUD ----------
+  function updateHUD(){
+    elScore.textContent = '¥' + Math.round(G.score);
+    elLevel.textContent = 'Lv.' + G.level;
+    var s = '';
+    for(var i = 0; i < 3; i++){ s += (i < 3 - G.strikes ? '😴' : '💢'); }
+    elStrikes.textContent = s;
+    if(G.mode !== 'play'){ elStatus.textContent = '准备开始'; return; }
+    if(G.stunned > 0){ elStatus.textContent = '被发现了…装一下'; return; }
+    if(!G.resting){ elStatus.textContent = '假装认真工作中'; return; }
+    if(G.phase === 'warn'){ elStatus.textContent = '老板在回头！快松手！'; return; }
+    if(G.phase === 'face'){ elStatus.textContent = '老板正看着你'; return; }
+    elStatus.textContent = '老板背对着你，摸！';
+  }
+
+  // ---------- loop ----------
+  var last = performance.now();
+  function frame(now){
+    var dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    update(dt);
+    drawScene(now);
+    updateHUD();
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- input ----------
+  function press(){
+    if(G.mode !== 'play' || G.lock) return;
+    if(actx && actx.state === 'suspended') actx.resume();
+    G.resting = true;
+  }
+  function release(){
+    G.lock = false;
+    G.resting = false;
+  }
+
+  gameEl.addEventListener('pointerdown', function(e){
+    e.preventDefault(); press();
+  });
+  window.addEventListener('pointerup', release);
+  window.addEventListener('pointercancel', release);
+  window.addEventListener('blur', release);
+
+  window.addEventListener('keydown', function(e){
+    if(e.code === 'Space' || e.key === ' '){
+      e.preventDefault();
+      if(G.mode === 'play') press();
+      else startGame();
+    }
+  });
+  window.addEventListener('keyup', function(e){
+    if(e.code === 'Space' || e.key === ' '){ release(); }
+  });
+
+  gameEl.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+  // ---------- start / restart ----------
+  function startGame(){
+    G = newGame('play');
+    startOverlay.classList.add('hidden');
+    overOverlay.classList.add('hidden');
+    elMsg.classList.remove('on');
+    if(actx && actx.state === 'suspended') actx.resume();
+    beep(520, 0.09, 'triangle', 0.05);
+  }
+  document.getElementById('startBtn').addEventListener('click', function(e){ e.stopPropagation(); startGame(); });
+  document.getElementById('againBtn').addEventListener('click', function(e){ e.stopPropagation(); startGame(); });
+
+  var soundBtn = document.getElementById('soundBtn');
+  soundBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    audioOn = !audioOn;
+    soundBtn.textContent = audioOn ? '🔊' : '🔇';
+    if(audioOn) beep(700, 0.06, 'triangle', 0.05);
+  });
+
+  resize();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

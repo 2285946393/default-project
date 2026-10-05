@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>赛博桌宠 · 词养一只电子宠物</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    display:flex; align-items:center; justify-content:center;
+    background:#070a14;
+    font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color:#eef3fb; overflow:hidden; user-select:none;
+    padding:14px;
+  }
+  .room {
+    position:relative;
+    width:min(97vw, 1000px);
+    height:min(88vh, 640px);
+    border-radius:20px; overflow:hidden; touch-action:none;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06) inset;
+  }
+  canvas { display:block; cursor:pointer; }
+
+  /* top status */
+  .stats {
+    position:absolute; top:12px; left:12px;
+    display:flex; flex-direction:column; gap:6px;
+    background:rgba(8,12,24,.55); backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.09); border-radius:14px;
+    padding:10px 12px; width:196px;
+  }
+  .bar { display:flex; align-items:center; gap:8px; font-size:11.5px; color:#a9b8d6; }
+  .bar .lab { width:34px; flex:0 0 auto; }
+  .bar .track { flex:1; height:8px; border-radius:5px; background:rgba(255,255,255,.1); overflow:hidden; }
+  .bar .fill { height:100%; width:50%; border-radius:5px; transition:width .25s linear; }
+  .f-sat { background:linear-gradient(90deg,#ffcf7a,#ff9f4a); }
+  .f-mood{ background:linear-gradient(90deg,#ff9fbe,#f2679a); }
+  .f-en  { background:linear-gradient(90deg,#8fd3a8,#4fbf7d); }
+  .bar b { color:#e9eefb; font-variant-numeric:tabular-nums; }
+
+  /* speech bubble */
+  .bubble {
+    position:absolute; transform:translate(-50%,-100%);
+    max-width:220px; padding:9px 14px; border-radius:14px;
+    background:#fffdf7; color:#3d3440; font-size:14px; font-weight:600;
+    line-height:1.4; text-align:center; white-space:nowrap;
+    box-shadow:0 10px 26px rgba(0,0,0,.4); opacity:0;
+    transition:opacity .18s ease; pointer-events:none; z-index:6;
+  }
+  .bubble::after {
+    content:''; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%);
+    border:8px solid transparent; border-top-color:#fffdf7; border-bottom:0;
+  }
+  .bubble.on { opacity:1; }
+
+  /* taskbar */
+  .taskbar {
+    position:absolute; left:0; right:0; bottom:0; height:52px;
+    display:flex; align-items:center; gap:10px; padding:0 14px;
+    background:linear-gradient(180deg, rgba(14,20,38,.92), rgba(9,13,26,.97));
+    border-top:1px solid rgba(255,255,255,.1); backdrop-filter:blur(10px);
+    z-index:8;
+  }
+  .who { display:flex; flex-direction:column; line-height:1.25; min-width:0; }
+  .who .nm { font-size:15px; font-weight:800; color:#ffd98a; }
+  .who .sp { font-size:11.5px; color:#9fb0d0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:270px; }
+  .grow { flex:1; }
+  .tbtn {
+    cursor:pointer; border:1px solid rgba(255,255,255,.14); border-radius:11px;
+    background:rgba(255,255,255,.07); color:#eef3fb; font-family:inherit;
+    font-size:13.5px; font-weight:700; padding:9px 15px; transition:.15s; white-space:nowrap;
+  }
+  .tbtn:hover { background:rgba(255,255,255,.16); transform:translateY(-1px); }
+  .tbtn.feed { background:linear-gradient(180deg,#ffe0a3,#ffc46b); color:#2a1307; border:none; }
+  .clock { font-size:13px; color:#c7d3ea; font-variant-numeric:tabular-nums; margin-left:4px; }
+
+  /* overlay */
+  .overlay {
+    position:absolute; inset:0; z-index:20;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:26px;
+    background: radial-gradient(700px 460px at 50% 40%, rgba(22,30,56,.78), rgba(6,9,18,.94));
+    backdrop-filter:blur(4px); transition:opacity .3s ease;
+  }
+  .overlay.hidden { opacity:0; pointer-events:none; }
+  .overlay h1 {
+    font-size:clamp(27px,4.8vw,42px); font-weight:900; letter-spacing:.02em;
+    background:linear-gradient(180deg,#fff,#ffd98a);
+    -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:8px;
+  }
+  .overlay .sub { font-size:15px; color:#c7d3ea; max-width:520px; line-height:1.7; }
+  .overlay .sub b { color:#ffd98a; }
+  .wordrow { display:flex; gap:10px; margin-top:22px; width:min(92%,460px); }
+  input[type=text] {
+    flex:1; padding:14px 18px; border-radius:14px; font-size:16px; font-family:inherit;
+    background:rgba(255,255,255,.95); border:2px solid transparent; outline:none; color:#232a3d;
+    box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+  input[type=text]:focus { border-color:#ffc46b; }
+  .overlay button {
+    cursor:pointer; border:none; border-radius:14px; padding:0 26px;
+    font-size:16px; font-weight:800; font-family:inherit; color:#2a1307;
+    background:linear-gradient(180deg,#ffe0a3,#ffc46b); white-space:nowrap;
+    box-shadow:0 10px 26px rgba(255,190,90,.35); transition:transform .12s ease;
+  }
+  .overlay button:hover { transform:translateY(-2px); }
+  .examples { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:18px; max-width:520px; }
+  .examples span {
+    cursor:pointer; font-size:13px; padding:6px 14px; border-radius:999px;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:#c7d3ea; transition:.15s;
+  }
+  .examples span:hover { background:rgba(255,255,255,.18); color:#fff; }
+  .overlay .hint { margin-top:20px; font-size:12.5px; color:#8296b8; line-height:1.7; }
+</style>
+</head>
+<body>
+<div class="room" id="room">
+  <canvas id="cv"></canvas>
+
+  <div class="stats">
+    <div class="bar"><span class="lab">饱食</span><span class="track"><span class="fill f-sat" id="fSat"></span></span><b id="vSat">50</b></div>
+    <div class="bar"><span class="lab">心情</span><span class="track"><span class="fill f-mood" id="fMood"></span></span><b id="vMood">50</b></div>
+    <div class="bar"><span class="lab">精力</span><span class="track"><span class="fill f-en" id="fEn"></span></span><b id="vEn">50</b></div>
+  </div>
+
+  <div class="bubble" id="bubble"></div>
+
+  <div class="taskbar">
+    <div class="who">
+      <span class="nm" id="pName">—</span>
+      <span class="sp" id="pSpecies">—</span>
+    </div>
+    <div class="grow"></div>
+    <button class="tbtn feed" id="feedBtn">投喂 🍚</button>
+    <button class="tbtn" id="petBtn">摸摸它</button>
+    <button class="tbtn" id="againBtn">换个词</button>
+    <span class="clock" id="clock">--:--</span>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <h1>赛博桌宠</h1>
+    <div class="sub">输入一个词，养一只<b>只属于你的电子宠物</b>。<br>同一个词，永远生成同一只。</div>
+    <div class="wordrow">
+      <input type="text" id="wordInput" maxlength="12" placeholder="输入一个词，比如你的名字…">
+      <button id="genBtn">生成</button>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div class="hint">生成后：跟着鼠标走 · 戳它会开心 · 会饿会困 · 按「投喂」喂它 · 可以直接用鼠标拖着它走</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ================= 确定性随机 =================
+  function xfnv1a(str){
+    var h = 2166136261 >>> 0;
+    for(var i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  var SPECIES = ['小水母','鲸鱼崽','团子兽','史莱姆','猫猫虫','企鹅宝宝','外星生物','云朵精灵','蘑菇人','小火苗'];
+  var TRAITS  = ['贪吃','爱睡觉','粘人','高冷','话痨','社恐','活泼','爱臭美','胆小鬼','摸鱼精'];
+  var SYL_A = ['小','阿','布','咕','咪','糯','团','球','糖','冰','铃','柚','星','泡','元','橘'];
+  var SYL_B = ['布','咕','咪','糯','团','球','糖','冰','铃','柚','星','泡','元','橘','芽','酱'];
+  var WORDS = ['有花无实','哈基米','摸鱼','毕业','猫猫','深夜','加班','元气','柠檬','月亮','咸鱼','甜妹','打工人','赛博','雪糕'];
+
+  function buildProfile(word){
+    var seed = xfnv1a(word);
+    var rnd = mulberry32(seed);
+    var hue = Math.floor(rnd() * 360);
+    // 保持和谐：高饱和配浅色身体
+    var sat = 55 + Math.floor(rnd() * 30);
+    var base = {
+      body:   'hsl(' + hue + ',' + sat + '%,' + (66 + Math.floor(rnd()*12)) + '%)',
+      accent: 'hsl(' + ((hue + 150 + Math.floor(rnd()*60)) % 360) + ',' + (60 + Math.floor(rnd()*20)) + '%,62%)',
+      line:   'hsl(' + hue + ',' + (sat - 15) + '%,30%)',
+      eye:    '#2a2333',
+      blush:  'rgba(255,140,170,.55)'
+    };
+    var rx = 6.4 + rnd() * 1.4;         // 身体宽半径
+    var ry = 5.2 + rnd() * 1.6;         // 身体高半径
+    var earType = ['none','cat','rabbit','fin','antenna'][Math.floor(rnd()*5)];
+    var eyeType = ['dot','sparkle','sleepy','round'][Math.floor(rnd()*4)];
+    var pattern = ['none','spots','stripes','belly'][Math.floor(rnd()*4)];
+
+    // 名字
+    var name = SYL_A[Math.floor(rnd()*SYL_A.length)] + SYL_B[Math.floor(rnd()*SYL_B.length)];
+    if(rnd() < 0.35) name += ['酱','子','崽','宝宝'][Math.floor(rnd()*4)];
+
+    // 性格
+    var pool = TRAITS.slice();
+    var traits = [];
+    for(var i=0;i<2;i++){ traits.push(pool.splice(Math.floor(rnd()*pool.length),1)[0]); }
+    var hasT = function(t){ return traits.indexOf(t) >= 0; };
+
+    return {
+      word: word, seed: seed, name: name,
+      species: SPECIES[Math.floor(rnd()*SPECIES.length)],
+      traits: traits, colors: base, rx: rx, ry: ry,
+      earType: earType, eyeType: eyeType, pattern: pattern,
+      speed: 34 + rnd() * 34,
+      sleepiness: hasT('爱睡觉') ? 1.5 : 1,
+      gluttony: hasT('贪吃') ? 1.5 : 1,
+      chatty: hasT('话痨') ? 1.6 : 1,
+      clingy: hasT('粘人') || hasT('活泼'),
+      shy: hasT('社恐') || hasT('高冷'),
+      blinks: 0.6 + rnd() * 0.8
+    };
+  }
+
+  // ================= 像素精灵 =================
+  var N = 20;
+  function buildSprite(p){
+    var g = {};
+    function put(x,y, role){ if(x>=0 && y>=0 && x<N && y<N) g[x+','+y] = role; }
+    function get(x,y){ return g[x+','+y]; }
+
+    // 身体（椭圆）
+    var cx = 10, cy = 12.4;
+    for(var y=0;y<N;y++){
+      for(var x=0;x<N;x++){
+        var dx = (x + 0.5 - cx) / p.rx;
+        var dy = (y + 0.5 - cy) / p.ry;
+        if(dx*dx + dy*dy <= 1) put(x,y,'body');
+      }
+    }
+    // 耳朵 / 触角
+    if(p.earType === 'cat'){
+      put(6,6,'body'); put(6,7,'body'); put(7,7,'body');
+      put(13,6,'body'); put(13,7,'body'); put(12,7,'body');
+    } else if(p.earType === 'rabbit'){
+      put(7,3,'body'); put(7,4,'body'); put(7,5,'body'); put(7,6,'body');
+      put(12,3,'body'); put(12,4,'body'); put(12,5,'body'); put(12,6,'body');
+    } else if(p.earType === 'fin'){
+      put(10,5,'accent'); put(9,6,'accent'); put(11,6,'accent'); put(10,6,'accent');
+    } else if(p.earType === 'antenna'){
+      put(7,5,'accent'); put(13,5,'accent'); put(7,4,'line'); put(13,4,'line');
+    }
+    // 脚
+    var footY = Math.round(cy + p.ry - 0.6);
+    put(7,footY,'body'); put(8,footY,'body');
+    put(11,footY,'body'); put(12,footY,'body');
+
+    // 花纹
+    if(p.pattern === 'spots'){
+      put(6,11,'accent'); put(13,10,'accent'); put(9,15,'accent'); put(12,5,'accent');
+    } else if(p.pattern === 'stripes'){
+      for(var sx=5; sx<=14; sx+=3){ put(sx,9,'accent'); put(sx,16,'accent'); }
+    } else if(p.pattern === 'belly'){
+      var bcx = 10, bcy = 14;
+      for(var by=12; by<=16; by++) for(var bx=8; bx<=11; bx++){
+        var ddx=(bx+0.5-bcx)/2.4, ddy=(by+0.5-bcy)/2.2;
+        if(ddx*ddx+ddy*ddy<=1) put(bx,by,'accent');
+      }
+    }
+
+    // 眼睛
+    var ey = 12;
+    if(p.eyeType === 'sleepy'){
+      put(7,ey,'eye'); put(7,ey+1,'eye'); put(12,ey,'eye'); put(12,ey+1,'eye');
+      put(6,ey,'line'); put(8,ey,'line'); put(11,ey,'line'); put(13,ey,'line');
+    } else if(p.eyeType === 'sparkle'){
+      put(7,ey,'eye'); put(12,ey,'eye'); put(8,ey-1,'eyehl'); put(13,ey-1,'eyehl');
+    } else if(p.eyeType === 'round'){
+      put(7,ey,'eye'); put(7,ey+1,'eye'); put(12,ey,'eye'); put(12,ey+1,'eye');
+    } else {
+      put(7,ey,'eye'); put(12,ey,'eye');
+    }
+    // 腮红 & 嘴
+    put(5,14,'blush'); put(14,14,'blush');
+    put(9,15,'mouth'); put(10,15,'mouth');
+
+    // 描边（把空白且贴到身体的格子涂成线）
+    var out = {};
+    for(var oy=0;oy<N;oy++) for(var ox=0;ox<N;ox++){
+      if(g[ox+','+oy]) continue;
+      if(get(ox-1,oy) || get(ox+1,oy) || get(ox,oy-1) || get(ox,oy+1)){
+        out[ox+','+oy] = 'line';
+      }
+    }
+    for(var k in out) g[k] = out[k];
+    return g;
+  }
+
+  // ================= 状态 =================
+  var room = document.getElementById('room');
+  var cv = document.getElementById('cv');
+  var ctx = cv.getContext('2d');
+  var W = 0, H = 0, DPR = 1, floorY = 0, scale = 10, spriteW = 0, spriteH = 0;
+
+  var P = null;
+  var bubble = document.getElementById('bubble');
+
+  function resize(){
+    var r = room.getBoundingClientRect();
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(320, Math.floor(r.width));
+    H = Math.max(320, Math.floor(r.height));
+    cv.width = W * DPR; cv.height = H * DPR;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    scale = Math.max(6, Math.min(13, H / 46));
+    spriteW = N * scale; spriteH = N * scale;
+    floorY = H - 52 - 8;      // 站在任务栏上方
+    if(P){ P.y = Math.min(P.y, floorY); P.floor = floorY; }
+  }
+  window.addEventListener('resize', resize);
+
+  var LINES = {
+    pet:    ['嘿嘿…','再摸摸～','今天也要开心呀','手感不错吧？','舒服～','别停嘛'],
+    hungry: ['肚子在叫了…','投喂时间到！','我想吃饭饭 🍚','饿饿，饭饭'],
+    sleepy: ['Zzz…','困困…','别吵，我在梦里游泳'],
+    eating: ['谢谢投喂！','好耶，好吃！','吧唧吧唧…','本宠值了'],
+    idle:   ['在呢在呢','陪我玩会儿嘛','本宠已躺平','我在想晚饭吃什么','摸鱼中，勿扰'],
+    wake:   ['啊…谁呀','睡醒了…','几点了？'],
+    hungrySad: ['不理你了，我去要饭','看一眼就走…饿']
+  };
+  function pick(a){ return a[(Math.random()*a.length)|0]; }
+
+  function startPet(word){
+    word = (word || '').trim() || '有花无实';
+    var prof = buildProfile(word);
+    P = {
+      prof: prof,
+      sprite: buildSprite(prof),
+      x: W * 0.5, y: floorY, floor: floorY,
+      vx: 0, vy: 0,
+      targetX: W * 0.5,
+      facing: 1,
+      state: 'idle',
+      stateT: 0,
+      bob: 0,
+      blinkT: prof.blinks * 3,
+      blinking: 0,
+      satiety: 62, mood: 68, energy: 70,
+      lastInteract: 0, lastSpeak: 0,
+      speakMsg: '', speakT: 0,
+      hearts: [], foods: [], dragging: false, dragDX: 0, asleep: false,
+      hop: 0
+    };
+    document.getElementById('pName').textContent = prof.name;
+    document.getElementById('pSpecies').textContent =
+      prof.species + ' · ' + prof.traits.join('·') + ' · 「' + word + '」';
+    try{ localStorage.setItem('cyberpet_word', word); }catch(e){}
+    document.getElementById('overlay').classList.add('hidden');
+  }
+
+  // ================= 说话 =================
+  function say(msg, dur){
+    P.speakMsg = msg; P.speakT = dur || 2.4;
+    bubble.textContent = msg;
+    bubble.classList.add('on');
+    P.lastSpeak = 0;
+  }
+  function maybeSay(lines, chance){
+    if(P.speakT > 0) return;
+    if(Math.random() < (chance || 0.5) * P.prof.chatty) say(pick(lines));
+  }
+
+  // ================= 交互 =================
+  function petHitTest(px, py){
+    var ox = P.x - spriteW/2, oy = P.y - spriteH + P.bob;
+    return px >= ox - 6 && px <= ox + spriteW + 6 && py >= oy - 6 && py <= oy + spriteH + 6;
+  }
+
+  function doPet(){
+    var p = P;
+    p.asleep = false;
+    p.mood = Math.min(100, p.mood + 8);
+    p.satiety = Math.min(100, p.satiety + 1);
+    p.hop = 1;
+    p.lastInteract = 0;
+    spawnHearts(3);
+    say(pick(LINES.pet));
+    if(Math.random() < 0.4) p.state = 'happy', p.stateT = 0.5;
+  }
+
+  function doFeed(){
+    var p = P;
+    p.asleep = false;
+    p.foods.push({ x: 40 + Math.random() * (W - 80), y: floorY, vy: -120, t: 0, landed: false });
+    p.lastInteract = 0;
+    if(Math.random() < 0.5) say('有吃的！我来啦～', 1.4);
+  }
+
+  function spawnHearts(n){
+    for(var i=0;i<n;i++){
+      P.hearts.push({
+        x: P.x + (Math.random()-0.5)*30,
+        y: P.y - spriteH*0.9 + (Math.random()-0.5)*20,
+        vy: -34 - Math.random()*26,
+        a: 1, s: 14 + Math.random()*10,
+        c: ['💗','💛','✨','⭐'][(Math.random()*4)|0]
+      });
+    }
+  }
+
+  // ================= 更新 =================
+  function update(dt){
+    if(!P) return;
+    var p = P, pr = p.prof;
+    p.stateT += dt;
+    p.lastInteract += dt;
+    if(p.speakT > 0){ p.speakT -= dt; if(p.speakT <= 0) bubble.classList.remove('on'); }
+    if(p.hop > 0) p.hop = Math.max(0, p.hop - dt*4);
+
+    // 眨眼
+    p.blinkT -= dt;
+    if(p.blinking > 0){ p.blinking -= dt; }
+    else if(p.blinkT <= 0){ p.blinking = 0.12; p.blinkT = pr.blinks * (2 + Math.random()*3); }
+
+    // 心情/精力/饱食自然衰减
+    if(!p.dragging){
+      p.satiety = Math.max(0, p.satiety - dt * 0.55 * pr.gluttony);
+      p.mood    = Math.max(0, p.mood - dt * 0.35);
+      if(!p.asleep) p.energy = Math.max(0, p.energy - dt * 0.5 * pr.sleepiness);
+    }
+
+    // 粒子
+    var i;
+    for(i=p.hearts.length-1;i>=0;i--){
+      var hh=p.hearts[i]; hh.y += hh.vy*dt; hh.a -= dt*0.9; hh.vy += dt*10;
+      if(hh.a<=0) p.hearts.splice(i,1);
+    }
+    for(i=p.foods.length-1;i>=0;i--){
+      var f=p.foods[i];
+      if(!f.landed){
+        f.vy += 900*dt; f.y += f.vy*dt;
+        if(f.y >= floorY){ f.y = floorY; f.landed = true; }
+      }
+    }
+
+    // 睡觉逻辑
+    if(p.asleep){
+      p.energy = Math.min(100, p.energy + dt * 9);
+      p.bob = Math.sin(performance.now()/500) * 2;
+      if(p.energy > 92){ p.asleep = false; p.state='idle'; p.stateT=0; say(pick(LINES.wake)); }
+      return;
+    }
+    if(p.lastInteract > 9 && p.energy < 55 && !p.dragging){ p.asleep = true; p.state='sleep'; say(pick(LINES.sleepy), 3); return; }
+
+    // 拖动中：跟手，松手后重力下落
+    if(p.dragging){ return; }
+    if(p.y < floorY - 1){
+      p.vy += 1400*dt; p.y += p.vy*dt;
+      if(p.y >= floorY){ p.y = floorY; p.vy = 0; }
+      return;   // 下落时不做别的
+    }
+
+    // 饿 → 盯着食物走
+    if(p.foods.length && p.satiety < 96){
+      var f0 = p.foods[0];
+      moveToward(f0.x, dt, pr.speed);
+      if(Math.abs(p.x - f0.x) < 22){
+        p.foods.shift();
+        p.satiety = Math.min(100, p.satiety + 26);
+        p.mood = Math.min(100, p.mood + 6);
+        p.hop = 1; spawnHearts(2);
+        say(pick(LINES.eating));
+        p.state='eat'; p.stateT=0;
+      }
+      return;
+    }
+
+    // 粘人：跟着鼠标；社恐：躲
+    if(pr.clingy && mouse.in && p.lastInteract > 1.2){
+      if(Math.abs(mouse.x - p.x) > 46){ moveToward(mouse.x, dt, pr.speed * 1.15); return; }
+    }
+    if(pr.shy && mouse.in && Math.abs(mouse.x - p.x) < 90){
+      moveToward(p.x + (p.x > mouse.x ? 150 : -150), dt, pr.speed * 1.2); return;
+    }
+
+    // 游荡
+    if(p.state === 'walk'){
+      var reached = moveToward(p.targetX, dt, pr.speed);
+      if(reached || p.stateT > 4){ p.state='idle'; p.stateT=0; }
+      return;
+    }
+    // idle：偶尔起身走动 / 说话
+    if(p.stateT > 2.2 + Math.random()*2.5){
+      p.state='walk'; p.stateT=0;
+      p.targetX = 40 + Math.random() * (W - 80);
+      if(Math.random() < 0.5) maybeSay(p.satiety < 30 ? LINES.hungry : LINES.idle, 0.6);
+    } else {
+      p.bob = Math.sin(performance.now()/420) * 1.6;
+    }
+    if(p.satiety < 22 && Math.random() < dt*0.4) say(pick(LINES.hungrySad));
+    else if(p.satiety < 40 && Math.random() < dt*0.25) say(pick(LINES.hungry));
+  }
+
+  function moveToward(tx, dt, spd){
+    var dx = tx - P.x;
+    if(Math.abs(dx) < 6){ P.vx = 0; P.bob = Math.sin(performance.now()/160)*1.2; return true; }
+    P.facing = dx > 0 ? 1 : -1;
+    P.x += Math.sign(dx) * spd * dt;
+    P.x = Math.max(30, Math.min(W - 30, P.x));
+    P.bob = -Math.abs(Math.sin(performance.now()/95)) * 3;
+    P.state = P.state === 'eat' ? 'eat' : 'walk';
+    return false;
+  }
+
+  // ================= 绘制 =================
+  function drawRoom(now){
+    var wall = ctx.createLinearGradient(0,0,0,H);
+    wall.addColorStop(0,'#141d36'); wall.addColorStop(1,'#0e1526');
+    ctx.fillStyle = wall; ctx.fillRect(0,0,W,H);
+
+    // 月光窗
+    var wx=W*0.07, wy=H*0.09, ww=W*0.22, wh=H*0.30;
+    ctx.fillStyle='#0b1428'; rr(wx,wy,ww,wh,12); ctx.fill();
+    ctx.fillStyle='#f6e4ad';
+    ctx.beginPath(); ctx.arc(wx+ww*0.66, wy+wh*0.34, Math.min(ww,wh)*0.15, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(160,185,230,.3)'; ctx.lineWidth=3;
+    rr(wx,wy,ww,wh,12); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(wx+ww/2,wy); ctx.lineTo(wx+ww/2,wy+wh); ctx.stroke();
+
+    // 地板
+    var fl = ctx.createLinearGradient(0, floorY-40, 0, H);
+    fl.addColorStop(0,'#1a2340'); fl.addColorStop(1,'#0c1322');
+    ctx.fillStyle=fl; ctx.fillRect(0, floorY-40, W, H-(floorY-40));
+    ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,floorY-40); ctx.lineTo(W,floorY-40); ctx.stroke();
+
+    // 地毯
+    ctx.fillStyle='rgba(247,168,196,.10)';
+    ctx.beginPath(); ctx.ellipse(W*0.5, floorY+30, W*0.28, 26, 0,0,Math.PI*2); ctx.fill();
+
+    // 摆件
+    ctx.font = Math.round(H*0.05)+'px "Segoe UI Emoji",sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.globalAlpha=.9; ctx.fillText('🪴', W*0.9, floorY-16); ctx.globalAlpha=1;
+
+    // 食物
+    for(var i=0;i<P.foods.length;i++){
+      var f=P.foods[i];
+      ctx.font = Math.round(scale*2.6)+'px "Segoe UI Emoji",sans-serif';
+      ctx.fillText('🍚', f.x, f.y - scale*1.2);
+    }
+  }
+
+  function rr(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  function colorFor(role, c){
+    switch(role){
+      case 'body':  return c.body;
+      case 'accent':return c.accent;
+      case 'line':  return c.line;
+      case 'eye':   return c.eye;
+      case 'eyehl': return '#ffffff';
+      case 'mouth': return c.line;
+      case 'blush': return c.blush;
+      default:      return c.body;
+    }
+  }
+
+  function drawPet(now){
+    var p = P, c = p.prof.colors;
+    var ox = Math.round(p.x - spriteW/2);
+    var oy = Math.round(p.y - spriteH + p.bob - p.hop*8);
+
+    // 影子
+    ctx.fillStyle='rgba(0,0,0,.28)';
+    ctx.beginPath(); ctx.ellipse(p.x, floorY+4, spriteW*0.34, 7, 0,0,Math.PI*2); ctx.fill();
+
+    // 睡眠泡泡
+    if(p.asleep){
+      ctx.save();
+      ctx.fillStyle='rgba(255,255,255,.85)';
+      var zt = (now/700) % 1;
+      ctx.font = Math.round(scale*1.6)+'px system-ui,sans-serif';
+      ctx.textAlign='left'; ctx.textBaseline='middle';
+      ctx.globalAlpha = 1 - zt;
+      ctx.fillText('z', ox + spriteW*0.9, oy - zt*24);
+      ctx.globalAlpha = 1 - ((now/700+0.5)%1);
+      ctx.fillText('Z', ox + spriteW*1.05, oy - 14 - ((now/700+0.5)%1)*24);
+      ctx.restore();
+    }
+
+    ctx.save();
+    if(p.facing < 0){ ctx.translate(ox + spriteW, oy); ctx.scale(-1,1); }
+    else { ctx.translate(ox, oy); }
+
+    var blink = p.blinking > 0;
+    for(var key in p.sprite){
+      var role = p.sprite[key];
+      var parts = key.split(',');
+      var gx = +parts[0], gy = +parts[1];
+      // 眨眼时把眼睛压成一条线
+      if(blink && (role === 'eye')){ if(gy !== 12) continue; }
+      if(role === 'eyehl' && blink) continue;
+      ctx.fillStyle = colorFor(role, c);
+      ctx.fillRect(gx*scale, gy*scale, Math.ceil(scale), Math.ceil(scale));
+    }
+    ctx.restore();
+
+    // 爱心粒子
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    for(var i=0;i<p.hearts.length;i++){
+      var h=p.hearts[i];
+      ctx.globalAlpha = Math.max(0,h.a);
+      ctx.font = h.s+'px "Segoe UI Emoji",sans-serif';
+      ctx.fillText(h.c, h.x, h.y);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function positionBubble(){
+    if(P.speakT <= 0) return;
+    bubble.style.left = Math.round(P.x) + 'px';
+    bubble.style.top = Math.round(P.y - spriteH + P.bob - 12) + 'px';
+  }
+
+  // ================= HUD =================
+  var elSat=document.getElementById('fSat'), elMood=document.getElementById('fMood'), elEn=document.getElementById('fEn');
+  var vSat=document.getElementById('vSat'), vMood=document.getElementById('vMood'), vEn=document.getElementById('vEn');
+  function setBar(fill,v,val){
+    fill.style.width = Math.max(0,Math.min(100,val)) + '%';
+    v.textContent = Math.round(val);
+  }
+  function updateHUD(){
+    if(!P) return;
+    setBar(elSat,vSat,P.satiety);
+    setBar(elMood,vMood,P.mood);
+    setBar(elEn,vEn,P.energy);
+  }
+
+  // ================= 时钟 =================
+  function tickClock(){
+    var d = new Date();
+    document.getElementById('clock').textContent =
+      String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+
+  // ================= 鼠标 / 触摸 =================
+  var mouse = { x:0, y:0, in:false, t:0 };
+  function toLocal(e){
+    var r = cv.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+  cv.addEventListener('pointerdown', function(e){
+    if(!P) return;
+    var m = toLocal(e);
+    if(petHitTest(m.x, m.y)){
+      P.dragging = true;
+      P.dragDX = P.x - m.x;
+      P.dragDY = P.y - m.y;
+      P.vy = 0;
+      try{ cv.setPointerCapture(e.pointerId); }catch(err){}
+      e.preventDefault();
+    } else {
+      // 点空白处：让它看过来
+      P.targetX = m.x; P.state='walk'; P.stateT=0;
+    }
+  });
+  cv.addEventListener('pointermove', function(e){
+    var m = toLocal(e);
+    mouse.x = m.x; mouse.y = m.y; mouse.t = performance.now();
+    mouse.in = (m.y < floorY + 40);
+    if(P && P.dragging){
+      P.x = Math.max(20, Math.min(W-20, m.x + P.dragDX));
+      P.y = Math.max(60, Math.min(floorY, m.y + P.dragDY));
+    }
+  });
+  function endDrag(){
+    if(P && P.dragging){
+      P.dragging = false;
+      P.vy = 0;
+      doPet();   // 松手即算一次“摸”
+    }
+  }
+  cv.addEventListener('pointerup', endDrag);
+  cv.addEventListener('pointercancel', endDrag);
+  window.addEventListener('blur', endDrag);
+
+  // ================= 按钮 =================
+  document.getElementById('feedBtn').addEventListener('click', doFeed);
+  document.getElementById('petBtn').addEventListener('click', doPet);
+  document.getElementById('againBtn').addEventListener('click', function(){
+    document.getElementById('overlay').classList.remove('hidden');
+    var inp = document.getElementById('wordInput');
+    inp.value = P ? P.prof.word : '';
+    setTimeout(function(){ inp.focus(); }, 60);
+  });
+  document.getElementById('genBtn').addEventListener('click', function(){
+    startPet(document.getElementById('wordInput').value);
+    say('你好呀，我是' + P.prof.name + '！', 2.6);
+  });
+  document.getElementById('wordInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') document.getElementById('genBtn').click();
+  });
+
+  // 示例词
+  var ex = document.getElementById('examples');
+  for(var i=0;i<WORDS.length;i++){
+    (function(w){
+      var s = document.createElement('span');
+      s.textContent = w;
+      s.addEventListener('click', function(){
+        document.getElementById('wordInput').value = w;
+        startPet(w);
+        say('你好呀，我是' + P.prof.name + '！', 2.6);
+      });
+      ex.appendChild(s);
+    })(WORDS[i]);
+  }
+
+  // ================= 主循环 =================
+  var last = performance.now();
+  function frame(now){
+    var dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    update(dt);
+    if(P){
+      drawRoom(now);
+      drawPet(now);
+      positionBubble();
+      updateHUD();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ================= 初始化 =================
+  resize();
+  try{
+    var saved = localStorage.getItem('cyberpet_word');
+    if(saved) document.getElementById('wordInput').value = saved;
+  }catch(e){}
+  tickClock(); setInterval(tickClock, 15000);
+  requestAnimationFrame(frame);
+  setTimeout(function(){ document.getElementById('wordInput').focus(); }, 200);
+})();
+</script>
+</body>
+</html>

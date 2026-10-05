@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#05070e" />
+<link rel="icon" href="data:," />
+<title>视界 · 浏览器里的实时黑洞</title>
+<style>
+  :root {
+    --bg: #05070e;
+    --ink: #f2f7ff;
+    --dim: #9fb3cc;
+    --line: rgba(160, 200, 255, .14);
+    --line-2: rgba(160, 200, 255, .3);
+    --hot: #7cc9ff;
+    --warm: #ffab63;
+    --panel: rgba(255, 255, 255, .045);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); overflow-x: hidden;
+    font-family: "MiSans", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.65;
+  }
+
+  /* ---------------------------------------------------------- 浮动导航 */
+  .nav {
+    position: fixed; z-index: 20; left: 50%; top: 18px; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 22px; padding: 10px 12px 10px 20px;
+    border-radius: 999px; border: 1px solid var(--line); background: rgba(8, 12, 22, .55);
+    backdrop-filter: blur(16px) saturate(1.2);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .06);
+  }
+  .nav .logo { font-size: 14px; letter-spacing: 3px; }
+  .nav .logo b { color: var(--hot); font-weight: 600; }
+  .nav nav { display: flex; gap: 18px; font-size: 13px; color: var(--dim); }
+  .nav nav a { color: inherit; text-decoration: none; transition: color .2s ease; }
+  .nav nav a:hover { color: var(--ink); }
+  .nav .go {
+    font-size: 13px; padding: 9px 18px; border-radius: 999px; text-decoration: none;
+    color: #06131f; font-weight: 600;
+    background: linear-gradient(120deg, var(--hot), var(--warm));
+    box-shadow: 0 6px 20px rgba(124, 201, 255, .28);
+  }
+
+  /* ---------------------------------------------------------- 英雄区 */
+  .hero { position: relative; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }
+  #bh { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(78% 58% at 50% 46%, rgba(5, 7, 14, .66) 0%, rgba(5, 7, 14, .3) 52%, rgba(5, 7, 14, .1) 100%),
+      radial-gradient(125% 95% at 50% 6%, rgba(5, 7, 14, .12) 0%, rgba(5, 7, 14, .7) 64%, var(--bg) 98%),
+      linear-gradient(180deg, rgba(5, 7, 14, .5) 0%, transparent 24%, rgba(5, 7, 14, .82) 100%);
+  }
+  .hero-inner {
+    position: relative; z-index: 2; width: 100%; max-width: 1240px;
+    padding: 0 26px; text-align: center; pointer-events: none;
+  }
+  .hero-inner > * { pointer-events: auto; }
+  .hero h1 {
+    margin: 0; font-weight: 600; letter-spacing: -1px;
+    font-size: clamp(38px, 7.2vw, 96px); line-height: 1.06;
+    text-shadow: 0 18px 60px rgba(0, 0, 0, .75);
+  }
+  .hero h1 em {
+    font-style: normal; background: linear-gradient(100deg, #a9e2ff, #ffbb85);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero .lede {
+    margin: 24px auto 0; max-width: 60ch; color: #c6d6e8;
+    font-size: clamp(15px, 1.5vw, 18px); line-height: 1.85;
+    text-shadow: 0 8px 30px rgba(0, 0, 0, .8);
+  }
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 36px; }
+  .cta a {
+    text-decoration: none; font-size: 15px; font-weight: 600; padding: 15px 30px; border-radius: 999px;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .cta .primary {
+    color: #06131f; background: linear-gradient(120deg, var(--hot), var(--warm));
+    box-shadow: 0 14px 40px rgba(124, 201, 255, .3);
+  }
+  .cta .ghost { color: var(--ink); border: 1px solid var(--line-2); background: rgba(10, 16, 28, .5); }
+  .cta a:hover { transform: translateY(-2px); }
+
+  /* 实时遥测：只显示真实读数 */
+  .telemetry {
+    position: absolute; z-index: 3; left: 26px; bottom: 26px;
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-size: 12px; color: rgba(200, 220, 245, .72); font-variant-numeric: tabular-nums;
+  }
+  .telemetry b { color: var(--hot); font-weight: 600; }
+  .scroll-hint {
+    position: absolute; z-index: 3; right: 26px; bottom: 28px;
+    font-size: 12px; color: rgba(200, 220, 245, .55); letter-spacing: 2px;
+  }
+
+  /* ---------------------------------------------------------- 通用区块 */
+  main { position: relative; z-index: 2; background: linear-gradient(180deg, var(--bg) 0%, #070a13 100%); }
+  .block { max-width: 1240px; margin: 0 auto; padding: 96px 26px; }
+  .block + .block { padding-top: 0; }
+  .eyebrow { font-size: 12.5px; letter-spacing: 3px; color: var(--dim); }
+  h2 {
+    margin: 14px 0 0; font-size: clamp(24px, 3.2vw, 42px); line-height: 1.2;
+    letter-spacing: -.5px; font-weight: 600; max-width: 22ch;
+  }
+  .block p.body { margin: 18px 0 0; max-width: 66ch; color: #b6c7db; font-size: 15.5px; line-height: 1.95; }
+  .block p.body b { color: var(--ink); }
+  .block p.body .k { color: var(--warm); }
+
+  /* 无缝 bento：两行各 6 格刚好填满 */
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-flow: dense; gap: 16px; margin-top: 40px; }
+  .card {
+    position: relative; overflow: hidden;
+    border: 1px solid var(--line); border-radius: 22px; background: var(--panel);
+    padding: 26px; backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+    transition: transform .28s cubic-bezier(.22, .9, .3, 1), border-color .28s ease, background .28s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--line-2); background: rgba(255, 255, 255, .06); }
+  .card .ico {
+    width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center;
+    border: 1px solid var(--line-2); background: rgba(124, 201, 255, .1); color: var(--hot);
+    font-size: 13px; font-weight: 600;
+  }
+  .card h3 { margin: 16px 0 0; font-size: 18px; letter-spacing: -.2px; }
+  .card p { margin: 9px 0 0; font-size: 14px; line-height: 1.85; color: #a9bdd4; }
+  .card.wide { grid-column: span 4; }
+  .card.slim { grid-column: span 2; }
+  .card .metric {
+    margin-top: 20px; font-size: 30px; font-weight: 600; letter-spacing: -1px;
+    font-variant-numeric: tabular-nums; color: var(--ink);
+  }
+  .card .metric small { font-size: 13px; font-weight: 400; color: var(--dim); margin-left: 6px; letter-spacing: 0; }
+
+  /* 步骤 */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 36px; }
+  .step { border-top: 1px solid var(--line); padding-top: 18px; }
+  .step b { display: block; font-size: 12.5px; letter-spacing: 2px; color: var(--warm); }
+  .step h4 { margin: 10px 0 0; font-size: 16px; }
+  .step p { margin: 8px 0 0; font-size: 14px; color: #a9bdd4; line-height: 1.8; }
+
+  /* 其它作品 */
+  .more { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 34px; }
+  .more a {
+    display: block; text-decoration: none; color: inherit; padding: 22px; border-radius: 20px;
+    border: 1px solid var(--line); background: var(--panel);
+    transition: transform .25s ease, border-color .25s ease, background .25s ease;
+  }
+  .more a:hover { transform: translateY(-3px); border-color: var(--line-2); background: rgba(255, 255, 255, .06); }
+  .more strong { display: block; font-size: 16px; }
+  .more span { display: block; margin-top: 7px; font-size: 13.5px; color: #a9bdd4; line-height: 1.75; }
+
+  footer {
+    border-top: 1px solid var(--line); padding: 34px 26px 46px;
+    display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    max-width: 1240px; margin: 0 auto; font-size: 12.5px; color: #7f93ab;
+  }
+
+  /* 滚动进场 */
+  .reveal { opacity: 0; transform: translateY(18px); }
+  .reveal.in { opacity: 1; transform: none; transition: opacity .7s ease, transform .7s cubic-bezier(.22, .9, .3, 1); }
+  .card:focus-visible, a:focus-visible { outline: 2px solid var(--hot); outline-offset: 3px; border-radius: 14px; }
+
+  @media (max-width: 900px) {
+    .nav { gap: 12px; padding: 9px 10px 9px 16px; top: 12px; }
+    .nav nav { display: none; }
+    .bento { grid-template-columns: repeat(2, 1fr); }
+    .card.wide, .card.slim { grid-column: span 2; }
+    .block { padding: 64px 18px; }
+    .telemetry { left: 18px; bottom: 18px; gap: 14px; font-size: 11px; }
+    .scroll-hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; }
+    * { transition: none !important; }
+  }
+  /* 整页验收用：?flat=1 时把英雄区压扁，方便一次截全（不影响正常浏览） */
+  html.flat .hero { min-height: 720px; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="logo">视界<b>·</b>EVENT HORIZON</span>
+  <nav>
+    <a href="#how">怎么做的</a>
+    <a href="#play">怎么玩</a>
+    <a href="#more">其它作品</a>
+  </nav>
+  <a class="go" href="./黑洞.html">打开实时黑洞</a>
+</div>
+
+<header class="hero">
+  <canvas id="bh"></canvas>
+  <div class="hero-inner">
+    <h1>光会拐弯，<em>所以看得见</em></h1>
+    <p class="lede">
+      这不是视频，也不是贴图。你现在看到的每一帧，都是浏览器在你显卡上实时解出来的引力弯曲——
+      光线绕着黑洞走，吸积盘一半亮一半暗。
+    </p>
+    <div class="cta">
+      <a class="primary" href="./黑洞.html">自己转一转</a>
+      <a class="ghost" href="#how">看看它怎么算的</a>
+    </div>
+  </div>
+  <div class="telemetry">
+    <span>实时帧率 <b id="t-fps">—</b></span>
+    <span>渲染分辨率 <b id="t-res">—</b></span>
+    <span>每像素采样 <b id="t-steps">340</b> 步</span>
+    <span>引力系数 <b>1.00</b></span>
+  </div>
+  <div class="scroll-hint">往下看</div>
+</header>
+
+<main>
+  <section class="block" id="how">
+    <div class="eyebrow">它到底在算什么</div>
+    <h2>每个像素，都是一条被引力掰弯的光线</h2>
+    <p class="body">
+      屏幕上的一个点，代表一束光从相机出发、穿过这片空间、最后去了哪里。程序从相机位置<b>反向</b>射出这条光线，
+      每走一小步就按广义相对论的近似公式把方向掰一点，一直走到它<b>掉进视界</b>、或者<b>逃到远方</b>。
+      逃出去的方向决定了这个像素看到的是哪颗星；掉进去就是纯黑。中间穿过吸积盘时，就把那一层的气体亮度累加上去。
+    </p>
+
+    <div class="bento">
+      <article class="card wide reveal">
+        <span class="ico">01</span>
+        <h3>光线弯曲 = 光走"弯路"</h3>
+        <p>
+          每步给光一个朝向黑洞的加速度，大小按角动量守恒算：<span style="color:#ffbb85">-1.5 · h² · r / |r|⁵</span>。
+          加得准，光环、双重像、爱因斯坦环就自己冒出来了，不需要额外画。
+        </p>
+        <div class="metric">340 <small>步/像素 · 自适应步长</small></div>
+      </article>
+
+      <article class="card slim reveal">
+        <span class="ico">02</span>
+        <h3>一半亮一半暗</h3>
+        <p>盘在高速自转，朝你冲来的那侧被多普勒增强，另一侧变暗——这不是打光，是算出来的。</p>
+      </article>
+
+      <article class="card slim reveal">
+        <span class="ico">03</span>
+        <h3>盘是有厚度的</h3>
+        <p>按体积积分：密度够厚就自己挡住自己，所以能看到暗缝和层次，而不是一张贴纸。</p>
+      </article>
+
+      <article class="card wide reveal">
+        <span class="ico">04</span>
+        <h3>整条管线都在页面里</h3>
+        <p>
+          场景先渲到浮点纹理（HDR），再做亮度提取和高斯模糊做泛光，最后色调映射输出。
+          手停下来时还会逐帧累积抖动样本，把噪点磨平——所以静止几秒画面会"变干净"。
+        </p>
+        <div class="metric">1 <small>个文件 · 无依赖 · 双击就开</small></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="play">
+    <div class="eyebrow">上手只要三下</div>
+    <h2>拖一拖，你会发现光真的会绕路</h2>
+    <div class="steps">
+      <div class="step reveal">
+        <b>拖动</b>
+        <h4>绕到黑洞侧面</h4>
+        <p>把视线压到几乎贴着吸积盘，会看到盘的背面从上方"绕"出来——那是被引力拐弯的光。</p>
+      </div>
+      <div class="step reveal">
+        <b>拉滑块</b>
+        <h4>把引力调到 0</h4>
+        <p>弯曲立刻消失，画面变成一片平直的星空。再拉回 1，光环重新出现，差别一眼就懂。</p>
+      </div>
+      <div class="step reveal">
+        <b>按 S</b>
+        <h4>存一张当壁纸</h4>
+        <p>静止时会自动累积降噪，存下来的图比实时看到的还干净。竖屏也能存。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="more">
+    <div class="eyebrow">同一个仓库里还有</div>
+    <h2>都是用浏览器本身算出来的</h2>
+    <div class="more">
+      <a href="./傅里叶游乐场.html">
+        <strong>傅里叶游乐场</strong>
+        <span>在频谱上涂抹，实时看逆傅里叶变换把图片变成什么样。浏览器里跑完整 2D FFT。</span>
+      </a>
+      <a href="./全息典藏卡册.html">
+        <strong>全息典藏卡册</strong>
+        <span>五张徽记卡，可旋转翻面、四种卡面质感，鼠标一晃镭射彩虹跟着走。</span>
+      </a>
+      <a href="./作品展馆.html">
+        <strong>作品展馆</strong>
+        <span>全部作品的总入口。</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>视界 · 浏览器实时黑洞</span>
+  <span>有花无实 / 前端作品</span>
+</footer>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+uniform vec2  uRes;
+uniform float uTime;
+uniform vec3  uCam;
+uniform float uFov;
+
+float hash13(vec3 p) {
+  p = fract(p * 0.3183099 + vec3(0.71, 0.113, 0.419));
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float noise3(vec3 x) {
+  vec3 i = floor(x), f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  float n000 = hash13(i), n100 = hash13(i + vec3(1, 0, 0));
+  float n010 = hash13(i + vec3(0, 1, 0)), n110 = hash13(i + vec3(1, 1, 0));
+  float n001 = hash13(i + vec3(0, 0, 1)), n101 = hash13(i + vec3(1, 0, 1));
+  float n011 = hash13(i + vec3(0, 1, 1)), n111 = hash13(i + vec3(1, 1, 1));
+  return mix(mix(mix(n000, n100, f.x), mix(n010, n110, f.x), f.y),
+             mix(mix(n001, n101, f.x), mix(n011, n111, f.x), f.y), f.z);
+}
+float fbm(vec3 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * noise3(p); p *= 2.03; a *= 0.5; } return s; }
+vec3 aces(vec3 x) { return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }
+
+vec3 sky(vec3 d) {
+  vec3 col = vec3(0.0);
+  vec3 p = d * 240.0;
+  vec3 id = floor(p), f = fract(p) - 0.5;
+  float h = hash13(id);
+  float core = smoothstep(0.44, 0.0, length(f));
+  float bright = step(0.982, h) * (0.30 + 1.8 * hash13(id + 3.7));
+  float tw = 0.8 + 0.3 * sin(uTime * (1.4 + 3.0 * h) + h * 40.0);
+  vec3 tint = mix(vec3(0.70, 0.80, 1.0), vec3(1.0, 0.85, 0.68), hash13(id + 11.3));
+  col += core * bright * tw * tint * 1.1;
+  float n = fbm(d * 90.0);
+  col += mix(vec3(0.09, 0.15, 0.40), vec3(0.40, 0.13, 0.38), smoothstep(0.45, 0.86, n))
+       * pow(smoothstep(0.42, 0.96, n), 2.3) * 0.30;
+  col += vec3(0.42, 0.50, 0.72) * exp(-abs(d.y + 0.06) * 4.2) * 0.03;
+  return col;
+}
+
+void main() {
+  vec2 fc = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
+  vec3 ww = normalize(-uCam);
+  vec3 uu = normalize(cross(vec3(0.0, 1.0, 0.0), ww));
+  vec3 vv = cross(ww, uu);
+  vec3 dir = normalize(fc.x * uu + fc.y * vv + (1.0 / tan(radians(uFov) * 0.5)) * ww);
+  vec3 pos = uCam;
+  float h2 = dot(cross(pos, dir), cross(pos, dir));
+
+  float diskIn = 2.35, diskOut = 10.0, thick = 0.26;
+  vec3 col = vec3(0.0);
+  float trans = 1.0;
+  bool captured = false;
+
+  for (int i = 0; i < 300; i++) {
+    float r2 = dot(pos, pos);
+    float r = sqrt(r2);
+    if (r < 1.0) { captured = true; break; }
+    if (r > 78.0 && dot(pos, dir) > 0.0) break;
+    float dt = clamp(0.05 * r, 0.02, 0.5);
+    if (abs(pos.y) < thick * 3.0 && r < diskOut * 1.25 && r > diskIn * 0.55) dt = min(dt, 0.085);
+    vec3 acc = -1.5 * h2 * pos / (r2 * r2 * r);
+    vec3 npos = pos + dir * dt + 0.5 * acc * dt * dt;
+    vec3 ndir = normalize(dir + acc * dt);
+
+    if (abs(pos.y) < thick * 3.0) {
+      float rp = length(pos.xz);
+      if (rp > diskIn && rp < diskOut) {
+        float u = (rp - diskIn) / (diskOut - diskIn);
+        float vert = exp(-pow(pos.y / thick, 2.0));
+        float ang = atan(pos.z, pos.x);
+        float spiral = ang * 2.0 + rp * 0.85 - uTime * 0.9;
+        float streak = fbm(vec3(cos(spiral) * 1.7, sin(spiral) * 1.7, rp * 0.5 - uTime * 0.35));
+        float grain = fbm(vec3(rp * 1.7, ang * 3.6, uTime * 0.5));
+        float dens = smoothstep(0.30, 0.92, streak * 0.62 + grain * 0.55);
+        dens *= smoothstep(0.0, 0.14, u) * (1.0 - smoothstep(0.42, 1.0, u));
+        vec3 radial = normalize(vec3(pos.x, 0.0, pos.z));
+        vec3 tangent = normalize(cross(vec3(0.0, 1.0, 0.0), radial));
+        vec3 vel = tangent * (0.72 / sqrt(max(rp, 1.0))) * 3.4;
+        float dop = clamp(1.0 / max(0.28, 1.0 - dot(vel, normalize(-dir)) * 1.25), 0.4, 2.1);
+        vec3 hot = vec3(1.34, 1.18, 0.94), mid = vec3(0.95, 0.46, 0.16), cold = vec3(0.36, 0.12, 0.04);
+        vec3 dcol = mix(hot, mid, smoothstep(0.0, 0.45, u));
+        dcol = mix(dcol, cold, smoothstep(0.45, 1.0, u));
+        dcol *= mix(1.0, dop * dop, 0.9);
+        float a = 1.0 - exp(-dens * vert * 1.15 * dt * 2.6);
+        col += dcol * a * trans * 1.7;
+        trans *= (1.0 - a);
+        if (trans < 0.02) break;
+      }
+    }
+    pos = npos; dir = ndir;
+  }
+  if (!captured && trans > 0.001) col += sky(normalize(dir)) * trans;
+  if (captured) col *= 0.0;
+
+  col = aces(col * 1.06);
+  col = pow(clamp(col, 0.0, 1.0), vec3(0.92));
+  vec2 q = gl_FragCoord.xy / uRes;
+  col *= 1.0 - 0.34 * pow(length(q - 0.5) * 1.2, 2.4);
+  gl_FragColor = vec4(col, 1.0);
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  if (new URLSearchParams(location.search).has("flat")) document.documentElement.classList.add("flat");
+  var canvas = document.getElementById("bh");
+  var attrs = { antialias: false, alpha: false, depth: false, preserveDrawingBuffer: false, powerPreference: "high-performance" };
+  var gl = canvas.getContext("webgl2", attrs) || canvas.getContext("webgl", attrs);
+  if (!gl) { canvas.style.display = "none"; return; }
+
+  function compile(t, src) {
+    var s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  var prog;
+  try {
+    prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, document.getElementById("vs").textContent));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, document.getElementById("fs").textContent));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  } catch (e) { canvas.style.display = "none"; return; }
+  gl.useProgram(prog);
+
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, "aPos");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var U = {};
+  ["uRes", "uTime", "uCam", "uFov"].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var visible = true, yaw = 0.62, pitch = 0.2, mouseX = 0, mouseY = 0, tx = 0, ty = 0;
+  var cw = 0, ch = 0, dpr = 1;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    var w = Math.max(320, Math.floor(canvas.clientWidth * dpr));
+    var h = Math.max(240, Math.floor(canvas.clientHeight * dpr));
+    if (w === cw && h === ch) return;
+    cw = w; ch = h; canvas.width = w; canvas.height = h;
+    gl.viewport(0, 0, w, h);
+    document.getElementById("t-res").textContent = w + "×" + h;
+  }
+  window.addEventListener("resize", resize);
+
+  // 只在英雄区可见时渲染；离屏就停，别白烧显卡
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }, { threshold: 0.02 }).observe(canvas);
+  }
+  window.addEventListener("pointermove", function (e) {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  var t0 = performance.now(), last = t0, frames = 0, started = false;
+  function frame(now) {
+    var t = (now - t0) / 1000;
+    if (visible && !document.hidden) {
+      if (!reduce) { yaw += 0.0016; }
+      tx += (mouseX * 0.16 - tx) * 0.05;
+      ty += (mouseY * 0.1 - ty) * 0.05;
+      var y = yaw + tx, p = Math.max(-0.5, Math.min(0.8, pitch + ty));
+      var cp = Math.cos(p), sp = Math.sin(p), d = 40;
+      gl.uniform2f(U.uRes, cw, ch);
+      gl.uniform1f(U.uTime, t);
+      gl.uniform3f(U.uCam, Math.sin(y) * cp * d, sp * d, Math.cos(y) * cp * d);
+      gl.uniform1f(U.uFov, 44);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      started = true;
+    }
+    frames++;
+    if (now - last > 1000) {
+      document.getElementById("t-fps").textContent = (frames * 1000 / (now - last)).toFixed(0);
+      frames = 0; last = now;
+    }
+    if (!started || !reduce) requestAnimationFrame(frame);
+  }
+  resize();
+  requestAnimationFrame(frame);
+
+  // 滚动进场
+  var items = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.12 });
+    Array.prototype.forEach.call(items, function (el) { io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(items, function (el) { el.classList.add("in"); });
+  }
+})();
+</script>
+</body>
+</html>

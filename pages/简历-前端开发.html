@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>简历 · 有花无实</title>
+<style>
+:root{
+  --ink:#23202b; --sub:#5c5666; --mist:#8b8496; --line:#e6e2e8;
+  --accent:#b5486c; --accent-soft:#f7e9ee;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;line-height:1.4;-webkit-font-smoothing:antialiased}
+
+.page{
+  width:210mm;min-height:297mm;margin:16px auto;background:#fff;
+  padding:13mm 14mm;box-shadow:0 8px 30px rgba(0,0,0,.12);
+}
+
+/* ---------- 头部 ---------- */
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;border-bottom:2px solid var(--ink);padding-bottom:9px}
+.hd .name{font-size:25px;font-weight:800;letter-spacing:.03em}
+.hd .role{margin-top:3px;font-size:13px;color:var(--accent);font-weight:700}
+.hd .meta{text-align:right;font-size:12px;color:var(--sub);line-height:1.6}
+.hd .meta b{color:var(--ink);font-weight:600}
+
+/* ---------- 区块 ---------- */
+.sec{margin-top:8px}
+.sec h2{font-size:13.5px;font-weight:800;color:var(--ink);letter-spacing:.06em;display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.sec h2::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--accent)}
+.sec h2 .en{font-size:10px;font-weight:600;color:var(--mist);letter-spacing:.14em;text-transform:uppercase}
+
+/* ---------- 项目 ---------- */
+.item{margin-bottom:6px;break-inside:avoid}
+.item .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.item .t{font-size:13px;font-weight:700}
+.item .t .tag{font-size:10.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 8px;border-radius:999px;margin-left:8px}
+.item .date{font-size:11px;color:var(--mist);white-space:nowrap}
+.item .stack{font-size:11px;color:var(--accent);font-weight:600}
+.item ul{margin:3px 0 0 16px}
+.item li{font-size:12px;color:var(--sub);margin-top:1px}
+.item li b{color:var(--ink);font-weight:600}
+
+/* ---------- 技能 ---------- */
+.skill{display:grid;grid-template-columns:74px 1fr;gap:4px 12px;font-size:12px}
+.skill dt{font-weight:700;color:var(--ink)}
+.skill dd{color:var(--sub)}
+.skill dd b{color:var(--ink);font-weight:600}
+
+/* ---------- 教育 ---------- */
+.edu .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.edu .t{font-size:13px;font-weight:700}
+.edu .date{font-size:11px;color:var(--mist)}
+.edu p{font-size:12px;color:var(--sub);margin-top:2px}
+
+.tip{margin:10px 0 0;font-size:11.5px;color:var(--mist);background:var(--accent-soft);border-radius:8px;padding:7px 11px}
+.tip b{color:var(--accent)}
+
+@media print{
+  html,body{width:210mm;background:#fff}
+  .page{margin:0;box-shadow:none;width:210mm;min-height:auto;padding:10mm 12mm}
+  .tip{display:none}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hd">
+    <div>
+      <div class="name">毛烨</div>
+      <div class="role">求职意向：前端开发（校招 / 实习）</div>
+    </div>
+    <div class="meta">
+      <div>📱 <b>19174406319</b></div>
+      <div>📮 2285946393@qq.com</div>
+      <div>🔗 ephemeralbloom.dpdns.org</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>教育背景<span class="en">Education</span></h2>
+    <div class="edu">
+      <div class="top">
+        <div class="t">电子信息工程（本科）</div>
+        <div class="date">2023.09 – 2027.06</div>
+      </div>
+      <p>专业排名前 20%，获校级奖助学金，已通过 CET-4。在校期间自学前端与图形编程，独立完成并上线 28 个 Web 作品。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>项目经历<span class="en">Projects</span></h2>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">鲸云 API <span class="tag">React + TS</span></div>
+        <div class="date">2026.09 · 个人项目</div>
+      </div>
+      <div class="stack">React 18 · TypeScript · Vite · Tailwind CSS · React Router · Recharts</div>
+      <ul>
+        <li><b>AI 大模型网关平台</b>：官网 + 用户控制台 + 管理后台三端共 12 个页面，深色科技风</li>
+        <li>15 个接口收口到服务层（列配置驱动的泛型表格 + useAsync 收敛加载四态）；路由级 lazy 把 410KB 图表库移出首屏（841KB → 389KB）；已上线 <b>ai-gateway-sigma-eight.vercel.app</b></li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">创作中台 <span class="tag">Vue3 + TS</span></div>
+        <div class="date">2026.09 · 个人项目</div>
+      </div>
+      <div class="stack">Vue 3 · TypeScript · Vite · Element Plus · Pinia · ECharts</div>
+      <ul>
+        <li>基于 art-design-pro（MIT）二次开发的<b>个人作品运营后台</b>：路由 meta 驱动菜单 / 面包屑 / 标签页，菜单级 roles 过滤 + 按钮级 v-auth 指令<b>双层权限</b></li>
+        <li>实现作品<b>增删改查全链路</b>：关键字 / 分类 / 状态组合筛选 + 分页表格 + 表单校验弹窗 + 批量删除 + CSV 导出</li>
+        <li>ECharts 封装 6 类图表看板；<b>图标集按源码用量裁剪 3.5MB → 14.6KB</b>；已上线 <b>creator-studio-orcin-nine.vercel.app</b>（Super / 123456）</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">极光流体 <span class="tag">WebGL</span></div>
+        <div class="date">2026.08 · 个人项目</div>
+      </div>
+      <div class="stack">WebGL · GLSL · JavaScript</div>
+      <ul>
+        <li>手写 GLSL 实现实时流体求解（速度场 / 染料注入），<b>零第三方库</b>，单文件 23KB</li>
+        <li>鼠标交互驱动整个模拟，稳定 60fps，作品展馆「镇馆之宝」</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">元素秘境 <span class="tag">Rust + WASM</span></div>
+        <div class="date">2026.09 · 个人项目</div>
+      </div>
+      <div class="stack">Rust · WebAssembly · WebGL</div>
+      <ul>
+        <li><b>移植并改造 sandspiel（MIT）的 Rust/WASM 落沙内核</b>，手写 wasm-bindgen glue 与原生 WebGL 渲染，76KB 单文件</li>
+        <li>完成 20 种元素的暗黑幻想中文化，并优化笔刷撒点逻辑让沙流更自然</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">深渊塔 <span class="tag">游戏</span></div>
+        <div class="date">2026.08 · 个人项目</div>
+      </div>
+      <div class="stack">JavaScript · 数据驱动 · 数值设计</div>
+      <ul>
+        <li>15 层爬塔 roguelike：<b>3 种进攻策略 + 随机事件分支 + 双结局</b>，背景随下潜深度实时变色</li>
+        <li>用配置数组驱动英雄 / 敌人 / 事件，自研战力与伤害公式、按区域缩放的难度曲线</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">通信调制实验室 <span class="tag">可视化</span></div>
+        <div class="date">2026.06 · 个人项目</div>
+      </div>
+      <div class="stack">Canvas 2D · 信号处理 · 交互可视化</div>
+      <ul>
+        <li>把 AM / FM 调制解调变成<b>看得见、可实时调参</b>的波形实验</li>
+        <li>将专业课知识转化为直观的教学工具</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="sec">
+    <h2>技能栈<span class="en">Skills</span></h2>
+    <dl class="skill">
+      <dt>前端</dt><dd>HTML5 / CSS3、<b>JavaScript (ES6+)</b>、响应式布局、Canvas 2D、Web Audio API</dd>
+      <dt>框架</dt><dd><b>Vue 3 (script setup)</b>、<b>TypeScript</b>、Vite、Element Plus、Pinia、Tailwind CSS、Next.js / React</dd>
+      <dt>工程</dt><dd>Vue Router 权限路由、Axios 请求封装、ECharts 图表封装、Rust → WebAssembly、Git</dd>
+      <dt>图形</dt><dd><b>WebGL</b>、<b>GLSL 着色器</b>、粒子与流体模拟、实时渲染</dd>
+      <dt>证书</dt><dd>大学英语四级（CET-4）、普通话水平测试等级证书</dd>
+      <dt>其他</dt><dd>Python（基础）；能独立完成从设计、编码到部署的全流程</dd>
+    </dl>
+  </div>
+
+  <div class="sec">
+    <h2>个人亮点<span class="en">Highlights</span></h2>
+    <div class="item">
+      <ul>
+        <li><b>极强的自驱与完成度</b>：独立设计并上线 <b>28 个单文件 Web 作品</b>，全部零安装、零依赖、双击即玩</li>
+        <li><b>作品在线可验证</b>：全部部署于 ephemeralbloom.dpdns.org，面试可当场试玩；能把专业课（通信）与兴趣（图形 / 游戏）都做成可交互成品</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip">💡 占位符（【】内）填完即可 <b>Ctrl+P / ⌘P → 另存为 PDF</b> 投递。想加实习经历、奖项或课程成绩，告诉我我帮你补。</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>简历 · AI 应用开发 · 毛烨</title>
+<style>
+:root{
+  --ink:#23202b; --sub:#5c5666; --mist:#8b8496; --line:#e6e2e8;
+  --accent:#0f766e; --accent-soft:#e6f4f1;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;line-height:1.45;-webkit-font-smoothing:antialiased}
+
+.page{width:210mm;min-height:297mm;margin:16px auto;background:#fff;padding:13mm 14mm;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.hd .name{font-size:27px;font-weight:800;letter-spacing:.03em}
+.hd .role{margin-top:5px;font-size:13.5px;color:var(--accent);font-weight:700}
+.hd .meta{text-align:right;font-size:12.5px;color:var(--sub);line-height:1.75}
+.hd .meta b{color:var(--ink);font-weight:600}
+/* 页眉二维码：指向作品集，方便面试官当场扫码 */
+.hd .qr{flex:0 0 auto;text-align:center;margin-left:14px}
+.hd .qr img{width:20mm;height:20mm;display:block}
+.hd .qr span{display:block;font-size:7.5px;color:var(--mist);letter-spacing:.02em;margin-top:1px;white-space:nowrap}
+
+.sec{margin-top:9px}
+.sec h2{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:.06em;display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.sec h2::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--accent)}
+.sec h2 .en{font-size:10.5px;font-weight:600;color:var(--mist);letter-spacing:.14em;text-transform:uppercase}
+
+.item{margin-bottom:8px;break-inside:avoid}
+.item .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.item .t{font-size:13.5px;font-weight:700}
+.item .t .tag{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 8px;border-radius:999px;margin-left:8px}
+.item .date{font-size:11.5px;color:var(--mist);white-space:nowrap}
+.item .stack{font-size:11.5px;color:var(--accent);font-weight:600;margin-top:1px}
+.item .stack .link{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent)}
+.item ul{margin:3px 0 0 16px}
+.item li{font-size:12.5px;color:var(--sub);margin-top:2px}
+.item li b{color:var(--ink);font-weight:600}
+.item li .link{color:var(--accent);font-weight:600;text-decoration:none;border-bottom:1px solid var(--accent)}
+.item li .note{font-size:11.5px;color:var(--mist)}
+
+.skill{display:grid;grid-template-columns:82px 1fr;gap:4px 12px;font-size:12.5px}
+.skill dt{font-weight:700;color:var(--ink)}
+.skill dd{color:var(--sub)}
+.skill dd b{color:var(--ink);font-weight:600}
+
+.edu .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.edu .t{font-size:13.5px;font-weight:700}
+.edu .date{font-size:11.5px;color:var(--mist)}
+.edu p{font-size:12.5px;color:var(--sub);margin-top:3px}
+
+.tip{margin:10px 0 0;font-size:11.5px;color:var(--mist);background:var(--accent-soft);border-radius:8px;padding:7px 11px}
+.tip b{color:var(--accent)}
+
+@media print{
+  html,body{width:210mm;background:#fff}
+  .page{margin:0;box-shadow:none;width:210mm;min-height:auto;padding:11mm 13mm}
+  .item,.skill,.edu{break-inside:avoid}
+  .tip{display:none}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hd">
+    <div>
+      <div class="name">毛烨</div>
+      <div class="role">求职意向：AI 应用开发 / 全栈工程师（校招 · 实习）</div>
+    </div>
+    <div class="meta">
+      <div>📱 <b>19174406319</b></div>
+      <div>📮 2285946393@qq.com</div>
+      <div>🔗 ephemeralbloom.dpdns.org</div>
+    </div>
+    <div class="qr">
+      <img src="data:image/png;base64,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" alt="作品集二维码">
+      <span>扫码看作品集</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>教育背景<span class="en">Education</span></h2>
+    <div class="edu">
+      <div class="top">
+        <div class="t">电子信息工程（本科）</div>
+        <div class="date">2023.09 – 2027.06</div>
+      </div>
+      <p>专业排名前 20%，获校级奖助学金，已通过 CET-4。在校期间自学前端与图形编程，独立完成并上线近 30 个 Web 作品。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>项目经历<span class="en">Projects</span></h2>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">面试间 · AI 模拟面试官 <span class="tag">AI 应用</span></div>
+        <div class="date">2026.09 · 个人项目</div>
+      </div>
+      <div class="stack">Next.js 15 · React 19 · TypeScript · Vercel AI SDK · Tailwind 4 · <a class="link" href="https://ai-interviewer-two-rosy.vercel.app">ai-interviewer-two-rosy.vercel.app</a></div>
+      <ul>
+        <li>基于开源项目深度重构：<b>拆解 Firebase 认证/数据库与付费语音服务</b>，重写为 localStorage 数据层 + AI SDK 流式对话 + 浏览器原生 Web Speech API，零注册即可使用</li>
+        <li>设计 <b>OpenAI 兼容 Provider 抽象层</b>，切换 DeepSeek / 硅基流动 / 智谱等模型仅需改环境变量，业务代码零改动</li>
+        <li>实现出题 / 点评 / 评分<b>三级降级策略</b>（内置题库 → 本地文案 → 本地估算），模型不可用时仍能跑完整面试流程</li>
+        <li>自研 <b>BM25 稀疏检索 + RAG 知识库模块</b>：中文 bigram 分词、文档切分与重叠窗口、上下文注入，支持关联 JD / 简历出题，附检索测试面板</li>
+        <li>用 Zod 定义评分 Schema 做结构化输出，<b>tsc 零错误、构建通过、端到端零控制台报错</b></li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">鲸云 API · AI 大模型网关 <span class="tag">React + TS</span></div>
+        <div class="date">2026.09 · 个人项目</div>
+      </div>
+      <div class="stack">React 18 · TypeScript · Vite · Tailwind CSS · Recharts</div>
+      <ul>
+        <li>官网 + 用户控制台 + 管理后台<b>三端 12 个页面</b>；15 个 AI 接口收口到服务层，做列配置驱动的泛型表格与统一加载四态</li>
+        <li>路由级 lazy 把 410KB 图表库移出首屏（<b>841KB → 389KB</b>）；已上线 <a class="link" href="https://ai-gateway-sigma-eight.vercel.app">ai-gateway-sigma-eight.vercel.app</a></li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">有花无实の小站 · AI 博客 <span class="tag">全栈 + AI</span></div>
+        <div class="date">2025.11 – 至今 · 长期维护</div>
+      </div>
+      <div class="stack">Next.js（App Router）· Cloudflare Workers（OpenNext）· Gemini API · TypeScript</div>
+      <ul>
+        <li>自建博客并接入 <b>Gemini API 做站内 AI 助手「阿实」</b>，负责会话管理、多轮上下文与流式输出</li>
+        <li>基于 OpenNext 迁到 <b>Cloudflare Workers</b> 部署（从 Vercel 迁走），另含文章系统、相册数据层与 16 个在线作品</li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">其他作品<span class="tag">图形 / 游戏</span></div>
+        <div class="date">2026.06 – 2026.09 · 个人项目</div>
+      </div>
+      <ul>
+        <li><b>极光流体</b>（WebGL）：手写 GLSL 实现实时流体求解，零第三方库，单文件 23KB，稳定 60fps</li>
+        <li><b>元素秘境</b>（Rust + WASM）：移植改造 sandspiel 内核，手写 wasm-bindgen 胶水层与原生 WebGL 渲染，76KB 单文件</li>
+        <li><b>深渊塔</b>（JavaScript）：15 层爬塔 roguelike，3 种策略 + 随机事件 + 双结局，配置数组驱动全部数值</li>
+        <li><b>通信调制实验室</b>（Canvas）：AM / FM 调制解调可视化，把专业课知识做成可实时调参的波形实验</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="sec">
+    <h2>技能栈<span class="en">Skills</span></h2>
+    <dl class="skill">
+      <dt>AI 应用</dt><dd><b>LLM 接入与流式对话</b>、OpenAI 兼容接口对接、<b>RAG（BM25 检索 / 文档切分 / 上下文注入）</b>、Prompt 工程、Zod 结构化输出、Vercel AI SDK</dd>
+      <dt>前端</dt><dd><b>TypeScript / React / Next.js（App Router）</b>、Tailwind CSS、HTML5 / CSS3、Canvas 2D</dd>
+      <dt>图形</dt><dd><b>WebGL</b>、<b>GLSL 着色器</b>、粒子与流体模拟、实时渲染</dd>
+      <dt>工程</dt><dd>Rust → WebAssembly、性能优化（首屏体积裁剪）、Git、Cloudflare Workers / Vercel 部署、能独立完成从设计到上线的全流程</dd>
+      <dt>证书</dt><dd>大学英语四级（CET-4）、普通话水平测试等级证书</dd>
+    </dl>
+  </div>
+
+  <div class="sec">
+    <h2>自我评价<span class="en">Summary</span></h2>
+    <div class="item">
+      <ul>
+        <li>具备 <b>AI 应用从 0 到上线</b>的完整经验：接口接入、流式对话、RAG 检索、权限与部署均可独立完成</li>
+        <li>独立上线 <b>近 30 个 Web 作品</b>（WebGL 图形 / Rust-WASM / AI 应用），全部可在个人站点当场打开验证</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip">💡 主投 <b>AI 应用开发 / 全栈</b> 岗。想投纯前端岗用「简历-前端开发.html」，投内容岗用「简历-AIGC运营.html」。</div>
+
+</div>
+</body>
+</html>
