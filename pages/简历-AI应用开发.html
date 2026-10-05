@@ -11,7 +11,7 @@
   --accent:#0f766e; --accent-soft:#e6f4f1;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;line-height:1.4;-webkit-font-smoothing:antialiased}
 
 .page{width:210mm;min-height:297mm;margin:16px auto;background:#fff;padding:13mm 14mm;box-shadow:0 8px 30px rgba(0,0,0,.12)}
 
@@ -38,7 +38,7 @@ body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSyste
 .item .stack{font-size:11.5px;color:var(--accent);font-weight:600;margin-top:1px}
 .item .stack .link{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent)}
 .item ul{margin:3px 0 0 16px}
-.item li{font-size:12.5px;color:var(--sub);margin-top:2px}
+.item li{font-size:12.5px;color:var(--sub);margin-top:1px}
 .item li b{color:var(--ink);font-weight:600}
 .item li .link{color:var(--accent);font-weight:600;text-decoration:none;border-bottom:1px solid var(--accent)}
 .item li .note{font-size:11.5px;color:var(--mist)}
@@ -58,7 +58,7 @@ body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSyste
 
 @media print{
   html,body{width:210mm;background:#fff}
-  .page{margin:0;box-shadow:none;width:210mm;min-height:auto;padding:11mm 13mm}
+  .page{margin:0;box-shadow:none;width:210mm;min-height:auto;padding:9mm 12mm}
   .item,.skill,.edu{break-inside:avoid}
   .tip{display:none}
   @page{size:A4;margin:0}
@@ -91,7 +91,7 @@ body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSyste
         <div class="t">电子信息工程（本科）</div>
         <div class="date">2023.09 – 2027.06</div>
       </div>
-      <p>专业排名前 20%，获校级奖助学金，已通过 CET-4。在校期间自学前端与图形编程，独立完成并上线近 30 个 Web 作品。</p>
+      <p>专业排名前 20%，获校级奖助学金，已通过 CET-4。在校期间自学前端与图形编程，独立完成并上线 33 个 Web 作品。</p>
     </div>
   </div>
 
@@ -107,9 +107,21 @@ body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSyste
       <ul>
         <li>基于开源项目深度重构：<b>拆解 Firebase 认证/数据库与付费语音服务</b>，重写为 localStorage 数据层 + AI SDK 流式对话 + 浏览器原生 Web Speech API，零注册即可使用</li>
         <li>设计 <b>OpenAI 兼容 Provider 抽象层</b>，切换 DeepSeek / 硅基流动 / 智谱等模型仅需改环境变量，业务代码零改动</li>
-        <li>实现出题 / 点评 / 评分<b>三级降级策略</b>（内置题库 → 本地文案 → 本地估算），模型不可用时仍能跑完整面试流程</li>
         <li>自研 <b>BM25 稀疏检索 + RAG 知识库模块</b>：中文 bigram 分词、文档切分与重叠窗口、上下文注入，支持关联 JD / 简历出题，附检索测试面板</li>
         <li>用 Zod 定义评分 Schema 做结构化输出，<b>tsc 零错误、构建通过、端到端零控制台报错</b></li>
+      </ul>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div class="t">尖塔任务 / 梗化尖塔 · Steam 创意工坊模组 <span class="tag">AI 协作 + LLM</span></div>
+        <div class="date">2026.08 – 至今 · 独立开发</div>
+      </div>
+      <div class="stack">C# · Godot · Harmony · LLM API · Python 工具链 · <a class="link" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3806270140">Steam 创意工坊</a></div>
+      <ul>
+        <li>独立开发并发布《杀戮尖塔2》创意工坊模组，为游戏新增一套任务系统：<b>167 条任务 + 10 件自研遗物</b>，迭代 20 轮至 0.2.28，<b>有真实玩家订阅、反馈驱动修复</b></li>
+        <li>无源码闭源游戏的工程方法：<b>反编译本体抽象出 50+ 个可用钩子</b>整理成能力清单再动手；为 AI 建立<b>验证通道</b>（18 个脚本 + 每次必跑 build 零错零警），原则是"<b>业务逻辑交给 AI，API 契约与验收自己扛</b>"</li>
+        <li>另用 <b>LLM 批量生成</b>「梗化尖塔」模组 <b>3300+ 条</b>文案，搭 <b>LLM API 批量起草 + 自动质检流水线</b>（查重 / 去近义词 / 覆盖率校验）；并独立修复奖励发放时机、存档序列化、联机重复发放（<b>幂等闸</b>）三个真实工程 bug</li>
       </ul>
     </div>
 
@@ -145,8 +157,7 @@ body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSyste
       <ul>
         <li><b>极光流体</b>（WebGL）：手写 GLSL 实现实时流体求解，零第三方库，单文件 23KB，稳定 60fps</li>
         <li><b>元素秘境</b>（Rust + WASM）：移植改造 sandspiel 内核，手写 wasm-bindgen 胶水层与原生 WebGL 渲染，76KB 单文件</li>
-        <li><b>深渊塔</b>（JavaScript）：15 层爬塔 roguelike，3 种策略 + 随机事件 + 双结局，配置数组驱动全部数值</li>
-        <li><b>通信调制实验室</b>（Canvas）：AM / FM 调制解调可视化，把专业课知识做成可实时调参的波形实验</li>
+        <li><b>深渊塔 / 通信调制实验室</b>（JavaScript / Canvas）：15 层爬塔 roguelike（3 种策略 + 双结局）与 AM/FM 调制解调实时可视化实验</li>
       </ul>
     </div>
 
@@ -167,8 +178,7 @@ body{background:#ececef;color:var(--ink);font-family:-apple-system,BlinkMacSyste
     <h2>自我评价<span class="en">Summary</span></h2>
     <div class="item">
       <ul>
-        <li>具备 <b>AI 应用从 0 到上线</b>的完整经验：接口接入、流式对话、RAG 检索、权限与部署均可独立完成</li>
-        <li>独立上线 <b>近 30 个 Web 作品</b>（WebGL 图形 / Rust-WASM / AI 应用），全部可在个人站点当场打开验证</li>
+        <li>具备 <b>AI 应用从 0 到上线</b>的完整经验（接口接入 / 流式对话 / RAG / 部署），并独立上线 <b>近 30 个 Web 作品 + 2 个 Steam 模组</b>，全部可当场打开验证</li>
       </ul>
     </div>
   </div>
