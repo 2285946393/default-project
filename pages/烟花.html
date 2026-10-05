@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>烟花 · 一整片夜空归你</title>
-<meta name="description" content="点哪儿哪儿开花：单文件交互烟花，四种炸法、合成音效、一键存图。零依赖。">
+<title>烟花铺子 · 放置夜空</title>
+<meta name="description" content="点哪儿哪儿开花的放置游戏：挣光尘、升级口径、攒自动燃放塔，攒出一整片会自己热闹的夜空。单文件零依赖。">
 <style>
   :root {
     --bg: #0F172A; --fg: #E2E8F0; --muted: #94A3B8;
     --accent: #7C3AED; --primary: #4338CA;
-    --ui-bg: rgba(15, 23, 42, .78); --ui-line: rgba(255, 255, 255, .08);
+    --gold: #FFD27A; --ui-bg: rgba(15, 23, 42, .78); --ui-line: rgba(255, 255, 255, .08);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; overflow: hidden; background: #050816; }
@@ -17,9 +17,17 @@
   canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
   #bg { z-index: 0; } #fx { z-index: 1; }
   .ui { position: fixed; z-index: 2; }
+
   header.ui { top: max(14px, env(safe-area-inset-top)); left: 20px; color: var(--fg); user-select: none; pointer-events: none; }
   header.ui h1 { font-size: 17px; font-weight: 600; letter-spacing: .34em; }
   header.ui p { font-size: 12.5px; line-height: 1.6; color: var(--muted); margin-top: 3px; }
+
+  .dust { top: max(12px, env(safe-area-inset-top)); right: 20px; text-align: right; user-select: none; pointer-events: none; }
+  .dust .num { font-size: clamp(20px, 4.4vw, 30px); font-weight: 700; color: var(--gold);
+               text-shadow: 0 0 18px rgba(255,210,122,.35); font-variant-numeric: tabular-nums; }
+  .dust .lbl { font-size: 12px; color: var(--muted); letter-spacing: .2em; margin-top: 2px; }
+  .dust .rate { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
   .bar { bottom: max(14px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
          display: flex; gap: 6px; align-items: center; padding: 8px 10px;
          background: var(--ui-bg); border: 1px solid var(--ui-line); border-radius: 14px;
@@ -33,16 +41,45 @@
   .bar button[aria-pressed="true"] { background: rgba(124, 58, 237, .24); border-color: rgba(124, 58, 237, .55); color: #C4B5FD; }
   .bar svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
   .sep { width: 1px; height: 22px; background: var(--ui-line); }
+
+  .shop { bottom: max(74px, calc(env(safe-area-inset-bottom) + 62px)); right: 14px; width: 300px; max-height: min(62vh, 480px);
+          overflow-y: auto; background: var(--ui-bg); border: 1px solid var(--ui-line); border-radius: 14px;
+          backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 12px; display: none; }
+  .shop.open { display: block; }
+  .shop h2 { font-size: 13px; color: var(--fg); letter-spacing: .2em; font-weight: 600; padding: 2px 4px 10px; }
+  .shop h2 small { color: var(--muted); letter-spacing: .05em; font-weight: 400; margin-left: 8px; }
+  .item { border: 1px solid var(--ui-line); border-radius: 10px; padding: 9px 11px; margin-bottom: 8px; cursor: pointer;
+          transition: border-color .2s ease, background .2s ease; }
+  .item:hover { background: rgba(255,255,255,.05); }
+  .item:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
+  .item.can { border-color: rgba(124, 58, 237, .55); }
+  .item .t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .item .name { font-size: 13.5px; color: var(--fg); font-weight: 600; }
+  .item .lv { font-size: 11px; color: var(--muted); }
+  .item .d { font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-top: 3px; }
+  .item .cost { font-size: 12.5px; color: var(--gold); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .item.no .cost { color: var(--muted); opacity: .7; }
+
+  .toast { position: fixed; z-index: 3; top: max(70px, calc(env(safe-area-inset-top) + 58px)); left: 50%; transform: translateX(-50%);
+           background: var(--ui-bg); border: 1px solid rgba(255,210,122,.35); color: var(--gold);
+           padding: 10px 18px; border-radius: 12px; font-size: 13px; letter-spacing: .06em;
+           opacity: 0; transition: opacity .4s ease; pointer-events: none; max-width: 86vw; text-align: center; }
+  .toast.show { opacity: 1; }
+
   .hint { position: fixed; z-index: 2; bottom: max(76px, calc(env(safe-area-inset-bottom) + 62px)); left: 50%; transform: translateX(-50%);
           color: var(--muted); font-size: 12.5px; letter-spacing: .1em; user-select: none; pointer-events: none;
-          transition: opacity .6s ease; }
+          transition: opacity .6s ease; text-align: center; max-width: 86vw; }
   .hint.gone { opacity: 0; }
+  .shop:not(.open) ~ .hint { bottom: max(76px, calc(env(safe-area-inset-bottom) + 62px)); }
+  .shop.open ~ .hint { display: none; }
+
   @media (hover: none) { .bar button { min-width: 48px; height: 48px; } }
   @media (max-width: 470px) {
     .bar button span { display: none; }
     .bar button { padding: 0 12px; }
+    .shop { left: 12px; right: 12px; width: auto; }
   }
-  @media (prefers-reduced-motion: reduce) { .hint { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .hint, .toast { transition: none; } }
 </style>
 </head>
 <body>
@@ -50,20 +87,31 @@
 <canvas id="fx"></canvas>
 
 <header class="ui">
-  <h1>烟　花</h1>
-  <p>点哪儿，哪儿开花</p>
+  <h1>烟花铺子</h1>
+  <p>点哪儿，哪儿开花 · 光尘养夜空</p>
 </header>
 
-<div class="hint" id="hint">点一下夜空试试 · 连点两下放大结局</div>
+<div class="dust ui">
+  <div class="num" id="dustNum">0</div>
+  <div class="lbl">光　尘</div>
+  <div class="rate" id="dustRate">每秒 0</div>
+</div>
 
-<nav class="bar ui" aria-label="烟花控制">
-  <button id="btnAuto" aria-pressed="true" aria-label="自动放烟花" title="自动放烟花">
-    <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.4"/></svg>
-    <span>自动</span>
+<div class="toast ui" id="toast" role="status"></div>
+<div class="hint ui" id="hint">点一下夜空放花挣光尘 · 连点两下放大结局</div>
+
+<nav class="bar ui" aria-label="烟花铺子控制">
+  <button id="btnShop" aria-expanded="false" aria-label="烟花铺子" title="烟花铺子">
+    <svg viewBox="0 0 24 24"><path d="M4 10l1.6-5h12.8L20 10M4 10v9a1 1 0 001 1h14a1 1 0 001-1v-9M4 10h16M9 20v-5h6v5"/></svg>
+    <span>铺子</span>
   </button>
   <button id="btnSound" aria-pressed="false" aria-label="音效开关" title="音效开关">
-    <svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4z"/><path class="snd" d="M15.5 9a4.2 4.2 0 010 6M18 6.8a7.6 7.6 0 010 10.4"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4z"/><path d="M15.5 9a4.2 4.2 0 010 6M18 6.8a7.6 7.6 0 010 10.4"/></svg>
     <span>声音</span>
+  </button>
+  <button id="btnReset" aria-label="重开一晚" title="重开一晚（清空进度）">
+    <svg viewBox="0 0 24 24"><path d="M4 5v4h4M4.8 9A8 8 0 1112 20a8 8 0 01-7.4-4.9"/></svg>
+    <span>重开</span>
   </button>
   <span class="sep" aria-hidden="true"></span>
   <button id="btnSave" aria-label="保存这一夜为图片" title="保存这一夜为图片">
@@ -71,6 +119,11 @@
     <span>存一张</span>
   </button>
 </nav>
+
+<aside class="shop ui" id="shop" aria-label="烟花铺子商店">
+  <h2>烟 花 铺 子<small>用光尘换更热闹的夜空</small></h2>
+  <div id="shopItems"></div>
+</aside>
 
 <script>
 (() => {
@@ -81,7 +134,7 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const DPR = Math.min(devicePixelRatio || 1, 2);
 let W = 0, H = 0, groundY = 0;
 
-/* ---------- 夜景底图 ---------- */
+/* ================= 夜景底图 ================= */
 let stars = [], city = [], moon = { x: 0, y: 0, r: 0 };
 function buildScene() {
   stars = [];
@@ -121,7 +174,6 @@ function drawSky(t) {
     bg.fillRect(s.x, s.y, s.r, s.r);
   }
   bg.globalAlpha = 1;
-  // 月亮与月晕
   bg.save();
   const glow = bg.createRadialGradient(moon.x, moon.y, moon.r * 0.4, moon.x, moon.y, moon.r * 3.4);
   glow.addColorStop(0, "rgba(220,228,255,.20)"); glow.addColorStop(1, "rgba(220,228,255,0)");
@@ -129,14 +181,12 @@ function drawSky(t) {
   bg.fillStyle = "#e8edff"; bg.beginPath(); bg.arc(moon.x, moon.y, moon.r, 0, 7); bg.fill();
   bg.fillStyle = "#0F172A"; bg.beginPath(); bg.arc(moon.x - moon.r * 0.42, moon.y - moon.r * 0.18, moon.r * 0.92, 0, 7); bg.fill();
   bg.restore();
-  // 远山
   bg.fillStyle = "#0b1122";
   bg.beginPath(); bg.moveTo(0, groundY);
   for (let x = 0; x <= W; x += 8) {
     bg.lineTo(x, groundY - 26 - 20 * Math.sin(x * 0.006) - 12 * Math.sin(x * 0.017 + 2));
   }
   bg.lineTo(W, groundY); bg.closePath(); bg.fill();
-  // 城市剪影 + 稀疏窗灯
   for (const b of city) {
     bg.fillStyle = "#0d1428";
     bg.fillRect(b.x, groundY - b.h, b.w, b.h);
@@ -149,43 +199,98 @@ function drawSky(t) {
   bg.fillStyle = "#080d1c"; bg.fillRect(0, groundY, W, H - groundY);
 }
 
-/* ---------- 烟花物理 ---------- */
+/* ================= 游戏状态 ================= */
+const SAVE_KEY = "fireworks-idle-v1";
+const G = {
+  dust: 0, total: 0, blooms: 0,
+  lv: { fuse: 0, bore: 0, tower: 0, rare: 0, dome: 0 },
+  lastSeen: Date.now(),
+};
+const fmt = (n) => {
+  if (n >= 1e8) return (n / 1e8).toFixed(n >= 1e10 ? 1 : 2) + " 亿";
+  if (n >= 1e4) return (n / 1e4).toFixed(n >= 1e6 ? 1 : 2) + " 万";
+  return Math.floor(n).toString();
+};
+const ITEMS = [
+  { id: "fuse", name: "速燃引线", d: () => "手放一朵的光尘 ×" + (2 ** G.lv.fuse).toFixed(0) + "。你的手越来越巧。",
+    cost: () => 60 * Math.pow(2.4, G.lv.fuse), max: 25 },
+  { id: "bore", name: "大口径", d: () => "每一朵更饱满（粒子 ×" + Math.pow(1.25, G.lv.bore).toFixed(2) + "），光尘跟着涨。",
+    cost: () => 240 * Math.pow(2.6, G.lv.bore), max: 20 },
+  { id: "tower", name: "自动燃放塔", d: () => "城里每 " + towerInterval().toFixed(1) + " 秒自己放一朵，你不在它也放。",
+    cost: () => 550 * Math.pow(2.3, G.lv.tower), max: 30 },
+  { id: "rare", name: "稀有金弹", d: () => (rareChance() * 100).toFixed(0) + "% 概率开出金弹，光尘 ×10。",
+    cost: () => 3000 * Math.pow(2.8, G.lv.rare), max: 12 },
+  { id: "dome", name: "夜空穹顶", d: () => "所有光尘 ×" + Math.pow(1.5, G.lv.dome).toFixed(2) + "。整座城抬头看你。",
+    cost: () => 9000 * Math.pow(3, G.lv.dome), max: 15 },
+];
+function towerInterval() { return Math.max(1.2, 6 * Math.pow(0.88, G.lv.tower)); }
+function rareChance() { return Math.min(0.5, 0.04 * G.lv.rare); }
+function globalMult() { return Math.pow(1.5, G.lv.dome); }
+function dustPerBloom(isGolden) {
+  const particles = 105 * Math.pow(1.25, G.lv.bore) * (isGolden ? 1.3 : 1);
+  const typeM = isGolden ? 10 : 1;
+  return particles * 0.1 * (2 ** G.lv.fuse) * typeM * globalMult();
+}
+function save() {
+  try { G.lastSeen = Date.now(); localStorage.setItem(SAVE_KEY, JSON.stringify(G)); } catch (e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const j = JSON.parse(raw);
+    if (j && j.lv) {
+      G.dust = j.dust || 0; G.total = j.total || 0; G.blooms = j.blooms || 0;
+      G.lv = { fuse: j.lv.fuse || 0, bore: j.lv.bore || 0, tower: j.lv.tower || 0, rare: j.lv.rare || 0, dome: j.lv.dome || 0 };
+      const away = Math.min((Date.now() - (j.lastSeen || Date.now())) / 1000, 7200);
+      if (G.lv.tower > 0 && away > 60) {
+        const blooms = Math.floor(away / towerInterval());
+        const earn = Math.round(blooms * dustPerBloom(false) * 0.6);
+        if (earn > 0) {
+          G.dust += earn; G.total += earn;
+          setTimeout(() => toast("你不在的 " + Math.round(away / 60) + " 分钟，城里放了你 " + fmt(blooms) + " 朵烟花，落下 " + fmt(earn) + " 光尘"), 900);
+        }
+      }
+    }
+  } catch (e) {}
+}
+
+/* ================= 烟花物理 ================= */
 const parts = [];
 const rockets = [];
 const MAX = reduced ? 900 : 2600;
 const PALETTES = [
-  [[36, 100, 62], [45, 100, 70], [18, 100, 60]],            // 金橙
-  [[340, 90, 64], [320, 95, 70], [275, 80, 66]],            // 玫瑰紫
-  [[190, 95, 62], [205, 100, 70], [170, 85, 60]],           // 青蓝
-  [[130, 70, 62], [95, 80, 66], [60, 100, 70]],             // 青柠
-  [[0, 0, 92], [45, 90, 72], [0, 0, 78]],                   // 银白闪
+  [[36, 100, 62], [45, 100, 70], [18, 100, 60]],
+  [[340, 90, 64], [320, 95, 70], [275, 80, 66]],
+  [[190, 95, 62], [205, 100, 70], [170, 85, 60]],
+  [[130, 70, 62], [95, 80, 66], [60, 100, 70]],
+  [[0, 0, 92], [45, 90, 72], [0, 0, 78]],
 ];
-let soundOn = false, autoOn = !reduced;
-let nextAuto = 1200;
+const GOLD = [[45, 100, 66], [40, 100, 74], [50, 100, 60]];
+let soundOn = false;
+let nextTower = 0;
 
-function launch(tx, ty, big) {
+function launch(tx, ty, big, golden) {
   const sx = tx + (Math.random() - 0.5) * 40;
   const sy = groundY - 4;
-  const peak = Math.max(H * 0.12, Math.min(ty, groundY - H * 0.1));
+  const peak = Math.max(H * 0.1, Math.min(ty, groundY - H * 0.08));
   const vy = -Math.sqrt(2 * 0.05 * (sy - peak));
-  rockets.push({ x: sx, y: sy, vx: (tx - sx) * 0.022, vy, tx, ty, big: !!big,
-                 hue: PALETTES[(Math.random() * PALETTES.length) | 0], t: 0 });
+  rockets.push({ x: sx, y: sy, vx: (tx - sx) * 0.022, vy, tx, ty, big: !!big, golden: !!golden,
+                 hue: golden ? GOLD : PALETTES[(Math.random() * PALETTES.length) | 0], t: 0 });
   sfxLaunch();
 }
-function explode(x, y, pal, big) {
-  const type = ["peony", "ring", "willow", "crackle"][(Math.random() * 4) | 0];
+function explode(x, y, pal, big, golden) {
+  const r = Math.random();
+  const type = golden ? "willow" : r < 0.34 ? "peony" : r < 0.62 ? "ring" : r < 0.84 ? "willow" : "crackle";
   const base = big ? 150 : 105;
-  const count = Math.min(MAX - parts.length, (type === "willow" ? base * 0.8 : base) | 0);
-  if (count <= 0) return;
+  const count = Math.min(MAX - parts.length, (base * Math.pow(1.25, G.lv.bore) * (type === "willow" ? 0.8 : 1)) | 0);
   sfxBloom(type);
-  for (let i = 0; i < count; i++) {
+  if (count > 0) for (let i = 0; i < count; i++) {
     const a = type === "ring" ? (i / count) * Math.PI * 2 : Math.random() * Math.PI * 2;
     const sp = type === "ring" ? (big ? 4.6 : 3.6) : Math.pow(Math.random(), 0.42) * (big ? 6.2 : 4.8) + 0.4;
-    const tilt = type === "ring" ? 0.5 : 0;
     parts.push({
       x, y,
-      vx: Math.cos(a) * sp * (1 - Math.abs(Math.sin(tilt)) * 0.25),
-      vy: Math.sin(a) * sp * (type === "ring" ? 0.55 : 1),
+      vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * (type === "ring" ? 0.55 : 1),
       life: 1,
       decay: type === "willow" ? 0.0055 + Math.random() * 0.004
            : type === "crackle" ? 0.011 + Math.random() * 0.008
@@ -195,9 +300,12 @@ function explode(x, y, pal, big) {
       c: pal[(Math.random() * pal.length) | 0],
       w: type === "willow" ? 1.4 : 1.9,
       crack: type === "crackle" && Math.random() < 0.16,
-      ct: 14 + Math.random() * 26,
     });
   }
+  const earn = Math.round(dustPerBloom(golden) * (big ? 1.6 : 1) * (type === "willow" ? 1.6 : type === "crackle" ? 1.4 : type === "ring" ? 1.2 : 1));
+  G.dust += earn; G.total += earn; G.blooms++;
+  if (golden) toast("✧ 金弹开了，落下 " + fmt(earn) + " 光尘");
+  milestones();
 }
 function step(dt) {
   for (let i = rockets.length - 1; i >= 0; i--) {
@@ -206,7 +314,7 @@ function step(dt) {
     r.x += r.vx * dt; r.y += r.vy * dt;
     r.vy += 0.05 * dt;
     fx.globalAlpha = 0.85;
-    fx.fillStyle = "#ffe9b8";
+    fx.fillStyle = r.golden ? "#ffe9a8" : "#ffe9b8";
     fx.fillRect(r.x, r.y, 2, 6);
     if (Math.random() < 0.5) {
       fx.globalAlpha = 0.5;
@@ -214,7 +322,7 @@ function step(dt) {
       fx.fillRect(r.x + (Math.random() - 0.5) * 3, r.y + 6 * Math.random(), 1.6, 1.6);
     }
     fx.globalAlpha = 1;
-    if (r.y <= r.ty || r.vy >= -0.5) { explode(r.x, r.y, r.hue, r.big); rockets.splice(i, 1); }
+    if (r.y <= r.ty || r.vy >= -0.5) { explode(r.x, r.y, r.hue, r.big, r.golden); rockets.splice(i, 1); }
   }
   for (let i = parts.length - 1; i >= 0; i--) {
     const p = parts[i];
@@ -241,7 +349,7 @@ function step(dt) {
   fx.globalAlpha = 1;
 }
 
-/* ---------- 合成音效 ---------- */
+/* ================= 合成音效 ================= */
 let AC = null, master = null;
 function audio() {
   if (!AC) {
@@ -289,10 +397,74 @@ function sfxCrackle() {
   src.connect(f).connect(g).connect(master); src.start(t);
 }
 
-/* ---------- 交互 ---------- */
+/* ================= 里程碑 ================= */
+const STONES = [1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9];
+const STONE_MSG = ["第一千粒光尘落进口袋", "一万了——铺子开始记住你", "十万光尘。夜里没有一朵烟花是白放的",
+  "一百万。城里的孩子以为这是节日", "一千万。你成了夜空本身", "一亿。天文台来登记这颗星", "十亿。你已经不需要这些数字了"];
+function milestones() {
+  while (STONES.length && G.total >= STONES[0]) {
+    STONES.shift();
+    toast(STONE_MSG[6 - STONES.length]);
+  }
+}
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 4200);
+}
+
+/* ================= 商店 ================= */
+const shopEl = document.getElementById("shop"), itemsEl = document.getElementById("shopItems");
+const itemEls = {};
+for (const it of ITEMS) {
+  const div = document.createElement("div");
+  div.className = "item"; div.tabIndex = 0; div.setAttribute("role", "button");
+  div.innerHTML = '<div class="t"><span class="name"></span><span class="lv"></span></div><div class="d"></div><div class="cost"></div>';
+  itemsEl.appendChild(div);
+  itemEls[it.id] = div;
+  const buy = () => {
+    const c = it.cost();
+    if (G.dust < c || G.lv[it.id] >= it.max) return;
+    G.dust -= c; G.lv[it.id]++;
+    if (it.id === "tower") nextTower = 0;
+    sfxBloom("ring");
+    save();
+    renderShop();
+  };
+  div.addEventListener("click", buy);
+  div.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); buy(); } });
+}
+function renderShop() {
+  for (const it of ITEMS) {
+    const el = itemEls[it.id];
+    const c = it.cost();
+    const maxed = G.lv[it.id] >= it.max;
+    el.querySelector(".name").textContent = it.name;
+    el.querySelector(".lv").textContent = maxed ? "满级" : "Lv." + G.lv[it.id];
+    el.querySelector(".d").textContent = it.d();
+    el.querySelector(".cost").textContent = maxed ? "——" : fmt(c) + " 光尘";
+    el.classList.toggle("no", maxed || G.dust < c);
+    el.classList.toggle("can", !maxed && G.dust >= c);
+  }
+}
+function tickShop() {
+  for (const it of ITEMS) {
+    const el = itemEls[it.id];
+    const c = it.cost();
+    const maxed = G.lv[it.id] >= it.max;
+    el.classList.toggle("no", maxed || G.dust < c);
+    el.classList.toggle("can", !maxed && G.dust >= c);
+    if (!maxed) el.querySelector(".cost").textContent = fmt(c) + " 光尘";
+  }
+}
+
+/* ================= 交互 ================= */
 let lastTap = 0;
 addEventListener("pointerdown", (e) => {
-  if (e.target.closest(".bar")) return;
+  if (!(e.target instanceof Element) || e.target.closest(".bar") || e.target.closest(".shop")) return;
   document.getElementById("hint").classList.add("gone");
   const now = performance.now();
   const big = now - lastTap < 350;
@@ -304,15 +476,23 @@ addEventListener("pointerdown", (e) => {
   }
 });
 
-const btnAuto = document.getElementById("btnAuto"), btnSound = document.getElementById("btnSound");
-btnAuto.addEventListener("click", () => {
-  autoOn = !autoOn;
-  btnAuto.setAttribute("aria-pressed", String(autoOn));
+document.getElementById("btnShop").addEventListener("click", () => {
+  const open = shopEl.classList.toggle("open");
+  document.getElementById("btnShop").setAttribute("aria-expanded", String(open));
 });
+const btnSound = document.getElementById("btnSound");
 btnSound.addEventListener("click", () => {
   soundOn = !soundOn;
   btnSound.setAttribute("aria-pressed", String(soundOn));
   if (soundOn) audio();
+});
+document.getElementById("btnReset").addEventListener("click", () => {
+  if (!confirm("重开一晚？光尘、铺子等级全部清空，夜空重新开始。")) return;
+  localStorage.removeItem(SAVE_KEY);
+  G.dust = 0; G.total = 0; G.blooms = 0;
+  G.lv = { fuse: 0, bore: 0, tower: 0, rare: 0, dome: 0 };
+  renderShop();
+  toast("新的一晚。天还没黑透。");
 });
 document.getElementById("btnSave").addEventListener("click", () => {
   const snap = document.createElement("canvas");
@@ -325,8 +505,8 @@ document.getElementById("btnSave").addEventListener("click", () => {
   a.click();
 });
 
-/* ---------- 主循环 ---------- */
-let last = 0;
+/* ================= 主循环 ================= */
+let last = 0, lastTick = 0, lastSave = 0;
 function frame(t) {
   const dt = Math.min(2.4, (t - last) / 16.7 || 1); last = t;
   fx.globalCompositeOperation = "destination-out";
@@ -335,14 +515,31 @@ function frame(t) {
   fx.globalCompositeOperation = "source-over";
   drawSky(t);
   step(dt);
-  if (autoOn && t > nextAuto && parts.length < MAX * 0.6) {
-    nextAuto = t + 2600 + Math.random() * 3800;
-    launch(W * (0.15 + Math.random() * 0.7), H * (0.14 + Math.random() * 0.32), Math.random() < 0.18);
+  // 自动燃放塔
+  if (G.lv.tower > 0 && t >= nextTower) {
+    nextTower = t + towerInterval() * 1000;
+    if (parts.length < MAX * 0.75) {
+      const golden = Math.random() < rareChance();
+      launch(W * (0.12 + Math.random() * 0.76), H * (0.12 + Math.random() * 0.34), Math.random() < 0.12, golden);
+    }
   }
+  // 界面节流刷新
+  if (t - lastTick > 250) {
+    lastTick = t;
+    document.getElementById("dustNum").textContent = fmt(G.dust);
+    const rate = G.lv.tower ? dustPerBloom(false) * 0.6 / towerInterval() : 0;
+    document.getElementById("dustRate").textContent = G.lv.tower ? "每秒 " + fmt(rate) : "点夜空挣光尘";
+    tickShop();
+  }
+  if (t - lastSave > 8000) { lastSave = t; save(); }
   requestAnimationFrame(frame);
 }
+load();
 resize();
+renderShop();
 requestAnimationFrame(frame);
+addEventListener("beforeunload", save);
+document.addEventListener("visibilitychange", () => { if (document.hidden) save(); });
 })();
 </script>
 </body>
