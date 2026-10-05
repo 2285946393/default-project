@@ -1,0 +1,1602 @@
+[
+  {
+    "appid": 2868840,
+    "name": "Slay the Spire 2",
+    "minutes": 60285,
+    "hours": 1004.8,
+    "last": 1791051325,
+    "installed": true
+  },
+  {
+    "appid": 2273430,
+    "name": "BlazBlue Entropy Effect",
+    "minutes": 46914,
+    "hours": 781.9,
+    "last": 1790520256,
+    "installed": true
+  },
+  {
+    "appid": 646570,
+    "name": "Slay the Spire",
+    "minutes": 41737,
+    "hours": 695.6,
+    "last": 1790077508,
+    "installed": true
+  },
+  {
+    "appid": 1371980,
+    "name": "No Rest for the Wicked",
+    "minutes": 31355,
+    "hours": 522.6,
+    "last": 1790077507,
+    "installed": false
+  },
+  {
+    "appid": 322330,
+    "name": "Don't Starve Together",
+    "minutes": 30665,
+    "hours": 511.1,
+    "last": 1790077506,
+    "installed": true
+  },
+  {
+    "appid": 1815570,
+    "name": "Aces and Adventures",
+    "minutes": 29872,
+    "hours": 497.9,
+    "last": 1790077505,
+    "installed": true
+  },
+  {
+    "appid": 3117820,
+    "name": "Sultan's Game",
+    "minutes": 29018,
+    "hours": 483.6,
+    "last": 1790077504,
+    "installed": true
+  },
+  {
+    "appid": 2246340,
+    "name": "Monster Hunter Wilds",
+    "minutes": 28942,
+    "hours": 482.4,
+    "last": 1790077503,
+    "installed": false
+  },
+  {
+    "appid": 3649580,
+    "name": "FrostBound",
+    "minutes": 28898,
+    "hours": 481.6,
+    "last": 1790077502,
+    "installed": true
+  },
+  {
+    "appid": 3265700,
+    "name": "Vampire Crawlers",
+    "minutes": 27833,
+    "hours": 463.9,
+    "last": 1790077501,
+    "installed": false
+  },
+  {
+    "appid": 1256670,
+    "name": "Library Of Ruina",
+    "minutes": 27802,
+    "hours": 463.4,
+    "last": 1790077500,
+    "installed": false
+  },
+  {
+    "appid": 1942280,
+    "name": "Brotato",
+    "minutes": 27713,
+    "hours": 461.9,
+    "last": 1790077499,
+    "installed": true
+  },
+  {
+    "appid": 668630,
+    "name": "Tricolour Lovestory",
+    "minutes": 27549,
+    "hours": 459.1,
+    "last": 1790077498,
+    "installed": false
+  },
+  {
+    "appid": 2358720,
+    "name": "Black Myth: Wukong",
+    "minutes": 26810,
+    "hours": 446.8,
+    "last": 1790077497,
+    "installed": false
+  },
+  {
+    "appid": 3527290,
+    "name": "PEAK",
+    "minutes": 26573,
+    "hours": 442.9,
+    "last": 1790077496,
+    "installed": false
+  },
+  {
+    "appid": 2825300,
+    "name": "AMANATSU ~Perfect Edition~",
+    "minutes": 25882,
+    "hours": 431.4,
+    "last": 1790077495,
+    "installed": false
+  },
+  {
+    "appid": 252490,
+    "name": "Rust",
+    "minutes": 25495,
+    "hours": 424.9,
+    "last": 1790077494,
+    "installed": false
+  },
+  {
+    "appid": 1701520,
+    "name": "Afterimage",
+    "minutes": 24474,
+    "hours": 407.9,
+    "last": 1790077493,
+    "installed": false
+  },
+  {
+    "appid": 3774440,
+    "name": "帝国幻想乡~TOHOTOPIA",
+    "minutes": 24398,
+    "hours": 406.6,
+    "last": 1790077492,
+    "installed": false
+  },
+  {
+    "appid": 730,
+    "name": "Counter-Strike 2",
+    "minutes": 24154,
+    "hours": 402.6,
+    "last": 1790077491,
+    "installed": false
+  },
+  {
+    "appid": 769560,
+    "name": "Night of the Full Moon",
+    "minutes": 24143,
+    "hours": 402.4,
+    "last": 1790077490,
+    "installed": false
+  },
+  {
+    "appid": 1948280,
+    "name": "Stacklands",
+    "minutes": 21667,
+    "hours": 361.1,
+    "last": 1790077489,
+    "installed": true
+  },
+  {
+    "appid": 250900,
+    "name": "The Binding of Isaac: Rebirth",
+    "minutes": 21639,
+    "hours": 360.6,
+    "last": 1790077488,
+    "installed": true
+  },
+  {
+    "appid": 526870,
+    "name": "Satisfactory",
+    "minutes": 19914,
+    "hours": 331.9,
+    "last": 1790077487,
+    "installed": false
+  },
+  {
+    "appid": 1794680,
+    "name": "Vampire Survivors",
+    "minutes": 16678,
+    "hours": 278.0,
+    "last": 1790077486,
+    "installed": true
+  },
+  {
+    "appid": 2379780,
+    "name": "Balatro",
+    "minutes": 16673,
+    "hours": 277.9,
+    "last": 1790077485,
+    "installed": true
+  },
+  {
+    "appid": 4425970,
+    "name": "Guildrun Demo",
+    "minutes": 16421,
+    "hours": 273.7,
+    "last": 1790077484,
+    "installed": true
+  },
+  {
+    "appid": 4001890,
+    "name": "How to Fish",
+    "minutes": 14853,
+    "hours": 247.6,
+    "last": 1790077483,
+    "installed": true
+  },
+  {
+    "appid": 2966320,
+    "name": "Starsand Island",
+    "minutes": 12594,
+    "hours": 209.9,
+    "last": 1790070798,
+    "installed": false
+  },
+  {
+    "appid": 2719030,
+    "name": "Meme Mayhem",
+    "minutes": 12254,
+    "hours": 204.2,
+    "last": 1790077482,
+    "installed": false
+  },
+  {
+    "appid": 1943950,
+    "name": "Escape the Backrooms",
+    "minutes": 11359,
+    "hours": 189.3,
+    "last": 1790077481,
+    "installed": false
+  },
+  {
+    "appid": 286160,
+    "name": "Tabletop Simulator",
+    "minutes": 10618,
+    "hours": 177.0,
+    "last": 1790077480,
+    "installed": false
+  },
+  {
+    "appid": 1145350,
+    "name": "Hades II",
+    "minutes": 9926,
+    "hours": 165.4,
+    "last": 1779887665,
+    "installed": true
+  },
+  {
+    "appid": 958260,
+    "name": "DEAD OR ALIVE Xtreme Venus Vacation",
+    "minutes": 8916,
+    "hours": 148.6,
+    "last": 1789072222,
+    "installed": false
+  },
+  {
+    "appid": 582010,
+    "name": "Monster Hunter: World",
+    "minutes": 8762,
+    "hours": 146.0,
+    "last": 1790329031,
+    "installed": false
+  },
+  {
+    "appid": 49520,
+    "name": "Borderlands 2",
+    "minutes": 7889,
+    "hours": 131.5,
+    "last": 1788585245,
+    "installed": false
+  },
+  {
+    "appid": 431960,
+    "name": "Wallpaper Engine",
+    "minutes": 7447,
+    "hours": 124.1,
+    "last": 1789799046,
+    "installed": true
+  },
+  {
+    "appid": 1086940,
+    "name": "Baldur's Gate 3",
+    "minutes": 7384,
+    "hours": 123.1,
+    "last": 1769238820,
+    "installed": false
+  },
+  {
+    "appid": 2730350,
+    "name": "Liminal Border Part II",
+    "minutes": 6563,
+    "hours": 109.4,
+    "last": 1787820965,
+    "installed": false
+  },
+  {
+    "appid": 1071870,
+    "name": "Biped",
+    "minutes": 6194,
+    "hours": 103.2,
+    "last": 1789315085,
+    "installed": false
+  },
+  {
+    "appid": 1145360,
+    "name": "Hades",
+    "minutes": 5649,
+    "hours": 94.2,
+    "last": 1757518647,
+    "installed": true
+  },
+  {
+    "appid": 970570,
+    "name": "CHAOS;CHILD",
+    "minutes": 5256,
+    "hours": 87.6,
+    "last": 1787820965,
+    "installed": false
+  },
+  {
+    "appid": 4292950,
+    "name": "Shao Song I",
+    "minutes": 5238,
+    "hours": 87.3,
+    "last": 1787820965,
+    "installed": false
+  },
+  {
+    "appid": 1607680,
+    "name": "Bread & Fred",
+    "minutes": 4866,
+    "hours": 81.1,
+    "last": 1788585245,
+    "installed": false
+  },
+  {
+    "appid": 3988570,
+    "name": "MUSYNX:RETURN",
+    "minutes": 4683,
+    "hours": 78.0,
+    "last": 1787967963,
+    "installed": false
+  },
+  {
+    "appid": 4304230,
+    "name": "历史模拟器：崇祯",
+    "minutes": 4362,
+    "hours": 72.7,
+    "last": 1789315085,
+    "installed": false
+  },
+  {
+    "appid": 2501600,
+    "name": "DICEOMANCER",
+    "minutes": 4069,
+    "hours": 67.8,
+    "last": 1780756075,
+    "installed": true
+  },
+  {
+    "appid": 1803400,
+    "name": "Beneath Oresa",
+    "minutes": 3455,
+    "hours": 57.6,
+    "last": 1787967964,
+    "installed": false
+  },
+  {
+    "appid": 1356040,
+    "name": "Ampersat",
+    "minutes": 3334,
+    "hours": 55.6,
+    "last": 1789315085,
+    "installed": false
+  },
+  {
+    "appid": 435150,
+    "name": "Divinity: Original Sin 2",
+    "minutes": 3213,
+    "hours": 53.5,
+    "last": 1775915002,
+    "installed": false
+  },
+  {
+    "appid": 3749320,
+    "name": "花满楼",
+    "minutes": 3041,
+    "hours": 50.7,
+    "last": 1789315085,
+    "installed": false
+  },
+  {
+    "appid": 4354460,
+    "name": "幸存者笔记",
+    "minutes": 2716,
+    "hours": 45.3,
+    "last": 1789641846,
+    "installed": false
+  },
+  {
+    "appid": 527230,
+    "name": "For The King",
+    "minutes": 2494,
+    "hours": 41.6,
+    "last": 1754041370,
+    "installed": false
+  },
+  {
+    "appid": 262060,
+    "name": "Darkest Dungeon®",
+    "minutes": 2460,
+    "hours": 41.0,
+    "last": 1697961801,
+    "installed": true
+  },
+  {
+    "appid": 3734680,
+    "name": "我只是想让她们都幸福",
+    "minutes": 2391,
+    "hours": 39.9,
+    "last": 1787820965,
+    "installed": false
+  },
+  {
+    "appid": 1144400,
+    "name": "Senren＊Banka",
+    "minutes": 2356,
+    "hours": 39.3,
+    "last": 1707046612,
+    "installed": false
+  },
+  {
+    "appid": 239140,
+    "name": "Dying Light",
+    "minutes": 2295,
+    "hours": 38.2,
+    "last": 1759917523,
+    "installed": false
+  },
+  {
+    "appid": 1347970,
+    "name": "Patch Quest",
+    "minutes": 2057,
+    "hours": 34.3,
+    "last": 1700914606,
+    "installed": true
+  },
+  {
+    "appid": 534380,
+    "name": "Dying Light 2: Reloaded Edition",
+    "minutes": 1914,
+    "hours": 31.9,
+    "last": 1751276839,
+    "installed": false
+  },
+  {
+    "appid": 1763250,
+    "name": "SWORN",
+    "minutes": 1882,
+    "hours": 31.4,
+    "last": 1787967964,
+    "installed": false
+  },
+  {
+    "appid": 4289150,
+    "name": "你的痛柜可以种出女孩吗？",
+    "minutes": 1783,
+    "hours": 29.7,
+    "last": 1787445365,
+    "installed": false
+  },
+  {
+    "appid": 493340,
+    "name": "Planet Coaster",
+    "minutes": 1661,
+    "hours": 27.7,
+    "last": 1787445365,
+    "installed": false
+  },
+  {
+    "appid": 366250,
+    "name": "METAL SLUG",
+    "minutes": 1651,
+    "hours": 27.5,
+    "last": 1787537884,
+    "installed": false
+  },
+  {
+    "appid": 227300,
+    "name": "Euro Truck Simulator 2",
+    "minutes": 1629,
+    "hours": 27.1,
+    "last": 1787445365,
+    "installed": false
+  },
+  {
+    "appid": 1661630,
+    "name": "KarmaZoo",
+    "minutes": 1602,
+    "hours": 26.7,
+    "last": 1787445365,
+    "installed": false
+  },
+  {
+    "appid": 892970,
+    "name": "Valheim",
+    "minutes": 1467,
+    "hours": 24.4,
+    "last": 1778674656,
+    "installed": false
+  },
+  {
+    "appid": 2071500,
+    "name": "Islands of Insight",
+    "minutes": 1433,
+    "hours": 23.9,
+    "last": 1788681124,
+    "installed": false
+  },
+  {
+    "appid": 2020710,
+    "name": "Havendock",
+    "minutes": 1259,
+    "hours": 21.0,
+    "last": 1787537884,
+    "installed": false
+  },
+  {
+    "appid": 828740,
+    "name": "Tales of the Neon Sea",
+    "minutes": 1259,
+    "hours": 21.0,
+    "last": 1787537884,
+    "installed": false
+  },
+  {
+    "appid": 1025440,
+    "name": "Fantasy General II",
+    "minutes": 1198,
+    "hours": 20.0,
+    "last": 1789641846,
+    "installed": false
+  },
+  {
+    "appid": 1368870,
+    "name": "Field of Glory II: Medieval",
+    "minutes": 1198,
+    "hours": 20.0,
+    "last": 1789641846,
+    "installed": false
+  },
+  {
+    "appid": 2797340,
+    "name": "Cat God Ranch",
+    "minutes": 997,
+    "hours": 16.6,
+    "last": 1779542999,
+    "installed": false
+  },
+  {
+    "appid": 1971650,
+    "name": "OCTOPATH TRAVELER II",
+    "minutes": 898,
+    "hours": 15.0,
+    "last": 1749289517,
+    "installed": false
+  },
+  {
+    "appid": 588650,
+    "name": "Dead Cells",
+    "minutes": 850,
+    "hours": 14.2,
+    "last": 1715948150,
+    "installed": false
+  },
+  {
+    "appid": 1102190,
+    "name": "Monster Train",
+    "minutes": 766,
+    "hours": 12.8,
+    "last": 1710507746,
+    "installed": false
+  },
+  {
+    "appid": 4148240,
+    "name": "Road to Empress Ⅱ",
+    "minutes": 747,
+    "hours": 12.4,
+    "last": 1787937256,
+    "installed": false
+  },
+  {
+    "appid": 289070,
+    "name": "Sid Meier's Civilization VI",
+    "minutes": 720,
+    "hours": 12.0,
+    "last": 1779981772,
+    "installed": false
+  },
+  {
+    "appid": 1694420,
+    "name": "Card Survival: Tropical Island",
+    "minutes": 685,
+    "hours": 11.4,
+    "last": 1774111712,
+    "installed": false
+  },
+  {
+    "appid": 1426210,
+    "name": "It Takes Two",
+    "minutes": 656,
+    "hours": 10.9,
+    "last": 1777384477,
+    "installed": false
+  },
+  {
+    "appid": 434650,
+    "name": "Lost Castle",
+    "minutes": 641,
+    "hours": 10.7,
+    "last": 1698552908,
+    "installed": false
+  },
+  {
+    "appid": 1446780,
+    "name": "MONSTER HUNTER RISE",
+    "minutes": 632,
+    "hours": 10.5,
+    "last": 1758345266,
+    "installed": false
+  },
+  {
+    "appid": 4198760,
+    "name": "Nioh 3 Demo",
+    "minutes": 599,
+    "hours": 10.0,
+    "last": 1770127617,
+    "installed": false
+  },
+  {
+    "appid": 2521380,
+    "name": "Legacy of Kain™ Soul Reaver 1&2 Remastered",
+    "minutes": 582,
+    "hours": 9.7,
+    "last": 1787056903,
+    "installed": false
+  },
+  {
+    "appid": 5206420,
+    "name": "Big Sister",
+    "minutes": 534,
+    "hours": 8.9,
+    "last": 1790077479,
+    "installed": false
+  },
+  {
+    "appid": 921570,
+    "name": "OCTOPATH TRAVELER",
+    "minutes": 483,
+    "hours": 8.1,
+    "last": 1736571020,
+    "installed": false
+  },
+  {
+    "appid": 2129530,
+    "name": "REANIMAL",
+    "minutes": 414,
+    "hours": 6.9,
+    "last": 1771829601,
+    "installed": false
+  },
+  {
+    "appid": 1227890,
+    "name": "Summer Memories",
+    "minutes": 411,
+    "hours": 6.8,
+    "last": 1704468546,
+    "installed": false
+  },
+  {
+    "appid": 1492070,
+    "name": "Sker Ritual",
+    "minutes": 397,
+    "hours": 6.6,
+    "last": 1751118557,
+    "installed": false
+  },
+  {
+    "appid": 1920960,
+    "name": "VPet",
+    "minutes": 352,
+    "hours": 5.9,
+    "last": 1692254272,
+    "installed": false
+  },
+  {
+    "appid": 1454400,
+    "name": "Cookie Clicker",
+    "minutes": 297,
+    "hours": 5.0,
+    "last": 1705916095,
+    "installed": false
+  },
+  {
+    "appid": 2667120,
+    "name": "Ballionaire",
+    "minutes": 294,
+    "hours": 4.9,
+    "last": 1761738588,
+    "installed": false
+  },
+  {
+    "appid": 1326470,
+    "name": "Sons Of The Forest",
+    "minutes": 281,
+    "hours": 4.7,
+    "last": 1790691432,
+    "installed": true
+  },
+  {
+    "appid": 319760,
+    "name": "Oh My Gore!",
+    "minutes": 272,
+    "hours": 4.5,
+    "last": 1786819342,
+    "installed": false
+  },
+  {
+    "appid": 504230,
+    "name": "Celeste",
+    "minutes": 263,
+    "hours": 4.4,
+    "last": 1732020876,
+    "installed": false
+  },
+  {
+    "appid": 2899680,
+    "name": "Island Of Enchantment",
+    "minutes": 261,
+    "hours": 4.3,
+    "last": 1786725562,
+    "installed": false
+  },
+  {
+    "appid": 838350,
+    "name": "The Scroll of Taiwu : Beyond The Dome",
+    "minutes": 255,
+    "hours": 4.2,
+    "last": 1700970468,
+    "installed": false
+  },
+  {
+    "appid": 1904860,
+    "name": "Legends of Kingdom Rush",
+    "minutes": 250,
+    "hours": 4.2,
+    "last": 1715485180,
+    "installed": false
+  },
+  {
+    "appid": 814380,
+    "name": "Sekiro™: Shadows Die Twice",
+    "minutes": 243,
+    "hours": 4.0,
+    "last": 1758273899,
+    "installed": false
+  },
+  {
+    "appid": 1099640,
+    "name": "Jack Move",
+    "minutes": 242,
+    "hours": 4.0,
+    "last": 1786795882,
+    "installed": false
+  },
+  {
+    "appid": 552990,
+    "name": "World of Warships",
+    "minutes": 242,
+    "hours": 4.0,
+    "last": 1786835551,
+    "installed": false
+  },
+  {
+    "appid": 4341360,
+    "name": "嫂子",
+    "minutes": 234,
+    "hours": 3.9,
+    "last": 1770539033,
+    "installed": false
+  },
+  {
+    "appid": 3412900,
+    "name": "代号三国：龙起",
+    "minutes": 227,
+    "hours": 3.8,
+    "last": 1777893149,
+    "installed": false
+  },
+  {
+    "appid": 3659090,
+    "name": "Jelly Bubble",
+    "minutes": 221,
+    "hours": 3.7,
+    "last": 1785935963,
+    "installed": false
+  },
+  {
+    "appid": 2933700,
+    "name": "Hades II Technical Test",
+    "minutes": 215,
+    "hours": 3.6,
+    "last": 1714282092,
+    "installed": false
+  },
+  {
+    "appid": 2595860,
+    "name": "Hitler is my crush",
+    "minutes": 212,
+    "hours": 3.5,
+    "last": 1786792277,
+    "installed": false
+  },
+  {
+    "appid": 3915610,
+    "name": "Meow Palace: Forbidden City ",
+    "minutes": 208,
+    "hours": 3.5,
+    "last": 1771046826,
+    "installed": false
+  },
+  {
+    "appid": 337320,
+    "name": "Paint the Town Red",
+    "minutes": 207,
+    "hours": 3.5,
+    "last": 1777350792,
+    "installed": false
+  },
+  {
+    "appid": 632470,
+    "name": "Disco Elysium",
+    "minutes": 201,
+    "hours": 3.4,
+    "last": 1702028753,
+    "installed": false
+  },
+  {
+    "appid": 2881650,
+    "name": "Content Warning",
+    "minutes": 195,
+    "hours": 3.2,
+    "last": 1790775481,
+    "installed": true
+  },
+  {
+    "appid": 1267910,
+    "name": "Melvor Idle",
+    "minutes": 172,
+    "hours": 2.9,
+    "last": 1703597519,
+    "installed": false
+  },
+  {
+    "appid": 632360,
+    "name": "Risk of Rain 2",
+    "minutes": 165,
+    "hours": 2.8,
+    "last": 1751450585,
+    "installed": false
+  },
+  {
+    "appid": 4521340,
+    "name": "电子ED治疗中心",
+    "minutes": 138,
+    "hours": 2.3,
+    "last": 1780758978,
+    "installed": false
+  },
+  {
+    "appid": 690640,
+    "name": "Trine 4: The Nightmare Prince",
+    "minutes": 131,
+    "hours": 2.2,
+    "last": 1752651083,
+    "installed": false
+  },
+  {
+    "appid": 246420,
+    "name": "Kingdom Rush",
+    "minutes": 124,
+    "hours": 2.1,
+    "last": 1736596536,
+    "installed": false
+  },
+  {
+    "appid": 1092790,
+    "name": "Inscryption",
+    "minutes": 121,
+    "hours": 2.0,
+    "last": 1704460174,
+    "installed": false
+  },
+  {
+    "appid": 1404850,
+    "name": "Luck be a Landlord",
+    "minutes": 119,
+    "hours": 2.0,
+    "last": 1780814167,
+    "installed": false
+  },
+  {
+    "appid": 2198070,
+    "name": "Cardboard Town",
+    "minutes": 105,
+    "hours": 1.8,
+    "last": 1715752536,
+    "installed": false
+  },
+  {
+    "appid": 2560240,
+    "name": "Biped 2",
+    "minutes": 105,
+    "hours": 1.8,
+    "last": 1785488245,
+    "installed": false
+  },
+  {
+    "appid": 1113000,
+    "name": "Persona 4 Golden",
+    "minutes": 95,
+    "hours": 1.6,
+    "last": 1748782009,
+    "installed": false
+  },
+  {
+    "appid": 3271280,
+    "name": "Shroom and Gloom",
+    "minutes": 90,
+    "hours": 1.5,
+    "last": 1789210974,
+    "installed": false
+  },
+  {
+    "appid": 1755830,
+    "name": "Astrea: Six-Sided Oracles",
+    "minutes": 86,
+    "hours": 1.4,
+    "last": 1729779863,
+    "installed": false
+  },
+  {
+    "appid": 1245620,
+    "name": "ELDEN RING",
+    "minutes": 78,
+    "hours": 1.3,
+    "last": 1748779282,
+    "installed": false
+  },
+  {
+    "appid": 2427700,
+    "name": "Backpack Battles",
+    "minutes": 75,
+    "hours": 1.2,
+    "last": 1732018667,
+    "installed": false
+  },
+  {
+    "appid": 1313140,
+    "name": "Cult of the Lamb",
+    "minutes": 73,
+    "hours": 1.2,
+    "last": 1774762241,
+    "installed": false
+  },
+  {
+    "appid": 1952370,
+    "name": "Oblivion Override",
+    "minutes": 72,
+    "hours": 1.2,
+    "last": 1745767090,
+    "installed": false
+  },
+  {
+    "appid": 2473490,
+    "name": "SWAT Commander: Prologue Playtest",
+    "minutes": 62,
+    "hours": 1.0,
+    "last": 1692969303,
+    "installed": false
+  },
+  {
+    "appid": 2527500,
+    "name": "MiSide",
+    "minutes": 51,
+    "hours": 0.8,
+    "last": 1735212279,
+    "installed": false
+  },
+  {
+    "appid": 2915380,
+    "name": "Ways of Alchemy",
+    "minutes": 51,
+    "hours": 0.8,
+    "last": 1767008696,
+    "installed": false
+  },
+  {
+    "appid": 998740,
+    "name": "Ring of Pain",
+    "minutes": 50,
+    "hours": 0.8,
+    "last": 1705409181,
+    "installed": true
+  },
+  {
+    "appid": 2190290,
+    "name": "To Be or Not to Be",
+    "minutes": 50,
+    "hours": 0.8,
+    "last": 1715945996,
+    "installed": false
+  },
+  {
+    "appid": 1927740,
+    "name": "Monument Valley 2",
+    "minutes": 49,
+    "hours": 0.8,
+    "last": 1728910177,
+    "installed": false
+  },
+  {
+    "appid": 1189490,
+    "name": "觅长生",
+    "minutes": 48,
+    "hours": 0.8,
+    "last": 1754030487,
+    "installed": false
+  },
+  {
+    "appid": 2593370,
+    "name": "The Hungry Lamb: Traveling in the Late Ming Dynasty",
+    "minutes": 48,
+    "hours": 0.8,
+    "last": 1719482970,
+    "installed": false
+  },
+  {
+    "appid": 3339420,
+    "name": "你的老婆",
+    "minutes": 47,
+    "hours": 0.8,
+    "last": 1733707877,
+    "installed": false
+  },
+  {
+    "appid": 367520,
+    "name": "Hollow Knight",
+    "minutes": 46,
+    "hours": 0.8,
+    "last": 1715340837,
+    "installed": false
+  },
+  {
+    "appid": 1718570,
+    "name": "ASTLIBRA ～生きた証～ Revision",
+    "minutes": 46,
+    "hours": 0.8,
+    "last": 1715416358,
+    "installed": false
+  },
+  {
+    "appid": 373420,
+    "name": "Divinity: Original Sin Enhanced Edition",
+    "minutes": 44,
+    "hours": 0.7,
+    "last": 1703783411,
+    "installed": false
+  },
+  {
+    "appid": 204360,
+    "name": "Castle Crashers",
+    "minutes": 42,
+    "hours": 0.7,
+    "last": 1753091873,
+    "installed": false
+  },
+  {
+    "appid": 2696050,
+    "name": "Yarimono",
+    "minutes": 40,
+    "hours": 0.7,
+    "last": 1736603613,
+    "installed": false
+  },
+  {
+    "appid": 445980,
+    "name": "Wizard of Legend",
+    "minutes": 39,
+    "hours": 0.7,
+    "last": 1698488997,
+    "installed": false
+  },
+  {
+    "appid": 656350,
+    "name": "UnderMine",
+    "minutes": 37,
+    "hours": 0.6,
+    "last": 1720451442,
+    "installed": true
+  },
+  {
+    "appid": 2163330,
+    "name": "Yet Another Zombie Survivors",
+    "minutes": 35,
+    "hours": 0.6,
+    "last": 1728749822,
+    "installed": false
+  },
+  {
+    "appid": 788100,
+    "name": "Neon Abyss",
+    "minutes": 32,
+    "hours": 0.5,
+    "last": 1734791787,
+    "installed": false
+  },
+  {
+    "appid": 1217410,
+    "name": "未知游戏（商店已查不到）",
+    "minutes": 32,
+    "hours": 0.5,
+    "last": 1693298976,
+    "installed": false
+  },
+  {
+    "appid": 548430,
+    "name": "Deep Rock Galactic",
+    "minutes": 30,
+    "hours": 0.5,
+    "last": 1751455389,
+    "installed": false
+  },
+  {
+    "appid": 1094520,
+    "name": "Sands of Salzaar",
+    "minutes": 29,
+    "hours": 0.5,
+    "last": 1716728688,
+    "installed": false
+  },
+  {
+    "appid": 330020,
+    "name": "Children of Morta",
+    "minutes": 27,
+    "hours": 0.5,
+    "last": 1700730764,
+    "installed": false
+  },
+  {
+    "appid": 1296830,
+    "name": "暖雪 Warm Snow",
+    "minutes": 27,
+    "hours": 0.5,
+    "last": 1691595414,
+    "installed": false
+  },
+  {
+    "appid": 1377550,
+    "name": "未知游戏（商店已查不到）",
+    "minutes": 27,
+    "hours": 0.5,
+    "last": 1692940198,
+    "installed": false
+  },
+  {
+    "appid": 550,
+    "name": "Left 4 Dead 2",
+    "minutes": 27,
+    "hours": 0.5,
+    "last": 1751442510,
+    "installed": false
+  },
+  {
+    "appid": 1868140,
+    "name": "DAVE THE DIVER",
+    "minutes": 26,
+    "hours": 0.4,
+    "last": 1745658860,
+    "installed": false
+  },
+  {
+    "appid": 413150,
+    "name": "Stardew Valley",
+    "minutes": 25,
+    "hours": 0.4,
+    "last": 1752247175,
+    "installed": false
+  },
+  {
+    "appid": 1244090,
+    "name": "Sea of Stars: Sunset Edition",
+    "minutes": 25,
+    "hours": 0.4,
+    "last": 1721294620,
+    "installed": false
+  },
+  {
+    "appid": 1468810,
+    "name": "鬼谷八荒 Tale of Immortal",
+    "minutes": 23,
+    "hours": 0.4,
+    "last": 1720453697,
+    "installed": false
+  },
+  {
+    "appid": 1584090,
+    "name": "东方夜雀食堂 - Touhou Mystia's Izakaya",
+    "minutes": 22,
+    "hours": 0.4,
+    "last": 1737111563,
+    "installed": false
+  },
+  {
+    "appid": 1367550,
+    "name": "Kingdom Rush Vengeance",
+    "minutes": 21,
+    "hours": 0.3,
+    "last": 1715345285,
+    "installed": false
+  },
+  {
+    "appid": 2015270,
+    "name": "Rotwood",
+    "minutes": 21,
+    "hours": 0.3,
+    "last": 1715787982,
+    "installed": false
+  },
+  {
+    "appid": 718670,
+    "name": "Cultist Simulator",
+    "minutes": 21,
+    "hours": 0.3,
+    "last": 1774428154,
+    "installed": false
+  },
+  {
+    "appid": 1123770,
+    "name": "Curse of the Dead Gods",
+    "minutes": 20,
+    "hours": 0.3,
+    "last": 1697343117,
+    "installed": false
+  },
+  {
+    "appid": 3594590,
+    "name": "异能重组",
+    "minutes": 18,
+    "hours": 0.3,
+    "last": 1775315822,
+    "installed": false
+  },
+  {
+    "appid": 315810,
+    "name": "eden*",
+    "minutes": 15,
+    "hours": 0.2,
+    "last": 1705150020,
+    "installed": false
+  },
+  {
+    "appid": 1147560,
+    "name": "Skul: The Hero Slayer",
+    "minutes": 14,
+    "hours": 0.2,
+    "last": 1700990917,
+    "installed": true
+  },
+  {
+    "appid": 1434540,
+    "name": "Zoeti",
+    "minutes": 14,
+    "hours": 0.2,
+    "last": 1729175735,
+    "installed": false
+  },
+  {
+    "appid": 1737340,
+    "name": "通神榜 Noobs Want to Live",
+    "minutes": 14,
+    "hours": 0.2,
+    "last": 1707746217,
+    "installed": false
+  },
+  {
+    "appid": 2218400,
+    "name": "Greedland",
+    "minutes": 14,
+    "hours": 0.2,
+    "last": 1723860312,
+    "installed": false
+  },
+  {
+    "appid": 323190,
+    "name": "Frostpunk",
+    "minutes": 14,
+    "hours": 0.2,
+    "last": 1780148241,
+    "installed": false
+  },
+  {
+    "appid": 957960,
+    "name": "Inkulinati",
+    "minutes": 13,
+    "hours": 0.2,
+    "last": 1721293070,
+    "installed": false
+  },
+  {
+    "appid": 105600,
+    "name": "Terraria",
+    "minutes": 11,
+    "hours": 0.2,
+    "last": 1692976788,
+    "installed": false
+  },
+  {
+    "appid": 1451940,
+    "name": "NEEDY GIRL OVERDOSE",
+    "minutes": 10,
+    "hours": 0.2,
+    "last": 1735551967,
+    "installed": false
+  },
+  {
+    "appid": 2453360,
+    "name": "鸡械绿洲",
+    "minutes": 10,
+    "hours": 0.2,
+    "last": 1715859181,
+    "installed": false
+  },
+  {
+    "appid": 1637320,
+    "name": "Dome Keeper",
+    "minutes": 9,
+    "hours": 0.1,
+    "last": 1728793161,
+    "installed": false
+  },
+  {
+    "appid": 1170080,
+    "name": "Foretales",
+    "minutes": 8,
+    "hours": 0.1,
+    "last": 1721138953,
+    "installed": true
+  },
+  {
+    "appid": 1669980,
+    "name": "Volcano Princess",
+    "minutes": 8,
+    "hours": 0.1,
+    "last": 1710751576,
+    "installed": false
+  },
+  {
+    "appid": 606150,
+    "name": "Moonlighter",
+    "minutes": 7,
+    "hours": 0.1,
+    "last": 1732019819,
+    "installed": false
+  },
+  {
+    "appid": 1230140,
+    "name": "ATRI -My Dear Moments-",
+    "minutes": 7,
+    "hours": 0.1,
+    "last": 1716903678,
+    "installed": false
+  },
+  {
+    "appid": 1260590,
+    "name": "Hadean Tactics",
+    "minutes": 7,
+    "hours": 0.1,
+    "last": 1721401587,
+    "installed": false
+  },
+  {
+    "appid": 1920400,
+    "name": "未知游戏（商店已查不到）",
+    "minutes": 7,
+    "hours": 0.1,
+    "last": 1717342087,
+    "installed": false
+  },
+  {
+    "appid": 4164310,
+    "name": "这是谐音梗",
+    "minutes": 7,
+    "hours": 0.1,
+    "last": 1778076377,
+    "installed": false
+  },
+  {
+    "appid": 568220,
+    "name": "Lobotomy Corporation",
+    "minutes": 6,
+    "hours": 0.1,
+    "last": 1721294999,
+    "installed": false
+  },
+  {
+    "appid": 1839880,
+    "name": "King Of The Castle",
+    "minutes": 6,
+    "hours": 0.1,
+    "last": 1736514379,
+    "installed": false
+  },
+  {
+    "appid": 2181610,
+    "name": "Heretic's Fork",
+    "minutes": 6,
+    "hours": 0.1,
+    "last": 1740317931,
+    "installed": false
+  },
+  {
+    "appid": 2865580,
+    "name": "Let's Minesweeper",
+    "minutes": 6,
+    "hours": 0.1,
+    "last": 1727010975,
+    "installed": false
+  },
+  {
+    "appid": 1092630,
+    "name": "Rogue Glitch Ultra",
+    "minutes": 5,
+    "hours": 0.1,
+    "last": 1698487126,
+    "installed": false
+  },
+  {
+    "appid": 1306630,
+    "name": "Lost Ruins",
+    "minutes": 5,
+    "hours": 0.1,
+    "last": 1721292076,
+    "installed": false
+  },
+  {
+    "appid": 1464930,
+    "name": "Seek Girl Ⅶ",
+    "minutes": 5,
+    "hours": 0.1,
+    "last": 1721295372,
+    "installed": false
+  },
+  {
+    "appid": 1857090,
+    "name": "Norland",
+    "minutes": 4,
+    "hours": 0.1,
+    "last": 1724670139,
+    "installed": false
+  },
+  {
+    "appid": 2194530,
+    "name": "Yog-Sothoth's Yard",
+    "minutes": 4,
+    "hours": 0.1,
+    "last": 1736521155,
+    "installed": false
+  },
+  {
+    "appid": 247080,
+    "name": "Crypt of the NecroDancer",
+    "minutes": 3,
+    "hours": 0.1,
+    "last": 1721291708,
+    "installed": false
+  },
+  {
+    "appid": 1280930,
+    "name": "Astral Ascent",
+    "minutes": 3,
+    "hours": 0.1,
+    "last": 1745752564,
+    "installed": true
+  },
+  {
+    "appid": 1382330,
+    "name": "Persona 5 Strikers",
+    "minutes": 3,
+    "hours": 0.1,
+    "last": 1748877621,
+    "installed": false
+  },
+  {
+    "appid": 2001120,
+    "name": "Split Fiction",
+    "minutes": 3,
+    "hours": 0.1,
+    "last": 1774757837,
+    "installed": false
+  },
+  {
+    "appid": 453480,
+    "name": "Shadowverse",
+    "minutes": 2,
+    "hours": 0.0,
+    "last": 1737355190,
+    "installed": false
+  },
+  {
+    "appid": 1088790,
+    "name": "Rebel Inc: Escalation",
+    "minutes": 2,
+    "hours": 0.0,
+    "last": 1721292246,
+    "installed": false
+  },
+  {
+    "appid": 343050,
+    "name": "Don't Starve Together Dedicated Server",
+    "minutes": 1,
+    "hours": 0.0,
+    "last": 1716699967,
+    "installed": false
+  },
+  {
+    "appid": 458710,
+    "name": "Kingdom Rush Frontiers",
+    "minutes": 1,
+    "hours": 0.0,
+    "last": 1736596889,
+    "installed": false
+  },
+  {
+    "appid": 1057090,
+    "name": "Ori and the Will of the Wisps",
+    "minutes": 1,
+    "hours": 0.0,
+    "last": 1723885765,
+    "installed": false
+  },
+  {
+    "appid": 1109570,
+    "name": "《文字遊戲》",
+    "minutes": 1,
+    "hours": 0.0,
+    "last": 1721386788,
+    "installed": false
+  },
+  {
+    "appid": 1627840,
+    "name": "Universe For Sale",
+    "minutes": 1,
+    "hours": 0.0,
+    "last": 1737730154,
+    "installed": false
+  },
+  {
+    "appid": 1700870,
+    "name": "Clanfolk",
+    "minutes": 1,
+    "hours": 0.0,
+    "last": 1721386685,
+    "installed": false
+  },
+  {
+    "appid": 1623730,
+    "name": "Palworld",
+    "minutes": 1,
+    "hours": 0.0,
+    "last": 1783690454,
+    "installed": false
+  }
+]

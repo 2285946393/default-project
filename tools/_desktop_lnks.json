@@ -1,0 +1,443 @@
+[
+  {
+    "lnk": "百度网盘",
+    "target": "D:\\software\\baidu netdisk\\BaiduNetdisk\\BaiduNetdisk.exe",
+    "args": "",
+    "workdir": "D:\\software\\baidu netdisk\\BaiduNetdisk",
+    "icon": "D:\\software\\baidu netdisk\\BaiduNetdisk\\BaiduNetdisk.exe,0"
+  },
+  {
+    "lnk": "打开 Codex（鲸鱼娘版）",
+    "target": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "args": "-NoProfile -STA -WindowStyle Hidden -ExecutionPolicy RemoteSigned -File \"C:\\Users\\有花无实\\AppData\\Local\\CodexDreamSkin\\engine\\scripts\\start-dream-skin.ps1\" -PromptRestart",
+    "workdir": "C:\\Users\\有花无实\\AppData\\Local\\CodexDreamSkin\\engine\\scripts",
+    "icon": "C:\\Users\\有花无实\\AppData\\Local\\CodexDreamSkin\\engine\\assets\\codex-dream-skin.ico,0"
+  },
+  {
+    "lnk": "豆包",
+    "target": "D:\\software\\豆包\\Doubao\\Doubao.exe",
+    "args": "",
+    "workdir": "D:\\software\\豆包\\Doubao",
+    "icon": "D:\\software\\豆包\\Doubao\\icon.ico,0"
+  },
+  {
+    "lnk": "飞书",
+    "target": "D:\\software\\fei shu\\Feishu\\Feishu.exe",
+    "args": "",
+    "workdir": "D:\\software\\fei shu\\Feishu",
+    "icon": "D:\\software\\fei shu\\Feishu\\icon.ico,0"
+  },
+  {
+    "lnk": "黑盒语音",
+    "target": "D:\\software\\小黑盒语音\\HeyboxChat\\Qingfeng\\HeyboxChat\\HeyboxChat.exe",
+    "args": "",
+    "workdir": "D:\\software\\小黑盒语音\\HeyboxChat\\Qingfeng\\HeyboxChat",
+    "icon": "D:\\software\\小黑盒语音\\HeyboxChat\\Qingfeng\\HeyboxChat\\HeyboxChat.exe,0"
+  },
+  {
+    "lnk": "虎牙直播",
+    "target": "D:\\software\\虎牙\\HuyaClient\\Huya.exe",
+    "args": "",
+    "workdir": "D:\\software\\虎牙\\HuyaClient",
+    "icon": ",0"
+  },
+  {
+    "lnk": "嘉立创EDA(专业版)",
+    "target": "D:\\software\\EDA\\lceda-pro\\lceda-pro.exe",
+    "args": "",
+    "workdir": "D:\\software\\EDA\\lceda-pro",
+    "icon": ",0"
+  },
+  {
+    "lnk": "雷神加速器",
+    "target": "D:\\software\\lei shen\\LeiGod_Acc\\leigod_launcher.exe",
+    "args": "",
+    "workdir": "D:\\software\\lei shen\\LeiGod_Acc",
+    "icon": ",0"
+  },
+  {
+    "lnk": "启动QQ机器人.bat - 快捷方式",
+    "target": "D:\\work\\新建文件夹\\启动QQ机器人.bat",
+    "args": "",
+    "workdir": "D:\\work\\新建文件夹",
+    "icon": ",0"
+  },
+  {
+    "lnk": "手写模拟器v2.2.exe - 快捷方式",
+    "target": "D:\\software\\手写模拟器v2.2\\手写模拟器v2.2\\手写模拟器v2.2.exe",
+    "args": "",
+    "workdir": "D:\\software\\手写模拟器v2.2\\手写模拟器v2.2",
+    "icon": ",0"
+  },
+  {
+    "lnk": "王者万象棋",
+    "target": "D:\\software\\万象棋\\WXQLauncher\\26083.0.7.30004\\王者万象棋.exe",
+    "args": "",
+    "workdir": "D:\\software\\万象棋\\WXQLauncher\\26083.0.7.30004",
+    "icon": ",0"
+  },
+  {
+    "lnk": "小黑盒加速器",
+    "target": "D:\\software\\xiao hei he jai su qi\\Qingfeng\\HeyboxAccelerator\\heyboxacc.exe",
+    "args": "",
+    "workdir": "D:\\software\\xiao hei he jai su qi\\Qingfeng\\HeyboxAccelerator",
+    "icon": "D:\\software\\xiao hei he jai su qi\\Qingfeng\\HeyboxAccelerator\\heyboxacc.exe,0"
+  },
+  {
+    "lnk": "小熊猫C++",
+    "target": "D:\\software\\c\\RedPandaIDE.exe",
+    "args": "",
+    "workdir": "D:\\software\\c",
+    "icon": ",0"
+  },
+  {
+    "lnk": "迅雷",
+    "target": "D:\\software\\xun lei\\Thunder\\program\\ThunderStart.exe",
+    "args": "-StartType:DesktopIcon",
+    "workdir": "",
+    "icon": "D:\\software\\xun lei\\Thunder\\Program\\Thunder.ico,0"
+  },
+  {
+    "lnk": "迅雷影音",
+    "target": "D:\\software\\迅雷音影\\Xmp\\program\\xmp.exe",
+    "args": "-StartType:DesktopIcon",
+    "workdir": "",
+    "icon": "D:\\software\\迅雷音影\\Xmp\\Program\\Xmp.ico,0"
+  },
+  {
+    "lnk": "ChatGPT Codex",
+    "target": "C:\\Windows\\explorer.exe",
+    "args": "shell:AppsFolder\\OpenAI.Codex_2p2nqsd0c76g0!App",
+    "workdir": "",
+    "icon": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.915.4065.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe,0"
+  },
+  {
+    "lnk": "Claude Code",
+    "target": "C:\\Users\\有花无实\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe",
+    "args": "-p \"Claude Code\"",
+    "workdir": "C:\\Users\\有花无实\\Documents\\Default Project",
+    "icon": "D:\\software\\claude code\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe,0"
+  },
+  {
+    "lnk": "Code.exe - 快捷方式",
+    "target": "D:\\software\\vs code\\Code.exe",
+    "args": "",
+    "workdir": "D:\\software\\vs code",
+    "icon": ",0"
+  },
+  {
+    "lnk": "DeepSeek Harness",
+    "target": "D:\\software\\ds桌面\\DeepSeek Harness.exe",
+    "args": "",
+    "workdir": "D:\\software\\ds桌面",
+    "icon": "D:\\software\\ds桌面\\DeepSeek Harness.exe,0"
+  },
+  {
+    "lnk": "dsh-pet-standalone-webm-chat.exe - 快捷方式",
+    "target": "D:\\software\\ds桌宠\\dsh-pet-standalone-webm-chat.exe",
+    "args": "",
+    "workdir": "D:\\software\\ds桌宠",
+    "icon": ",0"
+  },
+  {
+    "lnk": "dsh",
+    "target": "D:\\software\\dsh\\open-dsh-web.cmd",
+    "args": "",
+    "workdir": "D:\\software\\dsh",
+    "icon": "%SystemRoot%\\System32\\shell32.dll,2"
+  },
+  {
+    "lnk": "Firefox",
+    "target": "D:\\software\\firefox\\firefox.exe",
+    "args": "",
+    "workdir": "D:\\software\\firefox",
+    "icon": ",0"
+  },
+  {
+    "lnk": "Google Chrome",
+    "target": "D:\\software\\chrome\\Google\\Chrome\\Application\\chrome.exe",
+    "args": "",
+    "workdir": "D:\\software\\chrome\\Google\\Chrome\\Application",
+    "icon": ",0"
+  },
+  {
+    "lnk": "Keil uVision5",
+    "target": "D:\\software\\mdk536\\core\\UV4\\UV4.exe",
+    "args": "",
+    "workdir": "D:\\software\\mdk536\\core",
+    "icon": "D:\\software\\mdk536\\core\\UV4\\UV4.EXE,0"
+  },
+  {
+    "lnk": "KOOK",
+    "target": "D:\\software\\kook\\KOOK\\KOOK.exe",
+    "args": "",
+    "workdir": "D:\\software\\kook\\KOOK\\app-0.103.0",
+    "icon": "D:\\software\\kook\\KOOK\\KOOK.exe,0"
+  },
+  {
+    "lnk": "natpierce.exe - 快捷方式",
+    "target": "D:\\software\\natpierce-win-v1.06\\natpierce.exe",
+    "args": "",
+    "workdir": "D:\\software\\natpierce-win-v1.06",
+    "icon": ",0"
+  },
+  {
+    "lnk": "Oopz",
+    "target": "D:\\software\\oppz\\oopz\\oopz-runner.exe",
+    "args": "",
+    "workdir": "D:\\software\\oppz\\oopz",
+    "icon": ",0"
+  },
+  {
+    "lnk": "opencode.cmd - 快捷方式",
+    "target": "C:\\Users\\有花无实\\AppData\\Roaming\\npm\\opencode.cmd",
+    "args": "",
+    "workdir": "C:\\Users\\有花无实\\AppData\\Roaming\\npm",
+    "icon": ",0"
+  },
+  {
+    "lnk": "OpenCode",
+    "target": "C:\\Users\\有花无实\\AppData\\Local\\Programs\\@opencode-aidesktop\\OpenCode.exe",
+    "args": "",
+    "workdir": "C:\\Users\\有花无实\\AppData\\Local\\Programs\\@opencode-aidesktop",
+    "icon": "C:\\Users\\有花无实\\AppData\\Local\\Programs\\@opencode-aidesktop\\OpenCode.exe,0"
+  },
+  {
+    "lnk": "PasteMD",
+    "target": "D:\\software\\pasteMD\\PasteMD\\PasteMD.exe",
+    "args": "",
+    "workdir": "D:\\software\\pasteMD\\PasteMD",
+    "icon": "D:\\software\\pasteMD\\PasteMD\\icon.ico,0"
+  },
+  {
+    "lnk": "Proteus 8 Professional",
+    "target": "D:\\software\\proteus\\Proteus 8 Professional\\BIN\\PDS.EXE",
+    "args": "",
+    "workdir": "D:\\software\\proteus\\Proteus 8 Professional\\BIN\\",
+    "icon": "D:\\software\\proteus\\Proteus 8 Professional\\BIN\\PDS.EXE,0"
+  },
+  {
+    "lnk": "python.exe - 快捷方式",
+    "target": "D:\\software\\Python\\python.exe",
+    "args": "",
+    "workdir": "D:\\software\\Python",
+    "icon": ",0"
+  },
+  {
+    "lnk": "SlaytheSpire2Drawing.exe - 快捷方式",
+    "target": "D:\\BaiduNetdiskDownload\\picture\\SlaytheSpire2Drawing.exe",
+    "args": "",
+    "workdir": "D:\\BaiduNetdiskDownload\\picture",
+    "icon": ",0"
+  },
+  {
+    "lnk": "Start.bat - 快捷方式",
+    "target": "D:\\work\\git\\XinghuisamaBlogs\\my-blog-manager\\Start.bat",
+    "args": "",
+    "workdir": "D:\\work\\git\\XinghuisamaBlogs\\my-blog-manager",
+    "icon": ",0"
+  },
+  {
+    "lnk": "steamclient_loader.exe - 快捷方式",
+    "target": "D:\\BaiduNetdiskDownload\\game\\Kingdom Rush Genesis\\Kingdom Rush Genesis\\steamclient_loader.exe",
+    "args": "",
+    "workdir": "D:\\BaiduNetdiskDownload\\game\\Kingdom Rush Genesis\\Kingdom Rush Genesis",
+    "icon": ",0"
+  },
+  {
+    "lnk": "TraeCode CN",
+    "target": "D:\\software\\trae\\Trae CN\\Trae CN.exe",
+    "args": "",
+    "workdir": "D:\\software\\trae\\Trae CN",
+    "icon": ",0"
+  },
+  {
+    "lnk": "TreeSize Free",
+    "target": "D:\\software\\treesize\\TreeSize Free\\TreeSizeFree.exe",
+    "args": "",
+    "workdir": "D:\\software\\treesize\\TreeSize Free",
+    "icon": ",0"
+  },
+  {
+    "lnk": "UU远程",
+    "target": "D:\\software\\uu远程\\GameViewer\\GameViewer.exe",
+    "args": "",
+    "workdir": "D:\\software\\uu远程\\GameViewer",
+    "icon": "D:\\software\\uu远程\\GameViewer\\GameViewer.exe,0"
+  },
+  {
+    "lnk": "WizTree64.exe - 快捷方式",
+    "target": "D:\\software\\WizTree64\\WizTree64.exe",
+    "args": "",
+    "workdir": "D:\\software\\WizTree64",
+    "icon": ",0"
+  },
+  {
+    "lnk": "WorkBuddy AI",
+    "target": "D:\\software\\WorkBuddy AI\\WorkBuddyAI.exe",
+    "args": "",
+    "workdir": "D:\\software\\WorkBuddy AI",
+    "icon": "D:\\software\\WorkBuddy AI\\WorkBuddyAI.exe,0"
+  },
+  {
+    "lnk": "WorkBuddy",
+    "target": "D:\\software\\WorkBuddy\\WorkBuddy.exe",
+    "args": "",
+    "workdir": "D:\\software\\WorkBuddy",
+    "icon": "D:\\software\\WorkBuddy\\WorkBuddy.exe,0"
+  },
+  {
+    "lnk": "WPS Office",
+    "target": "D:\\software\\wps\\WPS Office\\ksolaunch.exe",
+    "args": "/prometheus /fromksolaunch /from=desktop_shortcut",
+    "workdir": "D:\\software\\wps\\WPS Office\\",
+    "icon": "D:\\software\\wps\\WPS Office\\ksolaunch.exe,0"
+  },
+  {
+    "lnk": "哔哩哔哩",
+    "target": "D:\\software\\bilibili\\哔哩哔哩.exe",
+    "args": "",
+    "workdir": "D:\\software\\bilibili",
+    "icon": ",0"
+  },
+  {
+    "lnk": "斗鱼直播",
+    "target": "D:\\software\\斗鱼\\DouyuPCClient\\Client\\DouyuLive.exe",
+    "args": "",
+    "workdir": "D:\\software\\斗鱼\\DouyuPCClient",
+    "icon": ",0"
+  },
+  {
+    "lnk": "机械革命控制中心",
+    "target": "",
+    "args": "",
+    "workdir": "",
+    "icon": "C:\\Program Files\\OEM\\机械革命控制中心\\logo\\controlcenter_MR.ico,0"
+  },
+  {
+    "lnk": "嘉立创下单助手",
+    "target": "D:\\software\\pcb\\jlc-assistant\\jlc-assistant.exe",
+    "args": "",
+    "workdir": "D:\\software\\pcb\\jlc-assistant",
+    "icon": ",0"
+  },
+  {
+    "lnk": "夸克网盘",
+    "target": "D:\\software\\quark\\quark-cloud-drive\\QuarkCloudDrive.exe",
+    "args": "--launch-from=desktopicon",
+    "workdir": "D:\\software\\quark\\quark-cloud-drive",
+    "icon": ",0"
+  },
+  {
+    "lnk": "慕讯公益加速器",
+    "target": "D:\\software\\慕迅加速器\\MuXunAccelerator\\MuXunAccelerator.exe",
+    "args": "",
+    "workdir": "D:\\software\\慕迅加速器\\MuXunAccelerator",
+    "icon": ",0"
+  },
+  {
+    "lnk": "图吧工具箱2025",
+    "target": "D:\\software\\图吧检验工具\\图吧工具箱202502\\图吧工具箱2025.exe",
+    "args": "",
+    "workdir": "D:\\software\\图吧检验工具\\图吧工具箱202502\\",
+    "icon": ",0"
+  },
+  {
+    "lnk": "网易有道翻译",
+    "target": "D:\\software\\youdao\\Dict\\YoudaoDict.exe",
+    "args": "",
+    "workdir": "D:\\software\\youdao\\Dict",
+    "icon": ",0"
+  },
+  {
+    "lnk": "网易云音乐",
+    "target": "D:\\software\\cloud music\\CloudMusic\\cloudmusic.exe",
+    "args": "",
+    "workdir": "D:\\software\\cloud music\\CloudMusic",
+    "icon": ",0"
+  },
+  {
+    "lnk": "微信",
+    "target": "D:\\software\\wechat\\Weixin\\Weixin.exe",
+    "args": "--scene=desktop",
+    "workdir": "D:\\software\\wechat\\Weixin",
+    "icon": ",0"
+  },
+  {
+    "lnk": "小黑盒",
+    "target": "D:\\software\\小黑盒\\Qingfeng\\HeyboxApp\\HeyboxApp.exe",
+    "args": "--launch-type=desktop_icon",
+    "workdir": "D:\\software\\小黑盒\\Qingfeng\\HeyboxApp",
+    "icon": "D:\\software\\小黑盒\\Qingfeng\\HeyboxApp\\HeyboxApp.exe,0"
+  },
+  {
+    "lnk": "小黑课堂计算机二级WPS题库",
+    "target": "D:\\software\\小黑课堂\\xhKTWps\\xhkt_desktop_app.exe",
+    "args": "",
+    "workdir": "D:\\software\\小黑课堂\\xhKTWps",
+    "icon": "D:\\software\\小黑课堂\\xhKTWps\\xhkt_desktop_app.exe,0"
+  },
+  {
+    "lnk": "自由猫",
+    "target": "D:\\software\\freecat\\ziyoumao\\ziyoumao.exe",
+    "args": "",
+    "workdir": "D:\\software\\freecat\\ziyoumao",
+    "icon": ",0"
+  },
+  {
+    "lnk": "Anyi",
+    "target": "D:\\software\\易安VPN\\Anyi.exe",
+    "args": "",
+    "workdir": "D:\\software\\易安VPN\\",
+    "icon": ",0"
+  },
+  {
+    "lnk": "Bandizip",
+    "target": "D:\\software\\bindzip\\Bandizip\\Bandizip.exe",
+    "args": "",
+    "workdir": "D:\\software\\bindzip\\Bandizip\\",
+    "icon": "D:\\software\\bindzip\\Bandizip\\Bandizip.exe,0"
+  },
+  {
+    "lnk": "MATLAB R2024b",
+    "target": "D:\\software\\MATLAB\\bin\\matlab.exe",
+    "args": "",
+    "workdir": "",
+    "icon": ",0"
+  },
+  {
+    "lnk": "Microsoft Edge",
+    "target": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "args": "",
+    "workdir": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application",
+    "icon": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe,0"
+  },
+  {
+    "lnk": "QQ",
+    "target": "D:\\software\\qq\\QQ.exe",
+    "args": "",
+    "workdir": "D:\\software\\qq",
+    "icon": "D:\\software\\qq\\QQ.exe,0"
+  },
+  {
+    "lnk": "Steam",
+    "target": "D:\\software\\steam\\Steam.exe",
+    "args": "",
+    "workdir": "D:\\software\\steam",
+    "icon": ",0"
+  },
+  {
+    "lnk": "UU加速器",
+    "target": "D:\\software\\uu\\Netease\\UU\\uu_launcher.exe",
+    "args": "",
+    "workdir": "D:\\software\\uu\\Netease\\UU\\",
+    "icon": "D:\\software\\uu\\Netease\\UU\\uu_launcher.exe,0"
+  },
+  {
+    "lnk": "VMware Workstation Pro",
+    "target": "D:\\software\\vmware\\vmware.exe",
+    "args": "",
+    "workdir": "D:\\software\\vmware\\",
+    "icon": ",0"
+  }
+]

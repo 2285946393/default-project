@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "有花无实の小站 · 架构",
+    "output": "blog-architecture.html",
+    "quality_profile": "showcase",
+    "visual_preset": "blossom",
+    "views": [
+      {
+        "id": "read-path",
+        "label": "读者请求路径",
+        "focus": ["visitors", "cf", "app", "posts"],
+        "note": "从浏览器到边缘渲染，再到请求时读取的 Markdown。"
+      },
+      {
+        "id": "content-sources",
+        "label": "三类内容源",
+        "focus": ["app", "posts", "albums", "static"],
+        "note": "文章、相册、静态资源走三条不同的取数路径。"
+      },
+      {
+        "id": "publish-path",
+        "label": "发布流程",
+        "focus": ["console", "gh", "build", "cf"],
+        "note": "本地写作控制台 push，GitHub 触发 Cloudflare 自动构建。"
+      }
+    ]
+  },
+  "components": [
+    { "id": "visitors", "type": "external", "label": "读者", "sublabel": "浏览器 / 手机", "pos": [40, 250], "size": [120, 60] },
+    { "id": "cdn", "type": "cloud", "label": "Cloudflare CDN", "sublabel": "静态与图片缓存", "pos": [250, 110], "size": [150, 60] },
+    { "id": "cf", "type": "cloud", "label": "Cloudflare Workers", "sublabel": "OpenNext · 边缘 SSR", "pos": [250, 250], "size": [150, 60], "tag": "ephemeralbloom.dpdns.org" },
+    { "id": "app", "type": "backend", "label": "Next.js App Router", "sublabel": "RSC 渲染", "pos": [470, 250], "size": [150, 60] },
+    { "id": "posts", "type": "database", "label": "posts/*.md", "sublabel": "请求时读取", "pos": [700, 110], "size": [150, 60], "tag": "部署完成前 500" },
+    { "id": "albums", "type": "database", "label": "相册数据", "sublabel": "34 相册 · 约 1000 图", "pos": [700, 250], "size": [150, 60], "tag": "200MB" },
+    { "id": "static", "type": "cloud", "label": "public/", "sublabel": "作品与曲库", "pos": [700, 390], "size": [150, 60], "tag": "16 作品 + OST" },
+    { "id": "console", "type": "backend", "label": "写作控制台", "sublabel": "本地 Next.js", "pos": [40, 530], "size": [140, 60] },
+    { "id": "gh", "type": "external", "label": "GitHub", "sublabel": "XinghuisamaBlogs", "pos": [250, 530], "size": [150, 60] },
+    { "id": "build", "type": "backend", "label": "Cloudflare Build", "sublabel": "push 触发自动构建", "pos": [470, 530], "size": [150, 60], "tag": "100~150 秒" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Cloudflare 边缘", "wraps": ["cdn", "cf"] },
+    { "kind": "region", "label": "内容源", "wraps": ["posts", "albums", "static"] }
+  ],
+  "connections": [
+    { "id": "readers-to-edge", "from": "visitors", "to": "cf", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "edge-to-cdn", "from": "cf", "to": "cdn", "label": "静态命中", "fromSide": "top", "toSide": "bottom", "labelAt": [325, 200] },
+    { "id": "edge-to-app", "from": "cf", "to": "app", "label": "SSR 请求" },
+    { "id": "app-to-posts", "from": "app", "to": "posts", "label": "读 md", "variant": "dashed", "fromSide": "top", "toSide": "left" },
+    { "id": "app-to-albums", "from": "app", "to": "albums", "label": "相册元数据", "fromSide": "right", "toSide": "left" },
+    { "id": "app-to-static", "from": "app", "to": "static", "label": "静态资源", "fromSide": "bottom", "toSide": "left" },
+    { "id": "console-to-gh", "from": "console", "to": "gh", "label": "commit + push" },
+    { "id": "gh-to-build", "from": "gh", "to": "build", "label": "push main" },
+    { "id": "build-to-edge", "from": "build", "to": "cf", "label": "部署", "variant": "emphasis", "fromSide": "top", "toSide": "bottom" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "边缘", "items": ["Cloudflare Workers 上跑 Next.js（OpenNext）", "CDN 兜住静态资源与图片"] },
+    { "dot": "emerald", "title": "内容", "items": ["posts/*.md 在请求时读取，所以新文章部署完成前返回 500", "相册 34 个、约 1000 图、200MB", "public/ 放 16 个作品与本地曲库"] },
+    { "dot": "rose", "title": "发布", "items": ["写作控制台本地 commit + push", "GitHub 触发 Cloudflare 自动构建，约 100~150 秒生效"] }
+  ]
+}
