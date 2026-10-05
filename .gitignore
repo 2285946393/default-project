@@ -2,3 +2,28 @@
 Thumbs.db
 desktop.ini
 $RECYCLE.BIN/
+
+# 依赖与构建产物（不进仓库）
+node_modules/
+dist/
+.pnpm-store/
+*.log
+.env
+.env.local
+
+# 例外：菌丝世界的单文件成品是有意随仓库发布的（可双击直接打开）
+!projects/mycelia/dist/
+!projects/mycelia/dist/index.html
+
+# 编辑器 / 工具产物
+.vscode/
+.idea/
+.playwright-mcp/
+
+# 独立仓库（单独推 GitHub / 部署 Vercel）
+projects/ai-interviewer/
+
+# 本地私有/工具产物（不入库）
+.claude/
+notes/_sessions_dump/
+__pycache__/
