@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>烟花铺子 · 放置夜空</title>
-<meta name="description" content="点哪儿哪儿开花的放置游戏：挣光尘、升级口径、攒自动燃放塔，攒出一整片会自己热闹的夜空。单文件零依赖。">
+<meta name="description" content="点哪儿哪儿开花的放置游戏：挣光尘、升级口径、攒一支乌篷船队，攒出一整片会自己热闹的水乡夜空。单文件零依赖。">
 <style>
   :root {
     --bg: #0F172A; --fg: #E2E8F0; --muted: #94A3B8;
@@ -132,70 +132,142 @@ const bgCv = document.getElementById("bg"), fxCv = document.getElementById("fx")
 const bg = bgCv.getContext("2d"), fx = fxCv.getContext("2d");
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const DPR = Math.min(devicePixelRatio || 1, 2);
-let W = 0, H = 0, groundY = 0;
+let W = 0, H = 0, groundY = 0, waterY = 0;
 
-/* ================= 夜景底图（随等级进化） ================= */
-let stars = [], city = [], motes = [], moon = { x: 0, y: 0, r: 0 };
+/* ================= 水乡夜景（随等级进化） ================= */
+let stars = [], ridgeFar = [], ridgeNear = [], town = [], lanterns = [], boats = [], lotus = [];
+let moon = { x: 0, y: 0, r: 0 };
+function ridgePath(arr, x0, x1, step) {
+  let out = "";
+  for (let x = x0; x <= x1; x += step) out += x.toFixed(0) + "," + hillY(arr, x).toFixed(1) + ";";
+  return out;
+}
+function mkRidge(W, base, amp1, amp2, seed) {
+  const a1 = amp1 * (0.7 + Math.random() * 0.6), a2 = amp2 * (0.7 + Math.random() * 0.6);
+  const f1 = 0.003 + Math.random() * 0.002, f2 = 0.012 + Math.random() * 0.006;
+  return { base, a1, a2, f1, f2, seed };
+}
+function hillY(r, x) { return r.base - r.a1 * Math.sin(x * r.f1 + r.seed) - r.a2 * Math.sin(x * r.f2 + r.seed * 2); }
+
 function buildScene() {
-  stars = [];
   const starN = Math.round(W * H / 5200 * (1 + G.lv.dome * 0.22));
+  stars = [];
   for (let i = 0; i < starN; i++) {
-    stars.push({ x: Math.random() * W, y: Math.random() * groundY * 0.92,
+    stars.push({ x: Math.random() * W, y: Math.random() * waterY * 0.88,
                  r: Math.random() * 1.1 + 0.3, p: Math.random() * Math.PI * 2, s: 0.5 + Math.random() * 1.6 });
   }
-  // 天际线：塔越多，楼越高、越密
-  const grow = 1 + Math.min(0.55, G.lv.tower * 0.045);
-  city = [];
-  let x = -20;
-  while (x < W + 40) {
-    const w = 24 + Math.random() * 66;
-    const h = (26 + Math.random() * 96) * grow;
-    city.push({ x, w, h });
-    x += w + 2 + Math.random() * 10;
+  ridgeFar = mkRidge(W, waterY * 0.62, waterY * 0.10, waterY * 0.05, Math.random() * 9);
+  ridgeNear = mkRidge(W, waterY * 0.82, waterY * 0.09, waterY * 0.045, Math.random() * 9);
+  // 左岸古镇：飞檐屋群
+  town = [];
+  let x = -26;
+  while (x < W * 0.74) {
+    const w = 52 + Math.random() * 62, h = 40 + Math.random() * 46;
+    town.push({ x, w, h, tip: 5 + Math.random() * 5, ridgeY: waterY - h });
+    x += w * (0.62 + Math.random() * 0.2) + 6;
   }
-  // 金尘（稀有金弹等级带来的空中微粒）
-  motes = [];
-  const moteN = Math.min(140, G.lv.rare * 26);
-  for (let i = 0; i < moteN; i++) {
-    motes.push({ x: Math.random() * W, y: Math.random() * groundY * 0.8,
-                 r: 0.8 + Math.random() * 1.2, p: Math.random() * Math.PI * 2, v: 4 + Math.random() * 10 });
+  lanterns = [];
+  for (let i = 0; i < town.length; i++) {
+    const b = town[i];
+    lanterns.push({ x: b.x + b.w * 0.1, y: waterY - b.h + 9, p: Math.random() * 9 });
+    if (i % 2 === 0) lanterns.push({ x: b.x + b.w * 0.82, y: waterY - b.h + 11, p: Math.random() * 9 });
   }
-  moon = { x: W * 0.82, y: groundY * 0.24, r: Math.min(W, H) * 0.045 };
+  // 乌篷船队（自动燃放等级）：泊在河面
+  boats = [];
+  const boatN = Math.min(6, G.lv.tower);
+  for (let i = 0; i < boatN; i++) {
+    boats.push({ x: W * (0.1 + (i + Math.random() * 0.6) / boatN * 0.82), p: Math.random() * 9 });
+  }
+  // 莲花河灯（稀有金弹等级）
+  lotus = [];
+  const lotusN = Math.min(16, G.lv.rare * 2);
+  for (let i = 0; i < lotusN; i++) {
+    lotus.push({ x: Math.random() * W, y: waterY + 14 + Math.random() * (H - waterY - 30),
+                 v: (Math.random() < 0.5 ? -1 : 1) * (3 + Math.random() * 7), p: Math.random() * 9 });
+  }
+  moon = { x: W * 0.8, y: waterY * 0.22, r: Math.min(W, H) * 0.042 };
 }
 function resize() {
-  W = innerWidth; H = innerHeight; groundY = H - Math.min(H * 0.16, 150);
+  W = innerWidth; H = innerHeight;
+  groundY = waterY = H - Math.min(H * 0.24, 190);
   for (const cv of [bgCv, fxCv]) {
     cv.width = W * DPR; cv.height = H * DPR;
     cv.getContext("2d").setTransform(DPR, 0, 0, DPR, 0, 0);
   }
   buildScene();
 }
-addEventListener("resize", resize);
+
+function drawEave(b, col) {
+  // 飞檐屋：屋身 + 翘角屋顶
+  const topY = waterY - b.h;
+  bg.fillStyle = col;
+  bg.fillRect(b.x + b.w * 0.08, topY + 9, b.w * 0.84, b.h - 9);
+  bg.strokeStyle = "rgba(170,195,255,.16)"; bg.lineWidth = 1.2;
+  bg.beginPath();
+  bg.moveTo(b.x - b.tip, topY + 10 - b.tip * 0.5);
+  bg.quadraticCurveTo(b.x + b.w * 0.18, topY + 3, b.x + b.w / 2, topY);
+  bg.quadraticCurveTo(b.x + b.w * 0.82, topY + 3, b.x + b.w + b.tip, topY + 10 - b.tip * 0.5);
+  bg.lineTo(b.x + b.w + b.tip - 4, topY + 15);
+  bg.lineTo(b.x - b.tip + 4, topY + 15);
+  bg.closePath();
+  bg.fill();
+  bg.stroke();
+}
+function drawPagoda(cx, baseY, col) {
+  // 七层宝塔剪影
+  const tiers = 7;
+  let w = Math.min(W * 0.055, 64), y = baseY;
+  bg.fillStyle = col;
+  for (let i = 0; i < tiers; i++) {
+    const h = 15 + (tiers - i) * 2.2;
+    bg.fillRect(cx - w * 0.3, y - h, w * 0.6, h);
+    bg.beginPath();
+    bg.moveTo(cx - w / 2, y - h);
+    bg.quadraticCurveTo(cx - w * 0.16, y - h - 7, cx, y - h - 9);
+    bg.quadraticCurveTo(cx + w * 0.16, y - h - 7, cx + w / 2, y - h);
+    bg.closePath(); bg.fill();
+    y -= h + 9; w *= 0.88;
+  }
+  bg.fillRect(cx - 1.2, y - 12, 2.4, 12);
+}
+function drawBridge(x0, x1, col) {
+  // 石拱桥：桥面 + 半圆桥洞
+  const cx = (x0 + x1) / 2, span = x1 - x0, deckY = waterY - 34;
+  bg.fillStyle = col;
+  bg.beginPath();
+  bg.moveTo(x0 - 8, deckY + 6);
+  bg.quadraticCurveTo(cx, deckY - 16, x1 + 8, deckY + 6);
+  bg.lineTo(x1 + 8, deckY + 14);
+  bg.quadraticCurveTo(cx, deckY - 6, x0 - 8, deckY + 14);
+  bg.closePath(); bg.fill();
+  bg.beginPath();
+  bg.moveTo(x0, waterY);
+  bg.quadraticCurveTo(cx, waterY - span * 0.32, x1, waterY);
+  bg.lineTo(x1, deckY + 14);
+  bg.quadraticCurveTo(cx, deckY - 6, x0, deckY + 14);
+  bg.closePath(); bg.fill();
+}
 
 function drawSky(t) {
   const g = bg.createLinearGradient(0, 0, 0, H);
   g.addColorStop(0, "#050816"); g.addColorStop(0.5, "#0F172A"); g.addColorStop(1, "#1B2540");
   bg.fillStyle = g; bg.fillRect(0, 0, W, H);
-  // 极光带（夜空穹顶）：流动的紫青色纱
+  // 星河（夜空穹顶）
   if (G.lv.dome > 0) {
     bg.save();
     bg.globalCompositeOperation = "lighter";
     const bands = Math.min(3, 1 + ((G.lv.dome / 4) | 0));
     for (let b = 0; b < bands; b++) {
-      const ph = t * 0.00016 * (b % 2 ? -1 : 1) + b * 2.1;
+      const ph = t * 0.00014 * (b % 2 ? -1 : 1) + b * 2.1;
       bg.beginPath();
-      const baseY = groundY * (0.28 + b * 0.1);
+      const baseY = waterY * (0.26 + b * 0.1);
       bg.moveTo(-40, baseY);
       for (let x = -40; x <= W + 40; x += 14) {
-        const yy = baseY - 46 * Math.sin(x * 0.0032 + ph) - 22 * Math.sin(x * 0.009 + ph * 1.7);
+        const yy = baseY - 42 * Math.sin(x * 0.0032 + ph) - 20 * Math.sin(x * 0.009 + ph * 1.7);
         bg.lineTo(x, yy);
       }
-      const hue = b % 2 ? 268 : 176; // 紫 / 青
-      bg.strokeStyle = `hsla(${hue}, 80%, 62%, ${0.05 + Math.min(0.1, G.lv.dome * 0.016)})`;
-      bg.lineWidth = 34 + b * 12;
-      bg.stroke();
-      bg.lineWidth = 10;
-      bg.strokeStyle = `hsla(${hue}, 90%, 72%, ${0.06 + Math.min(0.12, G.lv.dome * 0.02)})`;
+      bg.strokeStyle = `hsla(${b % 2 ? 262 : 200}, 62%, 70%, ${0.045 + Math.min(0.09, G.lv.dome * 0.014)})`;
+      bg.lineWidth = 30 + b * 14;
       bg.stroke();
     }
     bg.restore();
@@ -207,17 +279,7 @@ function drawSky(t) {
     bg.fillRect(s.x, s.y, s.r, s.r);
   }
   bg.globalAlpha = 1;
-  // 金尘微粒（稀有金弹）：缓慢漂浮上闪
-  if (motes.length) {
-    for (const m of motes) {
-      const yy = (m.y - t * 0.001 * m.v) % (groundY * 0.8);
-      const a = 0.3 + 0.5 * Math.abs(Math.sin(t * 0.0012 + m.p));
-      bg.globalAlpha = a;
-      bg.fillStyle = "#ffd27a";
-      bg.fillRect(m.x, yy < 0 ? yy + groundY * 0.8 : yy, m.r, m.r);
-    }
-    bg.globalAlpha = 1;
-  }
+  // 月亮与月晕
   bg.save();
   const glow = bg.createRadialGradient(moon.x, moon.y, moon.r * 0.4, moon.x, moon.y, moon.r * 3.4);
   glow.addColorStop(0, "rgba(220,228,255,.20)"); glow.addColorStop(1, "rgba(220,228,255,0)");
@@ -225,39 +287,94 @@ function drawSky(t) {
   bg.fillStyle = "#e8edff"; bg.beginPath(); bg.arc(moon.x, moon.y, moon.r, 0, 7); bg.fill();
   bg.fillStyle = "#0F172A"; bg.beginPath(); bg.arc(moon.x - moon.r * 0.42, moon.y - moon.r * 0.18, moon.r * 0.92, 0, 7); bg.fill();
   bg.restore();
-  bg.fillStyle = "#0b1122";
-  bg.beginPath(); bg.moveTo(0, groundY);
-  for (let x = 0; x <= W; x += 8) {
-    bg.lineTo(x, groundY - 26 - 20 * Math.sin(x * 0.006) - 12 * Math.sin(x * 0.017 + 2));
+  // 水墨远山两层
+  bg.fillStyle = "#101a30";
+  bg.beginPath(); bg.moveTo(0, waterY);
+  for (let x = 0; x <= W; x += 8) bg.lineTo(x, hillY(ridgeFar, x));
+  bg.lineTo(W, waterY); bg.closePath(); bg.fill();
+  bg.fillStyle = "#0b1224";
+  bg.beginPath(); bg.moveTo(0, waterY);
+  for (let x = 0; x <= W; x += 8) bg.lineTo(x, hillY(ridgeNear, x));
+  bg.lineTo(W, waterY); bg.closePath(); bg.fill();
+  // 宝塔与石拱桥（远景）
+  drawPagoda(W * 0.9, waterY - 6, "#0a0f20");
+  drawBridge(W * 0.6, W * 0.86, "#0a0f20");
+  // 古镇飞檐群（近景，最暗压得住画面）
+  for (const b of town) drawEave(b, "#080d1a");
+  // 檐角灯笼：暖光 + 摆动 + 光晕
+  for (const L of lanterns) {
+    const sw = Math.sin(t * 0.0011 + L.p) * 2.2;
+    const lx = L.x + sw, ly = L.y + Math.abs(sw) * 0.4 + 6;
+    bg.strokeStyle = "rgba(255,200,120,.5)"; bg.lineWidth = 1;
+    bg.beginPath(); bg.moveTo(L.x, L.y - 6); bg.lineTo(lx, ly - 3); bg.stroke();
+    const gl = bg.createRadialGradient(lx, ly + 3, 0.5, lx, ly + 3, 13);
+    gl.addColorStop(0, "rgba(255,190,110,.5)"); gl.addColorStop(1, "rgba(255,190,110,0)");
+    bg.fillStyle = gl; bg.beginPath(); bg.arc(lx, ly + 3, 13, 0, 7); bg.fill();
+    bg.fillStyle = "#ffcf8a"; bg.beginPath(); bg.ellipse(lx, ly + 3, 2.6, 3.6, 0, 0, 7); bg.fill();
   }
-  bg.lineTo(W, groundY); bg.closePath(); bg.fill();
-  // 城市剪影 + 窗灯（塔越多灯越亮越密）+ 楼顶发射架
-  const winA = 0.5 + Math.min(0.45, G.lv.tower * 0.06);
-  let padsDrawn = 0;
-  for (const b of city) {
-    bg.fillStyle = "#0d1428";
-    bg.fillRect(b.x, groundY - b.h, b.w, b.h);
-    const lights = ((b.x * 7 + b.w * 13) % 5 < 2.2 ? 2 : 1) + (G.lv.tower > 3 && b.h > 90 ? 1 : 0);
-    for (let L = 0; L < lights; L++) {
-      bg.fillStyle = `rgba(255,214,140,${winA})`;
-      bg.fillRect(b.x + b.w * (0.2 + L * 0.24), groundY - b.h * (0.62 - L * 0.18), 3, 4.4);
+  // 水面
+  const wg = bg.createLinearGradient(0, waterY, 0, H);
+  wg.addColorStop(0, "#081020"); wg.addColorStop(1, "#03060d");
+  bg.fillStyle = wg; bg.fillRect(0, waterY, W, H - waterY);
+  // 岸线微光
+  bg.fillStyle = "rgba(160,190,255,.10)"; bg.fillRect(0, waterY, W, 1.4);
+  // 烟花倒影：把上一帧 fx 垂直镜像切片 + 波浪横移
+  if (parts.length || rockets.length) {
+    const Rh = H - waterY, slices = 34, sH = Rh / slices;
+    bg.save();
+    bg.globalAlpha = 0.3;
+    for (let s = 0; s < slices; s++) {
+      const d = s * sH;
+      const wob = Math.sin(d * 0.055 + t * 0.0018) * (2 + d * 0.02);
+      const fade = 1 - s / slices;
+      bg.globalAlpha = 0.3 * fade;
+      bg.drawImage(fxCv, 0, (waterY - d * 0.8) * DPR, W * DPR, sH * 0.8 * DPR + 1,
+                   wob, waterY + d, W, sH + 0.8);
     }
-    // 发射架：给最高的几栋楼装上（自动燃放塔等级）
-    if (padsDrawn < Math.min(6, G.lv.tower) && b.h > 70 && b.w > 34) {
-      const topY = groundY - b.h;
-      bg.strokeStyle = "#2a3654"; bg.lineWidth = 2;
-      bg.beginPath();
-      bg.moveTo(b.x + b.w * 0.3, topY); bg.lineTo(b.x + b.w * 0.5, topY - 13);
-      bg.lineTo(b.x + b.w * 0.7, topY); bg.stroke();
-      bg.beginPath();
-      bg.moveTo(b.x + b.w * 0.5, topY - 13); bg.lineTo(b.x + b.w * 0.5, topY - 19); bg.stroke();
-      const blink = 0.4 + 0.6 * Math.abs(Math.sin(t * 0.003 + b.x));
-      bg.fillStyle = `rgba(255,90,90,${blink})`;
-      bg.beginPath(); bg.arc(b.x + b.w * 0.5, topY - 21, 2, 0, 7); bg.fill();
-      padsDrawn++;
-    }
+    bg.restore();
+    bg.fillStyle = "rgba(8,14,30,.32)"; bg.fillRect(0, waterY, W, H - waterY);
   }
-  bg.fillStyle = "#080d1c"; bg.fillRect(0, groundY, W, H - groundY);
+  // 月光水路
+  {
+    bg.save();
+    for (let i = 0; i < 26; i++) {
+      const yy = waterY + 4 + i * ((H - waterY) / 27);
+      const w = moon.r * (0.5 + Math.abs(Math.sin(t * 0.001 + i)) * 1.6) + i * 0.8;
+      bg.globalAlpha = 0.028 + 0.03 * Math.abs(Math.sin(t * 0.0016 + i * 1.7));
+      bg.fillStyle = "#cdd9ff";
+      bg.fillRect(moon.x - w / 2 + Math.sin(t * 0.001 + i * 2.4) * 3, yy, w, 1.6);
+    }
+    bg.restore();
+  }
+  // 莲花河灯（稀有金弹）
+  for (const Lo of lotus) {
+    Lo.x += Lo.v * 0.016;
+    if (Lo.x < -14) Lo.x = W + 14; if (Lo.x > W + 14) Lo.x = -14;
+    const yy = Lo.y + Math.sin(t * 0.0009 + Lo.p) * 2;
+    const gl = bg.createRadialGradient(Lo.x, yy, 0.5, Lo.x, yy, 12);
+    gl.addColorStop(0, "rgba(255,170,90,.55)"); gl.addColorStop(1, "rgba(255,170,90,0)");
+    bg.fillStyle = gl; bg.beginPath(); bg.arc(Lo.x, yy, 12, 0, 7); bg.fill();
+    bg.fillStyle = "#ffc27a"; bg.fillRect(Lo.x - 2, yy - 1.4, 4, 2.8);
+    bg.fillStyle = "rgba(255,190,120,.35)"; bg.fillRect(Lo.x - 3, yy + 5, 6, 1.2);
+  }
+  // 乌篷船（自动燃放等级）：船身随波轻摇 + 船头灯
+  for (const bt of boats) {
+    const yy = waterY + 7 + Math.sin(t * 0.0008 + bt.p) * 2;
+    bg.fillStyle = "#0a0f1e";
+    bg.beginPath();
+    bg.moveTo(bt.x - 22, yy);
+    bg.quadraticCurveTo(bt.x, yy + 7, bt.x + 22, yy);
+    bg.lineTo(bt.x + 16, yy - 5);
+    bg.lineTo(bt.x - 16, yy - 5);
+    bg.closePath(); bg.fill();
+    bg.beginPath();
+    bg.ellipse(bt.x, yy - 6, 13, 6, 0, Math.PI, 0);
+    bg.fill();
+    const gl = bg.createRadialGradient(bt.x + 20, yy - 6, 0.5, bt.x + 20, yy - 6, 9);
+    gl.addColorStop(0, "rgba(255,200,120,.6)"); gl.addColorStop(1, "rgba(255,200,120,0)");
+    bg.fillStyle = gl; bg.beginPath(); bg.arc(bt.x + 20, yy - 6, 9, 0, 7); bg.fill();
+    bg.fillStyle = "#ffd9a0"; bg.fillRect(bt.x + 19, yy - 8, 2.4, 3.4);
+  }
 }
 
 /* ================= 游戏状态 ================= */
@@ -275,13 +392,13 @@ const fmt = (n) => {
 const ITEMS = [
   { id: "fuse", name: "速燃引线", d: () => "手放一朵的光尘 ×" + (2 ** G.lv.fuse).toFixed(0) + "。你的手越来越巧。",
     cost: () => 60 * Math.pow(2.4, G.lv.fuse), max: 25 },
-  { id: "bore", name: "大口径", d: () => "每一朵更饱满（粒子 ×" + Math.pow(1.25, G.lv.bore).toFixed(2) + "），光尘跟着涨。",
+  { id: "bore", name: "大口径", d: () => "每一朵更饱满（炸开半径 ×" + (1 + G.lv.bore * 0.09).toFixed(2) + "），光尘跟着涨。",
     cost: () => 240 * Math.pow(2.6, G.lv.bore), max: 20 },
-  { id: "tower", name: "自动燃放塔", d: () => "城里每 " + towerInterval().toFixed(1) + " 秒自己放一朵，你不在它也放。",
+  { id: "tower", name: "乌篷船队", d: () => "河上泊着 " + G.lv.tower + " 条乌篷船替你放，每 " + towerInterval().toFixed(1) + " 秒一朵，你不在它们也放。",
     cost: () => 550 * Math.pow(2.3, G.lv.tower), max: 30 },
-  { id: "rare", name: "稀有金弹", d: () => (rareChance() * 100).toFixed(0) + "% 概率开出金弹，光尘 ×10。",
+  { id: "rare", name: "莲花河灯", d: () => "水面上漂起 " + (G.lv.rare * 2) + " 盏河灯；金弹概率 " + (rareChance() * 100).toFixed(0) + "%，光尘 ×10。",
     cost: () => 3000 * Math.pow(2.8, G.lv.rare), max: 12 },
-  { id: "dome", name: "夜空穹顶", d: () => "所有光尘 ×" + Math.pow(1.5, G.lv.dome).toFixed(2) + "。整座城抬头看你。",
+  { id: "dome", name: "夜空星河", d: () => "天上淌着星河，星星更密，所有光尘 ×" + Math.pow(1.5, G.lv.dome).toFixed(2) + "。",
     cost: () => 9000 * Math.pow(3, G.lv.dome), max: 15 },
 ];
 function towerInterval() { return Math.max(1.2, 6 * Math.pow(0.88, G.lv.tower)); }
@@ -309,7 +426,7 @@ function load() {
         const earn = Math.round(blooms * dustPerBloom(false) * 0.6);
         if (earn > 0) {
           G.dust += earn; G.total += earn;
-          setTimeout(() => toast("你不在的 " + Math.round(away / 60) + " 分钟，城里放了你 " + fmt(blooms) + " 朵烟花，落下 " + fmt(earn) + " 光尘"), 900);
+          setTimeout(() => toast("你不在的 " + Math.round(away / 60) + " 分钟，镇上放了你 " + fmt(blooms) + " 朵烟花，落下 " + fmt(earn) + " 光尘"), 900);
         }
       }
     }
@@ -474,7 +591,7 @@ function sfxCrackle() {
 /* ================= 里程碑 ================= */
 const STONES = [1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9];
 const STONE_MSG = ["第一千粒光尘落进口袋", "一万了——铺子开始记住你", "十万光尘。夜里没有一朵烟花是白放的",
-  "一百万。城里的孩子以为这是节日", "一千万。你成了夜空本身", "一亿。天文台来登记这颗星", "十亿。你已经不需要这些数字了"];
+  "一百万。镇上的孩子以为这是节日", "一千万。你成了夜空本身", "一亿。天文台来登记这颗星", "十亿。你已经不需要这些数字了"];
 function milestones() {
   while (STONES.length && G.total >= STONES[0]) {
     STONES.shift();
@@ -595,7 +712,8 @@ function frame(t) {
     nextTower = t + towerInterval() * 1000;
     if (parts.length < MAX * 0.75) {
       const golden = Math.random() < rareChance();
-      launch(W * (0.12 + Math.random() * 0.76), H * (0.12 + Math.random() * 0.34), Math.random() < 0.12, golden);
+      const bt = boats.length ? boats[(Math.random() * boats.length) | 0] : null;
+      launch(bt ? bt.x + (Math.random() - 0.5) * 24 : W * (0.12 + Math.random() * 0.76), H * (0.1 + Math.random() * 0.34), Math.random() < 0.12, golden);
     }
   }
   // 界面节流刷新
