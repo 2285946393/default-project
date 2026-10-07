@@ -1,0 +1,15 @@
+{
+  "id": "wuwancients",
+  "name": "鸣潮先古",
+  "displayName": "鸣潮先古",
+  "version": "0.92.9",
+  "min_game_version": "0.111.0",
+  "author": "supermanpower",
+  "description": "nothing",
+  "has_dll": true,
+  "has_pck": true,
+  "affects_gameplay": true,
+  "dependencies": [
+    { "id": "BaseLib", "min_version": "v3.2.0" }
+  ]
+}

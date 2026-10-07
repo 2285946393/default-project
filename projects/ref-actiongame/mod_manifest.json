@@ -1,0 +1,13 @@
+{
+  "id": "local.action_game",
+  "pck_name": "local.action_game",
+  "has_pck": false,
+  "version": "0.1.12",
+  "affects_gameplay": true,
+  "description": "把《杀戮尖塔 2》原版的回合制战斗改成类幸存者模式。用 WASD 躲避攻击，瓦库自动出牌，撑过一段时间即胜利。目前仍在测试。\nTurns Slay the Spire 2's turn-based combat into a survivor-like / bullet-heaven mode. Dodge with WASD, Waku auto-plays cards, survive for a while to win. Still in testing.",
+  "author": "普通网友Cano",
+  "has_dll": true,
+  "name": "假如塔2是类幸存者 / Make STS2 Bullet Heaven",
+  "min_game_version": "0.107.0",
+  "dependencies": []
+}
