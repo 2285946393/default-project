@@ -33,3 +33,7 @@ __pycache__/
 projects/sts2-asset-library/
 # 官方+社区教程包：Steam 工坊下载（作者 jezxx），46MB
 projects/sts2-moddev-workspace/
+
+# RitsuLib 上游源码快照（MIT，公开可重新下载，19MB / 1380 文件）
+# 重新获取：curl -sSL https://codeload.github.com/BAKAOLC/STS2-RitsuLib/tar.gz/refs/heads/main | tar xz
+projects/ref-ritsulib/upstream/

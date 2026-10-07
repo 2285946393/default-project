@@ -1,0 +1,519 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AssemblyInteropAttribute
+    标记一个类，使其公共方法、属性及嵌套 类型转发到 由程序集限定名称解析的 CLR 类型，例如 Namespace.Type, AssemblyName。
+  · 属性 Type
+      未指定 的成员所使用的默认程序集限定 CLR 类型名。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.ActScopedRegistrationAttributeBase
+    按阶段限定内容注册范围的基础元数据。
+  · 属性 ActType
+      目标阶段模型类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AttributeAutoRegistrationTypeDiscoveryContributor
+    内置贡献器：对每个程序集扫描一次 RitsuLib 自动注册特性，对所得操作进行确定性排序， 再通过显式注册表 API 执行。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoRegistrationAttribute
+    由 RitsuLib 自动注册管线处理的声明式注册基础元数据。
+  · 属性 Order
+      同一注册阶段内的局部排序。数值越小越先运行。
+  · 属性 Inherit
+      当基类型上声明的特性将此项设为 时，该注册可应用到具体派生类型。 每个逻辑注册槽位采用距离派生类型最近的声明： 直接声明可以替换继承的卡池、数量、路径、位置或阈值等配置，而不同目标 ID 或作用域的注册仍会累加。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoTimelineSlotAfterColumnAttribute
+    将标注的模组历史节点放入锚点历史时期之后最近的空闲时间线列。
+  · 属性 AnchorEra
+      用作位置锚点的历史时期。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoTimelineSlotAfterEpochColumnAttribute
+    将标注的模组历史节点放入参考历史节点所在列之后最近的空闲时间线列。
+  · 属性 ReferenceEpochType
+      以其所在列作为位置锚点的参考历史节点。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoTimelineSlotAttribute
+    将标注的模组历史节点放入指定历史时期时间线列中的第一个空位。
+  · 属性 Era
+      目标历史时期。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoTimelineSlotBeforeColumnAttribute
+    将标注的模组历史节点放入锚点历史时期之前最近的空闲时间线列。
+  · 属性 AnchorEra
+      用作位置锚点的历史时期。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoTimelineSlotBeforeEpochColumnAttribute
+    将标注的模组历史节点放入参考历史节点所在列之前最近的空闲时间线列。
+  · 属性 ReferenceEpochType
+      以其所在列作为位置锚点的参考历史节点。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoTimelineSlotInColumnAttribute
+    将标注的模组历史节点放入锚点历史时期所在的时间线列。
+  · 属性 AnchorEra
+      使用其时间线列的历史时期。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.AutoTimelineSlotInEpochColumnAttribute
+    将标注的模组历史节点放入参考历史节点所在的同一列。
+  · 属性 ReferenceEpochType
+      应与其共享列的参考历史节点。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.CharacterEpochRegistrationAttributeBase
+    角色与历史节点解锁条件注册的基础元数据。
+  · 属性 EpochType
+      目标历史节点类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.CharacterStarterRegistrationAttributeBase
+    角色初始内容注册的基础元数据。
+  · 属性 CharacterType
+      目标角色模型类型。
+  · 属性 Count
+      要注册的份数。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.ContentRegistrationAttribute
+    通过 ModContentRegistry 分发的内容注册基础元数据。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.KeywordRegistrationAttributeBase
+    归属于模组的关键词注册基础元数据。
+  · 属性 LocalKeywordStem
+      归属模组命名空间内的本地关键词词干。
+  · 属性 TitleTable
+      包含标题键的本地化表。
+  · 属性 TitleKey
+      标题使用的可选显式本地化键。
+  · 属性 DescriptionTable
+      包含描述键的可选本地化表。
+  · 属性 DescriptionKey
+      描述使用的可选显式本地化键。
+  · 属性 IconPath
+      悬停提示渲染使用的可选图标路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.ModelPublicEntryRegistrationAttributeBase
+    可配置公共条目命名方式的池类模型注册基础元数据。
+  · 属性 PoolType
+      目标池模型类型。
+  · 属性 StableEntryStem
+      可选的、由作者指定的稳定类型名词干。
+  · 属性 FullPublicEntry
+      可选的完整固定公共条目覆盖。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterAchievementAttribute
+    将标注类型注册为成就模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterActAncientAttribute
+    将标注先古之民事件类型注册到指定阶段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterActAttribute
+    将标注类型注册为阶段模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterActEncounterAttribute
+    将标注遭遇类型注册到指定阶段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterActEventAttribute
+    将标注事件类型注册到指定阶段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterAfflictionAttribute
+    将标注类型注册为侵蚀模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterArchaicToothTranscendenceAttribute
+    注册由“古老牙齿”将标注初始卡牌转化为指定先古卡牌的超越映射。
+  · 属性 AncientCardType
+      超越产生的先古卡牌类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterBadModifierAttribute
+    将标注类型注册为负面每日特效。
+  · 属性 ModifierListSortOrder
+      负值插入当前负面特效列表区段之前；非负值插入之后。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterCardAttribute
+    将标注类型注册为指定卡牌池中的卡牌。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterCharacterAttribute
+    将标注类型注册为角色模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterCharacterStarterCardAttribute
+    将标注卡牌类型注册为指定角色的初始内容。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterCharacterStarterPotionAttribute
+    将标注药水类型注册为指定角色的初始内容。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterCharacterStarterRelicAttribute
+    将标注遗物类型注册为指定角色的初始内容。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterDefaultModelCapabilityAttribute
+    将标注的能力类型添加到目标模型类型实例的默认能力集合。
+  · 属性 TargetModelType
+      目标模型类型。
+  · 属性 ModifierId
+      可选的稳定特效 ID。默认由 RitsuLib 根据能力类型和目标类型派生模组作用域 ID。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterDustyTomeCardAttribute
+    将标注先古卡牌注册为指定角色的“尘封魔典”优先候选。
+  · 属性 CharacterType
+      其“尘封魔典”候选池应包含标注卡牌的角色类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterEnchantmentAttribute
+    将标注类型注册为附魔模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterEpochAttribute
+    将标注类型注册为时间线历史节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterEpochCardsAttribute
+    为标注历史节点注册显式卡牌解锁内容，并要求先揭示该历史节点才能解锁这些卡牌。
+  · 属性 CardTypes
+      该历史节点揭示的卡牌模型类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterEpochRelicsFromPoolAttribute
+    将指定遗物池中的每件遗物注册为标注历史节点的解锁内容，并要求先揭示该节点。
+  · 属性 PoolType
+      遗物池模型类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterGlobalEncounterAttribute
+    将标注类型注册为全局遭遇。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterGoodModifierAttribute
+    将标注类型注册为正面每日特效。
+  · 属性 ModifierListSortOrder
+      负值插入当前正面特效列表区段之前；非负值插入之后。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterModelCapabilityAttribute
+    将标注类型注册为模型能力。
+  · 属性 StableEntryStem
+      可选的、由作者指定的稳定能力 ID 与公共条目词干。
+  · 属性 FullPublicEntry
+      可选的完整固定公共条目及能力 ID 覆盖值。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterMonsterAttribute
+    将标注类型注册为怪物模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterMutuallyExclusiveModifierGroupAttribute
+    为自定模式和每日挑战的随机特效选择注册互斥组。
+  · 属性 MemberTypes
+      同一互斥组中的其他特效类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterNodeAttachmentAttribute
+    声明式注册由工厂或节点构造函数创建的节点挂载项。
+  · 属性 NodeType
+      可选的子节点类型；省略时，标注类型本身必须是子节点类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterNodeAttachmentAttributeBase
+    在父节点 _Ready 生命周期中声明式挂载子节点的基础元数据。
+  · 属性 ParentType
+      在其 _Ready 生命周期中执行挂载的父节点类型。
+  · 属性 LocalId
+      归属模组命名空间内的本地挂载 ID。
+  · 属性 NodeName
+      节点加入前为其指定的可选直接子节点名称。
+  · 属性 UniqueNameInOwner
+      设置 ，并在节点加入后将挂载父节点设为 。
+  · 属性 IncludeDerivedParentTypes
+      注册到父基类的挂载项是否也应用于派生节点实例。
+  · 属性 DuplicatePolicy
+      处理已有同名直接子节点的策略。
+  · 属性 AddMode
+      将子节点加入挂载父节点时使用的方法。
+  · 属性 SetupTiming
+      在子节点加入前还是加入后运行。
+  · 属性 ChildIndex
+      可选的最终直接子节点索引；负数表示不指定索引。
+  · 属性 InsertBeforeName
+      可选：将新节点插入到该直接子节点之前。
+  · 属性 InsertAfterName
+      可选：将新节点插入到该直接子节点之后。
+  · 属性 QueueFreeReplacedNode
+      是否通过 释放被替换的已有子节点。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterNodeAttachmentFromConvertedSceneAttribute
+    声明式注册由 RitsuLib 节点工厂转换场景后创建的节点挂载项。
+  · 属性 NodeType
+      预期的子节点类型；省略时，标注类型本身必须是子节点类型。
+  · 属性 ScenePath
+      通过 RitsuLib 节点工厂加载并转换的 Godot 场景资源路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterNodeAttachmentFromSceneAttribute
+    声明式注册直接从 Godot 场景实例化的节点挂载项。
+  · 属性 NodeType
+      预期的子节点类型；省略时，标注类型本身必须是子节点类型。
+  · 属性 ScenePath
+      要实例化的 Godot 场景资源路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterOrbAttribute
+    将标注类型注册为充能球模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterOwnedCardKeywordAttribute
+    按照游戏的卡牌关键词本地化约定，注册归属于模组的关键词。
+  · 属性 LocalKeywordStem
+      归属模组命名空间内的本地关键词词干。
+  · 属性 IconPath
+      悬停提示渲染使用的可选图标路径。
+  · 属性 CardDescriptionPlacement
+      内联卡牌描述注入使用的可选位置。
+  · 属性 IncludeInCardHoverTip
+      此关键词是否显示在卡牌悬停提示中。默认为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterOwnedCardPileAttribute
+    通过 声明式注册模组牌堆。请将此特性用于模组程序集中的 具体类型；该类型可实现 以处理牌堆打开操作。
+  · 属性 LocalPileStem
+      归属模组命名空间内的本地牌堆名称。
+  · 属性 Scope
+      生命周期范围。默认为 。
+  · 属性 Style
+      展示样式。默认为 。
+  · 属性 AnchorKind
+      放置模式。默认为 。
+  · 属性 AnchorOffsetX
+      相对解析后锚点位置增加的 X 轴像素偏移。
+  · 属性 AnchorOffsetY
+      相对解析后锚点位置增加的 Y 轴像素偏移。
+  · 属性 AnchorCustomX
+      使用 时，所选基准点在挂载父节点局部坐标系中的 X 坐标；基准点由 和 指定。
+  · 属性 AnchorCustomY
+      使用 时，所选基准点在挂载父节点局部坐标系中的 Y 坐标。
+  · 属性 AnchorCustomPivotX
+      使用的水平枢轴比例，通常为 0 到 1；默认值 0 使用左边缘。
+  · 属性 AnchorCustomPivotY
+      使用的垂直枢轴比例，通常为 0 到 1；默认值 0 使用上边缘。
+  · 属性 IconPath
+      牌堆图标的 Godot 资源路径（例如 res://my_mod/icons/my_pile.png）。
+  · 属性 Hotkeys
+      用于打开牌堆控件及关闭默认界面的可选 Godot 输入动作 ID。每项是动作名，而非组合键。 注册时按 的约定复制并校验数组。
+  · 属性 CardShouldBeVisible
+      仅对 有意义：为 时， 牌堆中的卡牌会在容器内渲染为 NCard 节点。对于允许打出的额外手牌， 会强制启用此行为。
+  · 属性 ExtraHandDirection
+      额外手牌的内置排列方向。默认为原版手牌布局。
+  · 属性 ExtraHandSpacing
+      额外手牌的水平或垂直像素间距。默认为 110。
+  · 属性 ExtraHandCardScale
+      额外手牌中卡牌的常态缩放比例。默认为 0.65。
+  · 属性 ExtraHandHoverScale
+      额外手牌中卡牌获得焦点时的缩放比例。默认为 1。
+  · 属性 ExtraHandShowPlayableGlow
+      额外手牌卡牌是否使用原版可打出发光规则。默认为 。
+  · 属性 ExtraHandAllowCardPlay
+      额外手牌牌堆是否具备通过原版流程手动出牌的能力，包括与手牌一致的费用显示、验证及支付； 允许打出的卡牌会自动参与核心空手及可打出卡牌查询，并由卡牌节点表示。该值也决定每个新 容器的运行时可用性初始值。默认为 。
+  · 属性 ExtraHandBehaviors
+      应用于额外手牌牌堆卡牌的可选游戏原有手牌语义。默认不添加 所要求语义之外的行为。额外手牌卡牌不会计入游戏原有 最大手牌数量，也不会减少其抽牌容量。
+  · 属性 HoverTipOffsetX
+      自动放置悬停提示后应用的屏幕空间 X 轴偏移。
+  · 属性 HoverTipOffsetY
+      自动放置悬停提示后应用的屏幕空间 Y 轴偏移。
+  · 属性 HoverTipPlacement
+      悬停提示相对于牌堆按钮的放置位置。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterOwnedCardTagAttribute
+    注册归属于模组的自定义 ID。
+  · 属性 LocalCardTagStem
+      归属模组命名空间内的本地卡牌标签词干。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterOwnedKeywordAttribute
+    注册归属于模组的关键词定义。
+  · 属性 CardDescriptionPlacement
+      内联卡牌描述注入使用的可选位置。
+  · 属性 IncludeInCardHoverTip
+      此关键词是否显示在卡牌悬停提示中。默认为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterOwnedTopBarButtonAttribute
+    通过 声明式注册归属于模组的顶部栏按钮。
+  · 属性 LocalButtonStem
+      归属模组命名空间内的本地按钮词干。
+  · 属性 IconPath
+      图标的 Godot 资源路径（例如 res://my_mod/icons/recipes.png）。
+  · 属性 ButtonOrder
+      模组顶部栏按钮之间的全局排序值；值越小越靠近原版牌组按钮。
+  · 属性 OffsetX
+      相对于自动排列槽位的额外水平像素偏移。
+  · 属性 OffsetY
+      相对于自动排列槽位的额外垂直像素偏移。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterPotionAttribute
+    将标注类型注册为指定药水池中的药水。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterPowerAttribute
+    将标注类型注册为能力模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterRelicAttribute
+    将标注类型注册为指定遗物池中的遗物。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSharedAncientAttribute
+    将标注类型注册为共享先古之民事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSharedCardPoolAttribute
+    将标注类型注册为共享卡牌池。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSharedEventAttribute
+    将标注类型注册为共享事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSharedPotionPoolAttribute
+    将标注类型注册为共享药水池。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSharedRelicPoolAttribute
+    将标注类型注册为共享遗物池。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSingletonAttribute
+    将标注类型注册为单例模型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSmartFormatSourceAttribute
+    将标注类型注册为游戏本地化使用的 SmartFormat 选择器源。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterSmartFormatterAttribute
+    将标注类型注册为游戏本地化使用的 SmartFormat 格式化器。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterStoryAttribute
+    将标注类型注册为时间线故事。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterStoryEpochAttribute
+    将标注历史节点类型加入指定故事。
+  · 属性 StoryType
+      目标故事模型类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterTouchOfOrobasRefinementAttribute
+    注册由“欧洛巴斯之触”将标注初始遗物变为指定升级遗物的精炼映射。
+  · 属性 UpgradedRelicType
+      精炼产生的升级遗物类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterTrashHeapCardAttribute
+    将标注卡牌类型注册为“垃圾堆”事件“随便拿点垃圾”选项的候选。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RegisterTrashHeapRelicAttribute
+    将标注遗物类型注册为“垃圾堆”事件“扎进垃圾堆”选项的候选。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RequireAllCardsInPoolAttribute
+    要求先揭示标注历史节点，才能解锁指定卡牌池中的每张已注册卡牌。
+  · 属性 PoolType
+      卡牌池模型类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RequireEpochAttribute
+    要求先揭示指定历史节点，才能解锁标注内容类型。
+  · 属性 EpochType
+      所需历史节点类型。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RevealAscensionAfterEpochAttribute
+    指定历史节点揭示后，显示标注角色的进阶界面。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.RitsuLibOwnedByAttribute
+    覆盖此类型上所声明自动注册特性的归属模组 ID。如果其中某个特性通过 继承到派生类型，对应注册仍使用此归属； 该覆盖不会影响在其他类型上声明的特性。
+  · 属性 ModId
+      在标注类型上声明的自动注册操作所使用的归属模组 ID。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.UnlockCharacterAfterRunAsAttribute
+    通过标注角色的局后角色解锁检查授予指定历史节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.UnlockEpochAfterAscensionOneWinAttribute
+    使用标注角色通关进阶 1 后揭示历史节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.UnlockEpochAfterAscensionWinAttribute
+    使用标注角色在指定进阶等级或更高等级通关后揭示历史节点。
+  · 属性 AscensionLevel
+      解锁所需的最低进阶等级。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.UnlockEpochAfterBossVictoriesAttribute
+    使用标注角色击败指定数量的 Boss 后揭示历史节点。
+  · 属性 RequiredBossWins
+      所需 Boss 击败次数。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.UnlockEpochAfterEliteVictoriesAttribute
+    使用标注角色击败指定数量的精英后揭示历史节点。
+  · 属性 RequiredEliteWins
+      所需精英击败次数。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.UnlockEpochAfterRunAsAttribute
+    使用标注角色完成任意一局游戏后揭示历史节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.AutoRegistration.UnlockEpochAfterWinAsAttribute
+    使用标注角色通关一次后揭示历史节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.IModTypeDiscoveryContributor
+    在所有模组加载后，为每个由模组定义的 CLR 类型贡献处理逻辑。典型用途包括跨模组互操作生成 以及其他加载后反射流程。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.Internal.ModInteropEmitter
+    生成 Harmony 转译补丁，使带有互操作标记的 CLR 存根转发到另一个模组或程序集。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.InteropAnyParamAttribute
+    在解析目标重载时将方法参数标记为通配符；无论可赋值性如何，它都可匹配任意目标参数类型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.InteropClassWrapper
+    实例成员会转发到所包装运行时对象的互操作存根基类。参见 和 。
+  · 字段 Value
+      接收成员转发调用的运行时实例。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.InteropIgnoreAttribute
+    将声明的成员排除在互操作绑定之外。被忽略的属性保留两个访问器，方法保留原实现； 标注任一访问器会排除整个属性。其他成员照常处理。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.InteropTargetAttribute
+    为嵌套包装器类、方法或属性覆盖目标类型或成员名。与 配合时，类型在目标模组的程序集中解析；与 配合时，类型必须使用程序集限定的 CLR 类型名。
+  · 属性 GenericTypes
+      获取或设置目标方法的具体泛型实参；标注包装类或属性时则用于目标类型。类型名须包含 CLR 元数， 例如 Namespace.Box`1。赋值及读取时复制数组；null 或空数组表示不指定泛型实参。最多接受 32 个 已封闭、非指针、非引用、非类引用且非 void 的类型。
+  · 属性 Type
+      显式指定的目标类型名；从外层上下文继承时为 。
+  · 属性 Name
+      显式指定的远端成员名；使用存根名称时为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.ModInteropAttribute
+    标记一个类，使其公共方法、属性及嵌套 类型在运行时被重写， 从而无需编译期引用即可调用另一个模组程序集中的成员。
+  · 属性 ModId
+      此互操作接口所依赖目标模组的清单 ID。
+  · 属性 Type
+      未指定 的成员所使用的默认远端 CLR 类型名。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.ModInteropTypeDiscoveryContributor
+    处理带有 或 标记之存根的内置贡献器。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.ModTypeDiscoveryHub
+    在本地化初始化早期调用的可扩展模组加载后类型发现管线。它与 BaseLib 的扫描时机保持一致， 但不会将发现流程绑定到单一功能。
+  · 方法 LogDiagnostics
+      将当前贡献器列表和已注册的模组到程序集映射写入 RitsuLib 日志。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.Patches.ModTypeDiscoveryPatch
+    在 BaseLib 使用的同一生命周期节点运行一次 ，此时后续游戏系统 尚未使用本地化数据。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.Patches.SavedAttachedStatePatches
+    将 实例接入 的序列化与反序列化流程。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.Patches.SavedAttachedStatePatches.SavedPropertiesFillInternalPatch
+    在原版模型属性反序列化后导入已注册的持久化附加状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.Patches.SavedAttachedStatePatches.SavedPropertiesFromInternalPatch
+    在原版模型属性序列化后导出已注册的持久化附加状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Interop.Patches.SavedPropertiesTypeCacheInjectionPatch
+    在确定的初始化节点完成 RitsuLib 持久化属性注册，并将其接入游戏的持久化属性网络 ID 表。

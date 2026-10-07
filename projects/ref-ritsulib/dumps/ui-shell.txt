@@ -1,0 +1,757 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellChromeStyles
+    提供由模组设置界面和模态浮层共享的紧凑编辑器、列表及工具栏样式框工厂。
+  · 方法 CreateSurfaceStyle
+      为通用内容创建带背景、边框和柔和阴影的圆角平面面板。
+  · 方法 CreateColorPickerSwatchFrameStyle
+      为颜色样本预览创建紧凑的内嵌边框。
+  · 方法 CreateInsetSurfaceStyle
+      为次级内容创建凹陷面板。
+  · 方法 CreatePageToolbarTrayStyle
+      创建页面级工具栏控件（如搜索及操作控件）后方的托盘。
+  · 方法 CreateListShellStyle
+      为可滚动的列表内容创建外层容器。
+  · 方法 CreateListEditorSurfaceStyle
+      创建用于内联编辑列表项的内部编辑器面板，例如路径或文本条目。
+  · 方法 CreateTooltipPanelStyle
+      为 生成的 Godot TooltipPanel 弹出框创建紧凑面板， 并使其样式与条目控件保持一致。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellPanelStyles
+    提供带框面板和侧边栏卡片所用的共享 工厂，适用于模组设置界面、 运行时浮层及其他采用 Ritsu Shell 样式的游戏内界面。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellStyleCache
+    缓存无参数样式框及少量固定变体。每份缓存都与一个不可变的 快照关联， 因此主题被替换后，旧主题的缓存项会随对应快照一起进入可回收状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellThemePaths
+    提供全局模组数据中 Shell 主题目录的路径。
+  · 方法 GetShellThemesDirectoryVirtual
+      获取 Shell 主题目录的虚拟 user:// 路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipCard.MethodName
+    Cached StringNames for the methods contained in this class, for fast lookup.
+  · 字段 Create
+      Cached name for the 'Create' method.
+  · 字段 CreateLabel
+      Cached name for the 'CreateLabel' method.
+  · 字段 ResolveContentWidth
+      Cached name for the 'ResolveContentWidth' method.
+  · 字段 MeasureWidestLine
+      Cached name for the 'MeasureWidestLine' method.
+  · 字段 ResolveBodyFontSize
+      Cached name for the 'ResolveBodyFontSize' method.
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipCard.PropertyName
+    Cached StringNames for the properties and fields contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipCard.SignalName
+    Cached StringNames for the signals contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipLabel.MethodName
+    Cached StringNames for the methods contained in this class, for fast lookup.
+  · 字段 _MakeCustomTooltip
+      Cached name for the '_MakeCustomTooltip' method.
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipLabel.PropertyName
+    Cached StringNames for the properties and fields contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipLabel.SignalName
+    Cached StringNames for the signals contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipPanelContainer.MethodName
+    Cached StringNames for the methods contained in this class, for fast lookup.
+  · 字段 _MakeCustomTooltip
+      Cached name for the '_MakeCustomTooltip' method.
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipPanelContainer.PropertyName
+    Cached StringNames for the properties and fields contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipPanelContainer.SignalName
+    Cached StringNames for the signals contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.RitsuShellTooltipTheme
+    通过附加到祖先控件的 ，将 Shell 主题令牌映射到 Godot 原生的 TooltipPanel 和 TooltipLabel 主题类型。
+  · 字段 TooltipLabelClass
+  · 字段 PanelStyle
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.BgBorder
+    存储多个组件状态共用的背景及边框颜色。
+  · 属性 Bg
+      背景填充颜色。
+  · 属性 Border
+      边框颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.BorderWidthMetrics
+    按视觉强调程度分类定义备用边框宽度。
+  · 属性 Thin
+      细边框宽度。
+  · 属性 Normal
+      普通强调边框宽度。
+  · 属性 Thick
+      强强调边框宽度。
+  · 属性 Overlay
+      浮动层面板的边框宽度。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.BoxCorners
+    存储 已解析的左上、右上、右下及左下圆角半径。
+  · 属性 TopLeft
+      TopLeft 的有符号像素值。
+  · 属性 TopRight
+      TopRight 的有符号像素值。
+  · 属性 BottomRight
+      BottomRight 的有符号像素值。
+  · 属性 BottomLeft
+      BottomLeft 的有符号像素值。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.BoxEdges
+    存储已解析的左、上、右、下边缘值。
+  · 属性 Left
+      Left 的有符号像素值。
+  · 属性 Top
+      Top 的有符号像素值。
+  · 属性 Right
+      Right 的有符号像素值。
+  · 属性 Bottom
+      Bottom 的有符号像素值。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ChoiceCenterTokens
+    集中定义选择控件中央标签的双色高亮渐变。
+  · 属性 HighlightTop
+      渐变顶部的颜色。
+  · 属性 HighlightBottom
+      渐变底部的颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ChoiceMetrics
+    集中定义选择步进器条目的尺寸。
+  · 属性 RowMinWidth
+      完整步进器行的最小宽度。
+  · 属性 CenterMinWidth
+      中央标签区域的最小宽度。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ChromeMenuTokens
+    集中定义紧凑操作菜单的颜色。
+  · 属性 Default
+      静止状态的背景及边框。
+  · 属性 Hover
+      悬停状态的背景及边框。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.CollapsibleTokens
+    按交互状态分类定义可折叠分区标题栏的颜色。
+  · 属性 Default
+      静止状态的背景及边框。
+  · 属性 Hover
+      悬停状态的背景及边框。
+  · 属性 Selected
+      选中或展开状态的背景及边框。
+  · 属性 Disabled
+      分区内容不可用时使用的状态，即使标题栏本身仍可交互。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ColorRowMetrics
+    集中定义颜色选择器条目及色块的尺寸。
+  · 属性 RowMinWidth
+      颜色选择器行的最小宽度。
+  · 属性 SwatchSize
+      颜色色块的宽度及高度。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ColorTokens
+    集中定义不受组件状态或变体作用域限制的基础颜色。
+  · 属性 White
+      活动控件及浮层使用的纯白色调。
+  · 属性 Transparent
+      完全透明的颜色。
+  · 属性 Divider
+      分隔各区域所用的细分隔线颜色。
+  · 属性 UnsetPreview
+      尚未提交的值所用的预览色调。
+  · 属性 ModalBackdrop
+      模态面板后方的变暗背景色。
+  · 属性 Shadow
+      共享的阴影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ComponentTokens
+    按组件、变体及交互状态分类定义 Shell 主题颜色。
+  · 属性 SidebarCard
+      侧边栏模组卡片的默认及选中状态。
+  · 属性 ChromeMenu
+      紧凑操作菜单的状态。
+  · 属性 PageToolbarTray
+      页面级工具栏控件后方的托盘。
+  · 属性 ListShell
+      可滚动列表的外层容器。
+  · 属性 ListItem
+      列表项卡片的变体。
+  · 属性 ListEditor
+      内联列表编辑器面板。
+  · 属性 Pill
+      胶囊形标签及紧凑按钮的状态。
+  · 属性 Toggle
+      设置开关的状态。
+  · 属性 Slider
+      滑块柄的高光及阴影颜色。
+  · 属性 Dropdown
+      下拉框正面的交互状态。
+  · 属性 Stepper
+      步进器正面的状态。
+  · 属性 DragHandle
+      可重新排序列表中拖动手柄的状态。
+  · 属性 Collapsible
+      可折叠分区标题栏的状态。
+  · 属性 SidebarBtn
+      侧边栏树状行的类型、深度及交互状态。
+  · 属性 SidebarRail
+      分区导航轨道的颜色。
+  · 属性 TextButton
+      内联文本按钮的强调、危险及中性色调。
+  · 属性 StringValidation
+      字符串编辑器验证边框的中性及无效状态。
+  · 属性 OverlayPanel
+      浮动层面板的颜色。
+  · 属性 ChoiceCenter
+      选择控件中央标签的高亮渐变。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.DragHandleTokens
+    按选中状态分类定义拖动手柄的颜色。
+  · 属性 Default
+      静止状态的背景及边框。
+  · 属性 Selected
+      选中状态的背景及边框。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.DropdownTokens
+    集中定义下拉框正面的基础、悬停、按下及聚焦颜色。
+  · 属性 Open
+      默认正面状态的背景及边框。
+  · 属性 Hover
+      悬停状态的颜色；省略边框时回退到 。
+  · 属性 Pressed
+      按下状态的颜色；省略边框时回退到 。
+  · 属性 Focus
+      聚焦状态的背景及边框。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.EntryMetrics
+    集中定义常见条目及值控件的尺寸。
+  · 属性 ValueMinWidth
+      紧凑值控件的默认最小宽度。
+  · 属性 ValueMinHeight
+      值控件的默认最小高度。
+  · 属性 MiniStepperButtonSize
+      紧凑步进按钮的宽度及高度。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.EntrySurfaceTokens
+    集中定义标准条目容器使用的颜色。
+  · 属性 Bg
+      背景填充颜色。
+  · 属性 Border
+      边框颜色。
+  · 属性 Shadow
+      投影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.FontSizeMetrics
+    集中定义 Shell 控件、导航及浮层使用的字号。
+  · 属性 Button
+      标准按钮的默认字号。
+  · 属性 MiniButton
+      紧凑按钮的字号。
+  · 属性 ValueLabel
+      下拉框正面及步进器中央标签的字号。
+  · 属性 PopupRow
+      下拉框及其他弹出框中各行的字号。
+  · 属性 HintSmall
+      小型内联提示的字号。
+  · 属性 Tooltip
+      原生 TooltipLabel 控件的字号。
+  · 属性 Grip
+      字形拖动握柄的字号。
+  · 属性 PillCount
+      列表计数徽标的字号。
+  · 属性 Secondary
+      次要文本的字号。
+  · 属性 HeaderArrow
+      标题栏箭头字形的字号。
+  · 属性 HeaderTitle
+      可折叠标题栏标题的字号。
+  · 属性 HeaderSubtitle
+      标题栏副标题的字号。
+  · 属性 PageDescription
+      工具栏区域内页面说明的字号。
+  · 属性 OverlayTitle
+      浮动层标题的字号。
+  · 属性 OverlayBody
+      浮动层正文的字号。
+  · 属性 OverlayPath
+      浮动层中路径标签的字号。
+  · 属性 SettingsEntryButton
+      原版设置入口按钮标签的字号。
+  · 属性 SettingLineTitle
+      设置条目行主标题的字号。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.FontTokens
+    集中定义为 Shell 主题解析的字体资源。
+  · 属性 Body
+      常规正文字体。
+  · 属性 BodyBold
+      强调正文字体。
+  · 属性 Button
+      紧凑按钮及操作按钮使用的字体。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.FramedSurfaceTokens
+    集中定义大型带框窗格共享的颜色。
+  · 属性 Border
+      外框边框颜色。
+  · 属性 Shadow
+      外框阴影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.InsetSurfaceTokens
+    集中定义嵌套内容所用凹陷面板的颜色。
+  · 属性 Bg
+      凹陷背景的填充颜色。
+  · 属性 Border
+      凹陷面板的边框颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.KeybindingMetrics
+    集中定义按键绑定编辑器的尺寸及辅助文本字号。
+  · 属性 BlockWidth
+      按键绑定控件块的宽度。
+  · 属性 CaptureMinWidth
+      按键捕获按钮的最小宽度。
+  · 属性 HintFontSize
+      按键绑定辅助文本的字号。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.LeafToken
+    表示合并后克隆的叶令牌。标量 $value 属性存储为 CLR 值，复合值及扩展数据则保留为独立的 克隆。
+  · 属性 Value
+      原始令牌值：字符串、数值、布尔值、 或克隆后的复合 JSON。
+  · 属性 Type
+      可选的令牌类型，例如 color、dimension 或 fontFamily。
+  · 属性 Description
+      可选的易读说明。
+  · 属性 Extensions
+      可选的已克隆 $extensions 供应方元数据。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ListEditorTokens
+    集中定义内联列表编辑器面板的颜色。
+  · 属性 Bg
+      编辑器背景颜色。
+  · 属性 Border
+      编辑器边框颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ListItemTokens
+    集中定义列表项卡片的默认及强调颜色。
+  · 属性 Default
+      静止状态的背景及边框。
+  · 属性 Accent
+      强调或选中状态的背景及边框。
+  · 属性 Shadow
+      卡片投影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ListShellTokens
+    集中定义列表外层容器使用的颜色。
+  · 属性 Bg
+      外层容器的背景颜色。
+  · 属性 Border
+      外层容器的边框颜色。
+  · 属性 Shadow
+      外层容器的投影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.MetricTokens
+    集中定义 Shell 主题的尺寸、间距、排版大小及布局行为。
+  · 属性 Radius
+      圆角半径规格。
+  · 属性 BorderWidth
+      边框宽度规格。
+  · 属性 Entry
+      条目及行的尺寸。
+  · 属性 Slider
+      滑块尺寸。
+  · 属性 Choice
+      选择控件及步进器的尺寸。
+  · 属性 Color
+      颜色选择器行的尺寸。
+  · 属性 StringEntry
+      字符串编辑器尺寸。
+  · 属性 Keybinding
+      按键绑定编辑器尺寸。
+  · 属性 Overlay
+      浮动层尺寸。
+  · 属性 Sidebar
+      侧边栏导航的尺寸及行为。
+  · 属性 FontSize
+      字号规格。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.OverlayMetrics
+    集中定义浮动层面板的内容内边距。
+  · 属性 PaddingH
+      水平内容内边距。
+  · 属性 PaddingV
+      垂直内容内边距。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.OverlayPanelTokens
+    集中定义浮动层面板的颜色。
+  · 属性 Bg
+      面板背景颜色。
+  · 属性 Border
+      面板边框颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.PageToolbarTrayTokens
+    集中定义页面工具栏托盘的颜色。
+  · 属性 Bg
+      托盘背景颜色。
+  · 属性 Border
+      托盘边框颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.PillTokens
+    集中定义胶囊形标签及紧凑按钮使用的颜色。
+  · 属性 Default
+      静止状态的背景及边框。
+  · 属性 Hover
+      悬停状态的背景及边框。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RadiusMetrics
+    集中定义常见 Shell 面板的备用圆角半径。
+  · 属性 Default
+      默认样式框圆角半径。
+  · 属性 Validation
+      验证边框的圆角半径。
+  · 属性 Overlay
+      浮动层面板的圆角半径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellTheme
+    表示已解析 Shell 主题的不可变快照。该快照公开类型化的颜色、文本、面板、组件、度量及字体令牌， 同时提供基于路径的访问方式和各模组的扩展数据。
+  · 字段 _leafCache
+      按点分路径缓存叶令牌查找结果。令牌树在快照构建后保持不变，因此命中结果和未命中结果均可安全复用。
+  · 属性 Current
+      获取 当前发布的主题快照。
+  · 属性 Id
+      获取已解析主题的规范化小写标识符。
+  · 属性 Color
+      获取顶层调色板及阴影颜色。
+  · 属性 Text
+      获取富文本、标签、提示及相关文本所用的颜色。
+  · 属性 Surface
+      获取窗格、条目及带框面板所用的颜色。
+  · 属性 Component
+      获取 Shell 界面组件的视觉令牌。
+  · 属性 Metric
+      获取圆角半径、边框宽度、尺寸、字号及其他度量。
+  · 属性 Font
+      获取为该主题解析的字体。
+  · 方法 ListExtensionModIds
+      列出向此快照贡献 extensions.<modId> 数据的模组标识符。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeBuilder
+    从已合并并完成引用解析的设计令牌格式模块令牌树构建 快照， 将规范路径中的值读取到类型化令牌组中。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeCatalog
+    将内置及磁盘上的 .theme.json 文档加载到主题目录，并在构建快照时解析继承关系、 作用域覆盖及令牌引用。
+  · 属性 RegisteredThemeIds
+      获取当前目录中规范化主题标识符的新列表，并按序数顺序排列。
+  · 方法 InvalidateCache
+      使内存中的主题目录失效，以便下次访问时重新加载全部主题。
+  · 方法 EnsureLoaded
+      加载内置主题及磁盘主题文件。缺失的内置主题会提取到用户主题所在目录；若内置修订较新， 则会在尽力备份后替换磁盘上的旧副本。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeDocument
+    表示基于 W3C 设计令牌格式模块的 Shell 主题文档。令牌组存储为嵌套 JSON 对象，叶令牌包含 $value、$type 及可选的 $description 属性。
+  · 属性 SchemaReference
+      获取或设置供编辑器使用的可选 $schema URL。
+  · 属性 ThemeFormatVersion
+      获取或设置主题格式版本，当前为 1。
+  · 属性 ThemeVersion
+      获取或设置用于升级已提取主题文件的内容修订号。内嵌主题的修订号较新时会替换磁盘上的旧副本。
+  · 属性 Id
+      获取或设置主题的小写标识符。
+  · 属性 DisplayName
+      获取或设置在主题选择器中显示的易读名称。
+  · 属性 Inherits
+      获取或设置可选的父主题；当前主题将叠加在该主题之上。
+  · 属性 Core
+      获取或设置基础令牌组。
+  · 属性 Semantic
+      获取或设置语义令牌及别名令牌组。
+  · 属性 Components
+      获取或设置按组件、变体及状态组织的组件令牌。
+  · 属性 Scopes
+      获取或设置按作用域索引的覆盖，包括 shell、modSettings 和 mod:<modId>。
+  · 属性 Extensions
+      获取或设置按模组标识符索引的自由格式扩展数据。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeLayoutResolver
+    根据当前 Shell 主题解析可选布局令牌，并在令牌不可用时使用备用值。
+  · 字段 MaximumCachedBoxes
+      按主题快照、令牌路径及备用值缓存已解析的边缘和圆角集合。主题快照被替换后，对应缓存会随快照一起 进入可回收状态。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeMerger
+    深度合并设计令牌格式模块令牌树，同时保留叶令牌边界。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeModRegistration
+    描述模组贡献的默认令牌，以及可选的 Shell 主题新快照发布回调。
+  · 属性 ModId
+      scopes.mod:<modId> 及扩展数据使用的模组标识符。
+  · 属性 Defaults
+      可选的设计令牌格式模块对象，会在所选主题的继承链之前合并。
+  · 属性 OnApply
+      重建后的快照发布后调用的可选回调。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeReferenceResolver
+    在合并后的令牌树中解析形如 {path.to.token} 的 W3C 设计令牌整值引用。 每个引用都必须指向一个叶令牌。
+  · 方法 GetSingleReferenceRegex
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeRuntime
+    管理当前 Shell 主题快照、主题应用与重新加载、变更通知及模组令牌注册。公开的状态转换均会同步。
+  · 属性 ActiveThemeId
+      获取当前活动快照的规范化标识符；初始值为 default。
+  · 属性 Current
+      获取当前主题快照。首次访问会在需要时构建 default；后续访问会延迟重建已失效的字体资源。
+  · 事件 ThemeChanged
+      在 成功发布主题快照后发生。
+  · 方法 EnsureBaseline
+      若尚无主题快照，则构建并发布 default 基线快照。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.RitsuShellThemeValueCoerce
+    将已解析的 值转换为 Shell 主题快照所用的颜色、有限数值、布尔值及字体。
+  · 字段 DefaultFontFallbackPath
+      字体令牌无法加载时使用的默认字体资源。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ShadowTokens
+    集中定义不与特定组件绑定的阴影颜色。
+  · 属性 Ambient
+      抬升控件使用的柔和环境阴影。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.SidebarBtnTokens
+    集中定义当前侧边栏用于组合模组组、页面、分区及工具条目的旧版颜色槽位。
+  · 属性 Default
+      悬停分区行的背景及静止分区行的边框。
+  · 属性 Hover
+      选中分区行的背景及边框。
+  · 属性 Selected
+      悬停模组组行的背景及静止模组组行的边框。
+  · 属性 SelectedHover
+      选中模组组行的背景及边框。
+  · 属性 UtilitySelected
+      选中工具行的背景。
+  · 属性 IdleDeep
+      静止分区行及工具行的背景。
+  · 属性 IdleDeepHover
+      悬停工具行的背景。
+  · 属性 IdleDeeper
+      为更深层级侧边栏行保留的静止背景。
+  · 属性 IdleDeeperHover
+      为更深层级侧边栏行保留的悬停背景。
+  · 属性 Mod
+      静止模组组行及悬停页面行的背景。
+  · 属性 ModHover
+      选中页面行的背景。
+  · 属性 ModDeep
+      静止页面行的背景。
+  · 属性 DeepBorder
+      静止页面行及工具行的边框颜色。
+  · 属性 DeepBorderHover
+      选中页面行及工具行的边框颜色。
+  · 属性 Shadow
+      侧边栏行共享的投影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.SidebarCardTokens
+    集中定义侧边栏模组卡片的颜色。
+  · 属性 Default
+      默认状态的背景及边框。
+  · 属性 Selected
+      选中状态的背景及边框。
+  · 属性 Shadow
+      两种状态共享的投影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.SidebarMetrics
+    集中定义侧边栏导航的尺寸、间距及可选元数据显示行为。
+  · 属性 Width
+      侧边栏列的最小宽度。
+  · 属性 PageRowMinHeight
+      页面行的最小高度。
+  · 属性 SectionRowMinHeight
+      分区导航行的最小高度。
+  · 属性 ModListSeparation
+      模组卡片之间的垂直间距。
+  · 属性 ModCardInnerSeparation
+      展开的模组卡片内部的垂直间距。
+  · 属性 PageTreeSeparation
+      堆叠的根页面行之间的间距。
+  · 属性 SectionRailSeparation
+      分区导航行之间的间距。
+  · 属性 CardInnerMargin
+      紧凑侧边栏模组卡片的内容边距。
+  · 属性 ShowInlinePageCount
+      若要在展开的模组卡片内显示本地化页面计数行，则为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.SidebarRailTokens
+    集中定义侧边栏分区轨道的背景及边框颜色。
+  · 属性 Bg
+      轨道背景颜色。
+  · 属性 Border
+      轨道边框颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.SliderMetrics
+    集中定义滑块条目、轨道及数值字段的尺寸。
+  · 属性 RowMinWidth
+      滑块行的最小宽度。
+  · 属性 TrackMinWidth
+      为水平滑块轨道预留的最小宽度。
+  · 属性 ValueFieldWidth
+      滑块旁内联数值字段的宽度。
+  · 属性 ValueFieldHeight
+      滑块旁内联数值字段的高度。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.SliderTokens
+    集中定义滑块柄的高光及阴影颜色。
+  · 属性 GrabHighlight
+      外层高光颜色。
+  · 属性 GrabShadow
+      内层阴影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.StepperTokens
+    按交互状态分类定义步进器正面的颜色。
+  · 属性 Default
+      默认状态的背景及边框。
+  · 属性 Hover
+      悬停状态的背景及边框。
+  · 属性 Neutral
+      正面没有可见操作提示时使用的中性颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.StringEntryMetrics
+    集中定义单行及多行字符串编辑器的尺寸。
+  · 属性 MinWidth
+      单行字符串条目的最小宽度。
+  · 属性 MultilineMinHeight
+      多行字符串条目的最小高度。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.StringValidationTokens
+    集中定义字符串编辑器验证边框的中性及无效状态颜色。
+  · 属性 Neutral
+      中性状态的背景及边框。
+  · 属性 Invalid
+      无效状态的背景及边框。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.SurfaceTokens
+    集中定义窗格、条目及带框面板共享的颜色。
+  · 属性 Sidebar
+      设置侧边栏的背景色。
+  · 属性 Content
+      设置内容窗格的背景色。
+  · 属性 Entry
+      标准条目控件的背景、边框及阴影颜色。
+  · 属性 Inset
+      嵌套内容所用凹陷面板的颜色。
+  · 属性 Framed
+      大型带框窗格的边框及阴影颜色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.TextButtonTokens
+    按语义色调分类定义内联文本按钮的颜色。
+  · 属性 Accent
+      强调色调。
+  · 属性 Danger
+      危险色调。
+  · 属性 Neutral
+      中性色调。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.TextButtonToneTokens
+    集中定义一种内联文本按钮色调的前景及状态背景颜色。
+  · 属性 Fg
+      标签前景色。
+  · 属性 Bg
+      基础强调状态使用的着色背景。
+  · 属性 BgHover
+      着色背景的悬停变体。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.TextTokens
+    集中定义富文本、标签、提示及控件文本所用的颜色。
+  · 属性 RichTitle
+      富文本标题颜色。
+  · 属性 RichBody
+      富文本正文颜色。
+  · 属性 RichSecondary
+      描述及副标题使用的次要富文本颜色。
+  · 属性 RichMuted
+      低优先级信息使用的弱化富文本颜色。
+  · 属性 LabelPrimary
+      主要标签颜色。
+  · 属性 LabelSecondary
+      副标题及禁用文本使用的次要标签颜色。
+  · 属性 SidebarSection
+      侧边栏分区标题的颜色。
+  · 属性 HoverHighlight
+      突出、悬停、按下或聚焦控件的前景色。
+  · 属性 Number
+      数值标签的颜色。
+  · 属性 Grip
+      拖动手柄握持字形的颜色。
+  · 属性 Hint
+      内联提示及工具提示文本的颜色。
+  · 属性 DropdownRow
+      下拉弹出框中各行的前景色。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Ui.Shell.Theme.ToggleTokens
+    集中定义开关各状态的颜色及共享的静止阴影。
+  · 属性 On
+      开启状态的背景及边框。
+  · 属性 Off
+      关闭值状态的背景及边框。
+  · 属性 OffHover
+      关闭值悬停状态的颜色；省略边框时回退到 。
+  · 属性 Disabled
+      不可交互状态的背景及边框。
+  · 属性 Shadow
+      静止且未悬停状态的阴影颜色。
+

@@ -1,0 +1,148 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.ModEpochGatedContentRegistry
+    将纪元 ID 映射到受其限制的卡牌和遗物 CLR 类型。 等内容包流程 会填充此注册表，再由内容包声明的解锁纪元模板使用。药水的纪元限制则直接通过 注册。
+  · 属性 IsFrozen
+      获取注册是否已被冻结。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.ModEpochGatedContentRegistry.EpochGatedContentEntry
+    包含所属模组为一个纪元注册的类型快照。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.ModStoryEpochBindings
+    为每个具体 类型收集有序的纪元 CLR 类型。 会添加条目， 则读取这些条目，而非使用硬编码的类型列表。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.ModTimelineEraIconRegistry
+    按时代注册时间线坐标轴图标策略。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.ModTimelineLayoutRegistry
+    注册各 在时间线中使用的 列和列内 EraPosition。游戏本体的 实例会先占用其格位，避免模组槽位与之静默重叠。
+  · 字段 MinEraIntScan
+      在锚点时代之前放置列时所用的扫描下限。
+  · 字段 MaxEraIntScan
+      在锚点时代之后放置列时所用的扫描上限。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.ModTimelineRegistry
+    将模组自定义的 和 类型加入游戏的时间线字典。 一个纪元表示一个解锁槽位；一个故事会将有序纪元归入同一进度列。
+  · 属性 IsFrozen
+      获取框架是否已冻结后续纪元与故事注册。
+  · 方法 RegisterEpoch``1
+      向游戏的纪元发现机制注册具体纪元类型。
+  · 方法 RegisterStory``1
+      向游戏的故事类型字典注册具体故事类型。
+  · 方法 RegisterStoryEpoch``2
+      向游戏的纪元发现机制注册 ，并通过 将其追加到 的有序列。
+  · 方法 EnsureAllEpochIdsSyncedWithDictionary
+      根据实时 _epochTypeDictionary 重建 ，使第三方修改字典或 游戏本体过早初始化 ID 缓存后， 仍与 保持一致。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Patches.NEraColumnHideEmptyIconPatch
+    未解析出纹理时隐藏时代图标节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Patches.NTimelineScreenAddEpochSlotsMergeModTemplatesPatch
+    将符合条件的模组纪元槽位合并到 NTimelineScreen.AddEpochSlots。非动画方式打开界面时，仅在涅奥的 主扩展开始后合并；播放扩展动画时，则只合并由 入队的批次。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Patches.NTimelineScreenGetEraIconPolicyPatch
+    应用时间线坐标轴图标策略；自定义时代没有可用纹理时，默认隐藏其图标。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Patches.NUnlockTimelineScreenExpansionSlotSortPatch
+    先按 、再按 对时间线扩展槽位排序， 避免不同时代中相同位置发生排序冲突。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Patches.NeowEpochQueueUnlocksCoExpansionScopePatch
+    将模组时间线的共同扩展限制在 流程内，避免无关的 调用解锁或播放所有 的动画。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Patches.QueueTimelineExpansionSyncEpochIdListPatch
+    在时间线扩展将槽位入队前，使 与实时纪元类型字典同步，防止进度筛选在 新注册的模组纪元槽位刚解锁后便丢弃其 ID。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Patches.QueueTimelineExpansionUnlockModSlotsAfterNeowPatch
+    将符合条件的模组角色根节点和其他模组纪元槽位加入涅奥的主时间线扩展，并通知动画时间线界面在当前会话中 合并这些槽位。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.CardUnlockEpochTemplate
+    提供按 CLR 类型声明并解锁卡牌的 基类，也可选择扩展时间线。
+  · 属性 Cards
+      获取从 解析出的 实例。
+  · 属性 UnlockText
+  · 属性 CardTypes
+      获取要解锁的卡牌 CLR 类型；每种类型都必须已注册到 。
+  · 属性 ExpansionEpochTypes
+      获取此纪元解锁时追加的其他纪元类型。
+  · 方法 EnumerateUnlockCardTypes
+      枚举 ，供内容包批量调用 注册。
+  · 方法 GetTimelineExpansion
+  · 方法 QueueUnlocks
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.CharacterUnlockEpochTemplate`1
+    提供解锁 的 基类，也可选择扩展时间线。
+  · 属性 ExpansionEpochTypes
+      获取此纪元解锁时追加的其他纪元类型。
+  · 方法 GetTimelineExpansion
+  · 方法 QueueUnlocks
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.ModEpochTemplate
+    提供可选时间线肖像覆盖的模组 基类。此命名空间中的解锁纪元模板均继承此类。
+  · 属性 Era
+  · 属性 EraPosition
+  · 属性 AssetProfile
+  · 属性 CustomPackedPortraitPath
+  · 属性 CustomBigPortraitPath
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.ModStoryTemplate
+    提供从 派生 ID 的 基类。其纪元顺序来自 或 ，而不是由子类重写类型列表。
+  · 属性 Id
+  · 属性 Epochs
+  · 属性 StoryKey
+      获取用于派生模型 ID 的可读故事键。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.PackDeclaredCardUnlockEpochTemplate
+    提供通过 而非纪元子类声明受限卡牌类型的卡牌解锁纪元。 一项内容包注册即可同时提供解锁操作、解锁文本和纪元要求。
+  · 属性 Cards
+      获取为此纪元的 注册的卡牌。
+  · 属性 UnlockText
+  · 属性 ExpansionEpochTypes
+      获取此纪元解锁时追加的其他纪元类型。
+  · 方法 GetTimelineExpansion
+  · 方法 QueueUnlocks
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.PackDeclaredRelicUnlockEpochTemplate
+    提供通过 声明受限遗物类型的遗物解锁纪元。
+  · 属性 Relics
+      获取为此纪元的 注册的遗物。
+  · 属性 UnlockText
+  · 属性 ExpansionEpochTypes
+      获取此纪元解锁时追加的其他纪元类型。
+  · 方法 GetTimelineExpansion
+  · 方法 QueueUnlocks
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.PotionUnlockEpochTemplate
+    提供按 CLR 类型声明并解锁药水的 基类，也可选择扩展时间线。
+  · 属性 Potions
+      获取从 解析出的 实例。
+  · 属性 UnlockText
+  · 属性 PotionTypes
+      获取要解锁的药水 CLR 类型；每种类型都必须已注册到 。
+  · 属性 ExpansionEpochTypes
+      获取此纪元解锁时追加的其他纪元类型。
+  · 方法 GetTimelineExpansion
+  · 方法 QueueUnlocks
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Timeline.Scaffolding.RelicUnlockEpochTemplate
+    提供按 CLR 类型声明并解锁遗物的 基类，也可选择扩展时间线。
+  · 属性 Relics
+      获取从 解析出的 实例。
+  · 属性 UnlockText
+  · 属性 RelicTypes
+      获取要解锁的遗物 CLR 类型；每种类型都必须已注册到 。
+  · 属性 ExpansionEpochTypes
+      获取此纪元解锁时追加的其他纪元类型。
+  · 方法 EnumerateUnlockRelicTypes
+      枚举 ，供内容包批量调用 注册。
+  · 方法 GetTimelineExpansion
+  · 方法 QueueUnlocks
+

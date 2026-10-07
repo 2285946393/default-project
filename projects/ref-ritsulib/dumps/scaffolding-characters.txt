@@ -1,0 +1,625 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterAssetPathHelper
+    根据角色模型条目构建符合原版布局的资源路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterAssetProfile
+    组合模组角色的可选资源与视觉覆盖。
+  · 属性 Scenes
+      战斗与世界房间场景。
+  · 属性 Ui
+      HUD、角色选择与地图界面资源。
+  · 属性 Vfx
+      卡牌轨迹资源与样式。
+  · 属性 Spine
+      战斗 Spine 资源。
+  · 属性 Audio
+      角色 FMOD Studio 事件路径。
+  · 属性 Multiplayer
+      多人游戏手势贴图。
+  · 属性 VisualCues
+      战斗、游戏结束等角色显示场景使用的具名视觉提示。
+  · 属性 WorldProceduralVisuals
+      程序化生成的商店与休息处视觉资源。
+  · 属性 VanillaRelicVisualOverrides
+      原版遗物的角色专属视觉覆盖。
+  · 属性 VanillaPotionVisualOverrides
+      原版药水的角色专属视觉覆盖。
+  · 属性 VanillaCardVisualOverrides
+      原版卡牌的角色专属视觉覆盖。
+  · 属性 Empty
+      所有可选组件均为 的配置。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterAssetProfiles
+    按照原版路径约定创建和合并 实例。
+  · 字段 DefaultPlaceholderCharacterId
+      默认的占位角色 ID。
+  · 方法 Ironclad
+      创建原版铁甲战士资源配置。
+  · 方法 Silent
+      创建原版静默猎手资源配置。
+  · 方法 Defect
+      创建原版故障机器人资源配置。
+  · 方法 Regent
+      创建原版储君资源配置。
+  · 方法 Necrobinder
+      创建原版亡灵契约师资源配置。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterAudioAssetSet
+    组合角色反馈音效使用的 FMOD Studio 事件路径。
+  · 属性 CharacterSelectSfx
+      角色选择确认音效的事件路径。
+  · 属性 CharacterTransitionSfx
+      角色转场音效的事件路径。
+  · 属性 AttackSfx
+      默认攻击音效的事件路径。
+  · 属性 CastSfx
+      默认卡牌施放音效的事件路径。
+  · 属性 DeathSfx
+      玩家死亡音效的事件路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterCombatExtensions
+    提供用于查询 与 能力、充能球和能量的常用方法。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterMultiplayerAssetSet
+    组合多人游戏使用的指向与石头剪刀布手势贴图。
+  · 属性 ArmPointingTexturePath
+      指向手势贴图的路径。
+  · 属性 ArmRockTexturePath
+      石头手势贴图的路径。
+  · 属性 ArmPaperTexturePath
+      布手势贴图的路径。
+  · 属性 ArmScissorsTexturePath
+      剪刀手势贴图的路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterOwnedVanillaRelicModelId
+    提供角色专属美术常用的原版遗物条目名。
+  · 字段 YummyCookie
+      原版 YummyCookie 遗物的条目名。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterSceneAssetSet
+    组合角色在战斗与世界房间中使用的场景路径。
+  · 属性 VisualsPath
+      战斗生物视觉节点的场景路径。
+  · 属性 EnergyCounterPath
+      战斗能量计数器的场景路径。
+  · 属性 MerchantAnimPath
+      商店房间角色场景的路径。
+  · 属性 RestSiteAnimPath
+      休息处角色场景的路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterSpineAssetSet
+    组合角色在战斗中使用的 Spine 资源。
+  · 属性 CombatSkeletonDataPath
+      战斗 Spine 骨骼数据的资源路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterTrailStyle
+    定义可选的卡牌轨迹带、火花与精灵覆盖。
+  · 属性 OuterTrailModulate
+      外侧轨迹带的调制颜色。
+  · 属性 OuterTrailWidth
+      外侧轨迹带的宽度缩放。
+  · 属性 InnerTrailModulate
+      内侧轨迹带的调制颜色。
+  · 属性 InnerTrailWidth
+      内侧轨迹带的宽度缩放。
+  · 属性 BigSparksColor
+      大火花的颜色。
+  · 属性 LittleSparksColor
+      小火花的颜色。
+  · 属性 PrimarySpriteModulate
+      主轨迹精灵的调制颜色。
+  · 属性 PrimarySpriteScale
+      主轨迹精灵的缩放。
+  · 属性 SecondarySpriteModulate
+      副轨迹精灵的调制颜色。
+  · 属性 SecondarySpriteScale
+      副轨迹精灵的缩放。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterUiAssetSet
+    组合角色界面使用的贴图、场景与材质路径。
+  · 属性 IconTexturePath
+      顶部面板图标贴图的路径。
+  · 属性 IconOutlineTexturePath
+      顶部面板图标描边贴图的路径。
+  · 属性 IconPath
+      可选的角色图标场景路径。
+  · 属性 CharacterSelectBgPath
+      角色选择背景的场景路径。
+  · 属性 CharacterSelectIconPath
+      已解锁角色选择肖像的路径。
+  · 属性 CharacterSelectLockedIconPath
+      未解锁角色选择肖像的路径。
+  · 属性 CharacterSelectTransitionPath
+      角色选择转场材质的路径。
+  · 属性 MapMarkerPath
+      游戏地图标记贴图的路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterVanillaCardVisualOverride
+    定义某张原版卡牌的角色专属视觉资源。
+  · 属性 CardModelIdEntry
+      卡牌的 ModelId.Entry；匹配时不区分大小写。
+  · 属性 Assets
+      替换用卡牌资源配置。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterVanillaPotionVisualOverride
+    定义某瓶原版药水的角色专属视觉资源。
+  · 属性 PotionModelIdEntry
+      药水的 ModelId.Entry；匹配时不区分大小写。
+  · 属性 Assets
+      替换用药水资源配置。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterVanillaRelicVisualOverride
+    定义某件原版遗物的角色专属视觉资源。
+  · 属性 RelicModelIdEntry
+      遗物的 ModelId.Entry；匹配时不区分大小写。
+  · 属性 Assets
+      替换用遗物资源配置。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.CharacterVfxAssetSet
+    组合卡牌轨迹场景路径与可选样式覆盖。
+  · 属性 TrailPath
+      卡牌轨迹特效的场景路径。
+  · 属性 TrailStyle
+      可选的卡牌轨迹样式覆盖。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.ICrystalSphereCardPool
+    允许卡池替换水晶球事件中卡奖励格的底图和材质。
+  · 属性 CrystalSphereCardTexture
+      获取水晶球卡奖励格底图；返回 时保留原版纹理。
+  · 属性 CrystalSphereCardMaterial
+      获取水晶球卡奖励格材质；返回 时保留 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.IModCharacterAssetOverrides
+    提供模组角色的可选资源覆盖。
+  · 属性 AssetProfile
+      结构化角色资源配置。
+  · 属性 CustomVisualsPath
+      战斗生物视觉场景的路径覆盖。
+  · 属性 CustomEnergyCounterPath
+      战斗能量计数器场景的路径覆盖。
+  · 属性 CustomMerchantAnimPath
+      商店房间角色场景的路径覆盖。
+  · 属性 CustomRestSiteAnimPath
+      休息处角色场景的路径覆盖。
+  · 属性 CustomIconTexturePath
+      顶部面板图标贴图的路径覆盖。
+  · 属性 CustomIconOutlineTexturePath
+      顶部面板图标描边贴图的路径覆盖。
+  · 属性 CustomIconPath
+      角色图标场景的路径覆盖。
+  · 属性 CustomCharacterSelectBgPath
+      角色选择背景场景的路径覆盖。
+  · 属性 CustomCharacterSelectIconPath
+      已解锁角色选择肖像的路径覆盖。
+  · 属性 CustomCharacterSelectLockedIconPath
+      未解锁角色选择肖像的路径覆盖。
+  · 属性 CustomCharacterSelectTransitionPath
+      角色选择转场材质的路径覆盖。
+  · 属性 CustomMapMarkerPath
+      游戏地图标记贴图的路径覆盖。
+  · 属性 CustomTrailPath
+      卡牌轨迹特效场景的路径覆盖。
+  · 属性 CustomTrailStyle
+      可选的卡牌轨迹样式覆盖。
+  · 属性 CustomCombatSpineSkeletonDataPath
+      战斗 Spine 骨骼数据的资源路径覆盖。
+  · 属性 CustomCharacterSelectSfx
+      角色选择确认音效的事件路径覆盖。
+  · 属性 CustomCharacterTransitionSfx
+      角色转场音效的事件路径覆盖。
+  · 属性 CustomAttackSfx
+      默认攻击音效的事件路径覆盖。
+  · 属性 CustomCastSfx
+      默认卡牌施放音效的事件路径覆盖。
+  · 属性 CustomDeathSfx
+      玩家死亡音效的事件路径覆盖。
+  · 属性 CustomArmPointingTexturePath
+      多人游戏指向手势贴图的路径覆盖。
+  · 属性 CustomArmRockTexturePath
+      多人游戏石头手势贴图的路径覆盖。
+  · 属性 CustomArmPaperTexturePath
+      多人游戏布手势贴图的路径覆盖。
+  · 属性 CustomArmScissorsTexturePath
+      多人游戏剪刀手势贴图的路径覆盖。
+  · 属性 VisualCues
+      非 Spine 角色视觉使用的可选具名贴图与帧序列。
+  · 属性 WorldProceduralVisuals
+      可选的程序化商店与休息处视觉资源。
+  · 属性 CharacterAssetPlaceholderCharacterId
+      用于填充 缺失字段的可选原版角色 ID。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.IModCharacterCardLibraryCompendiumPlacement
+    允许角色自定义其牌池筛选项在卡牌总览中的位置。
+  · 属性 CardLibraryCompendiumPlacementRules
+      按优先级排列的位置规则。首个可解析的原版锚点决定初始索引，之后再应用相对于其他模组角色 的约束；列表为 或空时使用默认角色规则。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.IModCharacterEpochTimelineRequirement
+    声明角色是否使用原版历史节点与时间线进度。
+  · 属性 RequiresEpochAndTimeline
+      兼容补丁是否保留依赖内置 *_EPOCH ID 的原版进度流程。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.IModCharacterUnlockPrerequisite
+    公开用于解锁模组角色的前置角色。
+  · 属性 UnlocksAfterRunAsType
+      前置角色类型；未声明时为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.IModCharacterVanillaSelectionPolicy
+    控制模组角色是否参与原版角色选择与卡牌总览。
+  · 属性 HideFromVanillaCharacterSelect
+      是否从原版角色选择列表中隐藏该角色。
+  · 属性 AllowInVanillaRandomCharacterSelect
+      原版随机角色选择是否可以选中该角色。
+  · 属性 HideInCardLibraryCompendium
+      是否在卡牌总览中省略该角色的卡牌池筛选项。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.IModColorfulPhilosophersCardPool
+    标记可作为“色彩哲学家”奖励选项的角色卡牌池。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.ModCharacterTemplate`3
+    模组角色基类，提供泛型内容池、可扩展初始内容与资源覆盖。
+  · 属性 CharacterSelectSfx
+  · 属性 CharacterTransitionSfx
+  · 属性 CharacterSelectIconPath
+  · 属性 CharacterSelectLockedIconPath
+  · 属性 MapMarkerPath
+  · 属性 CardPool
+      获取已注册的 实例。
+  · 属性 RelicPool
+      获取已注册的 实例。
+  · 属性 PotionPool
+      获取已注册的 实例。
+  · 属性 StartingDeck
+  · 属性 StartingRelics
+  · 属性 StartingPotions
+  · 属性 UnlocksAfterRunAs
+  · 属性 LocalStartingDeck
+      角色类提供的初始牌组；之后会追加通过注册表添加的卡牌。
+  · 属性 LocalStartingRelics
+      角色类提供的初始遗物；之后会追加通过注册表添加的遗物。
+  · 属性 LocalStartingPotions
+      角色类提供的初始药水；之后会追加通过注册表添加的药水。
+  · 属性 StartingDeckEntries
+      旧版按类型与份数声明初始牌组的入口。
+  · 属性 StartingDeckTypes
+      旧版初始牌组卡牌类型列表。
+  · 属性 StartingRelicTypes
+      旧版初始遗物类型列表。
+  · 属性 StartingPotionTypes
+      旧版初始药水类型列表。
+  · 属性 UnlocksAfterRunAsType
+      原版解锁文本与 RitsuLib 角色解锁历史节点使用的可选前置角色类型。前置角色为铁甲战士时， 随涅奥的初始扩展解锁；其他角色则在使用该角色完成一局游戏后解锁。
+  · 属性 PlaceholderCharacterId
+      用于填充 缺失字段的原版角色 ID。
+  · 属性 ResolvedAssetProfile
+      使用占位角色填充缺失字段后的资源配置。
+  · 属性 AssetProfile
+  · 属性 CustomVisualsPath
+  · 属性 CustomEnergyCounterPath
+  · 属性 CustomMerchantAnimPath
+  · 属性 CustomRestSiteAnimPath
+  · 属性 CustomIconTexturePath
+  · 属性 CustomIconOutlineTexturePath
+  · 属性 CustomIconPath
+  · 属性 CustomCharacterSelectBgPath
+  · 属性 CustomCharacterSelectIconPath
+  · 属性 CustomCharacterSelectLockedIconPath
+  · 属性 CustomCharacterSelectTransitionPath
+  · 属性 CustomMapMarkerPath
+  · 属性 CustomTrailPath
+  · 属性 CustomTrailStyle
+  · 属性 CustomCombatSpineSkeletonDataPath
+  · 属性 CustomCharacterSelectSfx
+  · 属性 CustomCharacterTransitionSfx
+  · 属性 CustomAttackSfx
+  · 属性 CustomCastSfx
+  · 属性 CustomDeathSfx
+  · 属性 CustomArmPointingTexturePath
+  · 属性 CustomArmRockTexturePath
+  · 属性 CustomArmPaperTexturePath
+  · 属性 CustomArmScissorsTexturePath
+  · 属性 VisualCues
+  · 属性 WorldProceduralVisuals
+  · 属性 CardLibraryCompendiumPlacementRules
+  · 属性 RequiresEpochAndTimeline
+  · 属性 HideFromVanillaCharacterSelect
+  · 属性 AllowInVanillaRandomCharacterSelect
+  · 属性 HideInCardLibraryCompendium
+  · 方法 TryCreateCreatureVisuals
+      直接创建战斗视觉节点；返回 时使用已配置的场景路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CardLibraryCompendiumPatch
+    在卡牌总览中为已注册的模组角色和共享牌池添加牌池筛选按钮。由 隐藏的角色会被跳过。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterArmPaperTexturePathPatch
+    允许模组角色替换多人模式中猜拳“布”手势的手臂纹理路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterArmPointingTexturePathPatch
+    允许模组角色替换多人模式中的指向手臂纹理路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterArmRockTexturePathPatch
+    允许模组角色替换多人模式中猜拳“石头”手势的手臂纹理路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterArmScissorsTexturePathPatch
+    允许模组角色替换多人模式中猜拳“剪刀”手势的手臂纹理路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterAttackSfxPatch
+    允许模组角色替换 。FMOD 事件路径不会作为 Godot 资源进行验证。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterCastSfxPatch
+    允许模组角色替换 。FMOD 事件路径不会作为 Godot 资源进行验证。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterCombatSpineOverridePatch
+    战斗生物节点准备就绪后，如果其形象支持替换骨骼，则应用模组角色通过 指定的 Spine 骨骼数据。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterDeathSfxPatch
+    允许模组角色替换 。FMOD 事件路径不会作为 Godot 资源进行验证。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterEnergyCounterPathPatch
+    允许模组角色替换 界面场景。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterEnergyCounterRuntimeFactoryPatch
+    在游戏本体尝试将场景直接实例化为 前，将模组角色兼容的旧版能量计数器 场景转换为该类型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterEnergyCounterStarAnchorPatch
+    当当前能量计数器场景提供 %StarAnchor 时，将 重新设为其子节点， 使自定义能量计数器能够控制星星计数器的位置。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterGameOverScreenCompatibilityPatch
+    替换 MoveCreaturesToDifferentLayerAndDisableUi，使游戏结束界面能够排列不使用 Spine 或采用 不同节点结构的模组角色战斗形象。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterIconOutlineTexturePathPatch
+    允许 替换 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterIconPathPatch
+    允许模组角色替换 指定的小型图标。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterIconTexturePathPatch
+    允许模组角色替换 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterMapMarkerPathPatch
+    允许角色替换非公开 MapMarkerPath 属性返回的路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterMerchantAnimPathPatch
+    允许模组角色替换 指定的商人房间动画。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterRestSiteAnimPathPatch
+    允许模组角色替换 指定的休息处动画。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterSelectBackgroundRuntimeFactoryPatch
+    通过 创建角色选择背景，使以普通 或 为根节点的场景能够包装为 节点。 资源会显示在铺满父控件的背景控件中。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterSelectBgPathPatch
+    允许模组角色替换 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterSelectIconPathPatch
+    允许角色替换非公开 CharacterSelectIconPath 属性返回的路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterSelectLockedIconPathPatch
+    允许角色替换非公开 CharacterSelectLockedIconPath 属性返回的路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterSelectTransitionPathPatch
+    允许模组角色替换 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterTrailPathPatch
+    允许模组角色替换 指定的卡牌拖尾特效场景。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterTrailStyleOverridePatch
+    将兼容的卡牌拖尾场景转换为 ，并在创建后把 中的颜色、宽度和缩放应用到可识别的线条、 粒子及精灵节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterVanillaSelectionPolicyAllCharactersPatch
+    将当前选择策略作用域应用到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterVanillaSelectionPolicyPatches
+    为游戏本体的角色可见性和随机选择流程维护选择策略作用域。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CharacterVisualsPathPatch
+    允许模组角色替换 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.ColorfulPhilosophersCardPoolColorOrderPatch
+    将主动加入的模组角色牌池追加到“色彩哲学家”使用的奖励颜色候选列表中。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CombatAnimationStateMachineTriggerScope
+    定义 与 后置补丁 共用的适用条件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.CrystalSphereCardPoolCardBackPatch
+    当卡池提供 时，按非空项替换水晶球卡奖励格的底图和/或材质。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.ModCreatureCombatAnimationPlaybackPatch
+    当生物模型通过 或旧版 提供 时， 将 路由到该状态机。如果工厂返回了状态机，例如通过 创建的状态机，则同样支持基于 Spine 的形象。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.ModMerchantCharacterReadyPlaybackPatch
+    对已注册的非 Spine 商人形象跳过游戏本体的 实现，避免其中的 创建过程拒绝程序化根节点或 Godot 动画根节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.ModMerchantCharacterVisualPlaybackPatch
+    对已注册的非 Spine 商人形象，将 路由到模组状态机或 ，以支持纹理、 和 动画。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NCharacterButtonStripScroller.MethodName
+    Cached StringNames for the methods contained in this class, for fast lookup.
+  · 字段 _EnterTree
+      Cached name for the '_EnterTree' method.
+  · 字段 _ExitTree
+      Cached name for the '_ExitTree' method.
+  · 字段 _GuiInput
+      Cached name for the '_GuiInput' method.
+  · 字段 _Process
+      Cached name for the '_Process' method.
+  · 字段 FindButtonContainer
+      Cached name for the 'FindButtonContainer' method.
+  · 字段 CountVisibleButtons
+      Cached name for the 'CountVisibleButtons' method.
+  · 字段 IsForeignScroller
+      Cached name for the 'IsForeignScroller' method.
+  · 字段 ReplaceRoot
+      Cached name for the 'ReplaceRoot' method.
+  · 字段 RetainForeignScroller
+      Cached name for the 'RetainForeignScroller' method.
+  · 字段 CopyLayout
+      Cached name for the 'CopyLayout' method.
+  · 字段 ApplyViewportLayout
+      Cached name for the 'ApplyViewportLayout' method.
+  · 字段 PrepareContents
+      Cached name for the 'PrepareContents' method.
+  · 字段 RefreshLayout
+      Cached name for the 'RefreshLayout' method.
+  · 字段 MeasureContentWidth
+      Cached name for the 'MeasureContentWidth' method.
+  · 字段 MeasureContentHeight
+      Cached name for the 'MeasureContentHeight' method.
+  · 字段 ResolveSeparation
+      Cached name for the 'ResolveSeparation' method.
+  · 字段 UpdateScrollPosition
+      Cached name for the 'UpdateScrollPosition' method.
+  · 字段 OnGuiFocusChanged
+      Cached name for the 'OnGuiFocusChanged' method.
+  · 字段 ScrollByArrow
+      Cached name for the 'ScrollByArrow' method.
+  · 字段 EnsureArrows
+      Cached name for the 'EnsureArrows' method.
+  · 字段 CreateArrow
+      Cached name for the 'CreateArrow' method.
+  · 字段 CreateArrowMaterial
+      Cached name for the 'CreateArrowMaterial' method.
+  · 字段 RefreshArrows
+      Cached name for the 'RefreshArrows' method.
+  · 字段 LayoutArrow
+      Cached name for the 'LayoutArrow' method.
+  · 字段 QueueSiblingArrowFree
+      Cached name for the 'QueueSiblingArrowFree' method.
+  · 字段 FindDirectContentChild
+      Cached name for the 'FindDirectContentChild' method.
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NCharacterButtonStripScroller.PropertyName
+    Cached StringNames for the properties and fields contained in this class, for fast lookup.
+  · 字段 ScrollLimit
+      Cached name for the 'ScrollLimit' property.
+  · 字段 CanScroll
+      Cached name for the 'CanScroll' property.
+  · 字段 TargetX
+      Cached name for the 'TargetX' property.
+  · 字段 _contentHeight
+      Cached name for the '_contentHeight' field.
+  · 字段 _contentWidth
+      Cached name for the '_contentWidth' field.
+  · 字段 _contents
+      Cached name for the '_contents' field.
+  · 字段 _isDragging
+      Cached name for the '_isDragging' field.
+  · 字段 _leftArrow
+      Cached name for the '_leftArrow' field.
+  · 字段 _retainedForeignScroller
+      Cached name for the '_retainedForeignScroller' field.
+  · 字段 _rightArrow
+      Cached name for the '_rightArrow' field.
+  · 字段 _targetX
+      Cached name for the '_targetX' field.
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NCharacterButtonStripScroller.SignalName
+    Cached StringNames for the signals contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NCombatUiNonSpineDeathAnimationRewardDelayPatch
+    计算战斗奖励出现前的等待时间时，计入由 RitsuLib 管理的非 Spine 死亡动画时长。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NCreatureCombatAnimationInitialBootstrapPatch
+    对提供兼容状态机工厂的生物模型，在战斗形象准备就绪后立即创建战斗动画状态机。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NCreatureNonSpineDeathAnimationTriggerPatch
+    对由 RitsuLib 管理且没有 Spine 动画器的生物，在 后派发 Dead 动画触发器。游戏本体只会通过 Spine 路径派发该触发器，因此其他动画后端原本无法收到 死亡触发器。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NCreatureNonSpineReviveAnimationTriggerPatch
+    对由 RitsuLib 管理的生物，在游戏本体没有派发 Revive 动画触发器时，于 后补充派发该触发器。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NFakeMerchantProceduralCharacterInstantiationPatch
+    当任一玩家具有 RitsuLib 商人形象替换时，重新实现 NFakeMerchant.AfterRoomIsLoaded。随后通过 将所有玩家的摊位形象创建为 节点，并支持程序化形象和世界场景动画提示。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NMerchantRoomProceduralCharacterInstantiationPatch
+    仅替换游戏本体创建商人角色的步骤，使 RitsuLib 的程序化形象或资源替换能够提供节点，而房间初始化、 布局及节点准备就绪时的动画启动仍由游戏本体负责。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NRestSiteCharacterCreateProceduralPatch
+    有可用的程序化休息处定义时，通过该定义创建 节点；否则从角色的 休息处场景或纹理创建兼容节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.NRestSiteRoomProceduralVisualPlaybackPatch
+    休息处房间完成布局后，对由休息处状态机或 .RestSite 驱动的角色形象播放当前章节对应的循环动画。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Patches.StatsScreenCharacterStatsPatch
+    将可玩模组角色的已保存统计数据追加到综合统计界面。游戏本体的 实现只会为五名内置角色创建区段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.StartingDeckEntry
+    声明角色初始牌组中某种卡牌的份数。
+  · 属性 CardType
+      已注册的 类型。
+  · 属性 Count
+      要添加的份数；非正数不会添加卡牌。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.Definition.CharacterMerchantWorldDefinition
+    通过 中的纹理或帧序列定义商人房间形象。
+  · 属性 CueSet
+      以动画名称为键的形象提示集合。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.Definition.CharacterRestSiteWorldDefinition
+    定义休息处形象，其提示键与游戏本体各章节对应的 Spine 循环动画名称一致。
+  · 属性 CueSet
+      形象提示集合，通常包含 overgrowth_loop、hive_loop 和 glory_loop。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.Definition.CharacterWorldProceduralVisualSet
+    定义由数据驱动的商人和休息处形象，使模组无需提供专用 tscn 场景。可以通过 或 创建实例。
+  · 属性 Merchant
+      商人房间形象定义。
+  · 属性 RestSite
+      休息处形象定义。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.Definition.CharacterWorldProceduralVisualSetBuilder
+    提供 的流式构建器。
+  · 方法 Create
+      创建空的世界场景形象构建器。
+  · 方法 Build
+      创建已配置的形象集合；未配置的组成部分保持为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.Definition.ModCharacterWorldSceneVisuals
+    提供程序化商人和休息处形象的入口，使其无需自定义 tscn 场景。
+  · 方法 Procedural
+      创建 构建器。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.ModCreatureVisualPlayback
+    为模组生物形象提供统一的动画播放入口。它会先检查 中的纹理和数据驱动帧序列，再根据情况尝试 Spine 轨道或 Godot 的 、 及 节点。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.ModWorldSceneVisualNodeFactory
+    在内存中创建最精简的商人和休息处角色节点，使模组无需提供自定义 tscn 场景。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.RitsuNonSpineDeathAnimationDelayer.MethodName
+    Cached StringNames for the methods contained in this class, for fast lookup.
+  · 字段 Install
+      Cached name for the 'Install' method.
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.RitsuNonSpineDeathAnimationDelayer.PropertyName
+    Cached StringNames for the properties and fields contained in this class, for fast lookup.
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Characters.Visuals.RitsuNonSpineDeathAnimationDelayer.SignalName
+    Cached StringNames for the signals contained in this class, for fast lookup.

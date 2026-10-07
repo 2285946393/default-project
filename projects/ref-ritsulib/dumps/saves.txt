@@ -1,0 +1,474 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.Patches.ProgressStatePreserveUnknownRecordsFromSerializablePatch
+    捕获原版游戏会在对应模组内容不可用时丢弃的进度记录。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.Patches.ProgressStatePreserveUnknownRecordsLoadProgressPatch
+    成功加载进度后刷新进度镜像。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.Patches.ProgressStatePreserveUnknownRecordsToSerializablePatch
+    保存前，将为当前不可用的模组内容保留的记录恢复到可序列化进度数据中。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.PreservedProgressRecords
+    保留模型 ID 在当前模组集合中不可用的进度存档条目，使其不会参与运行时进度逻辑，但仍可在保存时写回。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.CloudReadBackStatus
+    报告提交尝试后从云端后端获得的证据。
+  · 字段 NotRequired
+      当前游戏没有云端后端，因此不需要云端验证。
+  · 字段 Succeeded
+      云端文档已读回，且与拟提交哈希一致。
+  · 字段 Unavailable
+      云端文档无法读回或未被持久化。
+  · 字段 Mismatch
+      云端文档已读回，但与拟提交哈希不一致。
+  · 字段 FailureObserved
+      云端后端报告了操作失败。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.IRawProgressCommitBridge
+    为活动进度文档提供保守失败的捕获与条件提交，并为每份日志所记录的目标提供有界恢复操作。
+  · 方法 Describe
+      返回不可变的时点提供方元数据，无需游戏运行时完成初始化，也不会读取或改变任何档案。schema 可用性可能在 多次调用之间变化。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.ITargetedRawProgressCommitBridge
+    在活动文档桥接器基础上，为显式选择的进度目标提供保守失败操作。
+  · 方法 DescribeTargeted
+      返回不可变的目标化提供方元数据，且不读取或改变任何档案。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.ProgressGeneration
+    标识一个进度目标的一次已观测版本。
+  · 属性 ProfileId
+      获取观测到的档案 ID。
+  · 属性 IsModded
+      获取观测目标是否属于模组存档命名空间。
+  · 属性 ProgressUniqueId
+      获取进度文档的稳定唯一 ID。
+  · 属性 LocalSha256
+      获取本地 UTF-8 内容的小写 SHA-256 哈希。
+  · 属性 LocalLength
+      获取本地 UTF-8 内容长度。
+  · 属性 LocalLastModifiedUtcTicks
+      获取观测到的本地最后修改时间（UTC ticks）。
+  · 属性 CloudAvailable
+      获取当前游戏是否持有云存档后端。
+  · 属性 CloudSyncEnabled
+      获取用户是否允许将云端副本同步回本机。即使此值为 false，只要云端后端可用，游戏仍会将本地存档写入云端。
+  · 属性 CloudPersisted
+      获取进度文件是否已由云端后端持久化。
+  · 属性 CloudSha256
+      获取已持久化远端文件成功读回时的内容哈希。
+  · 属性 CloudLength
+      获取可用时的云端 UTF-8 内容长度。
+  · 属性 CloudLastModifiedUtcTicks
+      获取可用时观测到的云端最后修改时间（UTC ticks）。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressBridge
+    提供进程级的 RitsuLib 原始进度桥接服务。
+  · 属性 Instance
+      获取共享的提供方实例。
+  · 属性 TargetedInstance
+      获取支持显式目标化操作的共享提供方实例。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressBridgeDescriptor
+    描述原始进度桥接提供方及其当前支持的契约。
+  · 属性 ProviderId
+      获取稳定的提供方标识符。
+  · 属性 ProviderVersion
+      获取提供方包版本。
+  · 属性 ProtocolVersion
+      获取请求和结果使用的精确协议版本。
+  · 属性 SupportedSchemas
+      获取当前可用于原始进度操作的进度 schema。游戏运行时 schema 不可用时，该集合为空。调用方应使用待替换快照 所返回的 schema。
+  · 属性 Features
+      获取声明的能力集合。
+  · 属性 MaxDocumentUtf8Bytes
+      获取允许提交的 UTF-8 文档最大字节数。
+  · 属性 MaxRetainedRecoveryJournals
+      获取所有所有者合计同时保留的恢复日志数量上限。达到该上限后，新的提交会保守失败，直至已有恢复项得到处理。
+  · 属性 MaxRecoveryOwnerIdUtf8Bytes
+      获取允许使用的 UTF-8 所有者标识最大字节数。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressBridgeFeature
+    描述原始进度桥接器中可独立协商的能力。
+  · 字段 RawSchema21Document
+      提供方接受使用 schema 21 的完整进度文档。
+  · 字段 UnknownJsonPassThrough
+      提交已验证的原始文档时不会经过有损的强类型重新序列化。
+  · 字段 LiveGameStoreCommit
+      提交使用当前游戏实例持有的存档存储。
+  · 字段 DurableLocalReplacement
+      本地替换使用游戏的备份、临时文件、刷新和重命名流程。
+  · 字段 CloudSaveBatch
+      使用云存档的提交会加入游戏的存档批处理作用域。
+  · 字段 ConditionalGenerationCheck
+      目标代次会在独占窗口内再次进行比较。
+  · 字段 ExclusiveSaveWindow
+      进程内的普通进度保存与提交共享同一独占窗口。
+  · 字段 LocalOnlyRecoveryJournal
+      恢复元数据仅保存在本地，并位于云端管理的档案数据之外。
+  · 字段 StructuredRecoveryOutcome
+      部分成功和不确定状态会以结构化结果返回。
+  · 字段 StablePublicContract
+      该能力通过有文档说明的公共契约公开。
+  · 字段 CloudReadBackVerification
+      云端写入会通过直接读取云端后端进行检查。
+  · 字段 LiveProgressStateSynchronization
+      内存中的进度状态会替换为已经验证的提交投影。
+  · 字段 SubsequentSaveUnknownJsonPreservation
+      后续普通保存会在能够安全匹配时保留未知 JSON 属性；若已安装的保留状态无法无损应用，则中止该次保存。
+  · 字段 ActiveProgressSnapshot
+      提供方可以捕获活动原始文档及其本地与云端代次。
+  · 字段 RecoveryJournalManagement
+      可以枚举保留的恢复日志，并有条件地恢复其中的原始文档。
+  · 字段 RecoveryJournalOwnership
+      恢复日志按经过验证的稳定所有者标识进行隔离。
+  · 字段 RecoveryJournalDisposition
+      调用方可以显式接受新近捕获的目标，并放弃与之匹配的保留日志。
+  · 字段 InvalidRecoveryJournalQuarantine
+      无效恢复文件会被隔离到提供方管理且有界的存储中。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressCommitOutcome
+    报告条件原始进度提交的最终状态。
+  · 字段 CommittedVerified
+      本地与云端证据一致；活动目标已同步内存状态与保留机制，非活动目标则保持该状态隔离。
+  · 字段 GenerationConflict
+      活动目标不再匹配预期代次。
+  · 字段 ActiveProfileChanged
+      活动档案或模组存档命名空间已改变。
+  · 字段 SchemaUnsupported
+      请求的 schema 不受此提供方构建支持。
+  · 字段 ValidationFailed
+      请求、指纹、身份或拟提交文档在修改前未通过验证。
+  · 字段 LocalReplacementUnverified
+      本地目标可能已经改变，但无法验证。
+  · 字段 CloudReadBackUnverifiedLocalPreserved
+      本地文档已验证，但云端文档无法验证。
+  · 字段 CloudReadBackMismatchLocalPreserved
+      本地文档已验证，但云端读回内容不同。
+  · 字段 LiveProgressStateUnverified
+      无法证明已提交的本地文档与内存中的已知投影一致。
+  · 字段 UnknownJsonContinuationUnverified
+      无法为后续普通保存安装未知属性保留机制。
+  · 字段 RecoveryRequired
+      恢复元数据无法被安全准备或结束。
+  · 字段 RecoveryJournalNotFound
+      请求的恢复日志已不存在。
+  · 字段 RecoveryJournalInvalid
+      请求的恢复日志格式错误或未通过完整性验证。
+  · 字段 RecoveryJournalChanged
+      请求的恢复日志在调用方枚举后发生了变化。
+  · 字段 CancelledBeforeCommit
+      在修改任何目标之前收到取消请求。
+  · 字段 ProviderIncompatible
+      调用方请求了不同的协议版本。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressCommitRequest
+    请求一次条件原始进度替换。活动桥接器将其绑定到活动文档，目标化桥接器则将其绑定到显式目标。
+  · 属性 ProtocolVersion
+      获取调用方要求的精确协议版本。
+  · 属性 SchemaVersion
+      获取拟提交文档声明的 schema。
+  · 属性 OwnerId
+      获取用于隔离重复提交抑制与恢复日志的稳定调用方标识。该值不得为空，不得包含首尾空白，且必须符合提供方声明的 UTF-8 大小上限。应使用稳定的 manifest 模组 ID。该值用于协作式命名以避免模组间误操作，并非针对同进程代码的授权边界。
+  · 属性 TransactionId
+      获取调用方生成的事务 ID，用于抑制重复提交和恢复。该值在 内必须唯一；仅可使用相同所有者与事务重试完全相同的请求，任何请求内容不同都会被拒绝。
+  · 属性 ExpectedGeneration
+      获取在修改前必须仍然有效的目标代次。
+  · 属性 ProposedRawJson
+      获取完整的拟提交进度 JSON。
+  · 属性 ProposedSha256
+      获取调用方计算的拟提交 UTF-8 内容小写 SHA-256 哈希。
+  · 属性 ProposedUtf8Length
+      获取调用方计算的拟提交 UTF-8 内容长度。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressCommitResult
+    包含一次提交尝试的验证与恢复证据。
+  · 属性 Outcome
+      获取最终结构化结果。
+  · 属性 LocalReadBackSha256
+      获取可用时已经验证的本地读回哈希。
+  · 属性 CloudStatus
+      获取云端读回状态。
+  · 属性 CloudReadBackSha256
+      获取成功取得时的云端读回哈希。
+  · 属性 LiveKnownProjectionSha256
+      获取尝试同步后内存中已知投影的哈希。
+  · 属性 UnknownJsonContinuationInstalled
+      获取后续普通保存是否已获得未知属性保留状态。
+  · 属性 PreservedRawSha256
+      获取安装保留机制时对应的原始哈希。
+  · 属性 LiveStateDisposition
+      获取提交处理活动内存进度状态的方式。
+  · 属性 DestinationMayHaveChanged
+      获取尝试期间是否可能已经改变任何目标。
+  · 属性 VerifiedBackupAvailable
+      获取原始本地内容是否可从已验证备份或保留日志中恢复。
+  · 属性 RecoveryJournalRetained
+      获取仅本地恢复日志是否为检查或恢复而被保留。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressDestination
+    选择一个档案及存档命名空间，且不改变游戏当前的活动档案。
+  · 属性 ProfileId
+      获取档案 ID。有效的游戏档案编号为 1 至 3。
+  · 属性 Environment
+      获取所选存档命名空间。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressEnvironment
+    标识可包含进度文档的存档命名空间。
+  · 字段 Vanilla
+      未加载模组时使用的游戏存档命名空间。
+  · 字段 Modded
+      加载模组时使用的游戏存档命名空间。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressLiveStateDisposition
+    报告提交与活动内存进度状态的交互方式。
+  · 字段 NotObserved
+      无需执行或尚未执行内存状态操作。
+  · 字段 Synchronized
+      活动目标已同步，且其已知投影已验证。
+  · 字段 Isolated
+      目标处于非活动状态，因此活动进度状态被有意保持不变。
+  · 字段 Unverified
+      已尝试同步活动目标，但无法验证结果。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressReadOutcome
+    报告捕获进度文档的结果。
+  · 字段 Succeeded
+      快照已捕获并通过验证。
+  · 字段 ActiveProfileUnavailable
+      游戏尚未初始化存档运行时或活动档案。
+  · 字段 LocalReadUnavailable
+      所选本地进度文件不存在或无法读取。
+  · 字段 ValidationFailed
+      所选文档格式错误、尺寸过大或缺少稳定身份。
+  · 字段 SchemaUnsupported
+      所选文档使用了此提供方构建不接受的 schema。
+  · 字段 CloudReadUnavailable
+      已存在持久化云端副本，但无法完整读回。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressReadResult
+    返回已验证快照，或一个保守失败的读取结果。
+  · 属性 Outcome
+      获取读取结果。
+  · 属性 Snapshot
+      仅当 为 时获取快照。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressRecoveryDiscardOutcome
+    报告显式放弃一个保留恢复日志的结果。
+  · 字段 Discarded
+      目标仍然匹配，且日志已被完整移除。
+  · 字段 ValidationFailed
+      请求中的所有者、事务、token 或代次格式错误。
+  · 字段 RecoveryJournalNotFound
+      请求的所有者与事务不存在对应日志。
+  · 字段 RecoveryJournalInvalid
+      日志格式错误或未通过完整性验证。
+  · 字段 RecoveryJournalChanged
+      日志在调用方枚举后发生了变化。
+  · 字段 ActiveProfileChanged
+      活动档案或模组存档命名空间已改变。
+  · 字段 GenerationConflict
+      活动目标不再匹配新近捕获的代次。
+  · 字段 DestinationUnavailable
+      无法为本次放弃决定捕获并验证目标。
+  · 字段 Cancelled
+      在日志开始移除前收到了取消请求。
+  · 字段 StorageFailure
+      至少有一个日志文件无法移除。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressRecoveryDiscardResult
+    包含显式放弃恢复日志的结果及其保留状态证据。
+  · 属性 Outcome
+      获取放弃结果。
+  · 属性 RecoveryJournalRetained
+      获取请求日志是否仍保留任何可恢复副本。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressRecoveryReadOutcome
+    报告是否完整枚举了保留的恢复日志。
+  · 字段 Succeeded
+      所有保留日志均已读取并验证。
+  · 字段 InvalidEntriesIgnored
+      返回有效日志，但忽略了一个或多个格式错误的条目。
+  · 字段 StorageUnavailable
+      无法检查本地恢复目录。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressRecoveryReadResult
+    包含已验证保留恢复日志的快照。
+  · 属性 OwnerId
+      获取本次请求恢复日志所对应的已验证所有者。
+  · 属性 Outcome
+      获取枚举结果。
+  · 属性 Records
+      获取按事务 ID 排序的已验证日志。
+  · 属性 InvalidEntryCount
+      获取因验证失败而被忽略的日志条目数量。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressRecoveryRecord
+    描述一个已验证的本地恢复日志，但不公开其中保存的文档。
+  · 属性 OwnerId
+      获取原始提交记录的稳定所有者标识。
+  · 属性 SchemaVersion
+      获取此日志所保留原始文档的进度 schema。活动游戏的 schema 发生变化后，该日志仍可枚举，但在 schema 匹配前恢复操作会保守失败。
+  · 属性 TransactionId
+      获取创建该日志的事务。
+  · 属性 ProfileId
+      获取原始提交前记录的档案 ID。
+  · 属性 IsModded
+      获取该日志是否属于模组存档命名空间。
+  · 属性 ProgressUniqueId
+      获取进度文档的稳定唯一 ID。
+  · 属性 Stage
+      获取日志最后持久记录的阶段。
+  · 属性 OriginalSha256
+      获取可恢复原始文档的小写 SHA-256 哈希。
+  · 属性 ProposedSha256
+      获取原始提交所提议内容的小写 SHA-256 哈希。
+  · 属性 RecoveryToken
+      获取用于在恢复或显式放弃前检测日志变化的不透明 token。调用方不得解析或推导该值。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressRecoveryRequest
+    选择一个保留日志，以有条件地恢复原始文档，或显式接受当前目标并放弃该日志。
+  · 属性 OwnerId
+      获取原始提交使用的稳定所有者标识。
+  · 属性 TransactionId
+      获取保留日志的事务 ID。
+  · 属性 RecoveryToken
+      获取最近一次恢复枚举返回的不透明 token。
+  · 属性 ExpectedGeneration
+      获取恢复或放弃前必须仍然匹配的当前目标代次。收到需要恢复的结果后应重新捕获快照，不要复用原始提交中的代次。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressRecoveryStage
+    标识保留恢复日志中最后持久记录的阶段。
+  · 字段 Prepared
+      恢复数据已在目标写入开始前准备完成。
+  · 字段 LocalUnverified
+      目标可能已经改变，但无法验证其本地内容。
+  · 字段 LocalVerified
+      新的本地内容已经验证，但其余验证尚未完成。
+  · 字段 VerificationIncomplete
+      至少有一项写入后验证未完成。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.RawProgressSnapshot
+    包含一个原始进度文档及与其同时捕获的代次。
+  · 属性 SchemaVersion
+      获取 中的进度 schema。
+  · 属性 RawJson
+      获取完整的原始进度 JSON。
+  · 属性 Generation
+      获取在同一独占窗口内捕获的目标代次。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.TargetedRawProgressBridgeDescriptor
+    描述目标化原始进度提供方及其当前限制。
+  · 属性 ProviderId
+      获取稳定的提供方标识符。
+  · 属性 ProviderVersion
+      获取提供方包版本。
+  · 属性 ProtocolVersion
+      获取目标化请求与结果使用的精确协议版本。
+  · 属性 BaseProtocolVersion
+      获取目标提交请求所需的精确基础提交协议版本。
+  · 属性 SupportedSchemas
+      获取当前可用于目标化操作的进度 schema。
+  · 属性 SupportedEnvironments
+      获取提供方接受的存档命名空间。
+  · 属性 Features
+      获取声明的目标化能力集合。
+  · 属性 BaseFeatures
+      获取目标化提交所使用的基础原始进度能力。
+  · 属性 MaxDocumentUtf8Bytes
+      获取允许提交的 UTF-8 文档最大字节数。
+  · 属性 MaxRetainedRecoveryJournals
+      获取所有所有者合计可保留的恢复日志数量上限。
+  · 属性 MaxRecoveryOwnerIdUtf8Bytes
+      获取允许使用的 UTF-8 所有者标识最大字节数。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.TargetedRawProgressBridgeFeature
+    描述目标化原始进度桥接器中可独立协商的能力。
+  · 字段 ExplicitDestinationCapture
+      调用方可以按档案及存档命名空间捕获进度文档。
+  · 字段 InactiveDestinationCommit
+      所选目标并非活动进度文档时仍可提交。
+  · 字段 SourceAndDestinationGenerationCheck
+      所选来源与目标的代次都会在提交的独占保存窗口内重新检查。
+  · 字段 ActiveProgressStateIsolation
+      提交非活动目标时，不会替换活动内存进度文档，也不会向其附加未知属性保留状态。
+  · 字段 TargetedRecoveryJournalManagement
+      现有的所有者范围恢复操作会定位每份日志所记录的目标，包括非活动目标。
+  · 字段 StablePublicContract
+      目标化能力通过有文档说明的公共契约公开。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.TargetedRawProgressCommitGuardOutcome
+    报告目标化操作的修改前保护检查是否通过。
+  · 字段 Passed
+      所有保护检查均已通过，且 存在。
+  · 字段 ProviderIncompatible
+      调用方请求了不兼容的目标化协议或基础协议。
+  · 字段 SchemaUnsupported
+      拟提交文档或所选文档使用了不受支持的进度 schema。
+  · 字段 ValidationFailed
+      请求、目标绑定、代次或拟提交文档无效。
+  · 字段 CancelledBeforeCommit
+      在恢复元数据或目标可能改变之前收到取消请求。
+  · 字段 SourceUnavailable
+      无法捕获并验证所选来源。
+  · 字段 SourceGenerationConflict
+      所选来源不再匹配其预期代次。
+  · 字段 DestinationUnavailable
+      无法捕获并验证所选目标。
+  · 字段 DestinationGenerationConflict
+      所选目标不再匹配其预期代次。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.TargetedRawProgressCommitRequest
+    请求一次由独立捕获的来源与目标代次共同保护的条件目标提交。
+  · 属性 ProtocolVersion
+      获取调用方要求的精确目标化协议版本。
+  · 属性 Source
+      获取以其捕获代次保护已准备提案的来源。
+  · 属性 ExpectedSourceGeneration
+      获取在修改前必须仍然有效的来源代次。
+  · 属性 Destination
+      获取要替换的目标。
+  · 属性 DestinationCommit
+      获取包含预期目标代次、所有者、事务及完整拟提交文档的基础提交请求。其协议版本必须与基础描述符匹配。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RawProgress.TargetedRawProgressCommitResult
+    包含来源与目标保护检查证据，以及存在时的提交尝试结果。
+  · 属性 GuardOutcome
+      获取修改前保护检查结果。当其不是 时，恢复元数据与目标均未改变。
+  · 属性 ReadFailure
+      获取所选来源或目标不可用时的读取失败结果；其他情况下为 。
+  · 属性 CommitResult
+      仅在所有保护检查均通过后获取详细的修改与验证证据。保留的恢复日志及所有部分成功结果与活动文档提交使用相同的有界恢复契约。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RunHistoryMissingModelSupport
+    解析游戏历史引用的章节与角色；当所属模组不可用时，改用原版游戏的已弃用模型占位项。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Saves.RunResumeMissingCharacterSupport
+    恢复跑局时检测缺失的 ，并显示原版游戏的无效存档对话框，而不删除局内存档。

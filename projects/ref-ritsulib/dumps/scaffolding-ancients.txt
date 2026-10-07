@@ -1,0 +1,18 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Ancients.Options.ModAncientOptionRegistry
+    注册向先古之民初始选项列表添加选项的规则。
+  · 方法 ClearForTests
+      清除所有已注册规则，供测试或热重载工具使用。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Scaffolding.Ancients.Options.ModAncientOptionRule
+    描述要添加到先古之民初始选项列表中的额外选项。
+  · 属性 OptionFactory
+      为匹配的先古之民实例生成要追加的选项。
+  · 属性 Condition
+      调用选项工厂前评估的可选条件；为 时始终通过。
+  · 属性 Priority
+      优先级较高的规则先运行；优先级相同时保留注册顺序。
+  · 属性 SkipDuplicateTextKeys
+      是否跳过非空 已出现过的选项。
+

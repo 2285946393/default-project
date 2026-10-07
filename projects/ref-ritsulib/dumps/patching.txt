@@ -1,0 +1,169 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Builders.DynamicPatchBuilder
+    提供流式构建器，用于创建在运行时解析目标的 Harmony 补丁。
+  · 属性 IdPrefix
+      获取用于生成补丁 ID 的前缀。
+  · 属性 Patches
+      获取此构建器已收集的补丁。这些补丁不会自动应用。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Compat.HarmonyInitSetterCompat
+    在 Harmony 或 MonoMod 将反射方法导入 Cecil 包装对象时，保留仅初始化 setter 的签名。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Core.ModPatcher
+    持有一个 Harmony 实例，并管理静态和动态补丁的注册、应用与移除。
+  · 属性 PatcherId
+      获取传入构造函数的 Harmony ID。
+  · 属性 PatcherName
+      获取补丁器的显示名称。
+  · 属性 Logger
+      获取与此补丁器关联的日志器。
+  · 属性 RegisteredPatchCount
+      获取已注册静态补丁的数量。
+  · 属性 RegisteredDynamicPatchCount
+      获取已注册动态补丁的数量。
+  · 属性 AppliedPatchCount
+      获取当前标记为已应用的补丁数量。
+  · 属性 RegisteredPatches
+      获取已注册的静态补丁。
+  · 属性 IsApplied
+      获取 是否已完成且未发生严重失败。
+  · 方法 PatchAll
+      应用所有已注册的静态补丁一次。严重补丁失败时调用 。
+  · 方法 UnpatchAll
+      尝试从此实例的 Harmony ID 移除其跟踪的所有已应用补丁。移除失败的补丁会继续标记为已应用， 以便之后再次调用时重试。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Core.ModPatcherExtensions
+    提供通过 注册和应用补丁的扩展方法。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Core.PatchLog
+    提供补丁类型的日志器注册表。
+  · 方法 For``1
+      获取 的日志器。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Core.PatchTargetMethodResolver
+    使用与 相同的语义，从补丁目标元数据解析原版 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Models.DynamicPatchInfo
+    描述在运行时解析的补丁目标，以及要应用的 Harmony 补丁方法。
+  · 属性 Id
+      获取补丁 ID；该 ID 在所属补丁器内唯一。
+  · 属性 OriginalMethod
+      获取补丁的目标方法。
+  · 属性 Prefix
+      获取 Harmony 前置补丁（如果有）。
+  · 属性 Postfix
+      获取 Harmony 后置补丁（如果有）。
+  · 属性 Transpiler
+      获取 Harmony 指令转换器（如果有）。
+  · 属性 Finalizer
+      获取 Harmony 终结器（如果有）。
+  · 属性 IsCritical
+      获取补丁应用失败是否属于严重错误。
+  · 属性 Description
+      获取适合写入日志的补丁描述。
+  · 属性 HasPatchMethods
+      获取是否至少指定了一个 Harmony 补丁方法。
+  · 方法 ToString
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Models.IModPatches
+    定义一组可自行注册到 的模组补丁。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Models.IPatchMethod
+    定义可为一个或多个目标创建 实例的补丁类型。
+  · 属性 PatchId
+      获取此补丁的唯一 ID 前缀。
+  · 属性 IsCritical
+      获取补丁应用失败是否属于严重错误。默认值为 。
+  · 属性 Description
+      获取补丁的描述。
+  · 方法 GetTargets
+      获取此补丁要应用到的所有目标。
+  · 方法 CreatePatchInfos``1
+      为 声明的所有目标创建补丁元数据。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Models.ModPatchInfo
+    描述通过反射定位单个原版方法的静态补丁类型。
+  · 属性 Id
+      获取补丁 ID。
+  · 属性 TargetType
+      获取声明目标方法的类型。
+  · 属性 MethodName
+      获取目标方法的名称。
+  · 属性 PatchType
+      获取包含 Harmony 补丁方法的类型。
+  · 属性 IsCritical
+      获取补丁应用失败是否属于严重错误。
+  · 属性 ParameterTypes
+      获取用于解析重载的参数签名（如果已指定）。
+  · 属性 IgnoreIfTargetMissing
+      获取目标缺失时是否返回已忽略结果。
+  · 属性 HarmonyMethodType
+      获取用于解析目标的 Harmony 方法类型。
+  · 属性 Description
+      获取便于阅读的补丁描述。
+  · 方法 ToString
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Models.ModPatchResult
+    表示应用一个 的结果。
+  · 属性 ModPatchInfo
+      获取已处理的补丁。
+  · 属性 Success
+      获取补丁是否已应用或被有意忽略。
+  · 属性 ErrorMessage
+      获取错误或信息消息。
+  · 属性 Exception
+      获取 Harmony 或反射异常（如果有）。
+  · 属性 Ignored
+      获取补丁是否因目标缺失且已设置 而被跳过。
+  · 方法 ToString
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Models.ModPatchTarget
+    标识供 构建补丁元数据的原版方法。
+  · 属性 TargetType
+      声明目标方法的类型。
+  · 属性 MethodName
+      目标方法的名称。
+  · 属性 ParameterTypes
+      重载的参数类型；为 时仅按名称查找。
+  · 属性 IgnoreIfMissing
+      是否忽略缺失的目标。
+  · 属性 HarmonyMethodType
+      用于解析目标的 Harmony 。
+  · 方法 ToString
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Models.PatchTarget
+    提供用于声明常见 的工厂方法。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.PrivateAccess
+    提供用于解析 Harmony 补丁所需非公开游戏成员的辅助方法。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Rules.ModPatchRule
+    定义从程序集中选择方法并为其创建 实例的规则。
+  · 属性 Id
+      获取用于生成补丁 ID 的前缀。
+  · 属性 TypeSelector
+      获取用于选择声明类型的谓词。
+  · 属性 MethodSelector
+      获取用于从匹配类型中选择方法的谓词。
+  · 属性 PatchType
+      获取要应用到每个选中方法的静态补丁类型。
+  · 属性 IsCritical
+      获取生成的补丁是否属于严重补丁。
+  · 属性 Description
+      获取生成补丁所使用的描述前缀。
+  · 方法 ToString
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Patching.Rules.PatchRuleBuilder
+    提供 的流式构建器。
+  · 方法 Build
+      构建已配置的规则。
+

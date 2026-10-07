@@ -72,7 +72,7 @@
 > 线上（博客 `public/lab/`）只部署了其中一部分，且用英文 slug 命名（`abyss.html`、`aura.html` …），
 > **和 `pages/` 里的文件名不是一一对应**，别按文件名直接推线上地址。
 
-### `projects/`（36 个多文件工程）
+### `projects/`（39 个多文件工程）
 
 `archify`（画架构图的 Agent Skill，给他提过 PR）、`ai-gateway`（鲸云 API 中转站）、
 `ai-interviewer`、`creator-studio`（创作中台）、`cosmic-playground`、
@@ -86,6 +86,12 @@
 - `sts2-vfx-template` —— 特效骨架（美术/演出/工程三层，13 文件 + README 速查表）
 - `sts2-vanilla-vfx` —— 可检索本体特效库（312 场景 / 100 着色器 / 160 材质 + `索引-特效目录.md`）
 - `ref-regentfx` / `ref-meleeattack` / `ref-shieldonly` —— 三个社区 mod 的反编译产物（分别对应美术/演出/工程三层）
+- **`ref-combatsolver` / `ref-wuwancients` / `ref-actiongame`** —— 三个工坊 mod 拆解产物
+  （战斗路线求解器 213,836 行 / 鸣潮先古 22,957 行 / 类幸存者 14,690 行）
+- **`ref-ritsulib`** —— ★ **RitsuLib 框架**（全工坊第一依赖，26 个 mod 用它，**本机 4 个自研 mod 全依赖**）。
+  **MIT 开源所以不反编译**：内含 API 表面导出（`dumps/`）、18 个内置主题（`assets/themes/`）、
+  解析脚本（`tools/`）；上游源码快照在 `upstream/`（19MB，**已 gitignore**，可一键重下）。
+  笔记：`notes/杀戮尖塔2-拆解-RitsuLib框架.md`
 - `sts2-moddev-workspace` —— 官方+社区中文教程 + 0.111.0 反编译源码
 - `sts2-asset-library` / `杀戮尖塔素材包` —— 素材库
 - `dou-spire-rules` —— 斗地主规则（含 `tools/build-mod.sh` 沙箱构建脚本）
@@ -97,7 +103,7 @@
 > `notes/凛冬尖塔-交接文档.md`**（冷启动包：现状/分工/高频坑/待拍板；斗地主账在 `projects/dou-spire/README.md`）。
 > ⚠️ 这两个工程有另一个 AI（WorkBuddy）在并行写入：动文件前看修改时间，发现刚被改过就让位，沟通一律写进 notes。
 
-### `notes/`（140 篇 + `_sessions_dump/`）
+### `notes/`（141 篇 + `_sessions_dump/`）
 
 > **总索引：`notes/README.md`** —— 按主题分区、每条一句"什么时候看"。找文件先看它，别翻目录。
 

@@ -1,0 +1,572 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.AfflictionCapability
+    用于所属苦痛行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ApplyModelCapabilityOptions
+    应用能力时使用的选项。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CapabilityCardModel
+    带受保护默认能力钩子的卡牌基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardCapability
+    用于所属卡牌行为及能力自有卡牌动态变量的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardDescriptionContext
+    传给卡牌描述贡献者的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardDescriptionFragment
+    由能力贡献的本地化卡牌描述片段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardDescriptionFragmentPlacement
+    能力提供的卡牌描述片段插入位置。
+  · 字段 BeforeBase
+      插入到卡牌自身描述之前。
+  · 字段 AfterBase
+      插入到卡牌自身描述之后。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardOverlayContext
+    能力提供卡牌覆盖层时的运行时上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardOverlayContribution
+    卡牌能力贡献的一个可视覆盖层。应且仅应设置一个创建来源： 、 或 。
+  · 属性 Id
+      用于诊断以及贡献能力内部排序的稳定 ID。
+  · 属性 Order
+      能力覆盖层之间的绘制顺序。数值越大越晚加入，因此显示在更上层。
+  · 属性 FullRect
+      为 时，RitsuLib 会在创建覆盖层节点后应用全矩形布局预设。
+  · 属性 ScenePath
+      通过游戏预加载缓存加载的 路径，与游戏原版卡牌覆盖层的创建行为一致。
+  · 属性 Scene
+      已解析的 PackedScene。
+  · 属性 Factory
+      用于创建全新覆盖层 的工厂。每次必须返回新的节点，因为同一个 可能同时由多个 节点显示。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardPlayCapability
+    处理所属卡牌打出事件的卡牌能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardTitleContext
+    传给卡牌标题贡献者的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardTitleFragment
+    由能力贡献的本地化卡牌标题片段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CardTitleFragmentPlacement
+    能力提供的卡牌标题片段插入位置。
+  · 字段 BeforeBase
+      插入到卡牌基础标题之前。
+  · 字段 ReplaceBase
+      替换卡牌基础标题；第一个替换胜出。
+  · 字段 AfterBase
+      插入到选定基础标题之后、原版升级后缀之前。
+  · 字段 AfterTitle
+      插入到原版升级后缀之后。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.CharacterCapability
+    用于所属角色状态及显示行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.EnchantmentCapability
+    用于所属附魔行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardDescriptionContributor
+    可选能力：贡献本地化卡牌描述片段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardEnergyCostContributor
+    可选卡牌能力：贡献卡牌本地能量费用修正。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardGlowContributor
+    可选能力：贡献手牌发光判定。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardHoverTipContributor
+    可选能力：贡献卡牌悬停提示。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardOverlayAssetPathContributor
+    可选卡牌能力：为覆盖层贡献预加载/诊断用资源路径。通过工厂创建且内部加载资源的覆盖层，应在这里或通过 报告这些路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardOverlayContributor
+    可选的卡牌模型或能力钩子，用于向所属卡牌节点提供可视覆盖层。贡献项会在游戏原版的苦痛及内置 覆盖层处理完成后加入，因此会叠加显示，而不会替换原版覆盖层槽位。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardPlayResultContributor
+    可选卡牌能力：自定义所属卡牌打出后的目标牌堆。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardPlayStateContributor
+    可选卡牌能力：贡献出牌状态决策。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardPropertyContributor
+    可选卡牌能力：贡献卡牌侧属性覆盖。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardStarCostContributor
+    可选卡牌能力：贡献卡牌本地星星费用修正。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardTitleContributor
+    可选能力：贡献本地化卡牌标题片段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardTransformCarryOverCapability
+    可选卡牌能力：可将自身从转化前卡牌携带到转化结果卡牌。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICardTypeTextModifier
+    可选的模型或模型能力钩子，用于修改卡牌显示的类型文本。方法签名与组合契约和 BaseLib 的 ICardTypeTextModifier 一致。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ICustomTypeTextCard
+    可选卡牌接口：修改自身显示的类型文本。返回文本使用与 BaseLib 相同的组合契约：包含 {Type} 的条目 包裹选定的基础文本，不包含它的条目替换基础文本。
+  · 方法 GetTypeModifiers
+      按应用顺序返回本地化类型文本修改器。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelAssetPathContributor
+    可选能力：为任意模型贡献资源路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelAssetPathContributor`1
+    可选类型化能力：为 贡献资源路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapability
+    附加到 实例的能力基础契约。
+  · 属性 CapabilityId
+      用于运行时查找和持久化的稳定能力 ID。
+  · 属性 Owner
+      当前所属模型；未附加时为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapabilityCloneHandler
+    可选能力复制行为。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapabilityCloneNotification
+    所属模型被复制后调用的可选能力回调。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapabilityHookListener
+    基于模型的能力可实现此契约，以接收所属模型的游戏原版模型钩子回调。 影响多人同步的游戏逻辑应使用此路径，因为游戏原版钩子会等待模型回调完成。
+  · 属性 ShouldReceiveOwnerHooks
+      获取此能力是否应插入所属模型的游戏原版钩子监听器流。
+  · 属性 OwnerHookOrder
+      相对所属模型的顺序。负值先于所属模型运行，零和正值在其后运行。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapabilityJsonState
+    可选能力 JSON 持久化行为。
+  · 属性 SchemaVersion
+      此能力状态写入的当前架构版本。
+  · 方法 SaveState
+      保存能力状态。无状态能力可返回 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapabilityMergeHandler
+    使用的可选能力合并行为。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapabilitySource
+    普通模型类可实现的可选提供器，用于填充默认能力列表。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelCapability`1
+    只适用于某个模型族的类型化能力协定。
+  · 属性 Owner
+      当前所属模型；未附加时为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelDynamicVarContributor
+    可选的模型能力，可向受支持的模型文本呈现位置提供能力自有的动态变量集合。该集合与模型自身的动态变量保持分离。通过 {Capabilities.Scope.Variable} 访问能力变量；无作用域短名称仅是兼容别名，多个贡献者可能提供同名变量时不得使用。
+  · 属性 LocStringVariableScope
+      本地化文本使用的可选稳定选择器作用域。例如作用域为 Burning、变量为 Damage 时， 使用 {Capabilities.Burning.Damage}。需要分别寻址的不同实例应返回不同且稳定的作用域。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelHoverTipContributor
+    可选能力：为任意模型贡献悬停提示。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelHoverTipContributor`1
+    可选类型化能力：为 贡献悬停提示。
+  · 方法 GetHoverTips(`0)
+      返回 的额外悬停提示。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IModelRightClickCapability
+    可选模型能力：通过 RitsuLib 处理同步的右键交互。
+  · 属性 RightClickPriority
+      优先级越高越先检查；相同优先级保持附加能力顺序。
+  · 属性 RightClickRunMode
+      控制此能力处理右键后是否停止执行链。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IOrbHoverTipDescriptionContributor
+    可选充能球能力：向所属充能球的主悬停提示贡献文本。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.IOrbValueDisplayContributor
+    可选充能球能力：覆盖被动与激发数值标签的显示方式。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.MissingModelCapabilityAnchorPolicy
+    控制有序插入时找不到锚点能力的处理方式。
+  · 字段 Append
+      添加到末尾。
+  · 字段 Prepend
+      添加到开头。
+  · 字段 Skip
+      不添加能力。
+  · 字段 Throw
+      抛出异常。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelAssetPathContext
+    传给模型资源路径能力的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelAssetPathScope
+    框架适配器使用的已知模型资源路径查询作用域。
+  · 字段 General
+      通用模型资源。
+  · 字段 Run
+      一局游戏进行期间需要的资源。
+  · 字段 Combat
+      战斗界面需要的资源。
+  · 字段 Map
+      地图或路线视图需要的资源。
+  · 字段 CharacterSelect
+      选角视图需要的资源。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilities
+    模型能力宿主的入口。
+  · 方法 EnsureInitialized
+      初始化模型能力的内置持久化槽位。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapability
+    基于模型的能力基类。子类需要稳定的 和持久化身份时，应将其注册为模型能力。
+  · 属性 ShouldReceiveCombatHooks
+  · 属性 DynamicVars
+      获取能力自有的动态变量；这些变量可用于本地化文本、游戏指令，并在所属模型为卡牌时用于卡牌预览。 此集合独立于所属模型的动态变量；能力行为依赖所属模型变量时，应通过 读取。
+  · 属性 CanonicalVars
+      获取能力的规范动态变量。重写此属性可直接在能力上注册变量。
+  · 属性 CapabilityId
+  · 属性 Owner
+  · 方法 SaveState
+  · 属性 LocStringVariableScope
+  · 方法 MarkDirty
+      在原地修改状态后将所属能力集合标记为脏。
+  · 方法 SaveAdditionalState
+      保存能力动态变量之外的额外状态。
+  · 方法 ResetDynamicVarsToCanonical
+      将能力自有的动态变量重置为规范定义。
+  · 方法 RemoveFromOwner
+      当前能力已附加时，将其从所属模型的能力集合中移除。
+  · 方法 OnLoadedFromSave
+      读取一局游戏的存档并恢复此能力的所属模型后调用。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilityConflictLogMode
+    控制可选的模型能力诊断日志。
+  · 字段 Off
+      不记录能力所提供值之间的冲突。
+  · 字段 WarnOnce
+      每个不同冲突只记录一次。
+  · 字段 WarnEveryTime
+      每次观察到冲突都记录。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilityDiagnostics
+    模型能力运行时诊断。
+  · 属性 ConflictLogs
+      可选择记录卡牌类型、稀有度、目标类型及结果牌堆等仅采用一个值的冲突。 默认为关闭，以免热路径产生大量日志。
+  · 方法 ClearConflictLogCache
+      清空 已记录冲突的缓存。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilityDynamicVarNames
+    共享模型文本中能力自有动态变量的稳定 LocString 变量名。
+  · 字段 RootName
+      能力作用域变量使用的根选择器。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilityExtensions
+    模型能力的便捷扩展方法。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilityList
+    解析模型默认能力时使用的可变列表。
+  · 属性 All
+      默认执行顺序中的所有能力。
+  · 属性 Count
+      列表中的能力数量。
+  · 方法 Add``1
+      创建能力并添加到列表末尾。
+  · 方法 AddFromRegistry``1
+      创建已注册能力并添加到列表末尾。
+  · 方法 Remove``1
+      移除第一个 类型能力。
+  · 方法 RemoveAll``1
+      移除所有 类型能力。
+  · 方法 Get``1
+      获取第一个 类型能力。
+  · 方法 GetAll``1
+      获取所有 类型能力。
+  · 方法 Contains``1
+      若列表包含 类型的能力，则为 ； 否则为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilityRegistry
+    能力 ID 与工厂的注册表。
+  · 方法 TryCreate``1(``0@)
+      按已注册类型创建能力（如果存在匹配工厂）。
+  · 方法 Create``1
+      按已注册类型创建能力；未注册匹配工厂时抛出异常。
+  · 方法 GetCapabilityId``1
+      获取 已注册的能力 ID（如果存在）。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilitySaveDocument
+    表示模型能力的可序列化文档。
+  · 属性 Capabilities
+      获取或设置按显示与执行顺序排列的能力条目。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilitySaveEntry
+    表示单个模型能力的可序列化状态。
+  · 属性 Id
+      获取或设置稳定的能力 ID。
+  · 属性 Schema
+      获取或设置能力状态的架构版本。
+  · 属性 Data
+      获取或设置序列化后的能力状态。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapabilitySet
+    表示附加到单个模型实例的可变能力集合。
+  · 属性 Owner
+      获取所属模型。
+  · 属性 All
+      获取按执行顺序排列的所有已附加能力。
+  · 属性 Attached
+      获取按执行顺序排列的所有已附加能力。
+  · 属性 Count
+      获取当前已附加能力的数量。
+  · 方法 Remove``1
+      移除第一个 类型的能力。
+  · 方法 RemoveAll``1
+      移除所有 类型的能力。分离回调抛出异常时，先前已处理的能力仍会 保持移除状态。
+  · 方法 Get``1
+      获取第一个 类型的能力。
+  · 方法 TryGet``1(``0@)
+      尝试获取第一个 类型的能力。
+  · 方法 Contains``1
+      至少附加一个 类型的能力时返回 。
+  · 方法 GetAll``1
+      获取所有 类型的能力。
+  · 方法 Capabilities``1
+      枚举可赋值给 的能力。
+  · 方法 MarkDirty
+      能力发生原地修改后，将能力集合标记为脏。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelCapability`1
+    仅可附加到 的类型化模型能力基类。
+  · 属性 Owner
+  · 方法 OnAttach(`0)
+      此能力附加到类型化所属模型时调用。
+  · 方法 OnDetach(`0)
+      此能力从类型化所属模型分离时调用。
+  · 方法 OnLoadedFromSave(`0)
+      读取一局游戏的存档并恢复此能力的类型化所属模型后调用。
+  · 方法 OnLoadedFromSave
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelHookListenerDispatcher
+    由模型和能力提供的钩子监听器流所共用的分发器。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelHookListenerRegistry`1
+    线程安全的进程级钩子监听器注册表。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelHookListener`1
+    从模型、模型能力或全局监听器注册表解析出的监听器。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelRightClickCapabilityRunMode
+    控制右键能力执行后是否停止或继续能力链。
+  · 字段 Exclusive
+      执行第一个匹配能力后停止；这是面向操作的默认行为。
+  · 字段 Continue
+      执行后继续检查后续匹配能力。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelSavedDataClonePolicy
+    指定模型复制时如何处理模型保存数据。
+  · 字段 Copy
+      通过槽位序列化器深复制保存值。
+  · 字段 Drop
+      不将此槽位复制到模型副本。
+  · 字段 Share
+      与模型副本共享同一个内存值。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelSavedDataOptions
+    配置单个模型保存数据槽位。
+  · 属性 SchemaVersion
+      获取或初始化此槽位写入的当前架构版本。
+  · 属性 WritePolicy
+      获取或初始化此槽位的写入时机。
+  · 属性 ClonePolicy
+      获取或初始化此槽位在 AbstractModel.MutableClone 期间的复制方式。
+  · 属性 Migrations
+      获取或初始化可选的槽位迁移。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelSavedDataStore
+    提供按模组划分的模型保存数据槽位注册表。
+  · 属性 ModId
+      获取拥有此存储的模组 ID。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelSavedDataWritePolicy
+    指定模型保存数据槽位的写入时机。
+  · 字段 WhenSet
+      仅在槽位被显式修改后写入。
+  · 字段 WhenNonDefault
+      当前值不同于默认值时写入。
+  · 字段 AlwaysWhenPresent
+      只要槽位中存在值便写入。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.ModelSavedData`2
+    提供类型化模型保存数据槽位的句柄。
+  · 方法 Get(`0)
+      获取当前值；必要时使用默认工厂创建。
+  · 方法 TryGet(`0,`1@)
+      尝试获取已有值，但不创建新值。
+  · 方法 Set(`0,`1)
+      设置 的值。
+  · 方法 MarkDirty(`0)
+      在原地修改后将当前值标记为脏。
+  · 方法 Remove(`0)
+      从 移除保存值。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.MonsterCapability
+    用于所属怪物行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OneShotCardPlayCapability
+    所属卡牌打出一次后自动移除自身的卡牌能力。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbAfterTurnStartTriggerContext
+    所属充能球的回合开始后触发方法运行后传入的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbBeforeTurnEndTriggerContext
+    所属充能球的回合结束前触发方法运行后传入的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbCapability
+    用于所属充能球行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbEvokeContext
+    所属充能球被激发后传入的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbHoverTipDescriptionContext
+    传给充能球悬停说明贡献者的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbHoverTipDescriptionFragment
+    由能力贡献的充能球悬停说明片段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbHoverTipDescriptionFragmentPlacement
+    能力提供的充能球悬停说明片段插入位置。
+  · 字段 BeforeBase
+      插入到充能球自身说明之前。
+  · 字段 AfterBase
+      插入到充能球自身说明之后。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbPassiveTriggerContext
+    所属充能球被动触发后传入的上下文。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbValueDisplayContext
+    传给充能球数值标签贡献者的当前显示状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OrbValueDisplayState
+    已解析的充能球数值标签显示状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.OwnerHookCapability`1
+    当所属模型参与游戏原版钩子时，此类型化模型能力基类会加入所属模型的原版钩子监听器流。
+  · 属性 ShouldReceiveOwnerHooks
+  · 属性 OwnerHookOrder
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches
+    将模型能力接入卡牌行为与显示。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches.DescriptionPatch
+    将能力描述修改器应用到常规卡牌描述渲染。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches.HoverTipsPatch
+    将能力悬停提示追加到卡牌悬停提示。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches.ShouldGlowGoldPatch
+    以逻辑或合并能力发光谓词与金色手牌发光条件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches.ShouldGlowRedPatch
+    以逻辑或合并能力发光谓词与红色手牌发光条件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches.TitlePatch
+    在 CardModel 格式化基础标题后应用能力标题片段。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches.TypeTextPatch
+    在类型牌匾 LocString 格式化前应用与 BaseLib 兼容的类型文本修改器。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardModelCapabilityPatches.UpdateDynamicVarPreviewPatch
+    通过与原版卡牌动态变量相同的卡牌预览路径更新能力动态变量。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.CardOverlayCapabilityPatches
+    在原版覆盖层重新加载后，将卡牌覆盖层能力应用到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.ModelCapabilityHookListenerPatches
+    将选择加入的模型能力插入原版局内及战斗钩子监听器流。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.ModelDisplayCapabilityPatches
+    将通用模型显示能力应用到非卡牌模型类型。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.ModelSavedDataPatches
+    通过 传递模型保存数据。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.ModelSavedDataPatches.SavedPropertiesFillInternalPatch
+    游戏原版模型属性反序列化后，导入已注册的模型保存数据。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.Patches.ModelSavedDataPatches.SavedPropertiesFromInternalPatch
+    游戏原版模型属性序列化后，导出已注册的模型保存数据。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.PotionCapability
+    用于所属药水行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.PowerCapability
+    用于所属能力行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.RelicCapability
+    用于所属遗物行为的能力基类。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.StatefulModelCapability`1
+    带类型化 JSON 状态负载的模型能力基类。
+  · 属性 State
+      获取可变的能力状态。
+  · 方法 SaveAdditionalState
+  · 方法 SetState(`0)
+      替换状态，并将所属能力集合标记为脏。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.StatefulModelCapability`2
+    带类型化 JSON 状态负载的类型化模型能力基类。
+  · 属性 State
+      获取可变的能力状态。
+  · 方法 SaveAdditionalState
+  · 方法 SetState(`1)
+      替换状态，并将所属能力集合标记为脏。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.TurnLimitedCapability`1
+    保存回合计数并在计数归零后自动移除自身的所属模型钩子能力。
+  · 方法 #ctor
+      创建剩余一回合的能力。
+  · 属性 RemainingTurns
+      此能力移除自身前剩余的回合计数。
+  · 方法 SaveAdditionalState
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.UnknownModelCapabilityPolicy
+    控制批量集合操作如何处理未知的已保存能力条目。
+  · 字段 Preserve
+      保留未知条目，以便未来或可选能力数据能继续往返保存。
+  · 字段 Remove
+      同时移除未知条目。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Models.Capabilities.UntilCombatEndCapability`1
+    战斗结束后自动移除自身的所属模型钩子能力。

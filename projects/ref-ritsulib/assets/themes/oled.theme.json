@@ -1,0 +1,226 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BAKAOLC/STS2-RitsuLib/main/schemas/ui/shell/v1/schema.json",
+  "themeFormatVersion": 1,
+  "themeVersion": 11,
+  "id": "oled",
+  "displayName": "OLED (Square)",
+  "inherits": "default",
+  "components": {
+    "toast": {
+      "interactive": {
+        "borderWidth": {
+          "$value": 1,
+          "$type": "dimension"
+        }
+      },
+      "closeButton": {
+        "layout": {
+          "borderWidth": {
+            "$value": 1,
+            "$type": "dimension"
+          },
+          "paddingH": {
+            "$value": 2,
+            "$type": "dimension"
+          },
+          "paddingV": {
+            "$value": 1,
+            "$type": "dimension"
+          }
+        }
+      },
+      "layout": {
+        "width": {
+          "$value": 420,
+          "$type": "dimension"
+        },
+        "minHeight": {
+          "$value": 72,
+          "$type": "dimension"
+        },
+        "padding": {
+          "horizontal": {
+            "$value": 14,
+            "$type": "dimension"
+          },
+          "vertical": {
+            "$value": 12,
+            "$type": "dimension"
+          }
+        },
+        "rowSpacing": {
+          "$value": 10,
+          "$type": "dimension"
+        },
+        "imageSize": {
+          "$value": 56,
+          "$type": "dimension"
+        },
+        "screenMargin": {
+          "$value": 16,
+          "$type": "dimension"
+        }
+      },
+      "animation": {
+        "enterDuration": {
+          "$value": 0.22,
+          "$type": "dimension"
+        },
+        "moveDuration": {
+          "$value": 0.18,
+          "$type": "dimension"
+        },
+        "exitDuration": {
+          "$value": 0.18,
+          "$type": "dimension"
+        },
+        "enterSlideDistance": {
+          "$value": 80,
+          "$type": "dimension"
+        },
+        "exitSlideDistance": {
+          "$value": 80,
+          "$type": "dimension"
+        },
+        "enterScale": {
+          "$value": 0.92,
+          "$type": "dimension"
+        }
+      }
+    }
+  },
+  "core": {
+    "color": {
+      "scheme": {
+        "canvas": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "sidebar": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "inset": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "panel": {
+          "$value": "#0A0C10",
+          "$type": "color"
+        },
+        "raised": {
+          "$value": "#13171D",
+          "$type": "color"
+        },
+        "hover": {
+          "$value": "#202630",
+          "$type": "color"
+        },
+        "overlay": {
+          "$value": "#141920",
+          "$type": "color"
+        },
+        "selected": {
+          "$value": "#152C3E",
+          "$type": "color"
+        },
+        "selectedHover": {
+          "$value": "#1D3C53",
+          "$type": "color"
+        },
+        "pressed": {
+          "$value": "#254C68",
+          "$type": "color"
+        },
+        "primary": {
+          "$value": "#F3F6FA",
+          "$type": "color"
+        },
+        "body": {
+          "$value": "#D7DFE9",
+          "$type": "color"
+        },
+        "secondary": {
+          "$value": "#B8C3D1",
+          "$type": "color"
+        },
+        "muted": {
+          "$value": "#939FAF",
+          "$type": "color"
+        },
+        "focus": {
+          "$value": "#E2F3FF",
+          "$type": "color"
+        },
+        "accent": {
+          "$value": "#98D2F7",
+          "$type": "color"
+        },
+        "accentHover": {
+          "$value": "#C4E8FF",
+          "$type": "color"
+        },
+        "border": {
+          "$value": "#465262",
+          "$type": "color"
+        },
+        "divider": {
+          "$value": "#2C333E",
+          "$type": "color"
+        },
+        "disabled": {
+          "$value": "#090B0E",
+          "$type": "color"
+        },
+        "disabledBorder": {
+          "$value": "#303943",
+          "$type": "color"
+        },
+        "track": {
+          "$value": "#354557",
+          "$type": "color"
+        },
+        "thumb": {
+          "$value": "#3C617B",
+          "$type": "color"
+        },
+        "thumbHover": {
+          "$value": "#4C7A98",
+          "$type": "color"
+        },
+        "thumbPressed": {
+          "$value": "#5D93B3",
+          "$type": "color"
+        },
+        "successBg": {
+          "$value": "#214D3B",
+          "$type": "color"
+        },
+        "success": {
+          "$value": "#91DFB0",
+          "$type": "color"
+        },
+        "danger": {
+          "$value": "#F0A29F",
+          "$type": "color"
+        },
+        "dangerBg": {
+          "$value": "#45272C",
+          "$type": "color"
+        },
+        "dangerHover": {
+          "$value": "#5C3339",
+          "$type": "color"
+        },
+        "info": {
+          "$value": "#8AC8F2",
+          "$type": "color"
+        },
+        "warning": {
+          "$value": "#EBC674",
+          "$type": "color"
+        }
+      }
+    }
+  }
+}

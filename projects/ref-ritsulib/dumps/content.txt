@@ -1,0 +1,370 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ActEnterPoolModeKind
+    指定没有强制候选章节胜出时如何选择符合条件的章节。
+  · 字段 Uniform
+      为有效候选贡献权重 1。槽位中已有章节始终具有权重 1。其他模组可向同一槽位贡献加权候选。
+  · 字段 Weighted
+      在有效候选与已有章节之间按权重选择，已有章节的权重固定为 1。 非有限值或非正权重的候选被排除。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ActEnterResolveContext
+    向章节进入解析器提供一局游戏状态、随机数生成器与解锁状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.CardLibraryCompendiumFilterInsertRelation
+    指定图鉴牌池筛选器插入到其锚点之前还是之后。
+  · 字段 Before
+      紧接锚点之前插入。
+  · 字段 After
+      紧接锚点之后插入。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.CardLibraryCompendiumPlacementDefaults
+    提供卡牌库图鉴中模组筛选器的内置放置规则。
+  · 属性 DefaultCharacterRowRules
+      获取默认角色筛选器放置偏好：依次尝试放在 Colorless、Ancients 与 Misc 之前。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.CardLibraryCompendiumPlacementRule
+    描述卡牌库图鉴筛选器的一项相对锚点放置偏好。
+  · 属性 VanillaFilterAnchorUniqueName
+      获取原版牌池筛选器锚点的唯一节点名称。
+  · 属性 ModCharacterModelIdEntry
+      获取用作锚点的另一模组角色公共 ModelId.Entry。
+  · 属性 ModSharedCompendiumFilterStableId
+      获取用作锚点的另一已注册共享牌池筛选器稳定 ID。
+  · 属性 Relation
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.CardLibraryCompendiumSharedPoolFilterRegistration
+    描述独立牌池 的可选卡牌库图鉴筛选器。
+  · 属性 OwningModId
+      获取注册此筛选器的模组 ID。
+  · 属性 StableId
+      获取全局唯一的筛选器 ID；该 ID 仅可包含 ASCII 字母、数字与下划线。
+  · 属性 IconTexturePath
+      获取筛选器按钮图标的 Godot 资源路径。
+  · 属性 CardPoolType
+      获取具体牌池类型；其 AllCardIds 定义筛选器包含的卡牌。
+  · 属性 PlacementRules
+      获取可选的有序放置偏好。未提供或为空时，会将筛选器追加到筛选器条末尾。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.CardLibraryCompendiumStripSnapshot
+    捕获 RitsuLib 插入模组筛选器前的图鉴筛选器条。
+  · 属性 OriginalSiblingsInOrder
+      获取从左到右排列的原始子节点序列。
+  · 属性 Count
+      获取快照中的子节点数量。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.CardLibraryCompendiumVanillaFilterNames
+    提供原版卡牌库图鉴牌池筛选器的 Godot 唯一节点名称。
+  · 字段 IroncladPool
+      铁甲战士角色牌池筛选器。
+  · 字段 SilentPool
+      静默猎手角色牌池筛选器。
+  · 字段 DefectPool
+      故障机器人角色牌池筛选器。
+  · 字段 RegentPool
+      储君角色牌池筛选器。
+  · 字段 NecrobinderPool
+      亡灵契约师角色牌池筛选器。
+  · 字段 ColorlessPool
+      无色牌池筛选器。
+  · 字段 AncientsPool
+      先古牌池筛选器。
+  · 字段 MiscPool
+      杂项牌池筛选器。
+  · 属性 AllInStripOrder
+      获取全部原版筛选器名称，并按其在图鉴筛选器条中的从左到右顺序排列。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ContentCatalogEntry
+    描述一个模组内容目录及其模型解析与合并行为。
+  · 属性 GlobalTypes
+      获取全局目录中已注册的模型类型。
+  · 属性 ScopedRegistry
+      获取章节作用域目录中章节类型到模型类型的注册表。
+  · 属性 WarmGlobal
+      获取根据已注册类型预热全局目录的解析器。
+  · 属性 WarmScoped
+      获取用于预热章节作用域目录的解析器。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ContentCatalogId
+    标识由 RitsuLib 扩展的模型目录。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ContentMergeMode
+    指定如何将原版模型序列与已解析的模组模型合并。
+  · 字段 AppendDistinctById
+      原版模型在前，再追加 ID 尚未出现的模组模型，并将结果实例化为数组。
+  · 字段 MergeDistinctById
+      没有模组模型时保留来源序列；否则按不同 ID 合并为实例化序列。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ContentRegistrationState
+    指示 是否仍接受注册。
+  · 字段 Open
+      仍可进行注册。
+  · 字段 Frozen
+      注册已冻结，继续尝试注册将抛出异常。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ContentRegistryPhase
+    注册冻结与已解析模型缓存的生命周期阶段。
+  · 字段 Open
+      允许模组注册。
+  · 字段 Frozen
+      在 运行前冻结注册。
+  · 字段 Resolved
+      已预热解析后的模型缓存。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ContentSourceDescriptor
+    描述为一项内容显示的来源。
+  · 属性 ModId
+      获取来源模组 ID；原版内容使用 Vanilla。
+  · 属性 DisplayName
+      获取可选的来源显示名称。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ContentSourceResolver
+    独立于内容来源悬浮提示偏好，解析稳定的内容来源元数据。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.IContentEnumerableMergeStrategy`1
+    定义将模型序列与已解析模组模型合并的策略。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.IContentListMergeStrategy`1
+    定义将模型列表与已解析模组模型合并的策略。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.IContentSourceSupplier
+    允许模型覆盖界面显示的内容来源信息。
+  · 属性 ContentSource
+      获取要显示的内容来源信息。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ModContentRegistry
+    提供按模组隔离的注册表，用于注册池模型、独立模型、章节作用域内容，以及供修补后的 身份系统使用的稳定公共条目覆盖。
+  · 属性 HasAnyActEnterRegistration
+      获取是否已注册任意章节进入强制规则或牌池规则。
+  · 方法 RequestActEnterPostMapUiMapSyncBump
+      请求在替换章节后执行一次多人地图选择同步。
+  · 方法 RemoveCardPoolAssetReplacement``1
+  · 方法 ClearGlobalCharacterAssetReplacement
+      移除此模组的全局角色资源替换。
+  · 字段 CatalogById
+      定义各扩展模型目录的注册来源、缓存解析器与合并模式。
+  · 方法 WarmResolvedModelCaches
+      在 后预热所有已解析模型缓存。
+  · 属性 ModId
+      获取与此注册表实例关联的模组 ID。
+  · 属性 IsFrozen
+      获取注册是否已在全局冻结。
+  · 属性 State
+      获取当前的 。
+  · 方法 RegisterCard``2
+      使用默认公共条目，将 注册到 。
+  · 方法 RegisterRelic``2
+      使用默认公共条目，将 注册到 。
+  · 方法 RegisterPotion``2
+      使用默认公共条目，将 注册到 。
+  · 方法 RegisterCharacter``1
+      注册模组角色模型，使其纳入 。
+  · 方法 RegisterAct``1
+      注册模组章节模型，使其纳入 。此操作不会将该章节加入原版随机章节列表； 如需加入，请实现 。
+  · 方法 RegisterMonster``1
+      注册模组怪物模型，用于身份跟踪、动态注入，并将其纳入修补后的 ModelDb.Monsters 列表。
+  · 方法 RegisterPower``1
+      注册模组能力模型，使其纳入 。
+  · 方法 RegisterOrb``1
+      注册模组充能球模型，使其纳入 。
+  · 方法 RegisterModelCapability``1
+      注册基于模型的能力，供 使用。
+  · 方法 RegisterEnchantment``1
+      注册模组附魔模型，用于固定身份、动态注入，并将其纳入修补后的 列表。
+  · 方法 RegisterAffliction``1
+      注册模组苦痛模型，用于固定身份、动态注入，并将其纳入修补后的 列表。
+  · 方法 RegisterAchievement``1
+      注册模组成就模型，用于固定身份、动态注入，并将其纳入修补后的 列表。
+  · 方法 RegisterSingleton``1
+      注册模组单例模型，用于固定身份，并通过 动态注入。
+  · 方法 RegisterBadge``1
+      注册自定义徽章模板类型。
+  · 方法 RegisterGoodModifier``1
+      将模组修正项注册为正面每日修正项，使其纳入修补后的 列表。
+  · 方法 RegisterBadModifier``1
+      将模组修正项注册为负面每日修正项，使其纳入修补后的 列表。
+  · 方法 RegisterSharedCardPool``1
+      注册共享卡牌池模型，使其纳入 。
+  · 方法 RegisterSharedRelicPool``1
+      注册共享遗物池模型，使其纳入修补后的 列表。
+  · 方法 RegisterSharedPotionPool``1
+      注册共享药水池模型，使其纳入修补后的 列表。
+  · 方法 RegisterSharedEvent``1
+      注册共享事件模型，使其纳入共享事件枚举。
+  · 方法 RegisterActEncounter``2
+      注册作用域限定为 的遭遇模型。
+  · 方法 RegisterGlobalEncounter``1
+      注册全局遭遇，并将其追加到每个章节的 结果中， 位于原版和章节作用域模组遭遇之后。若遭遇仅属于一个章节，请使用 。
+  · 方法 RegisterActEvent``2
+      注册作用域限定为 的事件模型。
+  · 方法 RegisterSharedAncient``1
+      注册共享先古之民事件模型，使其纳入先古之民事件枚举。
+  · 方法 RegisterActAncient``2
+      注册作用域限定为 的先古之民事件模型。
+  · 方法 GetRegisteredTypeSnapshots
+      获取已注册模型类型的快照，其中包含所有者、已解析 ID 和公共条目诊断信息。
+  · 方法 InjectDynamicRegisteredModels
+      在 Init 完成填充 _contentById 前，将位于 程序集中的 RitsuLib 注册类型注入 。游戏的子类型扫描能够发现静态模组 DLL 中的类型，但无法发现通过 Reflection.Emit 生成的占位类型。
+  · 方法 NonAlphaNumericRegex
+  · 方法 AcronymBoundaryRegex
+  · 方法 CamelBoundaryRegex
+  · 方法 RepeatedUnderscoreRegex
+  · 方法 RegisterTrashHeapCard``1
+      将 注册为“垃圾堆”事件“拿取”选项的候选卡牌。
+  · 方法 RegisterTrashHeapRelic``1
+      将 注册为“垃圾堆”事件“深入翻找”选项的候选遗物。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ModContentRegistry.ModContentRegisteredTypeSnapshot
+    表示已注册模型类型及其身份元数据的不可变快照。
+  · 属性 ModId
+      获取注册时记录的所属模组 ID。
+  · 属性 ModelType
+      获取已注册模型的 CLR 类型。
+  · 属性 ModelDbId
+      获取运行时解析的 ModelDb ID（如当前可用）。
+  · 属性 ExpectedPublicEntry
+      获取按当前注册表规则确定的预期固定公共条目。
+  · 属性 HasExplicitPublicEntryOverride
+      获取预期条目是否来自显式覆盖。
+  · 属性 TypeNamePublicEntry
+      获取由类型名派生的 CATEGORY_TYPENAME 公共条目（如可解析）。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ModContentRegistry.VanillaCharacterIds
+    提供常用的原版角色 ID。
+  · 字段 Ironclad
+      铁甲战士角色 ID。
+  · 字段 Silent
+      静默猎手角色 ID。
+  · 字段 Defect
+      故障机器人角色 ID。
+  · 字段 Regent
+      储君角色 ID。
+  · 字段 Necrobinder
+      亡灵契约师角色 ID。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ModelDbGetterMerge
+    扩展模型序列前将其实例化，同时让嵌套模型查找保持原样。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ModelPublicEntryOptions
+    配置分配给 RitsuLib 已注册模型的公共 ModelDb 条目。
+  · 属性 FromTypeName
+      获取默认条目规则：<MOD>_<CATEGORY>_<CLR_TYPE_NAME>。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ModifierContentMerge
+    将 RitsuLib 注册的一局游戏修饰符与互斥组合并到 列表中。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ModifierRegistration
+    描述已注册的模组局内修饰符及其列表位置。
+  · 属性 ModifierType
+      具体 类型。
+  · 属性 ModifierListSortOrder
+      负值插入当前列表段之前；非负值插入之后。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AchievementsPatch
+    将 RitsuLib 注册的成就追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.ActsByIndexPatch
+    阻止已注册模组章节默认参与原版章节列表随机选择，除非其显式加入。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.ActsPatch
+    将 RitsuLib 注册的章节追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllAncientsPatch
+    将 RitsuLib 注册的共享与章节作用域先古之民事件追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllCharactersPatch
+    将 RitsuLib 注册的角色追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllEventsPatch
+    将 RitsuLib 注册的事件追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllMonstersPatch
+    按 将 RitsuLib 注册的怪物类型合并到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllOrbsPatch
+    将 RitsuLib 注册的充能球追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllPotionPoolsPatch
+    将 RitsuLib 注册的共享药水池追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllPowersPatch
+    将 RitsuLib 注册的能力追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllRelicPoolsPatch
+    将 RitsuLib 注册的共享遗物池追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllRelicsPatch
+    将 RitsuLib 注册的遗物追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllSharedAncientsPatch
+    将 RitsuLib 注册的共享先古之民事件追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllSharedCardPoolsPatch
+    将 RitsuLib 注册的共享卡牌池追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.AllSharedEventsPatch
+    将 RitsuLib 注册的共享事件追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.BadModifiersPatch
+    将 RitsuLib 注册的修正项追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.DebugAfflictionsPatch
+    将 RitsuLib 注册的苦痛追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.DebugEnchantmentsPatch
+    将 RitsuLib 注册的附魔追加到 （覆盖子类型扫描之外的动态类型）。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.DynamicActContentPatchBootstrap
+    在 初始化前向所有已加载章节类型应用动态内容补丁。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.DynamicCharacterStarterContentPatchBootstrap
+    在 初始化前向所有已加载角色类型应用初始内容补丁。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.GoodModifiersPatch
+    将 RitsuLib 注册的修正项追加到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.ModelDbContentPatchHelper
+    应用模型序列合并函数，同时保护嵌套的 查找。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.ModelDbModdedEntryPatch
+    为 RitsuLib 所属模型类型提供已注册的公共模型条目。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.ModelIdSerializationCacheDynamicContentPatch
+    已注册动态内容进入 后，按确定性顺序重建 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.MutuallyExclusiveModifiersPatch
+    将 RitsuLib 注册的修正项互斥组合并到 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.TrashHeapCardsRegistryPatch
+    将已注册的候选卡牌加入“垃圾堆”事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.Patches.TrashHeapRelicsRegistryPatch
+    将已注册的候选遗物加入“垃圾堆”事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.PlaceholderCardDescriptor
+    配置生成的占位卡牌模型属性。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.PlaceholderPotionDescriptor
+    配置生成的占位药水模型属性。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.PlaceholderRelicDescriptor
+    配置生成的占位遗物模型属性。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Content.ResolvedModelCache
+    在 后解析已注册模型类型，并按目录缓存。

@@ -1,0 +1,179 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Context.StorageContext
+    在持久化操作中携带可扩展的存储寻址值。
+  · 属性 Empty
+      空上下文。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Context.StorageContextKey`1
+    表示在 中存取值时使用的强类型键。
+  · 属性 Id
+      此上下文键的稳定标识符。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Context.StorageContextKeys
+    提供 RitsuLib 持久化所用的内置 值。
+  · 属性 ProfileId
+      覆盖持久化操作的活动游戏档案 ID。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.DataLifecycleState
+    指示档案作用域的模组数据是否已可安全访问。
+  · 字段 WaitingForProfile
+      尚无可用于持久化模组数据的活动档案上下文。
+  · 字段 Ready
+      档案路径已初始化，模组数据操作预期有效。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.DataReadyLifecycle
+    协调档案数据的就绪状态，并发布 、 和 生命周期事件。
+  · 属性 IsReady
+      档案路径初始化完成且数据可安全使用时为 。
+  · 属性 ReadyProfileId
+      与最近一次就绪通知关联的档案 ID；未就绪时为 -1。
+  · 属性 State
+      从 派生的生命周期状态。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Migration.IMigration
+    定义两个架构版本之间的 JSON 对象数据迁移。
+  · 属性 FromVersion
+      此迁移可处理的源架构版本下限，包含该版本。
+  · 属性 ToVersion
+      此迁移生成的架构版本。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Migration.MigrationManager
+    协调持久化数据类型的架构版本迁移。
+  · 方法 GetCurrentVersion``1
+      获取为数据类型配置的当前架构版本。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Migration.MigrationResult`1
+    JSON 反序列化及可选迁移操作的结果。
+  · 属性 Success
+      JSON 反序列化及所有必要迁移均成功时为 。
+  · 属性 Data
+      为 时反序列化得到的实例；该实例可能已经迁移。
+  · 属性 ErrorMessage
+      为 时的失败说明。
+  · 属性 WasMigrated
+      至少执行了一个迁移步骤时为 。
+  · 属性 FinalVersion
+      已配置迁移操作所报告的最终架构版本。
+  · 属性 RequiresRecovery
+      JSON 格式错误或架构版本过旧，表明应隔离或重置存储文件时为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Migration.ModDataMigrationConfig
+    声明一种持久化模组数据类型所支持的 JSON 架构版本。
+  · 属性 CurrentDataVersion
+      迁移所面向的当前架构版本。
+  · 属性 MinimumSupportedDataVersion
+      仍可迁移的最旧架构版本；更早的版本需要执行恢复。
+  · 属性 SchemaVersionProperty
+      存储整数架构版本的 JSON 属性名。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.Migration.ModDataVersion
+    提供模组数据 JSON 架构版本控制使用的共享常量。
+  · 字段 SchemaVersionProperty
+      持久化架构版本整数的默认 JSON 属性名。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.ModAccountRelativePath
+    将当前账户根目录下的 Godot 用户数据路径转换为账户相对路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.ModCloudSyncPathRegistry
+    跟踪已注册的模组数据槽，并推导可进行云同步的账户相对路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.ModCloudSyncScope
+    选择哪些已注册模组数据作用域参与云同步操作。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.PersistentDataEntry`1
+    支持可选迁移、备份恢复和变更通知的强类型 JSON 持久化封装。
+  · 属性 Data
+      当前反序列化的数据对象；请通过 修改它以触发变更通知。
+  · 属性 FilePath
+      此条目解析后的 Godot 用户数据路径；除非上下文提供其他档案 ID，否则使用活动档案。
+  · 属性 Scope
+      此条目配置的存储作用域。
+  · 事件 Changed
+      尝试加载后，或通过 修改内存数据后触发。
+  · 方法 Load
+      从磁盘读取 JSON（带备份回退），应用迁移，并更新 。
+  · 方法 Save
+      将 序列化到 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.ProfileDataChangedEvent
+    RitsuLib 认为档案数据已就绪时，活动档案 ID 发生变化会发布此事件。
+  · 属性 OldProfileId
+      上一个档案标识符。
+  · 属性 NewProfileId
+      新档案标识符。
+  · 属性 Source
+      触发通知的子系统。
+  · 属性 OccurredAtUtc
+      UTC 时间戳。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.ProfileDataInvalidatedEvent
+    当前已就绪的档案上下文失效时发布，例如对应档案被删除后。
+  · 属性 ProfileId
+      已失效的档案。
+  · 属性 Reason
+      简短诊断标签。
+  · 属性 OccurredAtUtc
+      UTC 时间戳。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.ProfileDataReadyEvent
+    初始化或重新加载后，档案作用域的模组数据变为可读可写时发布。
+  · 属性 ProfileId
+      活动档案标识符。
+  · 属性 Source
+      触发通知的子系统。
+  · 属性 IsInitialReady
+      此次通知使生命周期从未就绪转换为就绪时为 。
+  · 属性 IsProfileSwitch
+      就绪档案 ID 与上一个就绪状态不同时为 。
+  · 属性 DataReloaded
+      模组数据因路径或档案变化而重新加载时为 。
+  · 属性 OccurredAtUtc
+      UTC 时间戳。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.ProfileManager
+    跟踪活动游戏档案 ID，并解析 Godot user:// 存储中的模组数据路径。
+  · 属性 Instance
+      获取共享的档案管理器。
+  · 属性 CurrentProfileId
+      最后获知的游戏档案 ID；初始化前为 -1。
+  · 事件 ProfileChanged
+      活动档案变化后以 (oldProfileId, newProfileId) 触发。
+  · 事件 ProfileDeleted
+      通过游戏 API 删除某个档案的模组数据时触发。
+  · 方法 Initialize
+      订阅游戏档案变化，并初始化 。
+  · 方法 RefreshCurrentProfile
+      从游戏重新读取档案 ID，并在值发生变化时调用 。
+  · 方法 GetProfileDirectory
+      返回 的档案子目录路径。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.SaveScope
+    定义存档数据的存储作用域。
+  · 字段 Global
+      数据在所有档案之间共享。
+  · 字段 Profile
+      数据专属于一个档案。
+  · 字段 InMemory
+      数据仅保留在内存中且不会持久化。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.StoragePathResolver
+    根据 解析本地用户存储路径。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Utils.Persistence.StorageSyncPathEnumerator
+    收集允许同步的已注册账户相对模组数据路径。

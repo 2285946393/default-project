@@ -13,9 +13,9 @@
 | 指标 | 数量 |
 |---|---|
 | 工坊 mod 总数 | **121** |
-| **已拆**（有反编译产物 + 笔记） | **6** |
+| **已拆**（有反编译产物 + 笔记） | **7** |
 | 半拆（只看了开源仓库，未反编译） | 1 |
-| **未拆** | **114** |
+| **未拆** | **113** |
 | 今天（10-08）目录被动过 | 11 |
 | 带 dll | 105 |
 | 带 pck | 87 |
@@ -23,7 +23,7 @@
 
 ---
 
-## 二、已拆（6 个）
+## 二、已拆（7 个）
 
 | 工坊 id | 名字 | 作者 | 产出 | 核心看点 |
 |---|---|---|---|---|
@@ -33,8 +33,12 @@
 | `3790899961` | 战斗路线求解器（CombatSolver） | Torch | `projects/ref-combatsolver/`（213,836 行） | ★ Anytime 束搜索、三态药水策略、影子世界推演、内存工程 |
 | `3747583646` | 鸣潮先古（wuwancients） | supermanpower | `projects/ref-wuwancients/`（22,957 行） | ★ 自定义先古 + 确定性随机（不动游戏随机流） |
 | `3804485262` | 假如塔2是类幸存者（`local.action_game`） | 普通网友Cano | `projects/ref-actiongame/`（14,690 行） | ★ 定时器把回合制"切片"成实时 + 89 个解阻塞补丁 |
+| **`3747602295`** | **RitsuLib**（`STS2-RitsuLib`） | OLC（GitHub `BAKAOLC`） | `projects/ref-ritsulib/`（**不反编译**：MIT 开源 + 29 篇官方文档） | ★★★ **框架层地基**：声明式注册 / 74 个生命周期事件 / IL 断言工具链 / W3C 设计令牌主题系统 / 免引用跨 mod 调用 |
 
-对应笔记：`notes/杀戮尖塔2-特效实战*.md`（前 3 个）· `notes/杀戮尖塔2-拆解-*.md`（后 3 个）
+对应笔记：`notes/杀戮尖塔2-特效实战*.md`（前 3 个）· `notes/杀戮尖塔2-拆解-*.md`（后 4 个）
+
+> **RitsuLib 是唯一一个"不用反编译"的** —— MIT 开源，直接读源码和官方文档站。
+> 详见 `notes/杀戮尖塔2-拆解-RitsuLib框架.md`（16 节 / 14 条"可偷"清单）。
 
 ## 三、半拆（1 个）
 
@@ -72,14 +76,31 @@
 | 依赖 | 用到它的 mod 数 | 说明 |
 |---|---|---|
 | **（零依赖）** | **72** | 占 6 成 —— 说明这个生态"裸 Harmony 也能玩" |
-| `BaseLib` | 25 | 提供 `CustomAncientModel` 等**内容注册口子**（鸣潮先古用的） |
-| `STS2-RitsuLib` | 23 | 提供 **patcher / 生命周期 / 模型能力**框架（CombatSolver 用的） |
+| **`STS2-RitsuLib`** | **26** | ① **框架层**：patcher / 生命周期 / 模型能力 / 声明式注册 / 主题系统（CombatSolver 的底座） |
+| `BaseLib` | 25 | ② **内容层**：提供 `CustomAncientModel` 等**内容注册口子**（鸣潮先古用的），作者 **Alchyr**（StS1「Downfall」作者） |
 | `JmcModLib` | 3 | 另一套小框架 |
 | `aemeath-ww` | 2 | |
-| `MinionLib` / `tune_strain` / `ModConfig` / `MomoLib` | 各 1 | |
+| `MinionLib` | 2 | 随从系统（FrostSpire 依赖） |
+| `tune_strain` / `ModConfig` / `MomoLib` / `voicemod` | 各 1 | |
 
-> **结论**：想做大改造，两条主流路径是 **BaseLib（塞内容）** 和 **RitsuLib（改框架）**。
-> 两个都**还没拆**，是目前最该补的洞。
+> **结论**：想做大改造，两条主流路径是 **`BaseLib`（塞内容）** 和 **`RitsuLib`（改框架）**。
+> **两个框架合起来覆盖 42 个 mod（约 44%）**。
+>
+> ⚠️ **修订记录**：早先一版统计写的是「RitsuLib 23 / BaseLib 25」，那是因为扫描时
+> 只读了工坊目录，且 `BaseLib` 装在**嵌套布局**里（`3737335127/BaseLib/BaseLib.json`）被漏掉。
+> 现在扫的是「工坊 + 本地 `mods/` 合并、按 manifest id 归并」，**以本节为准**。
+
+### 你自己在用的（本地 `Slay the Spire 2/mods/`）
+
+| mod | 版本 | 依赖 |
+|---|---|---|
+| `DouSpire` | v0.2.0 | RitsuLib **0.6.6** + BaseLib v3.4.7 |
+| `QuestSpire` | v0.2.28 | RitsuLib **0.6.2** + BaseLib v3.4.7 |
+| `FrostSpire` | v0.1.0 | RitsuLib **0.6.5** + BaseLib v3.4.7 + MinionLib 0.6.3 |
+| `BloomlessSpire` | v0.0.0 | RitsuLib **0.6.2** |
+
+> ⚠️ **四个自研 mod 全部依赖 RitsuLib，但版本不一致（0.6.2/0.6.5/0.6.6）**。
+> 框架仍在活跃更新（2026-10-06 还在推），建议统一到最新版。
 
 ---
 
@@ -87,8 +108,8 @@
 
 | 优先 | 工坊 id | 名字 | 为什么值得 |
 |---|---|---|---|
-| ★★★ | `3747602295` | **RitsuLib** | 被 **23 个 mod** 依赖、CombatSolver 的底座。拆它 = 一次搞懂半个生态的框架层。**本机 `mods/` 里也装了** |
-| ★★★ | `3737335127` | **BaseLib** | 被 **25 个 mod** 依赖，先古/内容注册的口子都在这（v3.4.7） |
+| ✅ **已拆** | `3747602295` | **RitsuLib** | 被 **26 个 mod** 依赖、CombatSolver 的底座，**本机 4 个自研 mod 全依赖它**。MIT 开源 + 29 篇官方文档，已出笔记 |
+| ★★★ | `3737335127` | **BaseLib** | 被 **25 个 mod** 依赖，先古/内容注册的口子都在这（v3.4.7，作者 Alchyr）。**下一个最该拆的** |
 | ★★ | `3779807977` | 弹幕尖塔 DanmakuSpire | 之前列为待拆；玩法改造，和"类幸存者"可对照 |
 | ★★ | `3772226486` | 中国人能飞 CombatFlight | 之前列为待拆；依赖 ModConfig，是**给原版加机制**的样本 |
 | ★★ | `3747531952` | 随机数预测 RandomForeseer | **MIT 有真源码**，比反编译省事得多；是 CombatSolver 的上游 |
@@ -99,6 +120,17 @@
 | ★ | `3747729740` | 无尽模式（今天新下） | 玩法模式扩展 |
 | — | `3747575739` | More Enchantments | 原版机制扩展（附魔） |
 | — | `3797367057` | 一代遗物 | 跨代内容移植 |
+
+### 还不急着拆，但记一笔：RitsuLib 官方文档里**没细读**的三篇
+
+拆 RitsuLib 时发现这三篇和**特效/机制线**直接相关，官方文档自带，哪天要深挖可直接看
+（`projects/ref-ritsulib/upstream/.../docs/pages/guide/`）：
+
+| 文档 | 大小 | 为什么以后要看 |
+|---|---|---|
+| `creature-visuals-and-animation.md` | 6.1KB | 生物视觉与动画 |
+| `card-dynamic-var-toolkit.md` | 15KB | 卡牌动态变量（`{Damage}` 这类怎么算） |
+| `secondary-resources.md` | **27KB**（最长） | **第二资源**子系统（「怒」「符」「血」这类），88 个类型 |
 
 ---
 

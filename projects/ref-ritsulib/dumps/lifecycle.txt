@@ -1,0 +1,90 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.ActEnterMapSelectionSyncPatch
+    当章节进入逻辑替换了生成的 时，在 完成后更新多人地图选择同步状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.ActEnteringLifecyclePatch
+    从 发布章节进入中事件以及最终奖励界面的继续事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.ActHookLifecyclePatch
+    在 完成后发布章节已进入生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.AfterGoldGainedLifecyclePatch
+    发布获得金币、获取或移除药水以及领取奖励的生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.BeforeRoomEnteredLifecyclePatch
+    在房间进入逻辑执行前后发布生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.CoreInitializationLifecyclePatch
+    在原版游戏的一次性初始化前后发布 / 及其完成事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.EpochObtainedLifecyclePatch
+    从 发布纪元获得与显示生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.GameNodeLifecyclePatch
+    为 发布 和 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.GameOverScreenLifecyclePatch
+    当使用局内状态和存档数据创建 时发布生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.GoldLossLifecyclePatch
+    当一名玩家通过 失去金币时发布生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.ModelRegistryLifecyclePatch
+    挂接 及相关初始化过程，以冻结注册表、注入模型并发布模型生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NContinueRunInfoShowInfoModelNotFoundPatch
+    将 遇到的章节或角色模型缺失错误转换为与存档无法读取时相同的错误状态。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NCustomRunLoadScreenBeginRunMissingCharacterPatch
+    当一名玩家引用未注册角色时阻止自定义模式的 StartRun，同时保留存档； 其他情况下不改变原版游戏的加载流程。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NDailyRunLoadScreenBeginRunMissingCharacterPatch
+    当一名玩家引用未注册角色时阻止每日攀登的 StartRun，同时保留存档； 其他情况下不改变原版游戏的加载流程。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NMainMenuContinueRunMissingCharacterPatch
+    在 OnContinueButtonPressedAsync 调用 RunState.FromSerializable 前拒绝引用未注册角色的存档， 且不改变原版游戏的正常继续流程。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NMainMenuReadyLifecyclePatch
+    主菜单节点就绪后，延迟发布共享的主菜单生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NMultiplayerLoadGameScreenBeginRunMissingCharacterPatch
+    当一名玩家引用未注册角色时阻止多人游戏的 StartRun，同时保留存档； 其他情况下不改变原版游戏的加载流程。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NMultiplayerTestCharacterPaginatorAllCharactersPatch
+    将多人测试中固定的原版角色列表替换为 ， 使已注册的模组角色显示在分页列表中。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NRunHistoryDroppedFilePreviewPatch
+    允许用户在原版游戏的游戏历史界面中预览拖入的 .run 或 .save 文件， 而不将其导入已保存的历史记录列表。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.NRunHistoryRefreshAndSelectRunSuppressRethrowPatch
+    在 处理跑局历史加载失败后抑制重新抛出。该异常会经由 TaskHelper.RunSafely 传播并可能冻结输入；在原版处理后吞掉它可使菜单保持可用。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.ReflectionHelperModTypeCachePostModLoadPatch
+    在模组加载后、BaseLib 等其他模组使用 前检查原版类型缓存。 后续检查会在静态程序集未变化时保留缓存。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.RelicObtainedLifecyclePatch
+    当通过 获得遗物时发布生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.RelicRemovedLifecyclePatch
+    当通过 移除遗物时发布生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.RoomExitLifecyclePatch
+    在 退出当前房间后发布房间已退出生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.RunEndedLifecyclePatch
+    发布 ，并将一局游戏结束转发给 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.RunHistoryMissingModelDbGetByIdTranspilerPatch
+    将游戏历史界面中的角色与章节查找重定向到 ， 使来自当前不可用模组的历史记录可使用已弃用模型占位项。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.RunLifecyclePatch
+    通过 发布 和 。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.RunSavingLifecyclePatch
+    当 保存当前一局游戏时发布生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.SaveLifecycleProfileId
+    围绕 的档案初始化、切换、进度保存和档案删除操作发布生命周期事件。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Lifecycle.Patches.UnlockIncrementLifecyclePatch
+    在旧版解锁计数推进后发布生命周期事件；从游戏 API 0.110.0 起，则在存档管理器尝试授予 下一个基于分数的纪元后发布。

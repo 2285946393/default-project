@@ -1,0 +1,26 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.RitsuLibFramework
+    为 RitsuLib 及其使用的模组提供共享的运行时启动和公共集成入口。
+  · 属性 Logger
+      获取框架的日志记录器。
+  · 属性 IsInitialized
+      获取必需的框架补丁是否已成功完成且初始化是否已进入运行时服务阶段。
+  · 属性 IsActive
+      获取必需补丁成功后，框架初始化是否在未发生异常的情况下完成。
+  · 属性 HasRegisteredModSettings
+      获取是否至少有一个模组通过 注册了设置页。
+  · 方法 Initialize
+      初始化共享框架服务，注册并应用必需补丁，然后发布生命周期事件。
+  · 方法 EnsureProfileServicesInitialized
+      确保与配置档绑定的服务（ProfileManager、配置档作用域的 ModDataStore）只初始化一次。
+  · 方法 RegisterModSettingsReflectionProvider``1
+      注册一个基于反射的设置提供器类型，用于属性驱动的设置页。
+  · 方法 RegisterModSettingsReflectionProviderAndTryRegister``1
+      注册一个反射提供器，并立即尝试镜像注册其页面。
+  · 方法 GetRegisteredModSettings
+      返回所有已注册的模组设置页（与 相同的快照）。
+  · 方法 GetTelemetryApplicants
+      返回已注册的遥测申请方。
+  · 方法 RefreshRelicVisibility
+      在遗物可见性状态变更后刷新当前一局游戏的遗物界面。
+

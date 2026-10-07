@@ -1,0 +1,66 @@
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.AncientDialogueLocalization
+    从本地化表加载先古之民事件对话，并将其添加到模组角色的 AncientDialogueSet 实例中。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.AncientDialogueMissingWarnings
+    先古之民事件对话键缺失但当前局内流程仍需继续时，每个键至多发出一次警告。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.I18NLocTableBridge
+    注册虚拟本地化表 ID，使 RitsuLib 的 字典可通过游戏的 LocString 和 LocTable 管线访问。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.AncientDialoguePopulateLocKeysPatch
+    在 AncientDialogueSet.PopulateLocKeys 运行前，为已注册的模组角色添加由本地化定义的先古之民事件对话。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocManagerGetTableI18NBridgePatch
+    使 LocManager.GetTable 能够解析已注册的虚拟 I18N 表。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocManagerLoadLocFormattersPostfixPatch
+    在游戏创建本地化格式化器后，注入模组注册的 SmartFormat 扩展。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocStringExistsI18NBridgePatch
+    解析虚拟 I18N 表的实例 LocString.Exists 查询。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocStringGetRandomWithPrefixI18NBridgePatch
+    解析虚拟 I18N 表的随机前缀选择。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocStringGetRawTextI18NBridgePatch
+    在 LocString.GetRawText 边界解析虚拟 I18N 条目，防止内联的 LocManager.GetTable 绕过桥接。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocStringStaticExistsI18NBridgePatch
+    解析虚拟 I18N 表的静态 LocString.Exists 查询。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocTableGetLocStringCompatibilityPatch
+    启用本地化表调试兼容时，使 LocTable.GetLocString 为缺失条目返回保留原键的占位值，并按表、键和方法各记录一次 [Localization][DebugCompat] 警告；否则保留原版缺失即抛异常的行为。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.LocTableGetRawTextCompatibilityPatch
+    启用本地化表调试兼容时，使 LocTable.GetRawText 为缺失条目返回原始键，并按表、键和方法各记录一次 [Localization][DebugCompat] 警告；否则保留原版缺失即抛异常的行为。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.Patches.TheArchitectLoadDialogueMissingFallbackPatch
+    当已注册的模组角色无法解析出 时，避免 THE_ARCHITECT 的 WinRun 流程解引用空对话。
+  · 方法 TryCreateEmptyLinesArchitectDialogueStub
+      在不调用构造函数（其要求至少一行台词）的情况下创建 ，随后将 设为空集合，并将攻击者字段设为 。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.SmartFormat.ModSmartFormatExtensionDefinition
+    描述已注册的 SmartFormat 扩展实例、实现类型、排序值及所属模组。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.SmartFormat.ModSmartFormatExtensionRegistry
+    提供按模组划分的注册表，用于登记游戏本地化格式化器所使用的 SmartFormat 选择器数据源和格式化器。
+  · 属性 ModId
+      获取此注册表所属模组的 ID。
+  · 方法 GetFormattersSnapshot
+      返回全部已注册格式化器定义的快照，依次按所属模组 ID、排序值、实现类型和注册顺序排列。
+  · 方法 GetSourcesSnapshot
+      返回全部已注册选择器数据源定义的快照，依次按所属模组 ID、排序值、实现类型和注册顺序排列。
+
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.SmartFormat.SmartFormatExtensionInjector
+    将已注册的模组 SmartFormat 扩展注入正在使用的 SmartFormatter 实例。
+────────────────────────────────────────────────────────────────────────────
+▌ STS2RitsuLib.Localization.SmartFormat.SmartFormatExtensionKind
+    标识通过 RitsuLib 注册的 SmartFormat 扩展类别。
+  · 字段 Source
+      SmartFormat 选择器数据源。
+  · 字段 Formatter
+      SmartFormat 格式化器。
+
