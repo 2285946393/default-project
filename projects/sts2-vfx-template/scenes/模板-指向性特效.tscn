@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3]
+
+[sub_resource type="Gradient" id="Gradient_beam"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0)
+
+[node name="DirectionalVfx" type="Node2D"]
+
+[node name="StartPos" type="Node2D" parent="."]
+position = Vector2(-400, 0)
+
+[node name="Beam" type="Line2D" parent="."]
+points = PackedVector2Array(-400, 0, 0, 0)
+width = 28.0
+gradient = SubResource("Gradient_beam")

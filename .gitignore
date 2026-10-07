@@ -27,3 +27,9 @@ projects/ai-interviewer/
 .claude/
 notes/_sessions_dump/
 __pycache__/
+
+# 杀戮尖塔2 参考素材（体积大 / 第三方下载，本地留用，不进仓库）
+# 素材库：730MB 图片+动画，4509 个文件
+projects/sts2-asset-library/
+# 官方+社区教程包：Steam 工坊下载（作者 jezxx），46MB
+projects/sts2-moddev-workspace/

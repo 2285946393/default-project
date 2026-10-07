@@ -42,20 +42,28 @@
 
 改东西之前先在这里找，**不要重复造**。
 
-### `pages/`（42 个单文件页面）
+### `pages/`（65 个单文件页面）
 
 作品集入口类：
-`作品展馆.html`（作品总入口，玫瑰粉樱花主题）、`求职作品集.html`、`AIGC内容作品集.html`、`小世界-演示页.html`、`创作者画像.html`、`秋招投递台.html`
+`作品展馆.html`（作品总入口，玫瑰粉樱花主题）、`求职作品集.html`、`AIGC内容作品集.html`、`小世界-演示页.html`、`创作者画像.html`、`秋招投递台.html`、`有花无实小站.html`、`视界.html`
 简历类：
 `简历-前端开发.html`、`简历-AI应用开发.html`、`简历-创意前端.html`、`简历-AIGC运营.html`
+求职工具类：
+`岗位速判.html`、`技能对照-真实JD拆解.html`、`代码导读-面试间.html`
 游戏类：
 `深渊塔.html`（15 层爬塔+策略战斗+随机事件）、`人生重开.html`、`二次元抽卡机.html`、
 `弹球乐园.html`、`弹球磁砖.html`、`合成猫咪.html`、`糖果果冻罐.html`、`节奏抽卡音游.html`、
 `Git时间穿梭迷宫.html`、`抉择回响.html`、`鲸鱼娘吃米饭.html`、`小鲸鱼岛.html`、
+`带薪摸鱼模拟器.html`、`摸鱼小屋.html`、`走进方块世界.html`、`赛博桌宠.html`、
 `王者万象棋作弊器.html`（梗页，假"开挂模拟器"，不是真外挂）
 可视化/模拟类：
 `极光流体.html`、`流体花园.html`、`粒子生命.html`、`反应扩散.html`、`引力沙盒.html`、
-`菌丝世界.html`、`元素秘境.html`、`虚拟歌姬音乐可视化.html`、`通信调制仿真实验室.html`、`云养小水母.html`
+`磁力沙盒.html`、`菌丝世界.html`、`元素秘境.html`、`虚拟歌姬音乐可视化.html`、`通信调制仿真实验室.html`、`云养小水母.html`、
+`傅里叶游乐场.html`、`黑洞.html`、`液态玻璃.html`、`烟花.html`、`花瓣粒子海报.html`
+卡牌/图鉴类：
+`全息典藏卡册.html`、`全息镭射卡.html`、`尖塔任务图鉴.html`、`梗化尖塔图鉴.html`、`梗化尖塔精选榜.html`、`我的游戏统计.html`
+闲聊/报告类：
+`小鲸鱼岛群聊总结-精简版.html`、`小鲸鱼岛群聊观察报告.html`
 工具类：
 `全能工具箱.html`、`沙雕工具箱.html`、`收藏夹.html`、`cos曲线画板.html`、`AI画图记录.html`
 其他单页：
@@ -64,7 +72,7 @@
 > 线上（博客 `public/lab/`）只部署了其中一部分，且用英文 slug 命名（`abyss.html`、`aura.html` …），
 > **和 `pages/` 里的文件名不是一一对应**，别按文件名直接推线上地址。
 
-### `projects/`（22 个多文件工程）
+### `projects/`（36 个多文件工程）
 
 `archify`（画架构图的 Agent Skill，给他提过 PR）、`ai-gateway`（鲸云 API 中转站）、
 `ai-interviewer`、`creator-studio`（创作中台）、`cosmic-playground`、
@@ -72,11 +80,26 @@
 `fractal-explorer`、`gravity-sandbox`、`particle-life`、`reaction-diffusion`、
 `mycelia`、`saharan-works`（球藻）、`The-Spirit`、`时光轴`、`other`、
 `quest-spire` / `sts2-mod` / `BloomlessSpire`（《杀戮尖塔 2》mod 系列，C#，纯 dll，进度见 `notes/尖塔任务-*.md`）、
-`3D导演台`
+`3D导演台` / `3D角色`
+
+**特效线新增（2026-10-07 起）：**
+- `sts2-vfx-template` —— 特效骨架（美术/演出/工程三层，13 文件 + README 速查表）
+- `sts2-vanilla-vfx` —— 可检索本体特效库（312 场景 / 100 着色器 / 160 材质 + `索引-特效目录.md`）
+- `ref-regentfx` / `ref-meleeattack` / `ref-shieldonly` —— 三个社区 mod 的反编译产物（分别对应美术/演出/工程三层）
+- `sts2-moddev-workspace` —— 官方+社区中文教程 + 0.111.0 反编译源码
+- `sts2-asset-library` / `杀戮尖塔素材包` —— 素材库
+- `dou-spire-rules` —— 斗地主规则（含 `tools/build-mod.sh` 沙箱构建脚本）
+
+> ⚠️ `projects/新建文件夹/` 是空占位，可清理。
 
 > `quest-spire` 是当前主线工程，**动手前先读 `notes/尖塔任务-mod-开发交接.md` 和 `-开发进度.md`**。
+> `frost-spire`（凛冬尖塔，多 AI 并行进行中）和 `dou-spire`（斗地主尖塔）——**动手前先读
+> `notes/凛冬尖塔-交接文档.md`**（冷启动包：现状/分工/高频坑/待拍板；斗地主账在 `projects/dou-spire/README.md`）。
+> ⚠️ 这两个工程有另一个 AI（WorkBuddy）在并行写入：动文件前看修改时间，发现刚被改过就让位，沟通一律写进 notes。
 
-### `notes/`（46 篇 + `_sessions_dump/`）
+### `notes/`（140 篇 + `_sessions_dump/`）
+
+> **总索引：`notes/README.md`** —— 按主题分区、每条一句"什么时候看"。找文件先看它，别翻目录。
 
 **动手前必读：**
 - `踩坑笔记.md` —— 环境坑、目录规则、历史问题的总账
@@ -85,10 +108,18 @@
 - `求职规划.md` / `秋招投递清单.md` / `面试复盘卡.md` / `面试速查-零基础版.md` —— 他的求职状态
 
 按内容分：
+- **杀戮尖塔 2 特效方法论（当前高优先级）**：`杀戮尖塔2-Mod特效方法手册.md`（总入口）、
+  `杀戮尖塔2-特效-坑清单（按症状查）.md`（查病因）、三个实战拆解（`-特效实战-万象辉星拆解.md` /
+  `-特效实战2-动作与特效-打击感拆解.md` / `-特效实战3-免pck与表现层工程学.md`）、
+  `杀戮尖塔2-本体特效资源清单.md`、`杀戮尖塔2-音效事件全表.md`；配套在 `projects/sts2-vfx-template/`、
+  `projects/sts2-vanilla-vfx/`、`projects/ref-*`
 - **尖塔任务 mod 主线**：`尖塔任务-mod-开发交接.md`、`尖塔任务-quest-spire-开发进度.md`、
   `尖塔任务-任务总表.md`、`尖塔任务-梗任务设计案.md`、`尖塔任务-随身物美术需求.md`、
   `杀戮尖塔2-梗清单.md`、`一代SpireQuests任务池.md`、`一代遗物-更多遗物mod清单.md`、
   `卡包大师-二代移植进度.md`、`海克斯符文-拆解.md`、`2026-09-22-尖塔任务-mod-一日归档.md`
+- **凛冬尖塔（frost-spire，多 AI 并行）**：`凛冬尖塔-*.md` 约 40 篇（交接文档 / 开发进度 / M1.5~M3.12 / 传送门专线）
+- **斗地主尖塔（dou-spire）**：`斗地主尖塔-*.md` 约 14 篇 + `斗地主拆解笔记-20261006.md`
+- **尖塔梗卡包（meme-spire）**：`尖塔梗卡包-*.md`、`想法-尖塔梗卡包（暂存）.md`、`全息镭射卡-做法.md`
 - 玩法说明：`反应扩散-玩法说明.md`、`引力沙盒-玩法说明.md`、`粒子生命-玩法说明.md`、
   `菌丝世界-玩法说明.md`、`云养小水母-玩法说明.md`
 - 每日复盘：`今日复盘-YYYYMMDD.md`（`会话复盘.md` 是更早的汇总）
@@ -99,11 +130,11 @@
   `手机存储清理清单.md`、`JIZURA歌词PV-项目复盘.md`
 - 素材/杂项：`取材资源清单.md`、`AIGC概念片-Seedance参数包.md`、`user_attachment`、`_sessions_dump/`
 
-### `assets/`（13 个主题目录）
+### `assets/`（15 个主题目录）
 
 `AIGC作品集`、`archify预览`、`二次元配图`、`作品截图`、`创作中台预览`、
 `剪口播预览`、`小站截图`、`视频抽帧`、`鲸云API预览`、`尖塔任务图标`、`尖塔任务封面`、
-`棕色尘埃2参考`、`求职简历PDF`
+`棕色尘埃2参考`、`求职简历PDF` 等
 
 ⚠️ 根下还散着 20 多个历史文件（`fish.png`、`gacha.png`、`rhythm.png`、`博客架构图.json` 等）。
 **不要批量搬它们**（会打断已有引用），但**新东西一律进主题目录，不要往根下丢**。

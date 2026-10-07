@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[sub_resource type="Gradient" id="Gradient_ring"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[node name="PointVfx" type="Node2D"]
+
+[node name="Ring" type="Line2D" parent="."]
+points = PackedVector2Array(0, -60, 60, 0, 0, 60, -60, 0, 0, -60)
+width = 12.0
+closed = true
+gradient = SubResource("Gradient_ring")

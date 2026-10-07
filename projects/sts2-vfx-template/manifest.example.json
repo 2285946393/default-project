@@ -1,0 +1,12 @@
+{
+  "id": "YourMod",
+  "name": "你的模组名",
+  "author": "你的名字",
+  "description": "一句话说明这个 mod 干什么。",
+  "version": "0.1.0",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [],
+  "min_game_version": "0.103.0",
+  "affects_gameplay": false
+}
