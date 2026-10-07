@@ -13,9 +13,9 @@
 | 指标 | 数量 |
 |---|---|
 | 工坊 mod 总数 | **121** |
-| **已拆**（有反编译产物 + 笔记） | **7** |
+| **已拆**（有反编译产物 + 笔记） | **8** |
 | 半拆（只看了开源仓库，未反编译） | 1 |
-| **未拆** | **113** |
+| **未拆** | **112** |
 | 今天（10-08）目录被动过 | 11 |
 | 带 dll | 105 |
 | 带 pck | 87 |
@@ -34,11 +34,14 @@
 | `3747583646` | 鸣潮先古（wuwancients） | supermanpower | `projects/ref-wuwancients/`（22,957 行） | ★ 自定义先古 + 确定性随机（不动游戏随机流） |
 | `3804485262` | 假如塔2是类幸存者（`local.action_game`） | 普通网友Cano | `projects/ref-actiongame/`（14,690 行） | ★ 定时器把回合制"切片"成实时 + 89 个解阻塞补丁 |
 | **`3747602295`** | **RitsuLib**（`STS2-RitsuLib`） | OLC（GitHub `BAKAOLC`） | `projects/ref-ritsulib/`（**不反编译**：MIT 开源 + 29 篇官方文档） | ★★★ **框架层地基**：声明式注册 / 74 个生命周期事件 / IL 断言工具链 / W3C 设计令牌主题系统 / 免引用跨 mod 调用 |
+| **`3737335127`** | **BaseLib** | Alchyr（StS1「Downfall」作者） | `projects/ref-baselib/`（**不反编译**：MIT 开源 + 28 篇官方文档） | ★★★ **内容层地基**：43 个 `Custom*Model` 基类 / `SpireField` 给原版类挂字段 / `[CustomEnum]` 运行期扩枚举 / **`Notes.txt` 作者的逆向笔记**（出牌流水线 + `CardPileCmd.Add` IL 控制流） |
 
-对应笔记：`notes/杀戮尖塔2-特效实战*.md`（前 3 个）· `notes/杀戮尖塔2-拆解-*.md`（后 4 个）
+对应笔记：`notes/杀戮尖塔2-特效实战*.md`（前 3 个）· `notes/杀戮尖塔2-拆解-*.md`（后 5 个）
 
-> **RitsuLib 是唯一一个"不用反编译"的** —— MIT 开源，直接读源码和官方文档站。
-> 详见 `notes/杀戮尖塔2-拆解-RitsuLib框架.md`（16 节 / 14 条"可偷"清单）。
+> **两个框架都拆完了** —— RitsuLib（框架层，26 个 mod 依赖）+ BaseLib（内容层，25 个依赖），
+> **合计覆盖 42 个工坊 mod（约 44%）**。这两个都是 **MIT 开源，不用反编译**。
+> ⚠️ **BaseLib 的清单在嵌套目录里**：`3737335127/BaseLib/BaseLib.json`（不在包根），
+> 所以按"包根找 json"的扫描会漏掉它 —— 这是第一轮统计出错的原因。
 
 ## 三、半拆（1 个）
 
@@ -108,12 +111,14 @@
 
 | 优先 | 工坊 id | 名字 | 为什么值得 |
 |---|---|---|---|
-| ✅ **已拆** | `3747602295` | **RitsuLib** | 被 **26 个 mod** 依赖、CombatSolver 的底座，**本机 4 个自研 mod 全依赖它**。MIT 开源 + 29 篇官方文档，已出笔记 |
-| ★★★ | `3737335127` | **BaseLib** | 被 **25 个 mod** 依赖，先古/内容注册的口子都在这（v3.4.7，作者 Alchyr）。**下一个最该拆的** |
+| ✅ **已拆** | `3747602295` | **RitsuLib** | 被 **26 个 mod** 依赖、CombatSolver 的底座，**本机 4 个自研 mod 全依赖它**。MIT 开源 + 29 篇官方文档 |
+| ✅ **已拆** | `3737335127` | **BaseLib** | 被 **25 个 mod** 依赖，**内容层地基**（43 个 `Custom*Model`）。MIT 开源 + 28 篇 Wiki + `Notes.txt` 逆向笔记。**清单在嵌套目录里** |
+| ★★★ | — | **`Alchyr/ModTemplate-StS2`**（不在工坊） | **299★**，**塔2 mod 工程模板** —— 定义了"一个 mod 工程该长什么样"（csproj/打包/本地化/部署）。不是 mod 但**对我们自己的工程最有参考价值** |
+| ★★ | — | **`Alchyr/StS2ModAnalyzers`**（不在工坊） | Roslyn 分析器/修复器，能**自动提示塔2 modding 常见错误** —— 装上可能少踩很多坑 |
 | ★★ | `3779807977` | 弹幕尖塔 DanmakuSpire | 之前列为待拆；玩法改造，和"类幸存者"可对照 |
 | ★★ | `3772226486` | 中国人能飞 CombatFlight | 之前列为待拆；依赖 ModConfig，是**给原版加机制**的样本 |
 | ★★ | `3747531952` | 随机数预测 RandomForeseer | **MIT 有真源码**，比反编译省事得多；是 CombatSolver 的上游 |
-| ★ | `3747819202` | Hades Ancients | 和"鸣潮先古"同题材（先古线），可横向对比 |
+| ★ | `3747819202` | Hades Ancients | 和"鸣潮先古"同题材（先古线），**现在知道底是 `CustomAncientModel` 了**，可横向对比覆盖了哪些虚方法 |
 | ★ | `3747588119` | Kafka（今天新下） | 鸣潮/星穹角色系 |
 | ★ | `3777276296` | BetterAnimation2（今天新下） | 动画增强，和我们的特效线同域 |
 | ★ | `3810696310` | More Defect Animations（今天新下） | 角色动画，同上 |
@@ -121,16 +126,25 @@
 | — | `3747575739` | More Enchantments | 原版机制扩展（附魔） |
 | — | `3797367057` | 一代遗物 | 跨代内容移植 |
 
-### 还不急着拆，但记一笔：RitsuLib 官方文档里**没细读**的三篇
+### 框架里的三个"还没做"（作者自己列的 TODO，说明这些是空白区）
 
-拆 RitsuLib 时发现这三篇和**特效/机制线**直接相关，官方文档自带，哪天要深挖可直接看
-（`projects/ref-ritsulib/upstream/.../docs/pages/guide/`）：
+BaseLib 的 `Notes.txt` 结尾写了它的 TODO，其中对我们是**机会信号**：
 
-| 文档 | 大小 | 为什么以后要看 |
+| TODO | 含义 |
+|---|---|
+| `base damage/block modifier support for card model` | **加"基础伤害/格挡"修正还没有官方支持** → 想做得自己动手 |
+| `Adjust transpiler patch implementations to make them more general` | transpiler 还不够通用 |
+| `WhatMod` | "这张卡/遗物来自哪个 mod"的查询工具（`Utils/WhatMod.cs` 已存在，但作者标为待完善） |
+
+### 官方文档里**还没细读**但和特效/机制线相关的（模板已备好，随时可看）
+
+| 来源 | 文档 | 为什么以后要看 |
 |---|---|---|
-| `creature-visuals-and-animation.md` | 6.1KB | 生物视觉与动画 |
-| `card-dynamic-var-toolkit.md` | 15KB | 卡牌动态变量（`{Damage}` 这类怎么算） |
-| `secondary-resources.md` | **27KB**（最长） | **第二资源**子系统（「怒」「符」「血」这类），88 个类型 |
+| RitsuLib | `creature-visuals-and-animation.md`(6.1KB) · `card-dynamic-var-toolkit.md`(15KB) · `secondary-resources.md`(**27KB**) | 生物视觉 / 卡牌动态变量 / 第二资源子系统（88 类型） |
+| BaseLib | `models/custom-orbs.md`(7.7KB) · `scenes/creature-visuals.md`(4.8KB) · `utilities/config-advanced.md`(9.2KB) | 充能球 / 生物视觉 / 高级配置 |
+
+> 两个框架的文档都已**落盘到仓库**（`projects/ref-ritsulib/upstream/` 与
+> `projects/ref-baselib/wiki/docs/`，后者是入库的），不用重新下载。
 
 ---
 
@@ -158,14 +172,35 @@ for d in sorted(os.listdir(base)):
 - 编码要 `utf-8-sig`（有 BOM）。
 - 有的包第一层不是 manifest（是 `README.md` / `assets/` / `lib/`），所以要把深度放宽到 2。
 - **别用 `find -iname "*中文*"` 找 mod** —— 目录名是工坊数字 id，mod 名在 json 里。
+- ⚠️ **框架包可能是嵌套目录**：`BaseLib` 装在 `3737335127/BaseLib/BaseLib.json`，
+  **包根没有 json**。所以扫描必须放宽到深度 2（或更深），否则会漏掉它 —— 这是第一轮统计出错的原因。
 
 ---
 
 ## 八、和 `AGENTS.md` 的关系
 
-本机 `Slay the Spire 2/mods/` 里（游戏实际加载的）是**自己写的 6 个 + RitsuLib**：
-`BloomlessSpire` / `DouSpire` / `FrostSpire` / `MemeSpire` / `QuestSpire` / `STS2-RitsuLib` / `君宝娘化`。
-工坊那 121 个是**订阅下来的参考样本**，两者不要混。
+本机 `Slay the Spire 2/mods/` 里（游戏实际加载的）：
+
+| 类别 | 目录 |
+|---|---|
+| **自己写的** | `BloomlessSpire` / `DouSpire` / `FrostSpire` / `MemeSpire` / `QuestSpire` / `君宝娘化` |
+| **框架（被依赖的大件）** | `STS2-RitsuLib` |
+
+（`BaseLib` 在本地 mods 里**没有独立目录**，它是随工坊 `3737335127` 安装的。）
+
+工坊那 121 个是**订阅下来的参考样本**，两者不要混 —— 但**框架是共用的**。
+
+### 自研 mod 的依赖矩阵（发现：版本不统一）
+
+| mod | RitsuLib | BaseLib |
+|---|---|---|
+| `DouSpire` | 0.6.6 | v3.4.7 |
+| `QuestSpire` | **0.6.2** | v3.4.7 |
+| `FrostSpire` | **0.6.5** | v3.4.7 |
+| `BloomlessSpire` | **0.6.2** | —（只依赖 RitsuLib） |
+
+> ⚠️ **RitsuLib 版本三个不一样**（0.6.2 / 0.6.5 / 0.6.6）。两个框架都在活跃更新
+> （RitsuLib 2026-10-06 推过，BaseLib 2026-10-07 推过），**建议统一到最新**。
 
 ---
 

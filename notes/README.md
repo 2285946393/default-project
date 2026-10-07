@@ -77,9 +77,17 @@
   · **`杀戮尖塔2-拆解-RitsuLib框架.md`**（★ **框架层地基**。全工坊第一依赖，26 个 mod 用它，
   **本机 4 个自研 mod 全依赖**。声明式注册 / 74 个生命周期事件 / IL 断言工具链 /
   W3C 设计令牌主题系统 / 免引用跨 mod 调用。**MIT 开源，不用反编译**）
+  · **`杀戮尖塔2-拆解-BaseLib.md`**（★ **内容层地基**。第二依赖，25 个 mod 用它，
+  **43 个 `Custom*Model` 基类** / `SpireField` 给原版类挂字段 / `[CustomEnum]` 运行期扩枚举 /
+  声明式配置。**含作者 Alchyr 的 `Notes.txt` 逆向笔记**：出牌流水线全链路 +
+  `CardPileCmd.Add` 的 IL 级控制流 + `DamageVar` 三层值。**MIT 开源，不用反编译**）
 - `尖塔mod-借鉴笔记-三个热门模组.md` · `卡包大师-二代移植进度.md` · `海克斯符文-拆解.md`
 - `梗化尖塔-接手笔记.md` · `杀戮尖塔2-梗清单.md` · `一代遗物-更多遗物mod清单.md`
-- 配套产物：`projects/ref-combatsolver/` · `ref-wuwancients/` · `ref-actiongame/` · **`ref-ritsulib/`**
+- 配套产物：`projects/ref-combatsolver/` · `ref-wuwancients/` · `ref-actiongame/` ·
+  **`ref-ritsulib/`** · **`ref-baselib/`**
+
+> **两个框架都拆完了** —— 合计覆盖 **42 个工坊 mod（约 44%）**。
+> **读别人的 mod 的顺序：先认框架，再读内容** —— 大部分"玄乎的写法"其实是在覆盖某个基类的虚方法。
 
 ### 六、小游戏玩法说明（原型 / 说明文档）
 `云养小水母` · `反应扩散` · `引力沙盒` · `磁力沙盒` · `粒子生命` · `菌丝世界` · `烟花` · `游戏统计-说明`（均以"XX-玩法说明.md"结尾）

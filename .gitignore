@@ -37,3 +37,7 @@ projects/sts2-moddev-workspace/
 # RitsuLib 上游源码快照（MIT，公开可重新下载，19MB / 1380 文件）
 # 重新获取：curl -sSL https://codeload.github.com/BAKAOLC/STS2-RitsuLib/tar.gz/refs/heads/main | tar xz
 projects/ref-ritsulib/upstream/
+
+# BaseLib 上游源码快照（MIT，公开可重新下载，2.9MB）
+# 重新获取：curl -sSL https://codeload.github.com/Alchyr/BaseLib-StS2/tar.gz/refs/heads/master | tar xz
+projects/ref-baselib/upstream/

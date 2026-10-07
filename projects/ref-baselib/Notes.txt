@@ -1,0 +1,299 @@
+https://github.com/pawslee/il-guide
+actually a very nice introduction
+
+CUSTOM RESOURCES 
+
+NCard UpdateEnergyCostVisuals (check _pretendCardCanBePlayed)
+x PlayerCombatState.HasEnoughResourcesFor
+
+
+x CardModel FinalizeUpgradeInternal, EndOfTurnCleanup, DowngradeInternal, CostsEnergyOrStars
+x CardModel.OnPlayWrapper => EnergyCost.AfterCardPlayedCleanup; just patch AfterCardPlayedCleanup of CardEnergyCost to also clear other costs
+
+
+GetResourceCostColor (see CardCostHelper)
+virtual method overridable in custom resource
+
+
+Annoying-ish:
+x CardModel.SpendResources return value, store attached to resource info thing
+x Vakuu Whispering Earrings - calls SpendResources but doesn't care about return value. Can probably somewhat ignore?
+These resources *should* be passed to the CardPlay.
+Vakuu does *not* set this properly. Maybe can be considered a bug?
+
+
+Cost modification effects:
+x Costs have bool - IncludeCombinedModifications (if cost should be changed by stuff like mummified hand that sets all costs to 0)
+default true
+
+x CardModel SetToFreeThisCombat/SetToFreeThisTurn
+Mummified hand
+
+
+
+minor:
+chem x flash
+
+Optional:
+NetFullCombatState sync checking
+Note star cost isn't checked
+
+
+
+Hooks:
+
+x TryModifyResourceCostWithHooks (see CardCostHelper)
+
+
+FOR THE RESOURCE:
+
+x integer that is tracked
+
+ways to gain/lose (see PlayerCmd), note these are (can be) separate from "spending"
+(by default spend does same thing as lose)
+
+
+optional: NetFullCombatState.PlayerState resource amount
+
+Hooks:
+x AfterResourceSpent
+
+
+UI:
+
+
+
+
+
+
+
+
+
+TODO
+auto-scale compendium options for custom pools
+pools not linked to a character are added to the misc pool thing
+does the side scroll if there are too many options?
+Is the layout dynamic or does it need to be manually modified
+
+Adjust transpiler patch implementations to make them more general
+base damage/block modifier support for card model
+(maybe something for generic dynamic var modification? but that'd be a lot more complicated.)
+
+WhatMod
+
+CommonActions for Damage (general)
+
+
+PlayCardAction : allow _card.SpendResources to spend custom resources, and also pass that value to a custom OnPlayWrapper if the card is a CustomCard?
+Ideally works for non-CustomCard as well
+
+NMouseCardPlay handles dragging before card is actually played
+
+
+
+
+Notes
+
+Async State Machine generation/await calls
+
+State Machine -
+integer "state", starting from -1
+field for each method parameter
+field for result of each await (if stored in a local var in method)
+
+each awaited call is another state
+one TaskAwaiter<T> field for each await
+
+StateMachine MoveNext method - contains basically all of actual method
+Starts by checking state and jumping based on it (simpler state machine may simply use an if statement)
+
+Each state is a branch with 3.5 sections.
+ 1 When state is initially reached (comes from ending of previous state)
+    - Call async method of state (returns task) and get awaiter from task
+    - If awaiter is done, skip to section 4. Otherwise, continue to section 2
+ 2 Set up AsyncTaskMethodBuilder.AwaitUnsafeOnCompleted
+ 3 Branch destination when MoveNext is called again after done awaiting.
+    - Sets up so that section 4 will work appropriately same as coming from section 1
+ 4 Finishing section of state AND starting section of next state.
+    - Calls TaskAwaiter.GetResult
+    - Intermediate non-awaited code will also occur here.
+    - (section 1 of next state)
+
+State is only set if it needs to wait, in which case the method returns and waits for next execution (when current awaiter ends).
+When initially reaching a state, the current state will be -1.
+
+
+
+
+
+await call - 
+The "await" specifically just *waits*. The actual async startup is performed by the method call.
+The same task awaited multiple times will only execute once.
+Async method call -
+new instance of state machine class (store in local)
+AsyncTaskMethodBuilder.Create for builder instance, store in state machine class field
+store method call parameters in state machine class fields
+set state machine "state" int to -1
+start state machine by getting builder from state machine local instance and calling AsyncMethodTaskBuilder.Start
+get builder from state machine and return builder.Task (property)
+
+
+
+
+
+
+notable classes - CombatManager, RunManager
+CombatState IterateHookListeners
+for visuals - NThing for visual version
+CardModel -> NCard
+
+Cards must be added to current run state before used? unsure of reason yet
+
+card description: CardModel.GetDescriptionForPile, called by NCard and set to its label
+
+text is formatted through the SmartFormat library, using various extensions (see LocManager.LoadLocFormatters)
+
+DamageVar - 
+BaseValue, EnchantedValue, PreviewValue
+BaseValue is self explanatory
+EnchantedValue is the "modified" base value, so something like +3 damage enchantments appear as the base value
+PreviewValue is the "final" damage when applying all modifiers, and is compared to EnchantedValue to determine text color (if upgraded, always)
+see CardModel.ToHighlightedString, which is called by HighlightDifferencesFormatter/HighlightDifferencesInverseFormatter when using .diff or .inverseDiff in card text json
+
+
+NPlayerHand -> NHandCardHolder
+->?
+NCardPlay
+card.TryManualPlay (null or target, depending on card's targettype) ->
+CardModel EnqueueManualPlay ->
+new PlayCardAction in RunManager ActionQueueSynchronizer RequestEnqueue
+
+-> validity checks ->
+CardModel OnPlayWrapper, does most of the actual card play
+
+If card is not autoplay: CardPileCmd.AddDuringManualCardPlay
+ensures NCard for visual exists
+removes card from current pile
+adds to "Play" pile
+moves to play position
+
+If autoplay: just add to play pile (and positions)
+
+HOOK : Hook.ModifyCardPlayResultPileTypeAndPosition
+
+
+
+
+CARDS - 
+ALL cards in combat are assumed to be in a pile (CardPile). If they are not in a pile, they will be treated as not in combat (no damage calc and similar).
+What pile a card is in is checked inefficiently - iterate through all of owner's piles and return first contains result.
+This means there is a *lot* of iteration of all cards in all piles. Might be a problem if someone has like a million cards.
+
+
+Incombat card visuals -
+NCombatUi -> 
+NPlayerHand -> CardHolderContainer/ActiveCardHolders
+	RefreshHandLayout still recalculates positions
+NCombatUi calculates positions for cards in PlayContainerCards
+
+
+NCombatUi.OnCombatSetup ->
+	Initialize draw/discard/exhaust pile containers (NCombatCardPile), connect to player piles when they are modified
+		(Not visual, since these are only visible properly when viewing their screens. These are just UI elements.)
+
+CombatManager.SetUpCombat -> player.ResetCombatState -> new PlayerCombatState -> subscribe all piles to CombatManager.StateTracker, reset orb queue
+	Adds CombatState.OnCardPileContentsChanged to cardpile ContentsChanged event to trigger NotifyCombatStateChanged
+	(results in applyPowers equivalent, PlayerCombatState.RecalculateCardValues) WRONG, this is just enchantment recalculation?
+	NCard UpdateVisuals -> CardModel.UpdateDynamicVarPreview
+
+Cards drawn -> CardPileCmd.Add  (piletype.GetPile) -> 
+	to combat pile and combat ending, all adding fails, return
+	for each card, if card owner dead, fail
+	card must be added to RunState before add to deck, add to CombatState before add to combat pile (see CardPileCmd.AddGeneratedCardsToCombat)
+	card add success marked as true, card owner set
+	if adding to deck, check additional conditions and maybe fail
+	if adding to combat pile and combat is over, return "results" without actually processing
+	Finally, for each "successful" card:
+		(if add to hand check hand size, move to discard instead if full)
+		Check if card has an NCard (NCard.FindOnTable, returns null for any piletype besides hand/play)
+		Remove card from old pile
+		Add to target pile
+		If add to combat pile and old pile null, trigger hook AfterCardEnteredCombat
+		card NCard.UpdateVisuals (if not null)
+		If no visuals and is visually moving between piles (to draw/discard/deck, not to hand), add to cardsWithoutNodesChangingPiles
+		Otherwise if no visuals and needed (probably to hand), CardPileCmd.CreateCardNodeAndUpdateVisuals
+		Generate tween to move card to target position. separate logic between to exhaust, hand, play, and default.
+			default determines position with Pile.Type.GetTargetPosition, and moves card to vfx and adds NCardFlyVfx. Card will vanish upon reaching destination.
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------
+cardpilecmd.add
+
+check basics like still in combat, card owner
+
+for each card being moved:
+	if destination is hand, check if hand is full.
+	if hand full, change destination to discard pile.
+	flag = num2 = owning player local, or target pile is play pile, or old pile is play pile
+	if flag, find NCard.
+		flag2 = ncard null and (target is/was hand, or old pile is not null)
+		flag4 = flag3 = ncard does not exist
+		flag5 = ncard doesn't exist && oldpile not null and type is draw/discard/exhaust/deck
+			flag4 = flag5
+		then jumps converge to IL_0611
+		flag6 = flag4 (ncard does exists, or doesn't exist but old pile is draw/discard/exhaust/deck)
+		flag6 = no ncard, old pile is draw/discard/exhaust/deck, target is draw/discard/deck
+		if (flag6) add to cardsWithoutNodesChangingPiles
+		else if (flag2, ncard null and (target is/was hand || old pile not null)
+			cardNode = create node!!!! important!
+			add node to cardNodes list
+		jump to 069b
+	if Not Flag jump to 069b
+	
+069b
+	remove from old pile (if not null) !!!!
+	if old pile *is* null and target is deck, 
+		modify card added to deck hook
+	add to target pile to position based on parameter
+	if old pile null and target pile is combat pile, trigger card entered combat hook
+	if full hand and is local player, show hand full message
+	if old pile null or its type is anything other than "play", or if moving to hand (VISIBLE), or if dupe
+		update visuals of NCard (if not null)
+	loop to next card
+
+create tween under NCombatRoom.Instance
+for each card node:
+	get its model (card3), get its old pile (from CardPileAddedResults in results)
+	MoveCardToNewPileBeforeTween
+		if card in play queue, remove
+		if card in hand, call hand.Remove
+			otherwise, call cardNode.GetParent()?.RemoveChildSafely
+		if target is play pile, add to playContainer (NCombatRoom, Ui.PlayContainer)
+			otherwise, NCombatRoom.Ui (NCombatUI) .AddChildSafely card
+			This is likely intended for temporarily visible cards? no logic for card interactivity
+		set cardNode global position to its global position (avoid position change when swapping parent?)
+		node.PlayPileTween?.Kill (remove positioning for play?)
+	flag8 = flag7 = owner Not Local
+	if flag8 (owner Not local)
+		flag8 = card pile type is none/draw/hand/discard/deck
+	if flag8 (owner not local and card pile type is none/draw/hand/discard/deck)
+		tween visuals (position and grey out?) callback after tween cardNode.QueueFreeSafely
+		move to next card
+
+	switch based on piletype and tween appropriately
+	and Also add card node to appropriate parent
+
+for each card without card node changing piles
+	make vfx to fly from old location to new pile location (uses piletype.GetTargetPosition(null))
+		(see NCardFlyShuffleVfx)
+
+if tween was created, play it and await NCombatRoom signal tween.finished
+
+for each success in results, trigger AfterCardChangedPiles hook
+
+return results
+----------------------------------------------------------------------------------------------------------
