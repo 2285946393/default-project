@@ -192,15 +192,33 @@ for d in sorted(os.listdir(base)):
 
 ### 自研 mod 的依赖矩阵（发现：版本不统一）
 
-| mod | RitsuLib | BaseLib |
-|---|---|---|
-| `DouSpire` | 0.6.6 | v3.4.7 |
-| `QuestSpire` | **0.6.2** | v3.4.7 |
-| `FrostSpire` | **0.6.5** | v3.4.7 |
-| `BloomlessSpire` | **0.6.2** | —（只依赖 RitsuLib） |
+| mod | RitsuLib | BaseLib | 声明的 `min_game_version` |
+|---|---|---|---|
+| `DouSpire` | 0.6.6 | v3.4.7 | **0.106.0** |
+| `QuestSpire` | **0.6.2** | v3.4.7 | **0.106.0** |
+| `FrostSpire` | **0.6.5** | v3.4.7 | **0.106.0** |
+| `BloomlessSpire` | **0.6.2** | —（只依赖 RitsuLib） | 0.106.0（清单还是模板样稿） |
+| `MemeSpire` | 无（纯文案包，`has_dll: false`） | — | 0.106.0 |
 
 > ⚠️ **RitsuLib 版本三个不一样**（0.6.2 / 0.6.5 / 0.6.6）。两个框架都在活跃更新
 > （RitsuLib 2026-10-06 推过，BaseLib 2026-10-07 推过），**建议统一到最新**。
+>
+> ⚠️ 四个 csproj 里都有个 `SyncManifestDependencies` 目标，本意是"构建时自动把依赖版本改对"，
+> 但 **2026-10-08 实测它没生效**：部署出来的 `QuestSpire.json` 仍写 0.6.2、`FrostSpire.json` 仍写 0.6.5
+> （实际装的是 0.6.6）。证据：部署副本与源码副本逐字节相同，而该目标会回写源码文件 ——
+> 源码 json 的 mtime（10-04 / 10-06）早于最后一次构建（10-08 / 10-07），说明它被静默跳过了。
+> 详见 `斗地主尖塔-任务尖塔-框架优化建议.md` §二.A1-2。
+
+> ⚠️⚠️ **`min_game_version` 是个真 bug（2026-10-08 发现）**：
+> 本机已装游戏是 **v0.111.0**（`release_info.json`），已装 RitsuLib 0.6.6 自己的清单里写着
+> `"min_game_version": "0.111.0"`。而我们四个 mod 都写 `0.106.0` ——
+> **比依赖的最低要求还低**。后果：0.106~0.110 的玩家会看到"这个 mod 支持我的版本"，
+> 装了之后 RitsuLib 装不上 → mod 整个不工作，**看起来还像是我们的 bug**。
+> 修法：三个（四个）manifest 的 `min_game_version` 改成 `"0.111.0"`。
+> 详见 `斗地主尖塔-任务尖塔-框架优化建议.md` §二.A1。
+
+> 另注：`mods/` 里的 `君宝娘化` 是 **Yatima 的 VoiceModFramework**（配音框架，不是自研）；
+> `BloomlessSpire` 已有 59 个 `.cs`，但清单仍是模板样稿（`author: "Author"`、`version: 0.0.0`）。
 
 ---
 

@@ -99,6 +99,12 @@
   笔记：`notes/杀戮尖塔2-拆解-BaseLib.md`
 
 > **两个框架合计覆盖 42 个工坊 mod（约 44%）**。读别人的 mod 先认框架，再读内容。
+>
+> ★ **游戏 API 的事实来源，不用反编译就能查**：
+> `projects/dou-spire/.godot/mono/temp/bin/Debug/sts2.xml`（9.7MB `sts2.dll` 的官方 XML 文档，
+> 每个 Godot/.NET 工程构建后都有）。`Hook` 类全部 147 个钩子、`PileType` 枚举、`CardPileCmd`
+> 全部重载都能直接 grep 出来 —— 判断"游戏到底有没有这个钩子"时先查它，比记靠谱。
+
 - `sts2-moddev-workspace` —— 官方+社区中文教程 + 0.111.0 反编译源码
 - `sts2-asset-library` / `杀戮尖塔素材包` —— 素材库
 - `dou-spire-rules` —— 斗地主规则（含 `tools/build-mod.sh` 沙箱构建脚本）
@@ -110,7 +116,7 @@
 > `notes/凛冬尖塔-交接文档.md`**（冷启动包：现状/分工/高频坑/待拍板；斗地主账在 `projects/dou-spire/README.md`）。
 > ⚠️ 这两个工程有另一个 AI（WorkBuddy）在并行写入：动文件前看修改时间，发现刚被改过就让位，沟通一律写进 notes。
 
-### `notes/`（142 篇 + `_sessions_dump/`）
+### `notes/`（150 篇 + `_sessions_dump/`）
 
 > **总索引：`notes/README.md`** —— 按主题分区、每条一句"什么时候看"。找文件先看它，别翻目录。
 
