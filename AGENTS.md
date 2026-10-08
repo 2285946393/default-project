@@ -97,6 +97,16 @@
   `CardPileCmd.Add` 的 IL 控制流 / `DamageVar` 三层值）**、28 篇官方 Wiki 文档（`wiki/docs/`，**入库**）、
   `Sts2PathDiscovery.props`（自动探测游戏路径）；源码快照在 `upstream/`（2.9MB，**已 gitignore**）。
   笔记：`notes/杀戮尖塔2-拆解-BaseLib.md`
+- **`ref-modtemplate` / `ref-analyzers`** —— ★ **工程层**（2026-10-08 拆，两个都不是 mod）：
+  - `ref-modtemplate` = **`Alchyr/ModTemplate-StS2`**（**299★ / 50 fork**，`dotnet new` 模板包
+    `Alchyr.Sts2.Templates` v2.5.2）。**"正规塔2 mod 工程长什么样"的权威口径**：
+    `Sts2PathDiscovery.props`（注册表自动探游戏路径）/ `ModTemplate.csproj`（**读 `project.assets.json`
+    同步依赖版本**、`CheckDependencyPaths` 硬报错、部署、pck 导出）。源码快照 389KB，已在 `upstream/`（**已 gitignore**）
+  - `ref-analyzers` = **`Alchyr/StS2ModAnalyzers`**（Roslyn 分析器，4 条规则 STS001–STS004；
+    ⚠️ 只有 **0★**，之前盘点笔记把它标 ★★ 是按用处不是按热度，**已更正为 ★**）
+  - 笔记：`notes/杀戮尖塔2-拆解-ModTemplate工程模板.md`
+  - **动 csproj / manifest / 部署之前，先翻这篇** —— 里面还有游戏 v0.111.0 的
+    `ModManifest` / `ModDependency` 字段表（**依赖版本字段是 `min_version`，不是 `version`**）
 
 > **两个框架合计覆盖 42 个工坊 mod（约 44%）**。读别人的 mod 先认框架，再读内容。
 >
@@ -116,7 +126,7 @@
 > `notes/凛冬尖塔-交接文档.md`**（冷启动包：现状/分工/高频坑/待拍板；斗地主账在 `projects/dou-spire/README.md`）。
 > ⚠️ 这两个工程有另一个 AI（WorkBuddy）在并行写入：动文件前看修改时间，发现刚被改过就让位，沟通一律写进 notes。
 
-### `notes/`（150 篇 + `_sessions_dump/`）
+### `notes/`（153 篇 + `_sessions_dump/`）
 
 > **总索引：`notes/README.md`** —— 按主题分区、每条一句"什么时候看"。找文件先看它，别翻目录。
 

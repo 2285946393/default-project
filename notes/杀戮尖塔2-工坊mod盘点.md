@@ -38,6 +38,13 @@
 
 对应笔记：`notes/杀戮尖塔2-特效实战*.md`（前 3 个）· `notes/杀戮尖塔2-拆解-*.md`（后 5 个）
 
+> **另拆了两个"不在工坊"的工程层目标**（2026-10-08 下午）：
+> `Alchyr/ModTemplate-StS2`（299★ 工程模板）+ `Alchyr/StS2ModAnalyzers`（Roslyn 分析器），
+> 笔记：`notes/杀戮尖塔2-拆解-ModTemplate工程模板.md`。
+> **它比再拆一个玩法 mod 值钱** —— 我们踩的三个坑（manifest 假话 / 构建目标装死 / 部署过期）
+> 全落在它讲的范围里。**拆它顺带找到一条真 bug：依赖条目该写 `min_version` 而不是 `version`**
+> （全生态 48 : 10，用 `version` 的 10 条全是我们自己的）。
+
 > **两个框架都拆完了** —— RitsuLib（框架层，26 个 mod 依赖）+ BaseLib（内容层，25 个依赖），
 > **合计覆盖 42 个工坊 mod（约 44%）**。这两个都是 **MIT 开源，不用反编译**。
 > ⚠️ **BaseLib 的清单在嵌套目录里**：`3737335127/BaseLib/BaseLib.json`（不在包根），
@@ -113,8 +120,8 @@
 |---|---|---|---|
 | ✅ **已拆** | `3747602295` | **RitsuLib** | 被 **26 个 mod** 依赖、CombatSolver 的底座，**本机 4 个自研 mod 全依赖它**。MIT 开源 + 29 篇官方文档 |
 | ✅ **已拆** | `3737335127` | **BaseLib** | 被 **25 个 mod** 依赖，**内容层地基**（43 个 `Custom*Model`）。MIT 开源 + 28 篇 Wiki + `Notes.txt` 逆向笔记。**清单在嵌套目录里** |
-| ★★★ | — | **`Alchyr/ModTemplate-StS2`**（不在工坊） | **299★**，**塔2 mod 工程模板** —— 定义了"一个 mod 工程该长什么样"（csproj/打包/本地化/部署）。不是 mod 但**对我们自己的工程最有参考价值** |
-| ★★ | — | **`Alchyr/StS2ModAnalyzers`**（不在工坊） | Roslyn 分析器/修复器，能**自动提示塔2 modding 常见错误** —— 装上可能少踩很多坑 |
+| ✅ **已拆** | — | **`Alchyr/ModTemplate-StS2`**（**不在工坊**） | **299★ / 50 fork**，**塔2 mod 工程模板**（`dotnet new` 模板包 `Alchyr.Sts2.Templates` v2.5.2），作者是 BaseLib 的 Alchyr。定义了"一个 mod 工程该长什么样"（路径自动发现 / 依赖版本同步 / 部署 / pck 导出 / manifest）。**对我们自己的工程最有参考价值** → `notes/杀戮尖塔2-拆解-ModTemplate工程模板.md` |
+| ✅ **已拆** | — | **`Alchyr/StS2ModAnalyzers`**（不在工坊） | Roslyn 分析器 4 条规则（`Alchyr.Sts2.ModAnalyzers` v0.2.1）。⚠️ **更正**：本行原来标 ★★，但该仓库实际只有 **0★ / 1 fork**，协议也未声明 —— 降到 **★**（价值在"规则清单本身是份检查表"，不是热度）。同上一篇笔记 |
 | ★★ | `3779807977` | 弹幕尖塔 DanmakuSpire | 之前列为待拆；玩法改造，和"类幸存者"可对照 |
 | ★★ | `3772226486` | 中国人能飞 CombatFlight | 之前列为待拆；依赖 ModConfig，是**给原版加机制**的样本 |
 | ★★ | `3747531952` | 随机数预测 RandomForeseer | **MIT 有真源码**，比反编译省事得多；是 CombatSolver 的上游 |

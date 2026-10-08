@@ -41,3 +41,11 @@ projects/ref-ritsulib/upstream/
 # BaseLib 上游源码快照（MIT，公开可重新下载，2.9MB）
 # 重新获取：curl -sSL https://codeload.github.com/Alchyr/BaseLib-StS2/tar.gz/refs/heads/master | tar xz
 projects/ref-baselib/upstream/
+
+# ModTemplate-StS2 上游快照（299★ 工程模板，389KB，公开可重新下载）
+# 重新获取：curl -sSL https://codeload.github.com/Alchyr/ModTemplate-StS2/tar.gz/refs/heads/master | tar xz
+projects/ref-modtemplate/upstream/
+
+# StS2ModAnalyzers 上游快照（Roslyn 分析器，21KB）
+# 重新获取：curl -sSL https://codeload.github.com/Alchyr/StS2ModAnalyzers/tar.gz/refs/heads/master | tar xz
+projects/ref-analyzers/upstream/

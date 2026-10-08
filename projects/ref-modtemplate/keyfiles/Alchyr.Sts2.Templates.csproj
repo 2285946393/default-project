@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Alchyr.Sts2.Templates</PackageId>
+    <PackageVersion>2.5.2</PackageVersion>
+    <Title>Sts2 Mod Templates</Title>
+    <Authors>Alchyr</Authors>
+    <Description>Templates to use when creating a Slay the Spire 2 mod</Description>
+    <PackageTags>dotnet-new;templates;</PackageTags>
+    <PackageProjectUrl>https://github.com/Alchyr/ModTemplate-StS2/</PackageProjectUrl>
+    <PackageReleaseNotes>Change PatchAll to pass assembly directly instead of relying on harmony getting assembly through stack trace</PackageReleaseNotes>
+    
+    <PackageType>Template</PackageType>
+    <TargetFramework>net9.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <LocalizeTemplates>false</LocalizeTemplates>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TemplateEngine.Tasks" Version="*" PrivateAssets="all" IsImplicitlyDefined="true"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="content\ModTemplate\ModTemplateCode\Placeholder.cs" />
+    <Content Include="content\**\*" Exclude="content\**\bin\**;content\**\obj\**;content\**\packages\**;content\**\.idea\**;content\**\.git\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="bin\**" />
+  </ItemGroup>
+
+</Project>

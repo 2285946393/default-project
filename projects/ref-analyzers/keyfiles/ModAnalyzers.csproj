@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>Sts2ModAnalyzers</AssemblyName>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <IsRoslynComponent>true</IsRoslynComponent>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <!-- NuGet Package Configuration -->
+        <IsPackable>true</IsPackable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>Alchyr.Sts2.ModAnalyzers</PackageId>
+        <PackageVersion>0.2.1</PackageVersion>
+        <Authors>Alchyr</Authors>
+        <Description>Analyzers to help with the creation of Slay the Spire 2 mods.</Description>
+        <PackageReleaseNotes>Fix generation of loc when multiple keys are provided</PackageReleaseNotes>
+        <PackageTags>c#</PackageTags>
+        
+        <RepositoryUrl>https://github.com/Alchyr/StS2ModAnalyzers/tree/master/ModAnalyzers/ModAnalyzers</RepositoryUrl>
+
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <!-- Prevent the analyzer from being added as a lib reference -->
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <LocalizeTemplates>false</LocalizeTemplates>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <Content Include=".gitignore" />
+    </ItemGroup>
+    
+    <!-- Locate the analyzer DLL in the correct package directory -->
+    <ItemGroup>
+        <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="tools" />
+        <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.14.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Remove="AnalyzerReleases.Unshipped.md" />
+      <AdditionalFiles Remove="AnalyzerReleases.Shipped.md" />
+    </ItemGroup>
+
+</Project>
