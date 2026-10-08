@@ -15,6 +15,13 @@
 > 路径怎么找、依赖版本怎么不漂移、怎么部署、怎么导出 pck、manifest 哪些字段是真的。
 > **我们今天踩的坑，全部落在这个范围里。**
 
+> ⚠️ **本笔记修订过两次，看的时候留意**：
+> 1. **10-08 下午**：初稿把"我们那个同步目标为什么不行"归因成"守卫条件为空 → 静默跳过"。
+>    **这条被实验证伪了**（另一位协作者做的实验，我复核过 —— `PkgSTS2_RitsuLib` 有真实路径，
+>    而且故意写坏能被改回来）。真因见 **§3.5**。**我保留被证伪的那段并标注了，别只看结论。**
+> 2. 同时补上一条更隐蔽的交叉结论：**同步目标修好之后反而更危险**（它会可靠地往 `version`
+>    这个游戏不读的键里写）→ **`§八-1` 的键名修正必须先做**。
+
 ---
 
 ## 术语小抄（先说人话）
@@ -186,17 +193,60 @@
 </Target>
 ```
 
-**三个"为什么它行、我们不行"**：
+### 3.5 ★★★ 依赖版本自动同步：我们那个目标**到底为什么不行**
 
-| | 模板 | 我们的 `SyncManifestDependencies` |
-|---|---|---|
-| 版本号从哪来 | **`project.assets.json`**（NuGet 的解析结果，一定存在且是真值） | `$(PkgSTS2_RitsuLib)`（MSBuild 生成的属性，**我们这里为空**） |
-| 空了会怎样 | 文件存在是硬条件，`Exists()` 写在 `Condition` 里 | **条件不成立 → 整个 target 静默跳过，连警告都没有** |
-| 改哪个键 | `min_version`（**游戏真正认的键**，见 §四） | `version`（**游戏不认这个键**） |
-| 改完有没有声音 | `<Message Importance="high">` 明确打印 | 没有 |
+这段是整份模板对今天的我们**最有直接价值**的十几行（模板的 `UpdateDependencyVersions` 见上）。
 
-**结论：我们那个 target 是"三重失效"叠加** —— 属性为空 + 键名错 + 无提示，
-所以它一次都没生效过，而且**永远不会有人发现**。修法就照抄上面这段。
+#### ⚠️ 先更正：我最初对"我们那个目标为什么不行"的归因**是错的**
+
+我原先写的是"守卫条件 `'$(PkgSTS2_RitsuLib)' != ''` 为假 → 整个目标被静默跳过"。
+**这条被实验证伪了**（另一位协作者做的，我复核过）：
+
+```
+# 证据 1：属性根本不是空的
+projects/dou-spire/.godot/mono/temp/obj/DouSpire.csproj.nuget.g.props:104
+    <PkgSTS2_RitsuLib Condition=" '$(PkgSTS2_RitsuLib)' == '' ">
+        C:\Users\有花无实\.nuget\packages\sts2.ritsulib\0.6.6
+
+# 证据 2：故意把 DouSpire.json 里的版本写成 0.6.1 → 构建 → 源码 json 变回 0.6.7
+#         → 目标**跑了**，而且真的改写了文件
+```
+
+**结论：目标一直在跑。"部署副本是旧的"不是因为目标没跑，是因为别的原因。**
+（我当初那条"源码 mtime 没被刷新"的观察是真的，但**归因错了** —— 见下面 ①②③。）
+
+#### 真正的原因（三个独立问题叠在一起）
+
+| # | 真因 | 说明 | 修法 |
+|---|---|---|---|
+| **①** | **MSBuild 声明顺序抢跑** | 原写法 `AfterTargets="Build" BeforeTargets="CopyMod"`。**两个 target 都挂 `AfterTargets="Build"` 时，MSBuild 按声明顺序跑**，而这个 target 声明在 `CopyMod` **之后** → 实际顺序是 `Build → CopyMod（拷旧 json）→ 才改源码 json`，改完没人再拷一遍 | 让 `CopyMod` 显式 `DependsOnTargets="SyncManifestDependencies"`，顺序 100% 确定（**已落地**） |
+| **②** | **版本号来源取错** | csproj 写 `Version="*"`（永远取最新）→ NuGet 缓存里躺着 0.6.2/0.6.5/0.6.6/0.6.7…，`$(PkgSTS2_RitsuLib)` 指向**最新那个（0.6.7）**，**不是游戏里装的那个（0.6.6）** → 声明和现实又对不上 | 优先读**游戏目录** `mods/STS2-RitsuLib/mod_manifest.json` 的真实版本，读不到才退回 NuGet（**已落地**） |
+| **③** | **改的是游戏不认的键** | 正则写的是 `"version"`；**游戏只认 `min_version`**（见 §四） | **⬜ 还没改** —— 见下面"⚠️ 和 §四 的交叉" |
+| ④ | `$1` 反向引用 + `(?s)` 跨行 | MSBuild 会先把 `${1}`/`$1` 当自己的属性语法展开成空串，再交给正则；配合 `(?s)` 让 `.*?` 跨行 → **把整个 manifest 吞进 version 字段写坏文件**（10-08 真的写坏过一次） | 用唯一占位符 `@@RITSULIB_DEP@@` 替换 → 数出现次数 → **必须恰好 1 个**才落盘（**已落地**） |
+| ⑤ | `WriteLinesToFile` + `Regex::Split` | 拆成行数组再写会毁掉 JSON 字符串值里的 `\n` 转义 → `Invalid control character at: line 15 column 20` | 整个 JSON **作为单行一次写出**（**已落地**） |
+| ⑥ | 静默失败 | 没输出 → "跳过"和"跑完了"日志长得一样 | 加 `<Message Importance="high">`（成功时报"同步为 X，来源 Y"）+ `<Warning>`（拿不到版本 / 匹配数 ≠ 1）（**已落地**） |
+
+#### ⚠️ ⚠️ 和 §四 的交叉：现在**更隐蔽**了
+
+① ② ④ ⑤ ⑥ 修好之后，那个目标会**每次构建都可靠地把 `version` 写对** ——
+而 **`version` 是游戏不读的键**。
+⇒ 表现变成"清单看起来总是同步的、每次构建还打印一行成功日志"，**但游戏读到的仍然是 `minVersion = null`**。
+**比修之前更容易让人以为没问题。** ⇒ **必须先做 §八-1（键名改成 `min_version`）**，否则这条修好等于白修。
+
+#### ⚠️ 顺带：模板的 `project.assets.json` 方案**不能照抄**
+
+模板用 `project.assets.json` 拿版本号 —— 那里面是 **NuGet 解析出来的版本**。
+模板自己写 `Version="*"`，所以 `project.assets.json` 里永远是**最新版**。
+对 BaseLib 还行（玩家从工坊拿到的也是最新）；**对我们不行**：
+
+```
+NuGet 上 STS2.RitsuLib 有 0.6.6 / 0.6.7（Version="*" → 解析成 0.6.7）
+工坊/游戏里装的是 0.6.6
+⇒ 照抄模板会把 min_version 写成 0.6.7 → 所有 0.6.6 的玩家被 GAME_VERSION 拦下
+```
+
+**根子上更干净的做法是把 `Version="*"` 换成钉死的版本号**（`Version="0.6.6"`），
+这样"编译用的版本 = 声明的版本 = 游戏里装的版本"三者一致，两个方案就都安全了。
 
 ### 3.6 部署与 pck 导出
 
@@ -441,12 +491,35 @@ RitsuLib 的构建规则也印证了：`build/RitsuLib.ModManifest.targets:84`
 **"我们的代码在 0.107 上能不能跑"没有任何证据**。把 `min_game_version` 调低的正确前提是
 **先验证代码只用 ≤0.107 的 API**，那是另一件事（见 §九）。
 
-### 7.2 ✅ 对：「manifest 里有假话」和「自动同步没生效」
+### 7.2 ⚠️ 半对：deployed 清单是旧的 —— 观察成立，**归因错了**
 
-这两条**方向是对的**，而且比昨天说的更严重 —— 多了一条 §4.2 的 `min_version` 键名问题。
-详见 §四。
+观察（部署那份 = 源码原文、值对不上）全部成立，但**原因不是"目标没跑"**，
+而是 §3.5 列的三个真因（**声明顺序抢跑 / 版本号来源取错 / 键名错**）。
+我原先那条"守卫条件为空 → 静默跳过"**已被实验证伪**，详见 §3.5。
 
-### 7.3 ⚠️ 修正口径：「没有任何自动机制在管它」
+**而且比"没生效"更麻烦**：那个目标现在被修好了，会**每次构建可靠地写 `version`** ——
+一个游戏不读的键。⇒ 看起来一切同步正常，实际约束仍是零。**先做 §八-1。**
+
+### 7.3 `Version="*"` 本身是个隐患（有实测数据）
+
+我们 csproj 里 `STS2.RitsuLib` 写的是 `Version="*"`（永远取最新）。实测后果：
+
+```
+~/.nuget/packages/sts2.ritsulib/  里有四个版本：0.6.2  0.6.5  0.6.6  0.6.7
+projects/dou-spire/.godot/mono/temp/obj/project.assets.json    → STS2.RitsuLib/0.6.6
+projects/quest-spire/.godot/.../project.assets.json            → STS2.RitsuLib/0.6.7   ← 不一致
+projects/frost-spire/.godot/.../project.assets.json            → STS2.RitsuLib/0.6.7   ← 不一致
+游戏/工坊里实际装的                                            → 0.6.6
+```
+
+**三个工程解析出了两个不同版本** —— 这就是 `Version="*"` 的非确定性。
+配合"读 NuGet 解析结果"同步方案，`min_version` 会被写成 **0.6.7**，
+而玩家装的是 **0.6.6** → **把本来能跑的玩家挡在外面**（`DEPENDENCY_VERSION_UNSUPPORTED`）。
+
+**改法：钉死版本号**（`Version="0.6.6"`）→"编译版本 = 声明版本 = 玩家版本"三者一致，
+上面那个"游戏目录优先还是 NuGet 优先"的两难也随之消失。
+
+### 7.4 ⚠️ 修正口径：「没有任何自动机制在管它」
 
 准确说法是：**我们四个工程里没有任何机制在管它**。
 生态里其实**有** —— RitsuLib 自己的 `GenerateRitsuLibModManifest`（每次 Build 前重写 manifest）
@@ -459,15 +532,21 @@ RitsuLib 的构建规则也印证了：`build/RitsuLib.ModManifest.targets:84`
 
 | # | 抄什么 | 从哪抄 | 收益 |
 |---|---|---|---|
-| **1** | **manifest 依赖键 `version` → `min_version`**（3 个 mod 共 6 条；BloomlessSpire 1 条） | §4.2 | ★★★ 修一个真 bug |
-| **2** | **修 `SyncManifestDependencies`**：条件换成"`project.assets.json` 存在"，版本号从它里面抠 | `ModTemplate.csproj:70-92` | ★★★ 让"安全网"真的存在 |
-| **3** | **BaseLib 改用 `PackageReference Alchyr.Sts2.BaseLib`**，删掉硬编码工坊路径 | `ModTemplate.csproj:38` | ★★ 换机器/退订不再断 |
-| **4** | **`Sts2PathDiscovery.props`** 替代手写路径默认值（`local.props` 保留当覆盖口） | `Sts2PathDiscovery.props` | ★★ 少一处换机踩坑 |
-| **5** | 构建脚本里**"必须成立"的条件一律 `<Error>`**，不许静默跳过 | `CheckDependencyPaths` | ★★ 规矩（今天两次栽在这） |
-| **6** | manifest 里的 `pck_name` 删掉（无效字段）；并注意**别往 mod 目录丢 `.json`** | §4.2 / §4.3 | ★ 卫生 |
-| 7 | 试挂 `Alchyr.Sts2.ModAnalyzers` + `AdditionalFiles` 本地化 | `ModTemplate.csproj:39,42` | ★ 可选 |
-| 8 | `sts2` / `Steamworks.NET` 改 `Private=False` | `ModTemplate.csproj:26-29` | ★ 卫生（实测目前无害） |
-| 9 | `Directory.Build.props` 单独放本机 Godot 路径并忽略 | `.gitignore` | ★ 和我们的 `local.props` 等价，不必动 |
+| **1** | **manifest 依赖键 `version` → `min_version`**（3 个 mod 共 6 条；BloomlessSpire 1 条） | §4.2 | ★★★ 修一个真 bug。**必须先做这条** —— 同步目标现在会可靠地往错键里写（§3.5） |
+| **2** | 同步目标的**时机**：`CopyMod` 显式 `DependsOnTargets="SyncManifestDependencies"`（别靠两个 `AfterTargets="Build"` 的声明顺序） | §3.5-① | ✅ **已落地**（三个 csproj） |
+| **3** | 同步目标的**版本号来源**：优先读游戏目录里那份依赖 manifest，读不到才退回 NuGet | §3.5-② | ✅ **已落地** |
+| **4** | 同步目标的**正则安全**：唯一占位符 + 数出现次数（必须 =1）+ JSON 单行写出 + `Message`/`Warning` | §3.5-④⑤⑥ | ✅ **已落地** |
+| **5** | **把 `Version="*"` 钉死成具体版本号** | §7.4 | ★★ 让"编译/声明/玩家"三者一致 |
+| **6** | **BaseLib 改用 `PackageReference Alchyr.Sts2.BaseLib`**，删掉硬编码工坊路径 | `ModTemplate.csproj:38` | ★★ 换机器/退订不再断 |
+| **7** | **`Sts2PathDiscovery.props`** 替代手写路径默认值（`local.props` 保留当覆盖口） | `Sts2PathDiscovery.props` | ★★ 少一处换机踩坑 |
+| **8** | 构建脚本里**"必须成立"的条件一律 `<Error>`**，不许静默跳过 | `CheckDependencyPaths` | ★★ 规矩（今天两次栽在这） |
+| **9** | manifest 里的 `pck_name` 删掉（无效字段）；并注意**别往 mod 目录丢 `.json`** | §4.2 / §4.3 | ★ 卫生 |
+| 10 | 试挂 `Alchyr.Sts2.ModAnalyzers` + `AdditionalFiles` 本地化 | `ModTemplate.csproj:39,42` | ★ 可选 |
+| 11 | `sts2` / `Steamworks.NET` 改 `Private=False` | `ModTemplate.csproj:26-29` | ★ 卫生（实测目前无害） |
+| 12 | `Directory.Build.props` 单独放本机 Godot 路径并忽略 | `.gitignore` | ★ 和我们的 `local.props` 等价，不必动 |
+
+> ⚠️ **不要照抄模板的 `UpdateDependencyVersions` 版本号来源**（`project.assets.json`）——
+> 理由见 §3.5 末尾。**时机/正则安全/日志那几条可以抄，版本号来源要换成"游戏目录优先"。**
 
 ---
 
@@ -484,6 +563,13 @@ RitsuLib 的构建规则也印证了：`build/RitsuLib.ModManifest.targets:84`
 3. `Sts2ModAnalyzers` 的 `LocalizationFixProvider` 具体怎么自动补本地化条目 —— 没看实现。
 4. **BloomlessSpire 还是模板样稿**（`author: "Author"`、`version: 0.0.0`、
    `min_game_version: 0.106.0`、RitsuLib `0.6.2`、依赖键 `version`），一直挂着没动。
+5. **一处还没解释干净的观察**：`QuestSpire.json` 源码 mtime = 10-04 14:54，
+   而最后一次构建是 10-08 01:03 —— 如果按 §3.5-① 的顺序（先拷后改），源码**应该**每次构建都被刷 mtime。
+   现在有两条实证（属性非空 + 故意改坏能变回来），说明目标确实在跑；
+   但"那两次构建为什么没写"没有对上。**可能是当时 `obj/` 没还原好导致目标根本没被调度**，
+   也可能是别的 —— **在下一次复现之前不要当成结论**。
+6. **§八-5（钉死 `Version="*"`）没动**：现在 NuGet 上的 RitsuLib 是 0.6.7、工坊/游戏里是 0.6.6，
+   两边已经分叉了。**只要还用 `Version="*"`，同步出来的版本号就有"越来越新"的趋势。**
 
 ---
 
