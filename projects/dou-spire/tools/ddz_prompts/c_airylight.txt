@@ -1,0 +1,72 @@
+IMPORTANT ABOUT THE REFERENCE IMAGE: the attached green table is for a DIFFERENT game (Texas hold'em). Use it ONLY for the oval silhouette and overall proportions. Its engraved layout is WRONG for this asset -- wherever the text below disagrees with the reference (especially the row of card recesses near the top: this asset needs exactly FOUR, the reference shows five), obey the TEXT, never the reference.
+
+A wide 16:9 game asset: the complete top surface of an ornate round card table, seen straight
+down from directly overhead in a perfectly flat orthographic view.
+
+SIZE IS RIGID: the oval's left and
+right edges touch the frame sides (width exactly 90% of the frame), its top and bottom edges
+come within about 5% of the frame edges (height exactly 89% of the frame). The oval's
+width-to-height ratio is always about 1.8 : 1. Do not shrink the table, do not add margins,
+do not crop it.
+
+MATERIALS.
+The playing surface in the middle is pale sun-bleached felt (#E4EADF) in one calm flat tone, with
+no pattern and no gradient across it. Around it a broad ring of light natural wood (#D9BE92,
+shading only very gently to #C3A575 at the outermost edge so it still reads flat and airy). Set
+into that band is a slim inlaid ring of brushed pale pewter (#C8CFD4). Engraved all the way round
+it: a repeating row of small abstract marks, purely decorative, absolutely not letters and not
+numbers. At the four extreme points of the oval sit four simple low bosses in soft white ceramic
+(#F7F4EE). Everything is light, matte and slightly hazy -- nothing dark, nothing glossy, no heavy
+material contrast.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change. Centre the table at
+(50%, 45.5%) of the frame with width 89.6% and height 88.6%. On it:
+1) Centre-bottom area, at (50.2%, 51.8%) of the whole frame: one wide horizontal empty recess
+big enough for a row of flat playing cards, about 27% of the frame width and 24% of the frame
+height, with one thin rule above and below it. IMPORTANT: the game overlays a large ornate
+golden logo watermark on this recess -- keep this recess perfectly plain and empty, it is the
+stage for that logo.
+2) At (50.2%, 26.9%) of the whole frame, well ABOVE the centre: one straight horizontal row of
+FOUR identical card recesses, evenly spaced, each sized 99 x 153 pixels out of 1920 x 1080 with
+a gap of about 6% of a card width between neighbours; the whole row spans about 430 pixels and
+is centred horizontally.
+3) Left of centre at (31.5%, 37.2%) and right of centre at (68.5%, 37.2%) of the whole frame:
+two small empty squares, mirror images of each other, each sized for a stacked deck.
+4) Exactly at (50%, 39.5%) of the whole frame, centred between the three-card row above and the
+playing recess below: one empty circular medallion about 220 pixels across with a thin double rim.
+5) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+6) One thin empty circular groove enclosing the central group of items.
+Keep the whole central column (roughly the middle 55% wide by 62% tall) perfectly plain -- all
+decoration stays in the outer ring only.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+LIGHT.
+This is the whole point of the style. Fill the scene with a large amount of soft incoming and
+scattered daylight -- a broad bright wash from the upper-left plus a gentle ambient bounce
+everywhere, so the table glows and feels transparent and airy. Deliberately MINIMISE shadows:
+almost no dark areas, no cast shadows, no deep occlusion; only the lightest suggestion of form.
+Every surface should look a little like frosted glass lit from behind. Colour temperature stays
+cool and the palette light throughout. The overall effect is clean, bright, calm and slightly
+dreamy -- never dark, never heavy, never muddy.
+
+STYLE.
+Modern Japanese anime illustration in an airy, cinematic, light-filled vein: thin delicate
+linework in a soft grey-brown (#7A7266), minimal shading, large areas of near-white, gentle
+depth-of-field softness toward the outer ring while the centre stays crisp. Keep the composition
+simple and uncluttered so the eye rests on the calm middle. Illustrated, not photorealistic, not
+3D, not watercolour, not flat vector.
+
+KEY.
+Everything outside the complete tabletop silhouette is one perfectly flat solid pure white
+(#FFFFFF) background: uniform, with no shadow, gradient, texture, glow, floor or scene. The
+table's outline must be closed and cleanly drawn so the white can be separated from it.
+Leave a small even white margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, grain, noise, vignette or border. No dark corners, no black areas, no heavy
+shadows. Not minimal corporate design, not sci-fi UI, not cyberpunk.

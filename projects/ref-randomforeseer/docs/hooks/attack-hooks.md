@@ -1,0 +1,95 @@
+# Attack command hooks
+
+Simulation-facing hook facade: `InCombat/Mirrors/HookMirrors.cs`.
+
+Mirror files:
+
+- `InCombat/Mirrors/Hooks/Attack/BeforeAttackMirrors.cs`
+- `InCombat/Mirrors/Hooks/Attack/ModifyAttackHitCountMirrors.cs`
+- `InCombat/Mirrors/Hooks/Attack/AfterAttackMirrors.cs`
+- `InCombat/Mirrors/Hooks/Attack/GigantificationPowerMirrors.cs`
+- `InCombat/Mirrors/Hooks/Attack/VigorPowerMirrors.cs`
+- `InCombat/Simulation/CombatPredictionSimulator.Attack.cs`
+- `InCombat/Simulation/SimAttackContext.cs`
+- `InCombat/Simulation/CombatPredictionHistory.cs`
+
+`CombatPredictionSimulator.ExecuteAttack(AttackCommand)` mirrors the prediction-relevant `AttackCommand.Execute` target loop and dispatches targeted attack hook mirrors through `HookMirrors`. Per-hit damage is still delegated to `CombatPredictionSimulator.Damage`. The current entry point only accepts commands whose `ModelSource` is a `CardModel`; callers must already be inside that card's prediction trace before invoking it. The method itself only pushes hook listener sources through the method registries.
+
+Per-hit `CreatureCmd.Damage` modifier and result hooks are documented in `damage-modifier-hooks.md` and `damage-hooks.md`.
+
+## Vanilla order
+
+`AttackCommand.Execute(PlayerChoiceContext?)` performs the following gameplay-relevant work:
+
+1. Rejects missing attacker/targets, ending combat, or dead attacker.
+2. `Hook.BeforeAttack(combatState, command)`.
+3. `Hook.ModifyAttackHitCount(combatState, command, _hitCount)`.
+4. For each hit:
+   - Stops if the attacker dies.
+   - Refreshes possible targets and filters to living targets. Multi-target attacks re-read opponents each hit.
+   - Stops when there are no valid targets in live combat.
+   - For random targeting, consumes `RunState.Rng.CombatTargets` once per hit and optionally removes previous receivers when duplicates are disallowed.
+   - Runs visuals, waits, `_afterAttackerAnim`, and `_beforeDamage`.
+   - Calls `CreatureCmd.Damage(...)` with either the selected random/single target or the full valid-target list, `DamageProps`, `Attacker`, `ModelSource as CardModel`, and `CardPlay`.
+   - Appends the returned `DamageResult` list to `AttackCommand.Results`.
+5. Records `CombatManager.Instance.History.CreatureAttacked(...)`.
+6. `Hook.AfterAttack(combatState, choiceContext ?? new BlockingPlayerChoiceContext(), command)`.
+
+`AttackContext` is a separate vanilla path used by `EchoingSlash` and `Omnislice`:
+
+1. `AttackContext.CreateAsync(...)` creates an `AttackCommand(0).FromCard(cardPlay.Card, cardPlay).TargetingAllOpponents(combatState)` and calls `Hook.BeforeAttack`.
+2. The card manually calls `CreatureCmd.Damage` one or more times and passes each returned hit list to `AttackContext.AddHit`.
+3. `DisposeAsync` calls `Hook.AfterAttack`.
+
+`AttackContext` does not run `ModifyAttackHitCount`, target selection, random targeting, visuals, waits, or `_beforeDamage`; those are owned by the custom card implementation.
+
+## Hook specs
+
+- `AbstractModel.BeforeAttack(AttackCommand)`
+- `AbstractModel.ModifyAttackHitCount(AttackCommand, int)`
+- `AbstractModel.AfterAttack(PlayerChoiceContext, AttackCommand)`
+
+## BeforeAttack listeners
+
+| Model | 中文名 | Original effect | Current status and feasibility |
+| --- | --- | --- | --- |
+| `GigantificationPower` | 超巨化 | Records the first matching powered Attack-card command so its damage multiplier applies to every hit of that attack, then consumes one stack in `AfterAttack`. | Implemented. Prediction-local command and amount state feed a selective multiplicative damage adapter, preserving the bonus across every hit of the selected attack. |
+| `HellraiserPower` | 地狱狂徒 | For cards being auto-played by Hellraiser, changes attack VFX/animation settings. | Ignorable for prediction. It does not affect target, RNG, damage, block, card piles, or power state. |
+| `VigorPower` | 活力 | Records the first matching powered attack command and starting Vigor amount so all hits of that attack receive the bonus, then removes that starting amount in `AfterAttack`. | Implemented. The prediction-local amount snapshot feeds a selective additive damage adapter for every hit of the selected attack. |
+
+## ModifyAttackHitCount listeners
+
+No vanilla gameplay model currently overrides `ModifyAttackHitCount`.
+
+The attack mirror dispatches a result registry for this hook, chains each listener's result into the
+next invocation like vanilla, and marks unknown modded overrides risky because the original hook sits
+between `BeforeAttack` and the per-hit target loop.
+
+## AfterAttack listeners
+
+| Model | 中文名 | Original effect | Current status and feasibility |
+| --- | --- | --- | --- |
+| `BoneFlute` | 骨笛 | When Osty attacks for the relic owner, owner gains block. | Implemented with simulator `GainBlock`. |
+| `Flatten` | 重压 | When Osty attacks, this card's cost becomes 0 for the turn. | Implemented for cards present in simulator piles/previews. Live listener cards are not mutated. |
+| `GigantificationPower` | 超巨化 | Clears the recorded command and decrements one stack if this was the selected attack. | Implemented by clearing the prediction-local command and decrementing its shared shadow amount. |
+| `PainfulStabsPower` | 疼痛戳刺 | If owner dealt powered unblocked attack damage to player creatures, adds `Wound` cards to each affected player's discard pile based on unblocked hit count. | Implemented by generating prediction-local `Wound` cards and inserting them into simulated discard piles. |
+| `SkittishPower` | 胆小 | Once per turn, when owner receives unblocked `Move` damage from a card attack, owner gains block. | Implemented with prediction-local per-turn trigger state initialized from live `HasGainedBlockThisTurn`, then simulator `GainBlock`. |
+| `SuckPower` | 吮吸 | For each hit where owner dealt powered unblocked attack damage, applies Strength to owner. Pet/Osty trample duplicate results are collapsed before counting. | Triggered cases are marked risky. Apply Power unsupported until shadow power application exists. |
+| `VigorPower` | 活力 | Removes the amount of Vigor that existed when the attack started. | Implemented by consuming the snapshotted amount from shared shadow state, so later chained attacks no longer reuse it. |
+
+## Current attack simulation gaps
+
+- The simulator records shadow `CreatureAttacked` entries in `CombatPredictionHistory`, but original value hooks and card model methods still read live `CombatManager.Instance.History`, not this shadow history.
+- `CalculatedDamageVar.Calculate(target)` may read live combat state. The simulator calculates the value for parity, but marks the attack source risky.
+- Reviewed vanilla `_beforeDamage` and `_afterAttackerAnim` callbacks are command-local cosmetic effects only: VFX/SFX, waits, screen shake, radial blur, hit stop, and audio-only strength fields. The simulator does not execute them and does not mark risk solely because a vanilla attack command contains these callbacks.
+- `VigorPower` and `GigantificationPower` share their prediction-local attack selection with exact damage-modifier adapters and shadow amount consumption. The shadow decrement does not run the full vanilla power amount/removal lifecycle documented in `damage-modifier-hooks.md`.
+- `EchoingSlash` and `Omnislice` use `SimAttackContext`, which mirrors the vanilla `AttackContext` lifecycle while leaving their card-specific hit generation in `SpecialAttackCardMirrors`. Their grouped hits therefore participate in the shared `BeforeAttack`/`AfterAttack` listeners without going through `AttackCommand.Execute`.
+
+## Remaining implementation sequence
+
+1. Add shadow Apply Power support for the Strength granted by `SuckPower`.
+2. Teach history-dependent value hooks and card logic to read simulator shadow attack/card-play history where prediction chains need it.
+
+## Mock model list
+
+- `MockGainBlockOnAttackPower` overrides `AfterAttack` in test support only.

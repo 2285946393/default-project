@@ -1,0 +1,21 @@
+{
+  "localized": {
+    "english": {
+      "title": "Random Foreseer",
+      "description": null
+    },
+    "schinese": {
+      "title": "随机数预测",
+      "description": null
+    }
+  },
+  "changeNote": "",
+  "tags": [
+    "qol",
+    "schinese",
+    "english"
+  ],
+  "dependencies": [
+    3747602295
+  ]
+}

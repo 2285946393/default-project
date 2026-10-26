@@ -1,0 +1,51 @@
+# LoadOrderManager localization - Russian
+open_button=Порядок загрузки
+open_button_tooltip=Изменить порядок загрузки модов для следующего запуска
+title=Порядок загрузки модов
+subtitle=Переместите строки и нажмите Применить. Изменения вступят в силу при следующем запуске.
+btn_move_up=Вверх
+btn_move_down=Вниз
+btn_move_top=В начало
+btn_move_bottom=В конец
+btn_reload=Обновить
+btn_apply=Применить
+btn_close=Закрыть
+status_ready=Готово.
+status_load_failed=Ошибка загрузки: {0}
+status_loaded=Загружено модов: {0}.
+status_moved_pos=Перемещено на позицию {0}.
+status_moved_top=Перемещено в начало.
+status_moved_bottom=Перемещено в конец.
+status_nothing_to_save=Нечего сохранять.
+status_save_failed=Ошибка сохранения: {0}
+status_saved=Сохранено. Перезапустите игру, чтобы применить порядок.
+warning_overwritten=Предупреждение: текущий порядок модов отличается от последнего снимка применения ({0}). Его могли перезаписать сортировка зависимостей или другой мод.
+source_mods=локальные
+source_workshop=мастерская
+source_unknown=неизвестно
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=Автоматически включать новые моды
+policy_auto_enable_tooltip=Включено: моды, на которые вы подпишетесь после сохранения этого профиля, будут здесь включены по умолчанию. Выключено: они выключены, включайте вручную.
+policy_on=вкл
+policy_off=выкл
+status_new_mods_seen=Обнаружено новых модов: {0}. Применена политика новых модов этого профиля. Нажмите «Применить», чтобы сохранить.
+status_policy_changed=Профиль «{0}»: авто-включение новых модов = {1}
+tag_new=НОВЫЙ

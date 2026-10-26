@@ -1,0 +1,164 @@
+[
+ {
+  "table": "monsters",
+  "key": "SPECTRAL_KNIGHT.name",
+  "vanilla": "幽灵骑士",
+  "new": "黑白无常"
+ },
+ {
+  "table": "monsters",
+  "key": "TEST_SUBJECT.moves.BIG_POUNCE.title",
+  "vanilla": "大力猛扑",
+  "new": "泰山压顶"
+ },
+ {
+  "table": "monsters",
+  "key": "TEST_SUBJECT.moves.BURNING_GROWL.title",
+  "vanilla": "燃烧之吼",
+  "new": "河东狮吼"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_ONE.moves.BARRAGE.title",
+  "vanilla": "弹幕",
+  "new": "弹幕护体"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_ONE.name",
+  "vanilla": "对手1型",
+  "new": "变形金刚"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_THREE.moves.BARRAGE.title",
+  "vanilla": "弹幕",
+  "new": "弹幕护体"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_THREE.moves.FLAME_BEAM.title",
+  "vanilla": "火焰光束",
+  "new": "龟派气功"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_THREE.name",
+  "vanilla": "对手3型",
+  "new": "高达"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_TWO.moves.BARRAGE.title",
+  "vanilla": "弹幕",
+  "new": "弹幕护体"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_TWO.moves.FLAME_BEAM.title",
+  "vanilla": "火焰光束",
+  "new": "龟派气功"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_ADVERSARY_MK_TWO.name",
+  "vanilla": "对手2型",
+  "new": "奥特曼"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_BELL.moves.RING.title",
+  "vanilla": "叮铃铃",
+  "new": "叮叮当当"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_BELL.name",
+  "vanilla": "铃铛",
+  "new": "铃铛"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_OBSCURA.moves.ILLUSION.title",
+  "vanilla": "幻象",
+  "new": "海市蜃楼"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_OBSCURA.moves.SAIL.title",
+  "vanilla": "起航",
+  "new": "扬帆起航"
+ },
+ {
+  "table": "monsters",
+  "key": "THIEVING_HOPPER.moves.HAT_TRICK.title",
+  "vanilla": "帽子戏法",
+  "new": "帽子戏法"
+ },
+ {
+  "table": "monsters",
+  "key": "TOADPOLE.moves.SPIKE_SPIT.title",
+  "vanilla": "吐刺",
+  "new": "毒舌"
+ },
+ {
+  "table": "monsters",
+  "key": "TRACKER_RUBY_RAIDER.moves.HOUNDS.title",
+  "vanilla": "放狗",
+  "new": "放狗咬人"
+ },
+ {
+  "table": "monsters",
+  "key": "TRACKER_RUBY_RAIDER.moves.TRACK.title",
+  "vanilla": "追踪",
+  "new": "如影随形"
+ },
+ {
+  "table": "monsters",
+  "key": "TURRET_OPERATOR.moves.UNLOAD.title",
+  "vanilla": "弹雨！",
+  "new": "火力覆盖"
+ },
+ {
+  "table": "monsters",
+  "key": "TWIG_SLIME_M.moves.CHOMP.title",
+  "vanilla": "大啃",
+  "new": "狼吞虎咽"
+ },
+ {
+  "table": "monsters",
+  "key": "TWIG_SLIME_M.moves.POKEY_POUNCE.title",
+  "vanilla": "戳刺扑击",
+  "new": "当头一棒"
+ },
+ {
+  "table": "monsters",
+  "key": "TWIG_SLIME_M.name",
+  "vanilla": "树枝史莱姆（中）",
+  "new": "大木偶"
+ },
+ {
+  "table": "monsters",
+  "key": "TWIG_SLIME_S.name",
+  "vanilla": "树枝史莱姆（小）",
+  "new": "小木偶"
+ },
+ {
+  "table": "monsters",
+  "key": "VANTOM.moves.DISMEMBER.title",
+  "vanilla": "肢解",
+  "new": "五马分尸"
+ },
+ {
+  "table": "monsters",
+  "key": "VINE_SHAMBLER.moves.CHOMP.title",
+  "vanilla": "大啃",
+  "new": "饥不择食"
+ },
+ {
+  "table": "monsters",
+  "key": "ZAPBOT.name",
+  "vanilla": "电击机器人",
+  "new": "皮卡丘"
+ }
+]

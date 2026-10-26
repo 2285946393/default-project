@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>技能对照 · 真实 JD 拆解 · 有花无实</title>
+<style>
+:root{
+  --ink:#3d3440; --sub:#8b7f8a; --line:rgba(180,150,175,.22);
+  --rose:#f7a8c4; --rose-deep:#e07ba0; --mint:#8fd3a8; --card:#fffdfe;
+  --warn:#f0b429; --bad:#e57373; --ok:#5cb98a;
+  --bg:#fdf6f9;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--ink);min-height:100vh;padding:24px 16px 60px;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto}
+
+.hd{margin-bottom:18px}
+.hd h1{font-size:22px;font-weight:800;letter-spacing:.02em}
+.hd h1 span{color:var(--rose-deep)}
+.hd .src{font-size:12.5px;color:var(--sub);margin-top:5px;line-height:1.7}
+.hd .src b{color:var(--rose-deep);font-weight:600}
+
+.verdict{
+  background:linear-gradient(180deg,#fff8fb,#fffdfe);border:1px solid var(--line);
+  border-left:3px solid var(--rose-deep);border-radius:12px;padding:14px 17px;margin-bottom:20px;
+}
+.verdict .tag{font-size:11.5px;font-weight:700;color:var(--rose-deep);letter-spacing:.06em;margin-bottom:5px}
+.verdict p{font-size:14.5px;line-height:1.75}
+.verdict b{color:var(--rose-deep)}
+
+h2{font-size:15px;font-weight:800;margin:24px 0 11px;display:flex;align-items:center;gap:8px}
+h2 .n{
+  width:20px;height:20px;border-radius:6px;background:var(--rose);color:#fff;
+  font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+}
+h2 .hint{font-size:11.5px;color:var(--sub);font-weight:400}
+
+/* 频率条 */
+.freq{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 16px 12px}
+.freq .row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.freq .row:last-child{border-bottom:none}
+.freq .nm{font-size:13px;font-weight:600;flex:0 0 172px}
+.freq .bar{flex:1;height:7px;background:#f6eaf0;border-radius:999px;overflow:hidden;min-width:40px}
+.freq .bar i{display:block;height:100%;background:var(--rose);border-radius:999px}
+.freq .bar i.hi{background:var(--rose-deep)}
+.freq .ct{font-size:11.5px;color:var(--sub);flex:0 0 30px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* 对照表 */
+.tbl{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{
+  text-align:left;font-size:11.5px;font-weight:700;color:var(--sub);
+  padding:10px 14px;background:#fdf2f7;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.req{font-weight:600;width:31%}
+td.st{width:20%;white-space:nowrap}
+td.ev{color:var(--sub);font-size:12.5px}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.b-have{background:#eaf9f1;color:#2f8f63;border:1px solid #bfe8d3}
+.b-strong{background:#e6f4ff;color:#2b6ca8;border:1px solid #c3ddf5}
+.b-half{background:#fff7e6;color:#b8860b;border:1px solid #f5dfa8}
+.b-gap{background:#fdecec;color:#c0504d;border:1px solid #f7cccc}
+
+/* 待补清单 */
+.todo{display:grid;gap:11px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 16px;display:flex;gap:13px}
+.item .rk{
+  flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:var(--rose-deep);color:#fff;
+  font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;
+}
+.item .bd{flex:1;min-width:0}
+.item .t{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.item .t .cost{font-size:11px;font-weight:600;color:var(--sub);background:#fdf2f7;border:1px solid var(--line);padding:1px 8px;border-radius:999px}
+.item .d{font-size:12.5px;color:var(--sub);margin-top:5px;line-height:1.65}
+.item .d b{color:var(--ink);font-weight:600}
+
+/* 优势 */
+.edge{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 16px}
+.edge .row{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+.edge .row:last-child{border-bottom:none}
+.edge .ic{flex:0 0 auto;color:var(--rose-deep);font-weight:800;font-size:13px}
+.edge .tx{flex:1}
+.edge .tx .a{font-size:13.5px;font-weight:700}
+.edge .tx .b{font-size:12.5px;color:var(--sub);margin-top:3px;line-height:1.6}
+
+.foot{margin-top:22px;font-size:12px;color:var(--sub);text-align:center;line-height:1.8}
+.foot b{color:var(--rose-deep)}
+
+@media (max-width:720px){
+  body{padding:16px 11px 50px}
+  .hd h1{font-size:19px}
+  .freq .nm{flex:0 0 118px;font-size:12.5px}
+  .tbl{overflow-x:auto}
+  table{min-width:560px}
+  .item{padding:12px 13px;gap:10px}
+  .edge{padding:4px 13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <h1>技能对照 <span>·</span> 真实 JD 拆解</h1>
+    <div class="src">
+      抓取日期 <b>2026-10-05</b> ｜ 样本三个真实岗位：<br>
+      阿里巴巴「AI应用研发工程师」（校招官网）· 腾讯「AI应用开发工程师-Agent方向」· 腾讯企微「AI应用后台开发工程师」
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="tag">一句话结论</div>
+    <p>你的 <b>LLM 应用链路已经跑通了</b>——RAG、Prompt、流式、工程兜底，一样不缺，而且 RAG 是手写的。<br>
+    真正缺的是 <b>Agent 那一层</b>：工具调用、任务规划、记忆。这恰好是 JD 里写得最多、也最缺人的部分。</p>
+  </div>
+
+  <h2><span class="n">1</span>JD 里出现最多的要求 <span class="hint">分母 = 3 个样本岗位</span></h2>
+  <div class="freq">
+    <div class="row"><div class="nm">RAG / 检索增强</div><div class="bar"><i class="hi" style="width:100%"></i></div><div class="ct">3/3</div></div>
+    <div class="row"><div class="nm">工程能力（降级/并发/异步）</div><div class="bar"><i class="hi" style="width:100%"></i></div><div class="ct">3/3</div></div>
+    <div class="row"><div class="nm">编程能力（Python/JS/Java）</div><div class="bar"><i class="hi" style="width:100%"></i></div><div class="ct">3/3</div></div>
+    <div class="row"><div class="nm">Agent（规划 / 记忆 / 编排）</div><div class="bar"><i style="width:67%"></i></div><div class="ct">2/3</div></div>
+    <div class="row"><div class="nm">工具 / 函数调用</div><div class="bar"><i style="width:67%"></i></div><div class="ct">2/3</div></div>
+    <div class="row"><div class="nm">Prompt / Context Engineering</div><div class="bar"><i style="width:67%"></i></div><div class="ct">2/3</div></div>
+    <div class="row"><div class="nm">LLM 原理理解</div><div class="bar"><i style="width:67%"></i></div><div class="ct">2/3</div></div>
+    <div class="row"><div class="nm">评测 / 回测机制</div><div class="bar"><i style="width:67%"></i></div><div class="ct">2/3</div></div>
+    <div class="row"><div class="nm">MCP 协议 / Skills 编排</div><div class="bar"><i style="width:33%"></i></div><div class="ct">1/3</div></div>
+    <div class="row"><div class="nm">AI 编程工具重度使用</div><div class="bar"><i style="width:33%"></i></div><div class="ct">1/3</div></div>
+  </div>
+
+  <h2><span class="n">2</span>逐项对照：要求 vs 你的现状</h2>
+  <div class="tbl">
+    <table>
+      <thead>
+        <tr><th>JD 要求</th><th>你的现状</th><th>依据</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="req">RAG / 检索增强</td>
+          <td class="st"><span class="badge b-have">已有 · 且是手写</span></td>
+          <td class="ev">自研 BM25 + 中文 bigram 分词，零依赖 180 行。多数人只会调 LangChain 模板</td>
+        </tr>
+        <tr>
+          <td class="req">Prompt / Context Engineering</td>
+          <td class="st"><span class="badge b-have">已有</span></td>
+          <td class="ev">6 条 system 约束规则，含「禁用 markdown 因为要语音朗读」这类下游意识</td>
+        </tr>
+        <tr>
+          <td class="req">流式输出</td>
+          <td class="st"><span class="badge b-have">已有</span></td>
+          <td class="ev">streamText + toTextStreamResponse，能说清「首字延迟」</td>
+        </tr>
+        <tr>
+          <td class="req">工程化应对（降级 / 容错）</td>
+          <td class="st"><span class="badge b-have">已有 · 是强项</span></td>
+          <td class="ev">三级降级 + 解析 LLM 输出的四级兜底。JD 里写的「风险工程化应对」你有实例</td>
+        </tr>
+        <tr>
+          <td class="req">可观测 / 可解释</td>
+          <td class="st"><span class="badge b-have">已有</span></td>
+          <td class="ev">检索测试面板直接显示命中片段与得分，不是黑盒</td>
+        </tr>
+        <tr>
+          <td class="req">React / TypeScript / Next.js</td>
+          <td class="st"><span class="badge b-have">已有</span></td>
+          <td class="ev">Next 15 + React 19 + TS；另有 React 18 + TS 的 ai-gateway</td>
+        </tr>
+        <tr>
+          <td class="req">AI 编程工具重度使用</td>
+          <td class="st"><span class="badge b-strong">强项</span></td>
+          <td class="ev">阿里把这条列为「职位要求」第 1 条。Claude Code / Codex / DSH / WorkBuddy 你都在用</td>
+        </tr>
+        <tr>
+          <td class="req">独立项目 / 开源</td>
+          <td class="st"><span class="badge b-strong">强项</span></td>
+          <td class="ev">20+ 个可在线运行的交互作品，面试官点开就能玩</td>
+        </tr>
+        <tr>
+          <td class="req">工具调用 / Function Calling</td>
+          <td class="st"><span class="badge b-gap">空白</span></td>
+          <td class="ev">项目里搜不到 tools / toolChoice。这是 Agent 的地基</td>
+        </tr>
+        <tr>
+          <td class="req">Agent（规划 / 记忆 / 多智能体）</td>
+          <td class="st"><span class="badge b-gap">空白</span></td>
+          <td class="ev">没有 Agent 项目。腾讯该岗位直接要求「有 Agent 实战项目经验」</td>
+        </tr>
+        <tr>
+          <td class="req">MCP 协议 / Skills 编排</td>
+          <td class="st"><span class="badge b-gap">空白</span></td>
+          <td class="ev">只见过概念，没写过 MCP server。腾讯列为明确职责</td>
+        </tr>
+        <tr>
+          <td class="req">Python</td>
+          <td class="st"><span class="badge b-gap">弱</span></td>
+          <td class="ev">只有零散脚本，没有自己的 Python 项目。JD 几乎都要求</td>
+        </tr>
+        <tr>
+          <td class="req">LLM 原理（Transformer / 幻觉）</td>
+          <td class="st"><span class="badge b-half">概念级</span></td>
+          <td class="ev">能讲清怎么用，讲不清为什么。腾讯要求「深刻理解 Transformer 与 LLM 原理」</td>
+        </tr>
+        <tr>
+          <td class="req">向量检索 / Embedding</td>
+          <td class="st"><span class="badge b-half">没用过</span></td>
+          <td class="ev">你选了 BM25，理由充分——但要知道什么时候该换成向量</td>
+        </tr>
+        <tr>
+          <td class="req">评测 / 回测机制</td>
+          <td class="st"><span class="badge b-gap">空白</span></td>
+          <td class="ev">没有自动化评测。阿里要求「搭建自动化评测与回测机制」</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2><span class="n">3</span>要补的四件事 <span class="hint">按性价比排序，不是按难度</span></h2>
+  <div class="todo">
+
+    <div class="item">
+      <div class="rk">1</div>
+      <div class="bd">
+        <div class="t">工具调用（Function Calling） <span class="cost">半天</span></div>
+        <div class="d">Agent 的地基，也是最短的一块板。用 Vercel AI SDK 的 <b>tools</b> 参数给面试间加一个工具——比如「查我的知识库」「按岗位调题库」，让模型自己决定调哪个。<br>
+        补完你就能说：<b>「我实现了 function calling，模型自主选择工具」</b>——这一句在 Agent 岗里含金量很高。</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="rk">2</div>
+      <div class="bd">
+        <div class="t">一个真正的 Agent 项目 <span class="cost">1–2 周</span></div>
+        <div class="d">这是简历上最缺的一行。最省力的做法是<b>把面试间升级成 Agent</b>：加工具调用 + 多轮记忆 + 任务规划（先出题 → 追问 → 复盘，让模型自己决定下一步）。<br>
+        不要新开一个从零的大坑——<b>升级已有项目比新做便宜十倍</b>，而且面试时能讲的东西更多。</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="rk">3</div>
+      <div class="bd">
+        <div class="t">Python 基础 <span class="cost">3–5 天</span></div>
+        <div class="d">JD 里的硬门槛，绕不过去。不用精通：能读懂、能写脚本、能用 FastAPI 起一个服务、知道怎么调 openai 官方库就够了。<br>
+        你的 JS 底子很好，Python 对你是<b>换语法不换思维</b>。</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="rk">4</div>
+      <div class="bd">
+        <div class="t">LLM 原理 + MCP 概念 <span class="cost">各半天</span></div>
+        <div class="d">原理：Transformer 大意、上下文窗口、幻觉怎么来的、Prompt 注入怎么防——<b>够用来回答问题就行，不用啃论文</b>。<br>
+        MCP：知道它是什么、解决什么问题、能说出你日常在哪些工具里用过它。</div>
+      </div>
+    </div>
+
+  </div>
+
+  <h2><span class="n">4</span>你已经有的、别人没有的三样东西</h2>
+  <div class="edge">
+    <div class="row">
+      <div class="ic">01</div>
+      <div class="tx">
+        <div class="a">RAG 是自己实现的，不是调库</div>
+        <div class="b">大部分候选人只会「import LangChain 跑个模板」。你写得出 BM25 打分公式、说得清 k1 和 b 的作用、还知道当前实现的瓶颈在哪。这是实打实的加分。</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="ic">02</div>
+      <div class="tx">
+        <div class="a">工程化兜底有真实案例</div>
+        <div class="b">三级降级 + 四级 JSON 兜底 + 降级时返回 source 字段暴露真实状态。JD 里写「具备大模型幻觉、Prompt 注入等风险的工程化应对思路」——你不是有思路，是有代码。</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="ic">03</div>
+      <div class="tx">
+        <div class="a">AI 编程工具是重度玩家</div>
+        <div class="b">阿里把「Cursor、Claude Code 等 AI 编程工具重度或顶级玩家」写在职位要求第 1 条。这条对你不是加分项，是<b>主场</b>。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    样本来自公开招聘页面，仅代表这三家这三岗。<br>
+    真实门槛以你实际投递的岗位为准——<b>中小厂看作品，大厂看关键词</b>。
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,2 @@
+﻿随身物美术（每件 3 张：xxx_small.png / xxx_outline.png / xxx_big.png）
+命名对照见 notes\尖塔任务-随身物美术需求.md

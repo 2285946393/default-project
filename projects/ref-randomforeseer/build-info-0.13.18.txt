@@ -1,0 +1,5 @@
+mod-version: 0.13.18
+min-game-version: 0.111.0
+git-commit: d17ff4e7de6036dee9db89d47d10c5f2d2334fd9
+git-ref: main
+built-at: 2026-09-30T20:29:40.8418026+08:00

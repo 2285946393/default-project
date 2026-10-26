@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>液态玻璃 · Liquid Glass</title>
+<style>
+  :root {
+    --blur: 22px;
+    --sat: 180%;
+    --mx: 50%;
+    --my: 20%;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; overflow-x: hidden; max-width: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+    color: #2b2450;
+    background: #eaeaff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== 背景：几团慢慢漂的彩色光斑 ===== */
+  .bg { position: fixed; inset: 0; overflow: hidden; z-index: 0; }
+  /* 背景上的细密点阵：玻璃身后有「细节」，模糊才看得出来 */
+  .bg::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,.95) 2.6px, transparent 3.4px);
+    background-size: 30px 30px;
+    opacity: .55;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(72px); mix-blend-mode: normal; opacity: .92; }
+  .b1 { width: 60vmax; height: 60vmax; background: #ffb0d8; top: -18vmax; left: -14vmax; animation: drift1 26s ease-in-out infinite; }
+  .b2 { width: 52vmax; height: 52vmax; background: #b8b0ff; top: 20vmax; right: -16vmax; animation: drift2 31s ease-in-out infinite; }
+  .b3 { width: 46vmax; height: 46vmax; background: #9ff0ff; bottom: -16vmax; left: 6vmax; animation: drift3 24s ease-in-out infinite; }
+  .b4 { width: 40vmax; height: 40vmax; background: #ffe08f; bottom: 4vmax; right: 10vmax; animation: drift1 29s ease-in-out infinite reverse; }
+  @keyframes drift1 { 50% { transform: translate3d(14vmax, 10vmax, 0) scale(1.12); } }
+  @keyframes drift2 { 50% { transform: translate3d(-12vmax, 12vmax, 0) scale(1.08); } }
+  @keyframes drift3 { 50% { transform: translate3d(10vmax, -12vmax, 0) scale(1.15); } }
+
+  /* ===== 液态玻璃：核心就这一个类 ===== */
+  .glass {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255,255,255,.44), rgba(255,255,255,.12));
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+    backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+    border: 1px solid rgba(255,255,255,.6);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,.9),
+      inset 0 -1px 2px rgba(255,255,255,.28),
+      0 12px 34px rgba(80,60,140,.16);
+  }
+  /* 玻璃面上的反光（跟着鼠标走的光斑 + 一道斜高光） */
+  .glass::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(240px 180px at var(--mx) var(--my), rgba(255,255,255,.5), transparent 72%),
+      linear-gradient(115deg, rgba(255,255,255,.55), rgba(255,255,255,0) 32%, rgba(255,255,255,0) 66%, rgba(255,255,255,.4));
+    opacity: .8;
+  }
+  .glass > * { position: relative; z-index: 1; }
+
+  /* ===== 布局 ===== */
+  .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 18px 18px 60px; }
+
+  .nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 14px; margin-bottom: 46px; }
+  .nav .logo { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg,#ff8fbf,#8f7bff); display: grid; place-items: center; font-size: 16px; }
+  .nav b { font-size: 15px; letter-spacing: .02em; }
+  .nav .spacer { flex: 1; }
+  .nav .chip { font-size: 12.5px; padding: 5px 11px; border-radius: 999px; background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.6); }
+
+  h1 { font-size: clamp(28px, 6vw, 52px); margin: 0 0 10px; letter-spacing: -.01em; }
+  h1 .glow { background: linear-gradient(120deg,#ff6fa8,#8f5cff 55%,#2fbfe0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { font-size: clamp(13.5px, 2.4vw, 16px); color: #5b5380; margin: 0 0 34px; line-height: 1.7; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+  .card { padding: 20px 20px 22px; }
+  .card .ico { font-size: 26px; margin-bottom: 12px; display: block; }
+  .card h3 { margin: 0 0 8px; font-size: 16.5px; }
+  .card p { margin: 0; font-size: 13.5px; line-height: 1.75; color: #5b5380; }
+  .card code { font-size: 12px; background: rgba(255,255,255,.55); padding: 1px 6px; border-radius: 6px; }
+
+  /* ===== 按钮效果展示 ===== */
+  .btnrow { display: flex; flex-wrap: wrap; gap: 20px 24px; margin-top: 34px; }
+  .bitem { display: flex; flex-direction: column; align-items: center; gap: 9px; }
+  .btag { font-size: 12px; color: #6a6390; }
+  .btn {
+    position: relative; overflow: hidden;
+    border: 0; cursor: pointer; font: inherit; font-size: 14.5px; font-weight: 700; color: #2b2450;
+    padding: 13px 24px; border-radius: 16px;
+    transition: transform .32s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: inset 0 1px 1px rgba(255,255,255,.95), 0 16px 34px rgba(90,70,150,.26); }
+  .btn:active { box-shadow: inset 0 4px 12px rgba(90,70,150,.3), inset 0 1px 1px rgba(255,255,255,.6); }
+
+  /* 1. 弹性按压：按下去、松手弹回来 */
+  .btn.press:active { transform: scale(.9); }
+
+  /* 2. 水波：从点击点荡开一圈白 */
+  .btn .ink { position: absolute; border-radius: 50%; z-index: 2; pointer-events: none;
+    background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,255,255,.25) 55%, transparent 72%);
+    transform: scale(0); animation: ink .62s cubic-bezier(.2,.7,.3,1) forwards; }
+  @keyframes ink { to { transform: scale(1); opacity: 0; } }
+
+  /* 3. 扫光：一道光扫过玻璃表面 */
+  .btn.shimmer::before {
+    content: ""; position: absolute; top: -20%; left: -85%; width: 55%; height: 140%; z-index: 2;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.95), transparent);
+    transform: skewX(-18deg); transition: left .62s ease; pointer-events: none;
+  }
+  .btn.shimmer:hover::before { left: 135%; }
+
+  /* 4. 果冻：Q 弹地变形一下 */
+  .btn.jelly.go { animation: jelly .62s cubic-bezier(.36,1.6,.4,1); }
+  @keyframes jelly {
+    0% { transform: scale(1, 1); }
+    28% { transform: scale(1.16, .82); }
+    48% { transform: scale(.9, 1.12); }
+    68% { transform: scale(1.06, .94); }
+    100% { transform: scale(1, 1); }
+  }
+
+  .panel { margin-top: 34px; padding: 18px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  .panel label { font-size: 13.5px; font-weight: 700; }
+  .panel .val { font-variant-numeric: tabular-nums; font-size: 13px; color: #5b5380; min-width: 3.5em; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: min(320px, 60vw); height: 6px; border-radius: 999px;
+    background: linear-gradient(90deg,#ff9ec4,#b9a1ff); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; border: 1px solid rgba(255,255,255,.9); box-shadow: 0 3px 10px rgba(120,90,180,.35); cursor: pointer; }
+
+  .tip { margin-top: 26px; font-size: 12.5px; color: #6a6390; }
+  @media (max-width: 560px) {
+    .nav { margin-bottom: 30px; }
+    .cards { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+  <div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="blob b4"></div>
+  </div>
+
+  <div class="wrap">
+    <header class="glass nav">
+      <span class="logo">🌸</span>
+      <b>液态玻璃 · Liquid Glass</b>
+      <span class="spacer"></span>
+      <span class="chip">纯 CSS / 零依赖</span>
+    </header>
+
+    <h1><span class="glow">会折射背景的玻璃</span></h1>
+    <p class="sub">下面这些卡片、按钮、导航条，都不是图片——是半透明的盒子把「身后的画面」糊掉再提出来的。<br>移动鼠标，注意每块玻璃上的反光。</p>
+
+    <section class="cards">
+      <div class="glass card">
+        <span class="ico">🌫️</span>
+        <h3>1 · 背景模糊</h3>
+        <p>一层 <code>backdrop-filter: blur()</code>，把玻璃「身后」的背景糊掉，前面的文字却是清清楚楚的。这是玻璃感的根。</p>
+      </div>
+      <div class="glass card">
+        <span class="ico">✨</span>
+        <h3>2 · 边缘高光</h3>
+        <p>真正的玻璃都有亮边。用 <code>inset</code> 内阴影 + 一道斜向渐变，做出「光照上去」的厚度感。</p>
+      </div>
+      <div class="glass card">
+        <span class="ico">🫧</span>
+        <h3>3 · 通透但不脏</h3>
+        <p>半透明白 + <code>saturate()</code> 把身后的颜色提亮，玻璃才不糊成一团灰。</p>
+      </div>
+    </section>
+
+    <div class="btnrow">
+      <div class="bitem">
+        <button class="glass btn press">弹性按压</button>
+        <span class="btag">松手会弹一下</span>
+      </div>
+      <div class="bitem">
+        <button class="glass btn ripple">水波扩散</button>
+        <span class="btag">从点击点荡开</span>
+      </div>
+      <div class="bitem">
+        <button class="glass btn shimmer">扫光</button>
+        <span class="btag">划过有道光扫过</span>
+      </div>
+      <div class="bitem">
+        <button class="glass btn jelly">果冻</button>
+        <span class="btag">点一下 Q 弹变形</span>
+      </div>
+    </div>
+
+    <div class="glass panel">
+      <label for="blur">模糊强度</label>
+      <input type="range" id="blur" min="0" max="42" value="22">
+      <span class="val" id="blurVal">22px</span>
+    </div>
+
+    <p class="tip">拖动滑块看玻璃从「完全通透」到「磨砂」——这就是 <code>--blur</code> 变量在起作用。</p>
+  </div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var range = document.getElementById('blur');
+  var out = document.getElementById('blurVal');
+
+  range.addEventListener('input', function () {
+    root.style.setProperty('--blur', range.value + 'px');
+    out.textContent = range.value + 'px';
+  });
+
+  // 水波：点哪儿，就从哪儿荡开
+  document.querySelectorAll('.btn.ripple').forEach(function (b) {
+    b.addEventListener('pointerdown', function (e) {
+      var r = b.getBoundingClientRect();
+      var d = Math.max(r.width, r.height) * 1.6;
+      var ink = document.createElement('span');
+      ink.className = 'ink';
+      ink.style.width = ink.style.height = d + 'px';
+      ink.style.left = (e.clientX - r.left - d / 2) + 'px';
+      ink.style.top = (e.clientY - r.top - d / 2) + 'px';
+      b.appendChild(ink);
+      ink.addEventListener('animationend', function () { ink.remove(); });
+    });
+  });
+
+  // 果冻：点一下弹一弹
+  document.querySelectorAll('.btn.jelly').forEach(function (b) {
+    b.addEventListener('pointerdown', function () {
+      b.classList.remove('go');
+      void b.offsetWidth;      // 强制重排，动画能重放
+      b.classList.add('go');
+    });
+    b.addEventListener('animationend', function () { b.classList.remove('go'); });
+  });
+
+  // 玻璃上的反光跟着鼠标走
+  window.addEventListener('pointermove', function (e) {
+    root.style.setProperty('--mx', (e.clientX / window.innerWidth * 100).toFixed(2) + '%');
+    root.style.setProperty('--my', (e.clientY / window.innerHeight * 100).toFixed(2) + '%');
+  });
+})();
+</script>
+</body>
+</html>

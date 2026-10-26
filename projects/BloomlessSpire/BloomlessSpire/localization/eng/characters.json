@@ -1,0 +1,21 @@
+{
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.aromaPrinciple": "[sine][blue]A clean template is ready for a new run.[/blue][/sine]",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.banter.alive.endTurnPing": "Turn complete.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.banter.dead.endTurnPing": "I am out for now.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.cardsModifierDescription": "Template Character cards can now appear in rewards and shops.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.cardsModifierTitle": "Template Cards",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.defeatMessage": "The template still needs a little tuning.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.description": "A sample character used to verify the RitsuLib template project.\nReplace this text with your own character concept after copying the template.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.eventDeathPrevention": "Template Character keeps going.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.flavor": "A clean template waiting to become a new adventure.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.goldMonologue": "This gold is enough to start testing.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.possessiveAdjective": "their",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.pronounObject": "them",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.pronounPossessive": "theirs",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.pronounSubject": "they",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.selectMessage": "Template Character is ready.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.title": "Template Character",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.titleObject": "Template Character",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.unlockText": "Complete a run as [pink]{Prerequisite}[/pink] to unlock this character.",
+  "BLOOMLESS_SPIRE_CHARACTER_BLOOMLESS_SPIRE_CHARACTER.victoryMessage": "Template verification complete."
+}

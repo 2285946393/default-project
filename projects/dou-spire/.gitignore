@@ -1,0 +1,18 @@
+bin/
+obj/
+.vs/
+.idea/
+.godot/
+*.DotSettings
+*.DotSettings.user
+
+local.props
+*.uid
+*.import
+*.tmp
+*.log
+
+# 从游戏 pck 导出的参考图（版权归 Mega Crit，只在本机当风格参考，不要提交/外发）
+参考图/
+pck-project/.godot/
+pck-project/*.pck

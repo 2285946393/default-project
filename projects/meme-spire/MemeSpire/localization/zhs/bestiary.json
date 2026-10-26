@@ -1,0 +1,15 @@
+{
+  "ACTIONS.header": "出招",
+  "ACTION_NAME.attack": "打你",
+  "ACTION_NAME.cast": "放招",
+  "ACTION_NAME.die": "无了",
+  "ACTION_NAME.hurt": "挨打",
+  "ACTION_NAME.revive": "诈尸",
+  "ACTION_NAME.stun": "晕了",
+  "DESCRIPTION.placeholder": "这个怪的资料还没建档……",
+  "EVENTS.title": "奇遇",
+  "LOCKED.monsterTitle": "？？？",
+  "MODE.viewActions": "看出招",
+  "MODE.viewStats": "看战绩",
+  "UNDER_CONSTRUCTION": "施工中，勿扰"
+}

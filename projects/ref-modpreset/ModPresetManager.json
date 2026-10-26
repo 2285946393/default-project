@@ -1,0 +1,12 @@
+{
+  "id": "ModPresetManager",
+  "name": "Mod Preset Sync",
+  "author": "Flaaax",
+  "description": "Exports, imports, previews, and applies exact mod presets and load orders.",
+  "version": "0.5.4",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [],
+  "min_game_version": "0.107.1",
+  "affects_gameplay": false
+}

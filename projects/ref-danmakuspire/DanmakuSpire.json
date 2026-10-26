@@ -1,0 +1,11 @@
+{
+  "id": "DanmakuSpire",
+  "name": "弹幕尖塔 DanmakuSpire",
+  "author": "Icnsis",
+  "description": "根据玩家打牌、受伤、购买、奖励、事件、火堆及SL等行为，从内置社区词条库中抽选发射滚动弹幕；多人模式下支持队友弹幕与选牌、购买等行为弹幕互通。共创弹幕：玩家在游戏内投稿（昵称、文本、触发时机、颜色、置顶），经作者人工审核后以版本化快照下发到所有玩家本地离线播放。",
+  "version": "v1.2.1",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": false
+}

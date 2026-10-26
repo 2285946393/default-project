@@ -1,0 +1,51 @@
+# LoadOrderManager localization - Spanish (Spain)
+open_button=Orden de carga
+open_button_tooltip=Editar el orden de carga de mods para el proximo inicio
+title=Orden de carga de mods
+subtitle=Mueve las filas y luego pulsa Aplicar. El cambio se aplicara en el proximo inicio.
+btn_move_up=Subir
+btn_move_down=Bajar
+btn_move_top=Ir arriba
+btn_move_bottom=Ir abajo
+btn_reload=Recargar
+btn_apply=Aplicar
+btn_close=Cerrar
+status_ready=Listo.
+status_load_failed=Error al cargar: {0}
+status_loaded=Se han cargado {0} mods.
+status_moved_pos=Movido a la posicion {0}.
+status_moved_top=Movido arriba.
+status_moved_bottom=Movido abajo.
+status_nothing_to_save=No hay nada que guardar.
+status_save_failed=Error al guardar: {0}
+status_saved=Guardado. Reinicia el juego para aplicar el orden.
+warning_overwritten=Aviso: el orden actual de mods difiere del ultimo snapshot aplicado ({0}). Puede haber sido sobrescrito por el ordenamiento de dependencias u otro mod.
+source_mods=local
+source_workshop=workshop
+source_unknown=desconocido
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=Activar automaticamente los mods nuevos
+policy_auto_enable_tooltip=Activado: los mods que suscribas despues de guardar este perfil se activan aqui por defecto. Desactivado: quedan desactivados y hay que activarlos a mano.
+policy_on=activado
+policy_off=desactivado
+status_new_mods_seen={0} mod(s) nuevo(s) tratados segun la politica de mods nuevos de este perfil. Pulsa Aplicar para guardar.
+status_policy_changed=Perfil '{0}': activar automaticamente mods nuevos = {1}
+tag_new=NUEVO

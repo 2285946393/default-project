@@ -1,0 +1,12 @@
+{
+  "id": "MemeSpire",
+  "name": "梗化尖塔 / Meme Spire",
+  "pck_name": "MemeSpire",
+  "author": "有花无实",
+  "description": "把尖塔的卡牌名、遗物名、怪物名等文本换成中文社区梗。只改文案，不改任何机制与数值。",
+  "version": "0.1.4",
+  "has_pck": true,
+  "has_dll": false,
+  "affects_gameplay": false,
+  "min_game_version": "0.106.0"
+}

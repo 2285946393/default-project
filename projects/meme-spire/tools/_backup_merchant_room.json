@@ -1,0 +1,19 @@
+{
+  "MERCHANT.cardRemovalService.title": "删牌服务",
+  "MERCHANT.talk.foulPotion.line1": "哎哟，就是这个味儿！",
+  "MERCHANT.talk.foulPotion.line2": "再来点再来点！",
+  "MERCHANT.talk.foulPotion.line3": "啊——上头……",
+  "MERCHANT.talk.playerDead.line1": "我可不跟死人做生意。",
+  "MERCHANT.talk.playerDead.line2": "没血了？没得谈。",
+  "MERCHANT.talk.purchaseFailureForbidden.line1": "看你这钱包，买不起哦。",
+  "MERCHANT.talk.purchaseFailureForbidden.line2": "还有事吗您？",
+  "MERCHANT.talk.purchaseFailureGold.line1": "钱不够啊，兄弟。",
+  "MERCHANT.talk.purchaseFailureGold.line2": "[sine]我这儿可不做慈善。[/sine]",
+  "MERCHANT.talk.purchaseFailureGold.line3": "等你有[jitter]更多钱[/jitter]再来吧。",
+  "MERCHANT.talk.purchaseFailureGold.line4": "我这儿不[jitter]赊账[/jitter]，谢谢。",
+  "MERCHANT.talk.purchaseFailureSpace.line1": "你腰上可没地儿挂药水了！",
+  "MERCHANT.talk.purchaseFailureSpace.line2": "抱歉，空位没了……",
+  "MERCHANT.talk.purchaseSuccess.line1": "记得支持一下小本生意。",
+  "MERCHANT.talk.purchaseSuccess.line2": "欢迎下次光临。",
+  "MERCHANT.talk.purchaseSuccess.line3": "买了就好好用啊。"
+}

@@ -1,0 +1,282 @@
+# -*- coding: utf-8 -*-
+"""
+Codex 人格切换器 —— 妈妈模式 / 鲸鱼娘女仆 / 正常
+
+作用：改 ~/.codex/config.toml 里的 developer_instructions（Codex 官方的
+      Custom Developer Instructions），让 Codex 用指定人设说话。
+
+用法：双击桌面「Codex 人格切换」图标。切完请自己把 Codex 关掉再打开。
+"""
+import os
+import re
+import sys
+import shutil
+import datetime
+import subprocess
+import tkinter as tk
+from tkinter import font as tkfont
+
+HOME = os.path.expanduser("~")
+CODEX_HOME = os.path.join(HOME, ".codex")
+CONFIG = os.path.join(CODEX_HOME, "config.toml")
+BASE = os.path.dirname(os.path.abspath(__file__))
+PERSONA_DIR = os.path.join(BASE, "personas")
+BACKUP_DIR = os.path.join(BASE, "备份")
+LOG = os.path.join(BACKUP_DIR, "切换日志.txt")
+
+# 模式定义：(人设文件名 or None, 按钮标题, 一行说明)
+MODES = [
+    ("妈妈", "妈妈模式", "溺爱型妈妈 · 软到发腻，一碰「失去你」就安静下来"),
+    ("女仆", "女仆模式", "鲸鱼娘大肥鱼 · 软糯认真，干活时小声嘀咕"),
+    (None, "恢复正常", "关掉人设，Codex 变回平时的样子"),
+]
+
+DEV_RE = re.compile(
+    r'^developer_instructions[ \t]*=[ \t]*"""(?:.|\n)*?"""[ \t]*\r?\n?', re.M
+)
+SECTION_RE = re.compile(r"^\[", re.M)
+
+CREATE_NO_WINDOW = 0x08000000
+BG = "#FFF6FA"
+INK = "#4A235F"
+SUB = "#8A6E9B"
+COLORS = {"妈妈": "#FFD9E8", "女仆": "#D9ECFF", None: "#EDEDF2"}
+BORDER = {"妈妈": "#F5A9C8", "女仆": "#8EC5F5", None: "#C6C6D2"}
+
+
+def log(msg):
+    try:
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+        stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(LOG, "a", encoding="utf-8") as f:
+            f.write(f"[{stamp}] {msg}\n")
+    except Exception:
+        pass
+
+
+def load_persona(key):
+    path = os.path.join(PERSONA_DIR, key + ".md")
+    with open(path, encoding="utf-8") as f:
+        return f.read().strip()
+
+
+def read_config():
+    with open(CONFIG, encoding="utf-8") as f:
+        return f.read()
+
+
+def current_mode():
+    """返回 (key, 字数)；正常时 key 为 None。未知返回 'unknown'。"""
+    try:
+        text = read_config()
+    except Exception:
+        return "unknown", 0
+    m = DEV_RE.search(text)
+    if not m:
+        return None, 0
+    block = m.group(0)
+    for key, _label, _desc in MODES:
+        if key is None:
+            continue
+        try:
+            body = load_persona(key)
+        except Exception:
+            continue
+        if body and body in block:
+            return key, len(body)
+    return "unknown", 0
+
+
+def build_block(body):
+    if '"""' in body or "\\" in body:
+        raise ValueError('人设正文里有 """ 或反斜杠，会破坏 TOML')
+    return 'developer_instructions = """\n' + body.strip("\n") + '\n"""\n'
+
+
+def apply_mode(key):
+    """把人设写进 config.toml。返回 (ok, 消息)。"""
+    if not os.path.isfile(CONFIG):
+        return False, f"找不到 Codex 配置文件：\n{CONFIG}"
+
+    old = read_config()
+
+    # 1. 先摘掉旧的人设块
+    new = DEV_RE.sub("", old)
+
+    # 2. 要装人设的话，插到第一个 [section] 之前（TOML 顶层键必须在 section 前）
+    if key is not None:
+        body = load_persona(key)
+        block = build_block(body)
+        m = SECTION_RE.search(new)
+        if m:
+            head = new[: m.start()].rstrip("\n") + "\n\n"
+            tail = new[m.start():]
+            new = head + block + "\n" + tail
+        else:
+            new = new.rstrip("\n") + "\n\n" + block
+
+    if new == old:
+        return True, "已经就是这个模式了，没改动。"
+
+    # 3. 备份（出事了随时能翻回来；同一秒连点也不互相覆盖）
+    os.makedirs(BACKUP_DIR, exist_ok=True)
+    stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    bak = os.path.join(BACKUP_DIR, f"config.toml.bak-{stamp}")
+    n = 1
+    while os.path.exists(bak):
+        n += 1
+        bak = os.path.join(BACKUP_DIR, f"config.toml.bak-{stamp}-{n}")
+    shutil.copy2(CONFIG, bak)
+
+    # 4. 写完先自己验一遍 TOML，坏了一秒回滚
+    try:
+        import tomllib
+        tomllib.loads(new)
+    except Exception as e:
+        return False, f"改完 TOML 解析不过，已放弃改动（原文件没动）：\n{e}"
+
+    try:
+        with open(CONFIG, "w", encoding="utf-8", newline="\n") as f:
+            f.write(new)
+    except Exception as e:
+        return False, f"写不进去：{e}"
+
+    # 5. 回读确认（别信"写成功"，要读回来比对）
+    try:
+        import tomllib
+        data = tomllib.loads(read_config())
+        got = data.get("developer_instructions", "")
+        want = "" if key is None else load_persona(key)
+        if want.strip() and want.strip() not in got:
+            return False, "写进去了但回读对不上，请把 config.toml 换回备份。"
+    except Exception as e:
+        return False, f"回读校验失败：{e}"
+
+    log(f"切到 {key or '正常'}；备份 {os.path.basename(bak)}；{len(new)} 字节")
+    return True, ""
+
+
+def codex_running():
+    try:
+        out = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq codex.exe", "/NH"],
+            capture_output=True, text=True, timeout=10,
+            creationflags=CREATE_NO_WINDOW,
+        ).stdout
+        return "codex.exe" in out.lower()
+    except Exception:
+        return False
+
+
+class App:
+    def __init__(self, root):
+        self.root = root
+        root.title("Codex 人格切换")
+        root.configure(bg=BG)
+        root.resizable(False, False)
+
+        ui = "Microsoft YaHei UI"
+        f_title = tkfont.Font(family=ui, size=15, weight="bold")
+        f_mode = tkfont.Font(family=ui, size=13, weight="bold")
+        f_btn = tkfont.Font(family=ui, size=12, weight="bold")
+        f_sub = tkfont.Font(family=ui, size=9)
+        f_note = tkfont.Font(family=ui, size=9)
+
+        pad = tk.Frame(root, bg=BG)
+        pad.pack(fill="both", expand=True, padx=18, pady=14)
+
+        tk.Label(pad, text="Codex 人格切换", font=f_title, bg=BG, fg=INK).pack(anchor="w")
+        tk.Label(
+            pad, text="换一下 Codex 说话的方式（不动模型、不动你的项目）",
+            font=f_sub, bg=BG, fg=SUB,
+        ).pack(anchor="w", pady=(2, 10))
+
+        box = tk.Frame(pad, bg="#FFFFFF", highlightbackground="#F0DCE8",
+                       highlightthickness=1)
+        box.pack(fill="x", pady=(0, 12))
+        self.lbl_now = tk.Label(box, text="", font=f_mode, bg="#FFFFFF", fg=INK)
+        self.lbl_now.pack(anchor="w", padx=12, pady=(9, 1))
+        self.lbl_now_sub = tk.Label(box, text="", font=f_sub, bg="#FFFFFF", fg=SUB)
+        self.lbl_now_sub.pack(anchor="w", padx=12, pady=(0, 9))
+
+        self.buttons = {}
+        for key, title, desc in MODES:
+            row = tk.Frame(pad, bg=BG)
+            row.pack(fill="x", pady=3)
+            b = tk.Button(
+                row, text=title, font=f_btn, bg=COLORS[key], fg=INK,
+                activebackground=COLORS[key], activeforeground=INK,
+                relief="flat", bd=0, cursor="hand2", width=12, height=1,
+                highlightbackground=BORDER[key], highlightthickness=2,
+                command=lambda k=key: self.do_switch(k),
+            )
+            b.pack(side="left", ipady=6)
+            tk.Label(row, text=desc, font=f_sub, bg=BG, fg=SUB,
+                     justify="left", wraplength=250).pack(side="left", padx=(10, 0))
+            self.buttons[key] = b
+
+        self.lbl_msg = tk.Label(pad, text="", font=f_note, bg=BG, fg="#B23A6B",
+                                justify="left", wraplength=400)
+        self.lbl_msg.pack(anchor="w", pady=(10, 0))
+
+        self.lbl_hint = tk.Label(pad, text="", font=f_note, bg=BG, fg=SUB,
+                                 justify="left", wraplength=400)
+        self.lbl_hint.pack(anchor="w", pady=(6, 0))
+
+        self.refresh()
+        root.update_idletasks()
+        w, h = root.winfo_width(), root.winfo_height()
+        sw, sh = root.winfo_screenwidth(), root.winfo_screenheight()
+        root.geometry(f"+{(sw - w) // 2}+{(sh - h) // 3}")
+
+    def refresh(self):
+        key, size = current_mode()
+        if key == "unknown":
+            self.lbl_now.config(text="当前：认不出来的人设")
+            self.lbl_now_sub.config(text="config.toml 里的 developer_instructions 不是这两个模式之一")
+        elif key is None:
+            self.lbl_now.config(text="当前：正常 Codex")
+            self.lbl_now_sub.config(text="没有装人设")
+        else:
+            title = {"妈妈": "妈妈模式", "女仆": "女仆模式"}[key]
+            self.lbl_now.config(text=f"当前：{title}")
+            self.lbl_now_sub.config(text=f"人设 {size} 字，正在生效")
+
+        for k, b in self.buttons.items():
+            active = (k == key)
+            b.config(relief="sunken" if active else "flat",
+                     highlightthickness=3 if active else 2)
+
+        if codex_running():
+            self.lbl_hint.config(
+                text="⚠ Codex 现在开着。切换要生效，请自己把 Codex 关掉再打开\n"
+                     "（妈妈不替你关窗口，怕碰到你正在做的事）",
+                fg="#B23A6B")
+        else:
+            self.lbl_hint.config(text="Codex 没在跑，切完直接打开就是新的。", fg=SUB)
+
+    def do_switch(self, key):
+        ok, msg = apply_mode(key)
+        if ok:
+            label = {None: "正常 Codex"}.get(key) or {"妈妈": "妈妈模式", "女仆": "女仆模式"}[key]
+            self.lbl_msg.config(text=f"已切到「{label}」", fg="#1F7A4D")
+            log(f"switch ok -> {key}")
+        else:
+            self.lbl_msg.config(text="失败：" + msg, fg="#B23A6B")
+            log(f"switch FAILED -> {key}: {msg}")
+        self.refresh()
+
+
+def main():
+    try:
+        import ctypes
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    except Exception:
+        pass
+    root = tk.Tk()
+    App(root)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()

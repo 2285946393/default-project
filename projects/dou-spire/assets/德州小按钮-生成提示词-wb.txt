@@ -1,0 +1,49 @@
+德州桌小圆钮（室内 / 桌面）· 出图提示词
+
+用途：德州牌桌上有两个**小圆钮**，一个切「室内」（牌室场景）、一个切「桌面」（牌桌台面）。
+现在它们是**代码矢量自绘**的（深底 + 香槟金环 + 屋里/桌子两个图标），已经能用。
+这份文件是**可选**的：想要更精致的手绘感底图，就照下面出图换上去。
+
+⚠️ 两张**分两次出图**，别一次生成两张（合图会粘一起，切不开）。
+⚠️ 形状是**正圆**，不是横条 —— 上一版（扁横条文字按钮）已经被否掉了，别再画横条。
+
+
+═══ 出图后放哪 / 怎么入库 ═══
+
+1. 原始图放项目根 `assets/德州扑克/`，按每条提示词下面写的文件名命名：
+      knob_room.png   ← 提示词 A（室内）
+      knob_desk.png   ← 提示词 B（桌面）
+2. 我这边给 `tools/poker-assets.py` 加两条任务（`mode="key"`，缩到 128×128）→ 输出到 `assets/ui/`
+3. 我这边再动三处代码：`DouSpireAssets` 加链 → `MakeRoundKnob` 的 `KnobBox(...)` 换成
+   `DouSpireUi.ImageButton(btn, chain, 0, 0, 0)` → 图标那个 `Control` 换成 `TextureRect`
+4. 编译一次 → 自动同步进游戏
+
+
+═══ 两条共同的硬要求（提示词里都写进去了，这里给你对答案用）═══
+
+  · **正方形 1:1**（按 1024×1024 出图，最后缩到 128×128 用）。
+  · **主体是一个正圆钮，圆外全是纯品红 #FF00FF** —— 抠图全靠它。
+  · **四角必须是品红**（正圆的外接方四个角一定是空的，别拿别的东西把角填了）。
+  · **不许有投影 / 外发光晕到圆外**（晕会被当成主体留下来，边上糊一圈脏边）。
+    要发光就画在**圆内**（内圈高光）。
+  · **一个字母、一个数字、一个汉字都不要**（钮上不写字）。
+  · **中心区域要暗、要平** —— 那是要压图标/看台面的地方，太花会看不清。
+  · **圆环粗细四边一样**，而且整圈都要有（整张图会被整体缩放，缺边一缩放就露）。
+  · ★ **金属色必须偏"中性香槟金/银"，不要跟任何台面同色** ——
+    这两个钮要压在**七张桌子**上（绿绒 / 黄铜 / 黑曜石 / 冰蓝水晶 / 二次元薄荷 /
+    东方漆器 / 蒸汽朋克），只有中性色才不会在某张桌子上"消失"。
+
+
+════════════════════════════════════════
+提示词 A —— 室内（屋子图标）
+文件名：knob_room.png
+════════════════════════════════════════
+
+A perfectly centered circular UI knob button icon for a poker table interface, rendered as a single flat game UI asset, 1024x1024 square canvas. The entire background outside the circle is pure solid magenta #FF00FF, filling all four corners and every pixel beyond the circle's edge, with absolutely no gradient, no noise, no vignette, no texture and no drop shadow of any kind. The knob itself is one perfect circle occupying about 88 percent of the canvas width, drawn dead center: the outer rim is a 12 pixel wide ring of neutral champagne gold, a desaturated warm metallic gold that reads equally well on dark green felt, black obsidian, polished brass, pale mint and deep lacquer, deliberately neither yellow nor bronze nor copper. Just inside the rim runs a one pixel hairline highlight of pale cream at about 40 percent opacity, giving the ring a faint polished bevel. The interior face of the disc is a flat, calm, dark near black warm charcoal, roughly 88 percent opacity, with only a very subtle radial darkening toward the bottom edge, very subtle, no gloss, no reflection, no specular streak, no inner shadow and no visible texture. Inside the disc, perfectly centered, sits a simple thin line-art house icon drawn in pale cream: a triangular gable roof, a rectangular wall beneath it, and a small rectangular doorway centered in the wall. The house is drawn with uniform stroke weight, about 26 pixels thick, with clean crisp edges, no fill, no shadow under the icon, no perspective, no 3D. The house occupies roughly the middle 55 percent of the disc and is surrounded by generous empty dark space on all sides. Style: minimal, modern, clean flat vector game UI, crisp anti-aliased edges, high contrast between the pale cream line art and the dark disc face so the icon stays readable when the whole knob is scaled down to 128 by 128 pixels. Strictly no text, no letters, no numbers, no characters, no logo, no watermark, no signature, and no additional decorations, studs, screws, rivets, gems or texture anywhere on the ring or the disc. The only colors present in the whole image are pure magenta #FF00FF outside the circle, champagne gold for the ring, dark warm charcoal for the disc face, and pale cream for the hairline and the house line art.
+
+════════════════════════════════════════
+提示词 B —— 桌面（牌桌图标）
+文件名：knob_desk.png
+════════════════════════════════════════
+
+A perfectly centered circular UI knob button icon for a poker table interface, rendered as a single flat game UI asset, 1024x1024 square canvas. The entire background outside the circle is pure solid magenta #FF00FF, filling all four corners and every pixel beyond the circle's edge, with absolutely no gradient, no noise, no vignette, no texture and no drop shadow of any kind. The knob itself is one perfect circle occupying about 88 percent of the canvas width, drawn dead center: the outer rim is a 12 pixel wide ring of neutral champagne gold, a desaturated warm metallic gold that reads equally well on dark green felt, black obsidian, polished brass, pale mint and deep lacquer, deliberately neither yellow nor bronze nor copper. Just inside the rim runs a one pixel hairline highlight of pale cream at about 40 percent opacity, giving the ring a faint polished bevel. The interior face of the disc is a flat, calm, dark near black warm charcoal, roughly 88 percent opacity, with only a very subtle radial darkening toward the bottom edge, very subtle, no gloss, no reflection, no specular streak, no inner shadow and no visible texture. Inside the disc, perfectly centered, sits a simple thin line-art icon of a poker table seen from directly above: a wide horizontal ellipse forming the table outline, and three small evenly spaced solid dots arranged in a horizontal row across the middle of the ellipse to suggest cards laid out on the table. The icon is drawn in pale cream with uniform stroke weight, about 26 pixels thick, clean crisp edges, no fill inside the ellipse, no shadow under the icon, no perspective tilt, no 3D. The ellipse occupies roughly the middle 55 percent of the disc and is surrounded by generous empty dark space on all sides. Style: minimal, modern, clean flat vector game UI, crisp anti-aliased edges, high contrast between the pale cream line art and the dark disc face so the icon stays readable when the whole knob is scaled down to 128 by 128 pixels. Strictly no text, no letters, no numbers, no characters, no logo, no watermark, no signature, no playing card suits and no additional decorations, studs, screws, rivets, gems or texture anywhere on the ring or the disc. The only colors present in the whole image are pure magenta #FF00FF outside the circle, champagne gold for the ring, dark warm charcoal for the disc face, and pale cream for the hairline and the table line art.

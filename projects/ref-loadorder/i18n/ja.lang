@@ -1,0 +1,51 @@
+# LoadOrderManager localization - Japanese
+open_button=ロード順
+open_button_tooltip=次回起動時のModロード順を編集します
+title=Modロード順
+subtitle=行を移動して「適用」を押してください。変更は次回起動時に反映されます。
+btn_move_up=上へ
+btn_move_down=下へ
+btn_move_top=先頭へ
+btn_move_bottom=末尾へ
+btn_reload=再読込
+btn_apply=適用
+btn_close=閉じる
+status_ready=準備完了。
+status_load_failed=読み込み失敗: {0}
+status_loaded={0} 件のModを読み込みました。
+status_moved_pos={0} 番目に移動しました。
+status_moved_top=先頭に移動しました。
+status_moved_bottom=末尾に移動しました。
+status_nothing_to_save=保存する内容がありません。
+status_save_failed=保存失敗: {0}
+status_saved=保存しました。反映にはゲームの再起動が必要です。
+warning_overwritten=警告: 現在のMod順が前回適用スナップショット（{0}）と一致しません。依存関係ソートまたは他のModに上書きされた可能性があります。
+source_mods=ローカル
+source_workshop=ワークショップ
+source_unknown=不明
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=新しいModを自動で有効化
+policy_auto_enable_tooltip=オン：このプリセット保存後に購読したModは、ここで既定で有効になります。オフ：既定で無効になり、手動で有効にします。
+policy_on=オン
+policy_off=オフ
+status_new_mods_seen=新しいModを {0} 件検出し、このプリセットの新規Modポリシーを適用しました。「適用」で保存してください。
+status_policy_changed=プリセット「{0}」：新しいModの自動有効化 = {1}
+tag_new=新規

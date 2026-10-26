@@ -1,0 +1,22 @@
+{
+  "id": "QuestSpire",
+  "name": "尖塔任务 / Quest Spire",
+  "pck_name": "QuestSpire",
+  "author": "有花无实",
+  "description": "给杀戮尖塔2加一套任务系统：常驻侧栏实时显示进度，达成目标自动发放奖励。纯逻辑 mod，借鉴一代 SpireQuests。",
+  "version": "0.2.30",
+  "has_pck": true,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.6.6"
+    },
+    {
+      "id": "BaseLib",
+      "min_version": "v3.4.7"
+    }
+  ]
+}

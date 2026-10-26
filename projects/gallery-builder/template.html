@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>图集总览 · 全部出图一墙看</title>
+<style>
+  :root{
+    --bg:#fdf6f8; --bg2:#fff; --ink:#3b2f36; --ink2:#8b7780;
+    --pink:#f4a3c0; --pink2:#e87ba6; --lav:#c9b6f0; --mint:#a8e0cd;
+    --line:#f0dde5; --shadow:0 6px 24px rgba(200,150,175,.16);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:
+      radial-gradient(900px 500px at 12% -8%, #ffe6f0 0%, transparent 62%),
+      radial-gradient(760px 460px at 92% 4%, #eae2ff 0%, transparent 58%),
+      var(--bg);
+    color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1500px;margin:0 auto;padding:34px 22px 90px}
+
+  header{margin-bottom:22px}
+  h1{
+    font-size:31px;margin:0 0 8px;letter-spacing:.5px;font-weight:800;
+    background:linear-gradient(96deg,var(--pink2),#b07bd8 55%,#7fb8e8);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{color:var(--ink2);font-size:13.5px;line-height:1.8;margin:0 0 20px}
+  .lede b{color:var(--pink2)}
+
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .stat{
+    background:var(--bg2);border:1px solid var(--line);border-radius:14px;
+    padding:9px 16px;font-size:12.5px;color:var(--ink2);box-shadow:var(--shadow);
+  }
+  .stat b{font-size:19px;color:var(--pink2);margin-right:5px;font-weight:800}
+
+  .bar{
+    position:sticky;top:0;z-index:30;padding:12px 0 14px;margin-bottom:14px;
+    background:linear-gradient(to bottom,rgba(253,246,248,.97) 68%,rgba(253,246,248,0));
+    backdrop-filter:blur(9px);
+  }
+  .bar-in{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  #q{
+    flex:1 1 260px;min-width:200px;padding:11px 16px;font-size:13.5px;
+    border:1.5px solid var(--line);border-radius:13px;background:#fff;color:var(--ink);
+    outline:none;transition:.18s;font-family:inherit;
+  }
+  #q:focus{border-color:var(--pink);box-shadow:0 0 0 4px rgba(244,163,192,.18)}
+  #q::placeholder{color:#c3b0b9}
+  .chip{
+    padding:8px 15px;font-size:12.5px;border-radius:11px;cursor:pointer;
+    border:1.5px solid var(--line);background:#fff;color:var(--ink2);
+    transition:.16s;user-select:none;white-space:nowrap;font-family:inherit;
+  }
+  .chip:hover{border-color:var(--pink);color:var(--pink2);transform:translateY(-1px)}
+  .chip.on{background:linear-gradient(135deg,var(--pink),#e7a0dc);border-color:transparent;color:#fff;font-weight:700;box-shadow:0 5px 16px rgba(232,123,166,.35)}
+
+  .albums{display:flex;flex-direction:column;gap:30px}
+  .album-h{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;margin:0 0 3px}
+  .album-h h2{font-size:16.5px;margin:0;font-weight:700}
+  .album-h .cnt{font-size:11.5px;color:#b7a2ac;background:#fff;border:1px solid var(--line);padding:2px 9px;border-radius:9px}
+  .album-h a{font-size:11.5px;color:var(--pink2);text-decoration:none;border-bottom:1px dashed rgba(232,123,166,.5)}
+  .album-h a:hover{color:#b07bd8;border-color:#b07bd8}
+  .album-sub{font-size:12px;color:var(--ink2);margin:0 0 13px;line-height:1.7}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:13px}
+  @media(max-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:9px}}
+
+  .card{
+    background:#fff;border-radius:14px;overflow:hidden;cursor:pointer;
+    border:1px solid var(--line);box-shadow:var(--shadow);
+    transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s;
+    position:relative;
+  }
+  .card:hover{transform:translateY(-4px) scale(1.014);box-shadow:0 14px 34px rgba(200,140,175,.3);border-color:var(--pink)}
+  .card img{display:block;width:100%;height:auto;background:#f6eef2}
+  .card .meta{padding:8px 10px 10px}
+  .card .nm{font-size:12px;line-height:1.5;color:var(--ink);font-weight:600;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .ds{font-size:11px;line-height:1.55;color:var(--ink2);margin-top:4px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  .lb{
+    position:fixed;inset:0;z-index:100;display:none;
+    background:rgba(46,32,40,.86);backdrop-filter:blur(10px);
+    padding:26px;overflow:auto;
+  }
+  .lb.on{display:flex;align-items:center;justify-content:center}
+  .lb-in{display:flex;gap:22px;max-width:1180px;width:100%;align-items:center;flex-wrap:wrap;justify-content:center}
+  .lb img{max-width:min(560px,88vw);max-height:82vh;border-radius:16px;box-shadow:0 24px 70px #0009;background:#fff}
+  .lb-txt{flex:1 1 280px;max-width:390px;color:#f6eaf0}
+  .lb-txt h3{font-size:17px;margin:0 0 9px;line-height:1.55;font-weight:700}
+  .lb-txt p{font-size:13px;line-height:1.9;color:#dcc9d3;margin:0 0 14px}
+  .lb-txt .tg{display:inline-block;font-size:11px;padding:3px 10px;border-radius:9px;margin:0 6px 6px 0}
+  .tg.act{background:rgba(244,163,192,.24);color:#ffc6dc}
+  .tg.ok{background:rgba(168,224,205,.2);color:#a8e0cd}
+  .lb-txt .src{font-size:11.5px;color:#b09aa6;margin-top:12px;line-height:1.8}
+  .lb-txt .src a{color:#ffc6dc;text-decoration:none;border-bottom:1px dashed #ffc6dc88}
+  .lb-x{position:fixed;top:16px;right:20px;font-size:27px;color:#fff;cursor:pointer;
+    width:44px;height:44px;display:grid;place-items:center;border-radius:50%;
+    background:rgba(255,255,255,.13);transition:.16s;line-height:1}
+  .lb-x:hover{background:rgba(255,255,255,.26);transform:rotate(90deg)}
+  .empty{color:var(--ink2);font-size:13px;padding:50px 0;text-align:center;display:none}
+  footer{margin-top:56px;text-align:center;font-size:11.5px;color:#c0adb6;line-height:2}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>图集总览</h1>
+    <p class="lede">把散在 <b>pages/</b> 里每个出图页面拆开，按轮次摊平成一整面墙。点任意一张放大看说明。</p>
+    <div class="stats">
+      <div class="stat"><b>__ALBUMS__</b>轮 / 图集</div>
+      <div class="stat"><b>__IMAGES__</b>张图</div>
+      <div class="stat" id="shown"></div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="bar-in">
+      <input id="q" type="search" placeholder="搜角色 / 动作 / 画师 / 描述…">
+      <button class="chip on" data-f="all">全部</button>
+      <button class="chip" data-f="ok">标了「正常」的</button>
+      <button class="chip" data-f="feet">带脚的</button>
+      <button class="chip" data-f="recent">最近 10 轮</button>
+    </div>
+  </div>
+
+  <div class="albums" id="albums"></div>
+  <div class="empty" id="empty">没有匹配的图。</div>
+
+  <footer>
+    数据来自 pages/*.html 里已有的 &lt;figure&gt;，图片路径原样引用<br>
+    重新生成：python projects/gallery-builder/build.py
+  </footer>
+</div>
+
+<div class="lb" id="lb">
+  <div class="lb-x" id="lbx">×</div>
+  <div class="lb-in">
+    <img id="lbimg" alt="">
+    <div class="lb-txt">
+      <h3 id="lbnm"></h3>
+      <div id="lbtg"></div>
+      <p id="lbds"></p>
+      <div class="src" id="lbsrc"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/;
+
+const albumsEl = document.getElementById('albums');
+const emptyEl  = document.getElementById('empty');
+const qEl      = document.getElementById('q');
+const shownEl  = document.getElementById('shown');
+let filter = 'all';
+
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function match(item, album){
+  if(filter === 'ok' && !item.tags.some(t=>t.k==='ok'&&t.v.includes('正常'))) return false;
+  if(filter === 'feet'){
+    const hay = (item.name+item.desc+album.title).toLowerCase();
+    if(!/脚|足|feet|foot|脚趾|赤足|袜/.test(hay)) return false;
+  }
+  if(filter === 'recent'){
+    const n = parseInt((album.file.match(/第(\d+)轮/)||[])[1] || 0, 10);
+    if(n < 61) return false;
+  }
+  const q = qEl.value.trim().toLowerCase();
+  if(!q) return true;
+  const hay = [item.name, item.desc, album.title, album.sub,
+               item.tags.map(t=>t.v).join(' ')].join(' ').toLowerCase();
+  return q.split(/\s+/).every(w=>hay.includes(w));
+}
+
+function render(){
+  let html = '', shown = 0;
+  for(const a of DATA){
+    const items = a.items.filter(it=>match(it, a));
+    if(!items.length) continue;
+    shown += items.length;
+    html += `<section class="album">
+      <div class="album-h">
+        <h2>${esc(a.title)}</h2>
+        <span class="cnt">${items.length} 张</span>
+        <a href="${esc(a.file)}">打开原页 →</a>
+      </div>
+      ${a.sub?`<p class="album-sub">${esc(a.sub)}</p>`:''}
+      <div class="grid">`;
+    for(const it of items){
+      html += `<div class="card" data-img="${esc(it.img)}" data-nm="${esc(it.name)}"
+        data-ds="${esc(it.desc)}" data-pg="${esc(it.page)}" data-pt="${esc(it.pageTitle)}"
+        data-tg="${esc(JSON.stringify(it.tags))}">
+        <img loading="lazy" src="${esc(it.img)}" alt="${esc(it.name)}">
+        <div class="meta">
+          <div class="nm">${esc(it.name)||'&nbsp;'}</div>
+          ${it.desc?`<div class="ds">${esc(it.desc)}</div>`:''}
+        </div></div>`;
+    }
+    html += `</div></section>`;
+  }
+  albumsEl.innerHTML = html;
+  emptyEl.style.display = shown ? 'none' : 'block';
+  shownEl.innerHTML = `<b>${shown}</b>张匹配`;
+}
+
+const lb = document.getElementById('lb');
+function openLb(card){
+  document.getElementById('lbimg').src = card.dataset.img;
+  document.getElementById('lbnm').textContent = card.dataset.nm || '（无标题）';
+  document.getElementById('lbds').textContent = card.dataset.ds || '';
+  let tg = '';
+  try{
+    for(const t of JSON.parse(card.dataset.tg || '[]'))
+      tg += `<span class="tg ${t.k==='ok'?'ok':'act'}">${esc(t.v)}</span>`;
+  }catch(e){}
+  document.getElementById('lbtg').innerHTML = tg;
+  document.getElementById('lbsrc').innerHTML =
+    `出自：${esc(card.dataset.pt)}<br><a href="${esc(card.dataset.pg)}">打开这一轮 →</a>`;
+  lb.classList.add('on');
+}
+albumsEl.addEventListener('click', e=>{
+  const c = e.target.closest('.card');
+  if(c) openLb(c);
+});
+document.getElementById('lbx').onclick = ()=>lb.classList.remove('on');
+lb.addEventListener('click', e=>{ if(e.target === lb) lb.classList.remove('on'); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') lb.classList.remove('on'); });
+
+qEl.addEventListener('input', render);
+document.querySelectorAll('.chip').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    filter = b.dataset.f;
+    render();
+  };
+});
+
+render();
+</script>
+</body>
+</html>

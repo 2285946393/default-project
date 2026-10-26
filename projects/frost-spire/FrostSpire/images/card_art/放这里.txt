@@ -1,0 +1,11 @@
+凛冬工事牌卡面放这里。
+文件名 = 卡牌类名去掉 Card 后转 snake_case，例如：
+  IceBulwarkCard      → ice_bulwark.png
+  IceBulwarkBackCard  → ice_bulwark_back.png
+  ArrowTowerCard      → arrow_tower.png
+  SummonMilitiaCard   → summon_militia.png
+  IceWallBuildingCard → ice_wall_building.png
+  CampfireBuildingCard→ campfire_building.png
+  WatchtowerBuildingCard → watchtower_building.png
+  ArrowTowerBuildingCard → arrow_tower_building.png
+改完图要跑 tools/build_pck.ps1 重新打包，再 dotnet build 部署。

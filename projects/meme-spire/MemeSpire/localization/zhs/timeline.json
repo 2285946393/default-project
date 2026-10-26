@@ -1,0 +1,15 @@
+{
+  "ACKNOWLEDGE_BUTTON": "知道了",
+  "PLACEHOLDER_PORTRAIT": "临时占位",
+  "REMINDER_TEXT": "有{RevealableEpochCount}个历史节点要解锁了……",
+  "REVEAL_TIP_HEADER": "条件",
+  "TUTORIAL_TEXT": "在[blue]时间线[/blue]里点亮[gold]历史节点[/gold]，解锁卡牌、遗物和更多东西……",
+  "UNLOCK_ANCIENT": "解锁先古：囤积狂 达哥 会出现在你以后的局里……",
+  "UNLOCK_CARDS": "这些牌以后会出现：",
+  "UNLOCK_CARDS_BANNER": "解锁新牌！",
+  "UNLOCK_EPOCHS": "时间线又长了……",
+  "UNLOCK_POTIONS": "这些药水以后会出现：",
+  "UNLOCK_POTIONS_BANNER": "解锁新药水！",
+  "UNLOCK_RELICS": "这些遗物以后会出现：",
+  "UNLOCK_RELICS_BANNER": "解锁新遗物！"
+}

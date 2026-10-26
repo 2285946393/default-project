@@ -1,0 +1,22 @@
+{
+  "id": "DouSpire",
+  "name": "斗地主尖塔 / DouSpire",
+  "pck_name": "DouSpire",
+  "author": "有花无实",
+  "description": "在杀戮尖塔2里开一局斗地主：三人一副牌，17+17+17 加 3 张底牌，地主先出，谁先把牌走完谁赢。规则内核与开源参考实现 rlcard 双向对车过（穷举 970 万子集 0 差异）。它不是尖塔里的一局——是主菜单直接开的一张独立牌桌：点主菜单的「斗地主尖塔」进去，或随时按 F9 开桌 / 收桌。坐在桌边的是游戏本体的角色，界面能借游戏自带的 UI 素材。",
+  "version": "0.2.43",
+  "has_pck": false,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.6.6"
+    },
+    {
+      "id": "BaseLib",
+      "min_version": "v3.4.7"
+    }
+  ]
+}

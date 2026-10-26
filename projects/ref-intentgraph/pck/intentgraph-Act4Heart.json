@@ -1,0 +1,129 @@
+{
+  "Act4Heart.CorruptHeart": [
+    {
+      "condition": "true",
+      "stateMachine": [
+        {
+          "name": "DEBILITATE_MOVE",
+          "isInitialState": true,
+          "followUpState": "rand"
+        },
+        {
+          "name": "rand",
+          "children": [
+            {
+              "label": "50%",
+              "node": {
+                "name": "BLOOD_SHOTS_MOVE1",
+                "moveName": "BLOOD_SHOTS_MOVE",
+                "followUpState": "ECHO_MOVE"
+              }
+            },
+            {
+              "label": "50%",
+              "node": {
+                "name": "ECHO_MOVE1",
+                "moveName": "ECHO_MOVE",
+                "followUpState": "BLOOD_SHOTS_MOVE"
+              }
+            }
+          ]
+        },
+        {
+          "name": "ECHO_MOVE",
+          "followUpState": "BUFF_MOVE"
+        },
+        {
+          "name": "BLOOD_SHOTS_MOVE",
+          "followUpState": "BUFF_MOVE"
+        },
+        {
+          "name": "BUFF_MOVE",
+          "followUpState": "rand"
+        }
+      ]
+    }
+  ],
+  "Act4Heart.SpireShield": [
+    {
+      "condition": "true",
+      "stateMachine": [
+        {
+          "name": "rand",
+          "isInitialState": true,
+          "children": [
+            {
+              "label": "50%",
+              "node": {
+                "name": "BASH_MOVE1",
+                "moveName": "BASH_MOVE",
+                "followUpState": "FORTIFY_MOVE"
+              }
+            },
+            {
+              "label": "50%",
+              "node": {
+                "name": "FORTIFY_MOVE1",
+                "moveName": "FORTIFY_MOVE",
+                "followUpState": "BASH_MOVE"
+              }
+            }
+          ]
+        },
+        {
+          "name": "BASH_MOVE",
+          "followUpState": "SMASH_MOVE"
+        },
+        {
+          "name": "FORTIFY_MOVE",
+          "followUpState": "SMASH_MOVE"
+        },
+        {
+          "name": "SMASH_MOVE",
+          "followUpState": "rand"
+        }
+      ]
+    }
+  ],
+  "Act4Heart.SpireSpear": [
+    {
+      "condition": "true",
+      "stateMachine": [
+        {
+          "name": "BURN_STRIKE_MOVE",
+          "isInitialState": true,
+          "followUpState": "SKEWER_MOVE"
+        },
+        {
+          "name": "SKEWER_MOVE",
+          "followUpState": "rand"
+        },
+        {
+          "name": "rand",
+          "children": [
+            {
+              "label": "50%",
+              "node": {
+                "name": "BURN_STRIKE_MOVE1",
+                "moveName": "BURN_STRIKE_MOVE",
+                "followUpState": "PIERCER_MOVE"
+              }
+            },
+            {
+              "label": "50%",
+              "node": {
+                "name": "PIERCER_MOVE1",
+                "moveName": "PIERCER_MOVE",
+                "followUpState": "BURN_STRIKE_MOVE"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PIERCER_MOVE",
+          "followUpState": "SKEWER_MOVE"
+        }
+      ]
+    }
+  ]
+}

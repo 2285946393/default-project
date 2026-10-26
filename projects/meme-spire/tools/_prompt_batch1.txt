@@ -1,0 +1,38 @@
+你在给《杀戮尖塔2》的中文"梗化"mod 起名。这个 mod 把游戏里的名字全换成**中文大众梗**。
+
+【铁律】
+1. 每个新名字**必须是一个梗**（影视台词 / 广告词 / 动漫 / 游戏 / 网络热词 / 名人语录 / 成语典故 / 小品相声），
+   不能只是"换个近义词"。
+2. 梗要**全国大众都懂**，不要用只玩尖塔的人才知道的圈内梗。
+3. 尽量和原名的**字数接近**（原名 2 字就给 2-4 字），要像一张卡的名字。
+4. 原版里如果有 {xxx} 这种大括号占位符，**必须原样保留**；有 [gold]…[/gold] 这种方括号标签也要原样保留。
+5. 如果某条实在想不出合适的梗，就照抄原版名字。
+
+【输出格式】一行一条，只输出 `编号<TAB>新名字`，不要解释、不要开场白。
+
+【要起名的条目】
+1. DEPRECATED_ACT.title = 已弃用阶段
+2. BACKSTAB.title = 背刺
+3. DISTRACTION.title = 声东击西
+4. FLECHETTES.title = 飞镖
+5. GRAVE_WARDEN.title = 守墓人
+6. MAUL.title = 撕咬
+7. MOCK_QUEST_CARD.title = 临时任务牌
+8. OFFERING.title = 祭品
+9. OVERCLOCK.title = 超频
+10. PALE_BLUE_DOT.title = 暗淡蓝点
+11. PUTREFY.title = 腐败
+12. QUASAR.title = 类星体
+13. SPOILS_MAP.title = 藏宝图
+14. STACK.title = 堆栈
+15. SUBROUTINE.title = 子程序
+16. TANK.title = 肉盾
+17. TRACKING.title = 跟踪
+18. UP_MY_SLEEVE.title = 袖里乾坤
+19. DEPRECATED_CHARACTER.title = 已弃用角色
+20. DEPRIVED.title = 被剥夺者
+21. LOCKED.title = ？？？
+22. MOCK_COMBAT_CLEANUP_ORB.title = Mock Combat Cleanup
+23. GHOST_IN_A_JAR.title = 罐装幽灵
+24. SHIP_IN_A_BOTTLE.title = 瓶中船
+25. STABLE_SERUM.title = 稳定血清

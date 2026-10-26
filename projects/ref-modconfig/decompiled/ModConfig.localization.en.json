@@ -1,0 +1,9 @@
+{
+  "tab_mods": "Mods",
+  "no_configs": "No mods have registered configurations.",
+  "reset_defaults": "Reset",
+  "press_any_key": "Press any key...",
+  "key_unbound": "Unbound",
+  "keybind_tooltip": "Click to rebind. Press Esc or click anywhere to clear.",
+  "color_picker_tooltip": "Click to pick a color."
+}

@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>云山 · 一纸会呼吸的山水</title>
+<meta name="description" content="程序化生成的水墨山水。按一下，它自己画出一幅你从没见过的新画；云雾会缓缓流动，水面会轻轻晃动，小船会慢慢走。单文件，零依赖，不联网。">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden}
+  body{
+    background:#14110d;
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    user-select:none;
+  }
+  /* 墙上的一点暖光，让纸看着像挂在墙上 */
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 42%, rgba(255,226,170,.10), transparent 70%),
+      radial-gradient(ellipse 120% 100% at 50% 50%, transparent 40%, rgba(0,0,0,.55) 100%);
+  }
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:pointer;touch-action:none}
+
+  /* ── 底部那一条控制栏 ── */
+  .bar{
+    position:fixed;left:50%;bottom:max(14px,2.2vh);transform:translateX(-50%);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+    padding:9px 12px;border-radius:999px;max-width:calc(100vw - 20px);
+    background:rgba(30,24,18,.62);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    box-shadow:0 12px 40px rgba(0,0,0,.5), inset 0 0 0 1px rgba(226,190,124,.22);
+    z-index:6;transition:opacity .5s;
+  }
+  .bar button{
+    font:inherit;font-size:13.5px;letter-spacing:.06em;
+    display:inline-flex;align-items:center;gap:7px;
+    padding:8px 15px;border-radius:999px;cursor:pointer;
+    color:#f0dfb8;background:rgba(255,232,186,.07);
+    border:1px solid rgba(226,190,124,.3);
+    transition:background .18s,border-color .18s,transform .1s;
+  }
+  .bar button:hover{background:rgba(255,232,186,.15);border-color:rgba(226,190,124,.6)}
+  .bar button:active{transform:scale(.97)}
+  .bar kbd{
+    font:inherit;font-size:10px;opacity:.5;padding:1px 5px;border-radius:4px;
+    border:1px solid rgba(226,190,124,.35);
+  }
+  .bar label{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;letter-spacing:.08em;color:rgba(240,223,184,.62);
+    padding-left:4px;
+  }
+  .bar input{
+    font:inherit;font-size:13px;letter-spacing:.1em;width:5.4em;
+    padding:6px 9px;border-radius:8px;text-align:center;
+    color:#f0dfb8;background:rgba(0,0,0,.28);
+    border:1px solid rgba(226,190,124,.26);outline:none;
+  }
+  .bar input:focus{border-color:rgba(226,190,124,.62);background:rgba(0,0,0,.42)}
+  .bar .hint{font-size:11.5px;letter-spacing:.1em;color:rgba(240,223,184,.34);padding-right:4px}
+  @media (max-width:640px){ .bar .hint{display:none} .bar{gap:7px;padding:8px 10px} }
+
+  /* 出错就直接显示出来，不用开控制台 */
+  #err{
+    position:fixed;left:0;right:0;bottom:0;z-index:99;display:none;
+    padding:10px 14px;font:12px/1.5 ui-monospace,Consolas,monospace;
+    color:#ffd9d0;background:rgba(120,26,20,.94);white-space:pre-wrap;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="bar">
+  <button id="again">再画一幅 <kbd>R</kbd></button>
+  <button id="save">存图 <kbd>S</kbd></button>
+  <label>落款 <input id="name" maxlength="6" value="有花无实" spellcheck="false"></label>
+  <span class="hint" id="hint">点画面也能重画</span>
+</div>
+<div id="err"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════════════
+   云山 · Cloud Mountains
+   ───────────────────────────────────────────────────────────────────
+   一幅程序化生成的水墨山水。没有一张图片素材，全部现画。
+
+   三个设计上的取舍，写在这儿免得以后忘了：
+
+   ① **画在固定尺寸的离屏画布上（1500×1000），最后整体缩放到窗口。**
+      不这么做的话，山的形状会跟着窗口比例变 —— 同一个种子在宽屏和窄屏上
+      是两幅画，"这幅画"就不成立了。现在窗口怎么变，画都是同一幅。
+
+   ② **静态的东西只画一次，动的东西每帧画。**
+      纸、山、云带、倒影、前景、落款印 → 各自的离屏画布，生成时画一次；
+      每帧只做 blit + 飘云 + 水波 + 船 + 鸟。
+      所以哪怕满屏都在动，CPU 也基本闲着。
+
+   ③ **"呼吸"靠的是错峰淡入 + 极慢的正弦，不是随机抖动。**
+      重画时每一层按 0.22s 间隔依次浮现（远山先、落款最后），
+      像有人一笔一笔画上去；之后云雾用 20~30 秒周期的正弦缓缓起伏 ——
+      慢到你不盯着看不会发现它在动，但盯久了会觉得这幅画是活的。
+   ═══════════════════════════════════════════════════════════════════ */
+
+const PW = 1500, PH = 1000;          // 画的内部尺寸（3:2，中堂横幅的比例）
+
+// ★ 水岸线 / 天空分界**每一幅都不一样**（见 generate() 开头"骨架"那一段）。
+//   原来是 const（钉死 0.70 / 0.42），结果六张种子摆在一起像同一张画的抖动 ——
+//   生成器只生成了"笔触"，没生成"构图"。改成 let，交给种子。
+let WY = PH * 0.700;                 // 水岸线：以下都是水
+let SKY = PH * 0.420;                // 天与远山的分界（给月亮 / 鸟定位用）
+
+// ── 墨色。真正的松烟墨偏冷，不是纯黑 ──
+const ink = (a) => `rgba(36,42,50,${a})`;
+const PAPER = '#efe6d1';
+
+// ── 可见画布（画本身画在离屏画布上，见上面第 ① 条）──
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+/* ─────────────────────────── 随机 & 噪声 ─────────────────────────── */
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/** 梯度噪声（Perlin 那一类），返回约 [-0.7, 0.7]。 */
+function makeNoise(seed) {
+  const r = mulberry32(seed);
+  const p = new Uint8Array(256);
+  for (let i = 0; i < 256; i++) p[i] = i;
+  for (let i = 255; i > 0; i--) { const j = (r() * (i + 1)) | 0; const t = p[i]; p[i] = p[j]; p[j] = t; }
+  const perm = new Uint8Array(512);
+  for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
+  const gx = new Float32Array(256), gy = new Float32Array(256);
+  for (let i = 0; i < 256; i++) { const a = r() * Math.PI * 2; gx[i] = Math.cos(a); gy[i] = Math.sin(a); }
+
+  return function (x, y) {
+    const xi = Math.floor(x), yi = Math.floor(y);
+    const xf = x - xi, yf = y - yi;
+    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    const X = xi & 255, Y = yi & 255, X1 = (xi + 1) & 255, Y1 = (yi + 1) & 255;
+    const n00 = gx[perm[(perm[X] + Y) & 255]] * xf + gy[perm[(perm[X] + Y) & 255]] * yf;
+    const n10 = gx[perm[(perm[X1] + Y) & 255]] * (xf - 1) + gy[perm[(perm[X1] + Y) & 255]] * yf;
+    const n01 = gx[perm[(perm[X] + Y1) & 255]] * xf + gy[perm[(perm[X] + Y1) & 255]] * (yf - 1);
+    const n11 = gx[perm[(perm[X1] + Y1) & 255]] * (xf - 1) + gy[perm[(perm[X1] + Y1) & 255]] * (yf - 1);
+    return (n00 * (1 - u) + n10 * u) * (1 - v) + (n01 * (1 - u) + n11 * u) * v;
+  };
+}
+
+function fbm(n, x, y, oct, gain, lac) {
+  let a = 1, f = 1, s = 0, norm = 0;
+  for (let i = 0; i < oct; i++) { s += a * n(x * f, y * f); norm += a; a *= gain; f *= lac; }
+  return s / norm;
+}
+
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+/* ─────────────────────────── 小工具 ─────────────────────────── */
+
+function buf(w, h) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return { c, g: c.getContext('2d') };
+}
+
+function rrect(g, x, y, w, h, r) {
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+/** 竖排文字：一个字一个字往下摞。 */
+function vtext(g, str, x, y, size, color, lh) {
+  g.save();
+  g.fillStyle = color;
+  g.font = `${size}px "STKaiti","KaiTi","楷体","STSong","SimSun",serif`;
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === ' ') continue;
+    g.fillText(str[i], x, y + i * (lh || size * 1.16));
+  }
+  g.restore();
+}
+
+/* ═══════════════════════ ① 宣纸 ═══════════════════════ */
+
+function paintPaper(g, seed) {
+  const r = mulberry32(seed * 31 + 7);
+
+  const base = g.createLinearGradient(0, 0, PW * .35, PH);
+  base.addColorStop(0, '#f6efdd');
+  base.addColorStop(.45, '#f0e7d2');
+  base.addColorStop(1, '#e7dcc2');
+  g.fillStyle = base;
+  g.fillRect(0, 0, PW, PH);
+
+  // 纸浆里的纤维：一大堆极淡的短毛边
+  g.lineCap = 'round';
+  for (let i = 0; i < 3200; i++) {
+    const x = r() * PW, y = r() * PH;
+    const a = r() * Math.PI, len = 4 + r() * 30;
+    g.strokeStyle = r() < .52
+      ? `rgba(196,180,142,${.03 + r() * .06})`
+      : `rgba(255,253,244,${.05 + r() * .10})`;
+    g.lineWidth = .5 + r() * 1.1;
+    g.beginPath();
+    g.moveTo(x, y);
+    g.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len);
+    g.stroke();
+  }
+
+  // 几块深浅不匀的"帘纹"（手工纸抄的时候留下的）
+  for (let i = 0; i < 9; i++) {
+    const x = r() * PW, y = r() * PH, rr = 120 + r() * 380;
+    const rg = g.createRadialGradient(x, y, 0, x, y, rr);
+    const dark = r() < .5;
+    rg.addColorStop(0, dark ? 'rgba(176,158,120,.055)' : 'rgba(255,252,240,.075)');
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = rg;
+    g.fillRect(x - rr, y - rr, rr * 2, rr * 2);
+  }
+
+  // 纸边稍微压深一点，不然看着像纯色块
+  const vg = g.createRadialGradient(PW * .5, PH * .46, PH * .18, PW * .5, PH * .5, PW * .72);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, 'rgba(146,124,86,.13)');
+  g.fillStyle = vg;
+  g.fillRect(0, 0, PW, PH);
+}
+
+/* ═══════════════════════ ② 山 ═══════════════════════ */
+
+/**
+ * 一道山脊的采样点。x 从 0 到 PW，y 是山脊线。
+ * 用 fbm 做**圆浑**的起伏（董源巨然那一派），不是刀削的尖峰 ——
+ * 尖峰要另写 ridged noise，那是范宽的路子，跟"云山"不搭。
+ */
+function ridgePoints(seed, o) {
+  const n = makeNoise(seed);
+  const N = 300;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const t = i / N;
+    let v = fbm(n, t * o.freq, o.off, o.oct, .5, 2.03);
+    v = .5 + v * .95;
+    // 两头往回收一点，免得山从画框边上齐刷刷地立起来
+    const edge = Math.pow(Math.sin(Math.PI * clamp(t, 0, 1)), .35);
+    v *= lerp(.72, 1, edge);
+    pts.push({ x: t * PW, y: o.yBase - clamp(v, .05, 1.12) * o.amp });
+  }
+  // 抹两遍，去掉噪点毛刺
+  for (let k = 0; k < 2; k++)
+    for (let i = 1; i < N; i++)
+      pts[i].y = (pts[i - 1].y + pts[i].y * 2 + pts[i + 1].y) / 4;
+  return pts;
+}
+
+function paintRange(seed, o) {
+  const b = buf(PW, PH);
+  const g = b.g;
+  const pts = ridgePoints(seed, o);
+
+  g.save();
+  if (o.blur > 0) g.filter = `blur(${o.blur}px)`;
+
+  // ── 山体 ──
+  g.beginPath();
+  g.moveTo(-6, PH + 6);
+  g.lineTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) g.lineTo(pts[i].x, pts[i].y);
+  g.lineTo(PW + 6, PH + 6);
+  g.closePath();
+
+  const top = o.yBase - o.amp * 1.15;
+  const grd = g.createLinearGradient(0, top, 0, o.yBase + o.amp * .55);
+  grd.addColorStop(0, ink(o.alpha * 1.02));
+  grd.addColorStop(.42, ink(o.alpha * .78));
+  grd.addColorStop(1, ink(o.alpha * .34));
+  g.fillStyle = grd;
+  g.fill();
+
+  // ── 山脊线：比山体深一点，是这幅画里唯一"硬"的线 ──
+  g.beginPath();
+  g.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) g.lineTo(pts[i].x, pts[i].y);
+  g.strokeStyle = ink(o.alpha * 1.25);
+  g.lineWidth = o.ridge || 1.6;
+  g.lineJoin = 'round';
+  g.stroke();
+  g.restore();
+
+  // ── 皴：只在近处那一道画。披麻皴 = 顺着坡往下走的短麻绳 ──
+  //
+  // ⚠️ 2026-10-11 修过两轮，两次都是"看着不对但说不出哪不对"：
+  //   ① 线太长 → 山脚被擦掉之后还吊在断口下面，整片像下暴雨。
+  //   ② 线**疏密均匀、起点全在山脊** → 远看就是一道篱笆 / 一排水草，不像山。
+  //   真山水的皴是**聚散不均**的：山坳里密、坡面上疏，起笔也高低错落。
+  //   所以这里用一层慢噪声来调制"这一段画不画皴"。
+  if (o.cun) {
+    const r = mulberry32(seed * 17 + 3);
+    const dn = makeNoise(seed + 991);
+    g.lineCap = 'round';
+    for (let i = 4; i < pts.length - 4; i += 1) {
+      // 疏密：沿山脊慢慢起伏，密处 .62、疏处 .16
+      const dens = clamp(.39 + dn(i * .055, 0) * .62, .10, .72);
+      if (r() > dens) continue;
+      const p = pts[i];
+      const slope = (pts[i + 1].y - pts[i - 1].y) / (pts[i + 1].x - pts[i - 1].x);
+      const depth = o.amp * (.20 + r() * .50);
+      const n = 1 + ((r() * 2.4) | 0);
+      for (let k = 0; k < n; k++) {
+        const off = (r() - .5) * 15;
+        // 起笔**错落**：有的贴着山脊，有的落到山腰
+        const x0 = p.x + off, y0 = p.y + 2 + r() * r() * depth * 1.05;
+        const len = depth * (.28 + r() * .85);
+        // 往坡下走，带一点弧度（手画的线不会直）
+        const bend = (r() - .5) * 0.9 + slope * 0.5;
+        g.beginPath();
+        g.moveTo(x0, y0);
+        g.quadraticCurveTo(x0 + bend * len * .3, y0 + len * .55, x0 + bend * len * .55, y0 + len);
+        g.strokeStyle = ink(o.alpha * (.14 + r() * .28));
+        g.lineWidth = .7 + r() * 1.5;
+        g.stroke();
+      }
+    }
+    // 山根压重一点，山才"坐得住"
+    const foot = g.createLinearGradient(0, o.yBase - o.amp * .22, 0, o.yBase + o.amp * .18);
+    foot.addColorStop(0, 'rgba(0,0,0,0)');
+    foot.addColorStop(1, ink(o.alpha * .55));
+    g.fillStyle = foot;
+    g.fillRect(0, o.yBase - o.amp * .22, PW, o.amp * .42);
+  }
+
+  // ── 山脚化进云里（destination-out 只在**自己这块画布**上挖洞，碰不到纸） ──
+  //
+  // ★ 2026-10-11 修：擦除的**起点**原来一律是 `yBase - amp*.30`，也就是水线以上 50px。
+  //   对远山没问题（它本来就该在云里化掉），可**近山的 `yBase` 就是水岸线** ——
+  //   于是近山在离水还有 50px 的地方被拦腰擦断，底下那条边硬得像一堵墙，
+  //   上面的皴还挂在断口上晃，看着像下雨。
+  //   现在起点/终点都能给：远山照旧从山腰开始化，近山**只在水线以下化**。
+  const sf = o.sinkFrom === undefined ? -.30 : o.sinkFrom;
+  const st = o.sinkTo === undefined ? .34 : o.sinkTo;
+  g.globalCompositeOperation = 'destination-out';
+  const mg = g.createLinearGradient(0, o.yBase + o.amp * sf, 0, o.yBase + o.amp * st);
+  mg.addColorStop(0, 'rgba(0,0,0,0)');
+  mg.addColorStop(.55, 'rgba(0,0,0,.55)');
+  mg.addColorStop(1, 'rgba(0,0,0,1)');
+  g.fillStyle = mg;
+  g.fillRect(0, o.yBase + o.amp * sf, PW, PH);
+  g.globalCompositeOperation = 'source-over';
+
+  return b.c;
+}
+
+/* ═══════════════════════ ③ 云海 ═══════════════════════ */
+
+/** 一条横着铺开的云雾带。山与山之间全靠它分隔。 */
+function paintMist(g, y, h, alpha, seed) {
+  const r = mulberry32(seed);
+
+  // 主体：一条软的上下过渡。**不要堆很多条** —— 26 条叠起来会把山整个洗白。
+  const gg = g.createLinearGradient(0, y - h * .5, 0, y + h * .5);
+  gg.addColorStop(0, 'rgba(247,242,229,0)');
+  gg.addColorStop(.34, `rgba(247,242,229,${alpha * .82})`);
+  gg.addColorStop(.5, `rgba(247,242,229,${alpha})`);
+  gg.addColorStop(.68, `rgba(247,242,229,${alpha * .82})`);
+  gg.addColorStop(1, 'rgba(247,242,229,0)');
+  g.fillStyle = gg;
+  g.fillRect(0, y - h * .5, PW, h);
+
+  // 再补几缕更亮的横云，让云不是一条均匀的带子
+  for (let i = 0; i < 5; i++) {
+    const yy = y + (r() - .5) * h * .86;
+    const hh = h * (.09 + r() * .14);
+    const a = alpha * (.34 + r() * .52);
+    const g2 = g.createLinearGradient(0, yy - hh, 0, yy + hh);
+    g2.addColorStop(0, 'rgba(253,250,242,0)');
+    g2.addColorStop(.5, `rgba(253,250,242,${a})`);
+    g2.addColorStop(1, 'rgba(253,250,242,0)');
+    g.fillStyle = g2;
+    g.fillRect(0, yy - hh, PW, hh * 2);
+  }
+}
+
+/* ═══════════════════════ ④ 前景：坡岸 / 松 / 石 ═══════════════════════ */
+
+function paintRocks(g, x, y, w, h, seed, alpha) {
+  const r = mulberry32(seed);
+  g.beginPath();
+  const n = 16;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = Math.PI + (i / (n - 1)) * Math.PI;     // 上半圈
+    const rr = .72 + r() * .42;
+    pts.push([x + Math.cos(a) * w * .5 * rr, y + Math.sin(a) * h * rr]);
+  }
+  g.moveTo(x - w * .5, y + 4);
+  for (const p of pts) g.lineTo(p[0], p[1]);
+  g.lineTo(x + w * .5, y + 4);
+  g.closePath();
+  const grd = g.createLinearGradient(0, y - h, 0, y + 4);
+  grd.addColorStop(0, ink(alpha));
+  grd.addColorStop(1, ink(alpha * .55));
+  g.fillStyle = grd;
+  g.fill();
+  g.strokeStyle = ink(alpha * 1.3);
+  g.lineWidth = 1.5;
+  g.stroke();
+  // 石头的皴：几道短斧劈
+  for (let i = 0; i < 16; i++) {
+    const px = x + (r() - .5) * w * .7, py = y - r() * h * .7;
+    g.beginPath();
+    g.moveTo(px, py);
+    g.lineTo(px + (r() - .5) * w * .22, py + h * (.12 + r() * .3));
+    g.strokeStyle = ink(alpha * .3);
+    g.lineWidth = .8 + r();
+    g.stroke();
+  }
+}
+
+/** 一棵松。歪干 + 几层横枝 + 每根枝头一蓬针。 */
+function paintPine(g, x, y, h, seed, alpha, flip) {
+  const r = mulberry32(seed);
+  const s = flip ? -1 : 1;
+  g.lineCap = 'round';
+
+  // 干：从根部往上，一路歪
+  const segs = 7;
+  let cx = x, cy = y;
+  const path = [[cx, cy]];
+  for (let i = 1; i <= segs; i++) {
+    const t = i / segs;
+    cx += s * (r() - .35) * h * .085 * (1 - t * .5);
+    cy -= h / segs;
+    path.push([cx, cy]);
+  }
+  for (let i = 1; i < path.length; i++) {
+    const w = lerp(h * .034, h * .009, i / path.length);
+    g.beginPath();
+    g.moveTo(path[i - 1][0], path[i - 1][1]);
+    g.lineTo(path[i][0], path[i][1]);
+    g.strokeStyle = ink(alpha * .95);
+    g.lineWidth = w;
+    g.stroke();
+  }
+
+  // 枝 + 针
+  const nb = 5 + ((r() * 3) | 0);
+  for (let i = 0; i < nb; i++) {
+    const t = .28 + (i / nb) * .68;
+    const idx = clamp(Math.round(t * segs), 1, segs);
+    const bx = path[idx][0], by = path[idx][1];
+    const dir = (i % 2 === 0 ? 1 : -1) * s;
+    const len = h * (.30 - t * .12) * (.8 + r() * .5);
+    const drop = h * (.06 + r() * .10);
+    const ex = bx + dir * len, ey = by - h * .035 + drop;
+
+    g.beginPath();
+    g.moveTo(bx, by);
+    g.quadraticCurveTo(bx + dir * len * .55, by - h * .05, ex, ey);
+    g.strokeStyle = ink(alpha * .85);
+    g.lineWidth = lerp(h * .016, h * .006, t);
+    g.stroke();
+
+    // 针蓬：从枝头散出去的短针
+    //
+    // ⚠️ 原来 26~48 根、长度 h*.09~.145（h=400 时 36~58px），又长又稀，
+    //    画出来是一团交叉的长线 —— 远看像蜘蛛腿。针要**多、短、密**。
+    const needles = 62 + ((r() * 46) | 0);
+    const R = h * (.055 + r() * .035);
+    for (let k = 0; k < needles; k++) {
+      const a = -Math.PI * .95 + r() * Math.PI * .90;
+      const rr = R * (.42 + r() * .78);
+      g.beginPath();
+      g.moveTo(ex + (r() - .5) * R * .26, ey + (r() - .5) * R * .20);
+      g.lineTo(ex + Math.cos(a) * rr, ey + Math.sin(a) * rr);
+      g.strokeStyle = ink(alpha * (.30 + r() * .40));
+      g.lineWidth = .6 + r() * .7;
+      g.stroke();
+    }
+  }
+}
+
+function paintForeground(seed, side, scale) {
+  const b = buf(PW, PH);
+  const g = b.g;
+  const r = mulberry32(seed * 53 + 11);
+  const flip = side < 0;
+  const sc = scale || 1;
+
+  const bx = flip ? PW * .20 : PW * .80;
+
+  // ★ 岸的一切都**挂在水线上**（WY 现在每幅都不一样）。
+  //   原来是写死的 PH*.78/.72/.82 —— 水线一挪，松树就站到水里去了。
+  const yTop = WY + PH * .015;         // 岸顶：贴着水线
+  const yBot = WY + PH * .175;         // 岸脚：沉进水里
+
+  // 坡岸：从画角斜着伸进来的一块土坡
+  g.beginPath();
+  g.moveTo(flip ? -10 : PW + 10, PH + 10);
+  g.lineTo(flip ? -10 : PW + 10, yTop + PH * .045);
+  g.quadraticCurveTo(bx, yTop - PH * .012, flip ? PW * .34 : PW * .66, yTop + PH * .070);
+  g.quadraticCurveTo(flip ? PW * .26 : PW * .74, yBot, flip ? PW * .10 : PW * .90, PH + 10);
+  g.closePath();
+  const grd = g.createLinearGradient(0, yTop, 0, PH);
+  grd.addColorStop(0, ink(.17));
+  grd.addColorStop(1, ink(.46));
+  g.fillStyle = grd;
+  g.fill();
+
+  // 岸上的几块石头
+  paintRocks(g, bx - 60 * (flip ? -1 : 1), yTop + PH * .075, 190 * sc, 74 * sc, seed + 5, .58);
+  paintRocks(g, bx + 130 * (flip ? -1 : 1), yTop + PH * .105, 130 * sc, 56 * sc, seed + 9, .48);
+
+  // 两棵松：一大一小，小的躲在后面
+  paintPine(g, bx + 20, yTop + PH * .090, PH * .40 * sc, seed + 21, .74, flip);
+  paintPine(g, bx + 175, yTop + PH * .108, PH * .27 * sc, seed + 33, .56, !flip);
+
+  // 岸边的草
+  for (let i = 0; i < 130; i++) {
+    const x = bx + (r() - .5) * 460;
+    const y = yTop + PH * (.055 + r() * .170);
+    g.beginPath();
+    g.moveTo(x, y);
+    g.quadraticCurveTo(x + (r() - .5) * 14, y - 10 - r() * 16, x + (r() - .5) * 26, y - 18 - r() * 24);
+    g.strokeStyle = ink(.18 + r() * .3);
+    g.lineWidth = .8 + r() * 1.1;
+    g.stroke();
+  }
+
+  return b.c;
+}
+
+/* ═══════════════════════ ⑤ 落款 & 印 ═══════════════════════ */
+
+const T1 = ['溪山', '云壑', '秋江', '寒林', '烟岚', '松风', '月下', '春江',
+            '远岫', '空谷', '清溪', '疏林', '平湖', '晓雾', '渔隐', '山居',
+            '寒江', '云林', '野渡', '秋山'];
+const T2 = ['清远', '幽居', '小景', '晚照', '归舟', '闲话', '雪霁', '微茫',
+            '听泉', '独钓', '烟雨', '清晓', '无尽', '深处', '一叶', '待月'];
+
+const GAN = '甲乙丙丁戊己庚辛壬癸', ZHI = '子丑寅卯辰巳午未申酉戌亥';
+function ganzhi(y) { return GAN[((y - 4) % 10 + 10) % 10] + ZHI[((y - 4) % 12 + 12) % 12]; }
+function season(m) { return m <= 2 || m === 12 ? '冬' : m <= 5 ? '春' : m <= 8 ? '夏' : '秋'; }
+
+/** 朱文印：红底白字，四角留一点斑驳 —— 太干净就不像石头刻的。 */
+function paintSeal(chars, size, seed) {
+  const b = buf(size, size);
+  const g = b.g;
+  const r = mulberry32(seed);
+
+  g.fillStyle = '#a93029';
+  rrect(g, 0, 0, size, size, size * .10);
+  g.fill();
+
+  // 斑驳：在红底上挖小洞（只挖自己这块画布）
+  g.globalCompositeOperation = 'destination-out';
+  for (let i = 0; i < 260; i++) {
+    const x = r() * size, y = r() * size, rr = .4 + r() * 2.1;
+    g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill();
+  }
+  // 四边再啃掉一点，边线不要太平
+  for (let i = 0; i < 90; i++) {
+    const e = (r() * 4) | 0;
+    const x = e === 0 ? 0 : e === 1 ? size : r() * size;
+    const y = e < 2 ? r() * size : (e === 2 ? 0 : size);
+    g.beginPath(); g.arc(x, y, 1 + r() * 3.4, 0, 7); g.fill();
+  }
+  g.globalCompositeOperation = 'source-over';
+
+  // 字：2×2 排
+  g.fillStyle = '#f7f0e0';
+  g.font = `${size * .375}px "STKaiti","KaiTi","楷体","STSong","SimSun",serif`;
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  const q = size * .25;
+  for (let i = 0; i < 4; i++) {
+    const ch = chars[i] || chars[i % chars.length];
+    g.fillText(ch, q + (i % 2) * size * .5, q + ((i / 2) | 0) * size * .5);
+  }
+  return b.c;
+}
+
+function paintMark(seed, meta) {
+  const b = buf(PW, PH);
+  const g = b.g;
+  const r = mulberry32(seed * 97 + 13);
+
+  const colX = [PW - 96, PW - 152, PW - 208];   // 从右往左三列
+  const y0 = PH * .095;
+
+  // ① 题目：四个大字
+  vtext(g, meta.title, colX[0], y0, 44, 'rgba(30,34,40,.86)', 50);
+
+  // ② 干支 + 季
+  vtext(g, meta.year, colX[1], y0 + 6, 22, 'rgba(46,52,60,.66)', 26);
+
+  // ③ 落款
+  vtext(g, meta.sign, colX[2], y0 + 6, 22, 'rgba(46,52,60,.66)', 26);
+
+  // ④ 印：盖在落款那一列的下头
+  const sealSize = 46;
+  const seal = paintSeal(meta.name, sealSize, seed + 77);
+  const sy = y0 + 6 + meta.sign.length * 26 + 26;
+  g.save();
+  g.translate(colX[2], sy);
+  g.rotate((r() - .5) * .05);                   // 手盖的印不会正
+  g.drawImage(seal, -sealSize / 2, -sealSize / 2);
+  g.restore();
+
+  return b.c;
+}
+
+/* ═══════════════════════ ⑥ 组装一幅画 ═══════════════════════ */
+
+const S = {};      // 当前这一幅的全部图层
+
+/**
+ * `?still=1` —— **静止帧**：跳过"一笔一笔浮现"的淡入，所有图层立刻到位，
+ * 动效也停在 t=0。用途有两个：
+ *   ① 截图 / 存图时想要一张"画完了"的定格，而不是半透明的中间态；
+ *   ② 我（和以后任何人）在无头浏览器里验证画面时，结果必须是**确定的** ——
+ *      否则截到哪一毫秒全看运气，调参数就变成了猜谜。
+ */
+let STILL = false;
+
+function generate(seed, name) {
+  const r = mulberry32(seed);
+  const now = new Date();
+
+  // ── 骨架：这一幅的"构图" ──
+  //   ⚠️ 这段是整幅画最要紧的地方。原先水岸线、天空高度、三道山的 yBase/freq/off
+  //      全是写死的常数，只有噪声种子在变 —— 于是六张种子摆在一起像同一张画。
+  //      **生成器必须连构图一起生成**，否则它只是个"笔触随机器"。
+  //      现在：水线、天高、山的高低胖瘦、云的浓淡、前景左右与大小，全由种子决定。
+  WY  = PH * (.615 + r() * .150);              // 水岸线 0.615 ~ 0.765
+  SKY = PH * (.280 + r() * .170);              // 天 / 远山的分界
+
+  const farY  = WY - PH * (.175 + r() * .085); // 远山：压得低，离水线远
+  const midY  = WY - PH * (.090 + r() * .055);
+  const farAmp  = PH * (.055 + r() * .060);
+  const midAmp  = PH * (.085 + r() * .070);
+  const nearAmp = PH * (.105 + r() * .090);
+
+  // 云带落在两道山之间 —— 山挪了，云跟着挪（不然云会穿山而过）
+  const mist1 = { y: (farY + midY) * .5, h: PH * (.070 + r() * .060), a: .20 + r() * .17 };
+  const mist2 = { y: (midY + WY) * .5,   h: PH * (.080 + r() * .065), a: .24 + r() * .19 };
+
+  // ── 纸 ──
+  const paper = buf(PW, PH);
+  paintPaper(paper.g, seed);
+
+  // ── 三道山：越近越浓、越大、越清楚 ──
+  //   sinkFrom/sinkTo 是"山脚从哪里开始化掉"，单位是 amp、相对 yBase（见 paintRange）。
+  //   近山的 yBase **就是水岸线**，所以它只在**水线以下**化 —— 山要坐得住。
+  const far = paintRange(seed + 101, {
+    yBase: farY, amp: farAmp, freq: 1.55 + r() * 1.05, off: r() * 22, oct: 5,
+    alpha: .17 + r() * .10, blur: 2.2 + r() * 1.8, ridge: 1.0 + r() * .6,
+  });
+  const mid = paintRange(seed + 211, {
+    yBase: midY, amp: midAmp, freq: 1.30 + r() * .95, off: r() * 26, oct: 5,
+    alpha: .30 + r() * .16, blur: .7 + r() * 1.1, ridge: 1.3 + r() * .7,
+  });
+  const near = paintRange(seed + 307, {
+    yBase: WY, amp: nearAmp, freq: 1.05 + r() * .80, off: r() * 30, oct: 5,
+    alpha: .52 + r() * .18, blur: 0, ridge: 1.8 + r() * .8, cun: true,
+    sinkFrom: .00, sinkTo: .70,
+  });
+
+  // ── 静态底板：纸 → 远山 → 云 → 中山 → 云 → 近山 → 水 ──
+  const base = buf(PW, PH);
+  const bg = base.g;
+  bg.drawImage(paper.c, 0, 0);
+  bg.drawImage(far, 0, 0);
+  paintMist(bg, mist1.y, mist1.h, mist1.a, seed + 401);
+  bg.drawImage(mid, 0, 0);
+  paintMist(bg, mist2.y, mist2.h, mist2.a, seed + 409);
+  bg.drawImage(near, 0, 0);
+
+  // ── 水：底子 + 山影 ──
+  bg.save();
+  bg.beginPath(); bg.rect(0, WY, PW, PH - WY); bg.clip();
+
+  // ★ 2026-10-11：水面顶边原来是**硬边**（一条不透明的横带从水线开始），
+  //   配上"近山在离水线 50px 处被擦断"，两下一夹就成了"一堵墙立在河上"。
+  //   现在顶边是软的（从 0 渐入），近山也只在**水线以下**化，两者自然咬合。
+  const wg = bg.createLinearGradient(0, WY, 0, PH);
+  wg.addColorStop(0, 'rgba(232,224,203,0)');
+  wg.addColorStop(.20, 'rgba(230,222,200,.50)');
+  wg.addColorStop(1, 'rgba(212,202,178,.58)');
+  bg.fillStyle = wg;
+  bg.fillRect(0, WY, PW, PH - WY);
+
+  // ── 倒影：把水线以上的画面翻过来、压扁 0.55、**模糊**、再按"越近越淡"抹一层 ──
+  //   原来是一张硬边的镜像直接盖上去，边界清晰得像贴纸。现在先画进一块离屏画布，
+  //   在那儿做模糊和渐隐 —— 这些操作**只在倒影自己那块画布上**生效，碰不到水底。
+  const refl = buf(PW, PH - WY);
+  const rg = refl.g;
+  rg.save();
+  rg.translate(0, WY * .55);
+  rg.scale(1, -.55);
+  rg.filter = 'blur(2.6px)';
+  rg.globalAlpha = .30;
+  rg.drawImage(base.c, 0, 0);
+  rg.restore();
+
+  rg.globalCompositeOperation = 'destination-out';
+  const rfade = rg.createLinearGradient(0, 0, 0, PH - WY);
+  rfade.addColorStop(0, 'rgba(0,0,0,0)');
+  rfade.addColorStop(.45, 'rgba(0,0,0,.35)');
+  rfade.addColorStop(1, 'rgba(0,0,0,.92)');
+  rg.fillStyle = rfade;
+  rg.fillRect(0, 0, PW, PH - WY);
+  rg.globalCompositeOperation = 'source-over';
+  bg.drawImage(refl.c, 0, WY);
+
+  // ── 岸线：原来是一条 2.4px 的实线横贯整幅，硬得像拿尺子画的。
+  //    山水里的水岸从来不是一条线，改成一段很淡的软过渡。 ──
+  const sl = bg.createLinearGradient(0, WY - 7, 0, WY + 11);
+  sl.addColorStop(0, 'rgba(0,0,0,0)');
+  sl.addColorStop(.42, ink(.17));
+  sl.addColorStop(1, 'rgba(0,0,0,0)');
+  bg.fillStyle = sl;
+  bg.fillRect(0, WY - 7, PW, 18);
+  bg.restore();
+
+  // ── 前景 / 落款 ──
+  //   左右 + **大小**都给种子 —— 原来是固定尺寸，六张里那棵松一样高。
+  const fg = paintForeground(seed + 503, r() < .5 ? -1 : 1, .78 + r() * .46);
+
+  const title = T1[(r() * T1.length) | 0] + T2[(r() * T2.length) | 0];
+  const mark = paintMark(seed + 601, {
+    title,
+    year: ganzhi(now.getFullYear()) + '年' + season(now.getMonth() + 1),
+    sign: (name || '有花无实') + '写',
+    name: (name || '有花无实').slice(0, 4).padEnd(4, '印'),
+  });
+
+  // ── 月亮（一多半概率有）──
+  //   ⚠️ x 只在左 46% 里选 —— 右上角是落款的地盘，月亮挪过去会压字。
+  const moon = r() < .66 ? {
+    x: PW * (.10 + r() * .36),
+    y: SKY * (.22 + r() * .46),
+    R: PH * (.045 + r() * .036),
+  } : null;
+
+  // ── 船 ──
+  const boat = {
+    y: WY + (PH - WY) * (.28 + r() * .30),
+    s: PH * (.046 + r() * .022),
+    dir: r() < .5 ? 1 : -1,
+    x: r() * PW,
+    v: PH * .0055 * (.75 + r() * .6),
+  };
+
+  // ── 鸟 ──
+  const birds = [];
+  const nb = 3 + ((r() * 4) | 0);
+  const bx0 = PW * (.06 + r() * .46), by0 = SKY * (.26 + r() * .48);
+  for (let i = 0; i < nb; i++) {
+    birds.push({
+      x: bx0 + (i - nb / 2) * 34 + r() * 16,
+      y: by0 + (r() - .5) * 26 + i * 6,
+      s: PH * (.010 + r() * .007),
+      ph: r() * 7,
+      v: PW * (.0032 + r() * .0028),
+    });
+  }
+
+  Object.assign(S, {
+    seed, base: base.c, fg, mark, moon, boat, birds,
+    // 重画时的浮现顺序：远 → 近 → 前景 → 落款
+    order: ['base', 'fg', 'mark'],
+    reveal: STILL ? -1e9 : performance.now(),
+  });
+}
+
+/* ═══════════════════════ ⑦ 每帧要画的东西 ═══════════════════════ */
+
+function drawBoat(g, b, t) {
+  const x = b.x, y = b.y + Math.sin(t * .55 + b.x * .01) * b.s * .09;
+  const s = b.s * b.dir;
+  g.save();
+  g.translate(x, y);
+  g.scale(s / b.s, 1);
+
+  // 船身：一弯月牙
+  g.beginPath();
+  g.moveTo(-b.s * .60, 0);
+  g.quadraticCurveTo(0, b.s * .30, b.s * .60, 0);
+  g.quadraticCurveTo(0, b.s * .10, -b.s * .60, 0);
+  g.closePath();
+  g.fillStyle = ink(.72);
+  g.fill();
+
+  // 乌篷
+  g.beginPath();
+  g.moveTo(-b.s * .30, -b.s * .01);
+  g.quadraticCurveTo(-b.s * .05, -b.s * .40, b.s * .20, -b.s * .01);
+  g.closePath();
+  g.fillStyle = ink(.66);
+  g.fill();
+
+  // 船尾那个人：身子 + 斗笠 + 一根篙
+  const px = b.s * .40, py = -b.s * .03;
+  g.beginPath();
+  g.moveTo(px, py);
+  g.lineTo(px, py - b.s * .30);
+  g.strokeStyle = ink(.75);
+  g.lineWidth = b.s * .075;
+  g.lineCap = 'round';
+  g.stroke();
+  g.beginPath();
+  g.moveTo(px - b.s * .12, py - b.s * .30);
+  g.quadraticCurveTo(px, py - b.s * .47, px + b.s * .12, py - b.s * .30);
+  g.closePath();
+  g.fillStyle = ink(.78);
+  g.fill();
+  g.beginPath();
+  g.moveTo(px + b.s * .05, py - b.s * .12);
+  g.lineTo(px + b.s * .30, py - b.s * .62);
+  g.strokeStyle = ink(.5);
+  g.lineWidth = b.s * .035;
+  g.stroke();
+
+  g.restore();
+}
+
+function drawBird(g, b, t) {
+  const flap = Math.sin(t * 3.1 + b.ph) * .5 + .5;
+  const w = b.s * (1.25 - flap * .5);
+  const h = b.s * (.30 + flap * .62);
+  g.beginPath();
+  g.moveTo(b.x - w, b.y + h);
+  g.quadraticCurveTo(b.x - w * .45, b.y - h * .35, b.x, b.y);
+  g.quadraticCurveTo(b.x + w * .45, b.y - h * .35, b.x + w, b.y + h);
+  g.strokeStyle = ink(.52);
+  g.lineWidth = Math.max(.9, b.s * .19);
+  g.lineCap = 'round';
+  g.stroke();
+}
+
+/** 水面的碎光。越靠近画面下缘（=离眼睛越近）走得越快，这是唯一的视差。 */
+const RIPPLES = (() => {
+  const r = mulberry32(20261011);
+  const out = [];
+  for (let i = 0; i < 240; i++) {
+    const d = Math.pow(r(), .62);            // 0=近 1=远
+    out.push({
+      d,
+      x: r() * PW,
+      len: 20 + r() * 120 * (1 - d * .5),
+      // ★ 原来是 .05~.21，配上纸色基本看不见 —— 一整片水面是空的。
+      //   水纹是这幅画里唯一的"横向笔触"，太淡整幅就只剩三条山。
+      a: (.08 + r() * .22) * (1 - d * .40),
+      bright: r() < .42,
+      ph: r() * 7,
+    });
+  }
+  return out;
+})();
+
+function drawWater(g, t) {
+  g.save();
+  g.beginPath();
+  g.rect(0, WY, PW, PH - WY);
+  g.clip();
+  g.lineCap = 'round';
+  for (const p of RIPPLES) {
+    const y = WY + (PH - WY) * (p.d * .96 + .02);
+    const speed = 9 + (1 - p.d) * 34;
+    const x = ((p.x + t * speed) % (PW + 200)) - 100;
+    const wob = Math.sin(t * 1.15 + p.ph) * 2.6 * (1 - p.d * .5);
+    g.beginPath();
+    g.moveTo(x, y + wob);
+    g.lineTo(x + p.len, y + wob + Math.sin(t * .9 + p.ph * 2) * 1.4);
+    g.strokeStyle = p.bright
+      ? `rgba(255,252,242,${p.a})`
+      : ink(p.a * .9);
+    g.lineWidth = .8 + (1 - p.d) * 1.7;
+    g.stroke();
+  }
+  g.restore();
+}
+
+/** 会飘的雾。整幅画"活着"主要靠它 —— 周期 26~34 秒，慢到你不会注意到它在动。 */
+const DRIFT = (() => {
+  const r = mulberry32(7717);
+  const out = [];
+  for (let i = 0; i < 13; i++) {
+    out.push({
+      y: PH * (.40 + r() * .28),
+      h: PH * (.045 + r() * .085),
+      a: .10 + r() * .17,
+      sp: .16 + r() * .34,
+      ph: r() * 7,
+      per: 26 + r() * 8,
+    });
+  }
+  return out;
+})();
+
+function drawDrift(g, t) {
+  for (const d of DRIFT) {
+    const a = d.a * (.62 + .38 * Math.sin(t * 2 * Math.PI / d.per + d.ph));
+    if (a <= .004) continue;
+    const y = d.y + Math.sin(t * 2 * Math.PI / (d.per * 1.7) + d.ph) * d.h * .5;
+    const x = ((t * d.sp * 26 + d.ph * 120) % (PW + 700)) - 350;
+    const gg = g.createRadialGradient(x, y, 0, x, y, PW * .34);
+    gg.addColorStop(0, `rgba(250,246,236,${a})`);
+    gg.addColorStop(.55, `rgba(250,246,236,${a * .45})`);
+    gg.addColorStop(1, 'rgba(250,246,236,0)');
+    g.save();
+    g.translate(0, y); g.scale(1, d.h / (PW * .34)); g.translate(0, -y);
+    g.fillStyle = gg;
+    g.fillRect(x - PW * .4, y - PW * .4, PW * .8, PW * .8);
+    g.restore();
+  }
+}
+
+function drawMoon(g, m, t) {
+  const pulse = 1 + Math.sin(t * 2 * Math.PI / 21) * .035;
+  const R = m.R * pulse;
+  const halo = g.createRadialGradient(m.x, m.y, R * .55, m.x, m.y, R * 5.4);
+  halo.addColorStop(0, 'rgba(255,246,222,.30)');
+  halo.addColorStop(.35, 'rgba(255,246,222,.10)');
+  halo.addColorStop(1, 'rgba(255,246,222,0)');
+  g.fillStyle = halo;
+  g.beginPath(); g.arc(m.x, m.y, R * 5.4, 0, 7); g.fill();
+
+  // 月亮本体：原来是一块纯白实心圆，像贴了张白纸；
+  // 第一版改过头，边儿只剩 .48 不透明度、糊进了光晕里，成了个"雾球"。
+  // 现在：偏心径向渐变（光从左上打过来）+ **边儿保住**（.84），才是枚月亮。
+  const disc = g.createRadialGradient(m.x - R * .26, m.y - R * .30, R * .08, m.x, m.y, R);
+  disc.addColorStop(0, 'rgba(255,254,249,.97)');
+  disc.addColorStop(.72, 'rgba(252,248,236,.90)');
+  disc.addColorStop(1, 'rgba(243,238,224,.84)');
+  g.beginPath(); g.arc(m.x, m.y, R, 0, 7);
+  g.fillStyle = disc;
+  g.fill();
+}
+
+/* ═══════════════════════ ⑧ 视口 / 循环 ═══════════════════════ */
+
+let scale = 1, ox = 0, oy = 0, dpr = 1;
+
+function resize() {
+  dpr = Math.min(devicePixelRatio || 1, 2);
+  const W = innerWidth, H = innerHeight;
+  cv.width = Math.round(W * dpr);
+  cv.height = Math.round(H * dpr);
+  cv.style.width = W + 'px';
+  cv.style.height = H + 'px';
+
+  const barH = Math.min(90, H * .13);
+  const availH = H - barH - Math.max(24, H * .05);
+  const availW = W - Math.max(24, W * .04);
+  scale = Math.min(availW / PW, availH / PH);
+  ox = (W - PW * scale) / 2;
+  oy = Math.max(Math.max(12, H * .028), (availH - PH * scale) / 2 + Math.max(12, H * .028));
+}
+
+const REVEAL_STEP = 220;    // 每层错开多少毫秒
+const REVEAL_DUR = 900;     // 每层淡入多久
+
+function layerAlpha(name, now) {
+  const i = S.order.indexOf(name);
+  const t0 = S.reveal + i * REVEAL_STEP;
+  return clamp((now - t0) / REVEAL_DUR, 0, 1);
+}
+
+let last = 0;
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (!S.base) return;
+  const t = STILL ? 0 : now / 1000;
+  const dt = last ? Math.min(.05, (now - last) / 1000) : 0;
+  last = now;
+
+  const W = cv.width, H = cv.height;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  const k = dpr * scale;
+  ctx.setTransform(k, 0, 0, k, ox * dpr, oy * dpr);
+
+  // ── 纸的投影：挂在墙上的一点立体感 ──
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,.62)';
+  ctx.shadowBlur = 46;
+  ctx.shadowOffsetY = 14;
+  ctx.fillStyle = PAPER;
+  ctx.fillRect(0, 0, PW, PH);
+  ctx.restore();
+
+  // ── 静态底板 ──
+  const aBase = layerAlpha('base', now);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, PW, PH); ctx.clip();
+  ctx.globalAlpha = aBase;
+  ctx.drawImage(S.base, 0, 0);
+  ctx.globalAlpha = 1;
+
+  // ── 月亮（在底板之上、雾之下）──
+  if (S.moon && aBase > .99) drawMoon(ctx, S.moon, t);
+
+  // ── 会飘的雾 ──
+  if (aBase > .35) {
+    ctx.save();
+    ctx.globalAlpha = (aBase - .35) / .65;
+    drawDrift(ctx, t);
+    ctx.restore();
+  }
+
+  // ── 水面碎光 + 船 ──
+  if (aBase > .5) {
+    ctx.save();
+    ctx.globalAlpha = (aBase - .5) / .5;
+    drawWater(ctx, t);
+    if (S.boat) {
+      S.boat.x += S.boat.v * dt;
+      if (S.boat.dir > 0 && S.boat.x > PW + 90) S.boat.x = -90;
+      if (S.boat.dir < 0 && S.boat.x < -90) S.boat.x = PW + 90;
+      drawBoat(ctx, S.boat, t);
+    }
+    ctx.restore();
+  }
+
+  // ── 鸟 ──
+  if (S.birds && aBase > .8) {
+    ctx.save();
+    ctx.globalAlpha = (aBase - .8) / .2;
+    for (const b of S.birds) {
+      b.x += b.v * dt;
+      if (b.x > PW + 60) b.x = -60;
+      drawBird(ctx, b, t);
+    }
+    ctx.restore();
+  }
+
+  // ── 前景 ──
+  const aFg = layerAlpha('fg', now);
+  if (aFg > 0) { ctx.globalAlpha = aFg; ctx.drawImage(S.fg, 0, 0); ctx.globalAlpha = 1; }
+
+  // ── 落款 + 印 ──
+  const aMk = layerAlpha('mark', now);
+  if (aMk > 0) { ctx.globalAlpha = aMk; ctx.drawImage(S.mark, 0, 0); ctx.globalAlpha = 1; }
+
+  ctx.restore();
+}
+
+/* ═══════════════════════ ⑨ 交互 ═══════════════════════ */
+
+const nameEl = document.getElementById('name');
+const hintEl = document.getElementById('hint');
+
+function newSeed() { return (Math.random() * 1e9) | 0; }
+
+function redraw(seed) {
+  const s = seed !== undefined ? seed : newSeed();
+  generate(s, nameEl.value.trim());
+  hintEl.textContent = `第 ${String(s).slice(0, 6)} 号 · 点画面也能重画`;
+}
+
+function save() {
+  // 把当前这一幅（不含动效）合成成一张干净的图存下来
+  const out = buf(PW, PH);
+  const g = out.g;
+  g.drawImage(S.base, 0, 0);
+  if (S.moon) drawMoon(g, S.moon, 0);
+  drawWater(g, 0);
+  if (S.boat) drawBoat(g, S.boat, 0);
+  if (S.birds) for (const b of S.birds) drawBird(g, b, 0);
+  g.drawImage(S.fg, 0, 0);
+  g.drawImage(S.mark, 0, 0);
+
+  const a = document.createElement('a');
+  a.download = `云山-${S.seed}.png`;
+  a.href = out.c.toDataURL('image/png');
+  a.click();
+}
+
+cv.addEventListener('pointerdown', () => redraw());
+document.getElementById('again').addEventListener('click', (e) => { e.stopPropagation(); redraw(); });
+document.getElementById('save').addEventListener('click', (e) => { e.stopPropagation(); save(); });
+
+addEventListener('keydown', (e) => {
+  if (e.target === nameEl) return;
+  if (e.key === 'r' || e.key === 'R' || e.key === ' ') { e.preventDefault(); redraw(); }
+  if (e.key === 's' || e.key === 'S') { e.preventDefault(); save(); }
+});
+nameEl.addEventListener('change', () => redraw(S.seed));
+
+let rt = 0;
+addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(resize, 120); });
+
+addEventListener('error', (e) => {
+  const el = document.getElementById('err');
+  el.style.display = 'block';
+  el.textContent = '出错了：' + (e.message || e) + '\n' + (e.filename || '') + ':' + (e.lineno || '');
+});
+
+/* ── 开画 ── */
+resize();
+const q = new URLSearchParams(location.search);
+STILL = q.has('still');                       // 静止帧（见 STILL 的注释）
+const DEBUG = q.has('debug');                 // 把每帧的图层不透明度打到提示条上
+
+if (DEBUG) {
+  // 调参时用：一屏就能看出"是淡入没走完"还是"图层真的叠淡了"
+  setInterval(() => {
+    const n = performance.now();
+    hintEl.textContent =
+      `now=${n | 0} reveal=${S.reveal | 0} aBase=${layerAlpha('base', n).toFixed(2)}` +
+      ` aFg=${layerAlpha('fg', n).toFixed(2)} aMk=${layerAlpha('mark', n).toFixed(2)}`;
+  }, 120);
+}
+
+redraw(q.has('seed') ? (+q.get('seed') | 0) : undefined);
+if (DEBUG) hintEl.textContent = 'debug';
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>

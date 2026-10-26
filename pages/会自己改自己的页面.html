@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>会自己改自己的页面 · Page Agent</title>
+<style>
+  :root{
+    --pink:#ff7fa8; --pink-soft:#ffd6e3; --ink:#3a2e35; --line:#ffd0de; --good:#4ec9a0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Microsoft YaHei",system-ui,sans-serif;
+    background:linear-gradient(160deg,#fff5f9 0%,#fdf0f6 45%,#f6f0ff 100%);
+    color:var(--ink); min-height:100vh; padding:26px 16px 100px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+
+  header{text-align:center;margin-bottom:20px}
+  h1{font-size:25px;margin:0 0 8px;letter-spacing:1px}
+  h1 .em{color:var(--pink)}
+  .sub{font-size:13px;color:#9b8792;line-height:1.75}
+  .badge{
+    display:inline-block;margin-top:10px;padding:5px 14px;border-radius:999px;
+    background:#fff;border:1px solid var(--line);font-size:12px;color:#b07a90;
+  }
+  .badge b{color:var(--good)}
+
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:16px;
+    padding:19px;margin-bottom:15px;box-shadow:0 4px 18px rgba(255,150,185,.10);
+  }
+  .card h2{font-size:15.5px;margin:0 0 12px;color:#c2688a}
+
+  #title-text{font-size:21px;margin:0 0 10px;transition:.3s}
+  #box{
+    padding:16px;border:2px dashed var(--line);border-radius:12px;
+    background:linear-gradient(135deg,#fff8fb,#fff);min-height:78px;
+    font-size:15px;line-height:1.8;transition:.3s;
+  }
+  #btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .demo-btn{
+    padding:9px 18px;border-radius:10px;border:1px solid var(--line);
+    background:#fff;color:#c2688a;cursor:pointer;font-size:14px;
+    font-family:inherit;transition:.2s;
+  }
+  .demo-btn:hover{background:var(--pink-soft);transform:translateY(-1px)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    padding:7px 14px;border-radius:999px;background:#fff0f5;
+    border:1px solid var(--line);font-size:13px;cursor:pointer;transition:.2s;
+  }
+  .chip:hover{background:var(--pink-soft)}
+
+  .tip{font-size:12.5px;color:#a8949e;line-height:1.9;margin-top:11px}
+  .tip code{background:#fff0f5;padding:1px 6px;border-radius:5px;color:#c2688a}
+
+  .step{display:flex;gap:10px;margin-bottom:9px;font-size:13.5px;line-height:1.6}
+  .step b{
+    flex:none;width:22px;height:22px;border-radius:50%;background:var(--pink);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;
+  }
+  @media(max-width:520px){
+    h1{font-size:20px}
+    #title-text{font-size:18px}
+    body{padding:16px 12px 100px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>会自己改<span class="em">自己</span>的页面</h1>
+    <div class="sub">
+      阿里开源的 <b>Page Agent</b>（29,000+ 星）<br>
+      你不用懂代码 —— 用中文说话，它自己看页面、自己动手改
+    </div>
+    <div class="badge">当前模型：<b id="model-name">正在加载…</b></div>
+    <div class="badge" style="margin-left:6px;background:#fff8e6;border-color:#ffe0a3;color:#b08a3a">
+      慢是正常的 —— 每一步要 13~18 秒
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>怎么玩（三步）</h2>
+    <div class="step"><b>1</b><div>看屏幕<b>最下面中间</b> —— 有个半透明的黑条，那就是输入框</div></div>
+    <div class="step"><b>2</b><div>点进去打中文，比如「把标题改成你好世界」，然后回车</div></div>
+    <div class="step"><b>3</b><div>它会自己找元素、自己点、自己改 —— 你看着就行</div></div>
+    <div class="tip">
+      💡 第一次用可能等几秒（模型在思考）<br>
+      💡 改错了就说「改回去」<br>
+      💡 干活时它会亮起来、显示每一步
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>这块区域随便让它改</h2>
+    <h3 id="title-text">我是一个可以随便改的标题</h3>
+    <div id="box">
+      这整段话都是「活的」—— 你可以让 AI 把它改成任何东西。<br>
+      试试说：「把这段话换成一首关于鲸鱼的小诗」
+    </div>
+    <div id="btn-row">
+      <button class="demo-btn" id="b1">我是按钮一</button>
+      <button class="demo-btn" id="b2">我是按钮二</button>
+      <button class="demo-btn" id="b3">我是按钮三</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>不知道说啥？点下面的试试</h2>
+    <div class="chips" id="chips">
+      <div class="chip">把标题改成「宝贝的专属页面」</div>
+      <div class="chip">把三个按钮都改成关于猫的</div>
+      <div class="chip">把背景改成淡紫色</div>
+      <div class="chip">在页面最上面加一行大字写着「你好」</div>
+      <div class="chip">把所有文字颜色改成深蓝色</div>
+    </div>
+    <div class="tip">↑ 点一下会自动复制，再粘到右下角输入框里</div>
+  </div>
+
+  <div class="card">
+    <h2>它是怎么做到的</h2>
+    <div class="tip" style="font-size:13.5px">
+      普通 AI 是「截个图看看」—— 慢，还常常看不懂。<br>
+      <b>它是直接读网页的「骨架」</b>（哪块是按钮、哪块是标题、能不能点），
+      所以<b>不用截图、不用图片模型</b>，特别快。<br><br>
+      纯 JavaScript，<b>一行 script 标签</b>就能塞进任何网页 ——
+      不用装插件、不用后端。
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ Page Agent ============
+     它原生支持从 URL 参数读配置：
+       ?model=xxx&baseURL=xxx&apiKey=xxx&lang=zh-CN&showPanel=true
+     showPanel=true 会自动把底部输入框亮出来。
+     ===================================== -->
+<script src="../assets/page-agent/page-agent.js?model=glm-5.3&baseURL=https%3A%2F%2Fai-ocloud.ihep.ac.cn%2Fv1&apiKey=YOUR_API_KEY_HERE&lang=zh-CN&showPanel=true"></script>
+
+<script>
+(function () {
+  var MODEL = "glm-5.3";
+
+  function setModel(n){
+    var e = document.getElementById('model-name');
+    if (e) e.textContent = n;
+  }
+
+  // 等 page-agent 初始化完（它是 setTimeout 里建的）
+  setTimeout(function () {
+    if (window.pageAgent && window.pageAgent.panel) {
+      setModel('GLM-5.3（三千·免费·慢但聪明）');
+      // 保险起见，再显式亮一次
+      try { window.pageAgent.panel.show(); } catch (e) {}
+      console.log('[页面] Page Agent 就绪');
+    } else {
+      setModel('没起来，看控制台');
+    }
+  }, 800);
+
+  // 点提示词 → 复制
+  var chips = document.querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) {
+    (function (c) {
+      c.addEventListener('click', function () {
+        var txt = c.textContent.trim();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).catch(function(){});
+        }
+        c.style.background = '#ffe0ec';
+        setTimeout(function(){ c.style.background = ''; }, 500);
+      });
+    })(chips[i]);
+  }
+})();
+</script>
+</body>
+</html>

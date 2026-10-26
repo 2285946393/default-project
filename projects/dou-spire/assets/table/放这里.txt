@@ -1,0 +1,40 @@
+这个目录是美术素材处理后的成品目录。游戏按固定文件名取图，**不要改名**。
+
+德州专用牌桌一共 7 档（牌桌右上角「牌桌：…」和设置页都能切）：
+
+  table_poker.png          经典绿绒（默认，已画，不用重画）
+  table_poker_brass.png    暗黑黄铜 · 酒红皮革
+  table_poker_obsidian.png 黑曜石 · 熔金纹
+  table_poker_frost.png    冰蓝水晶 · 月白
+  table_poker_anime.png    二次元明亮
+  table_poker_lacquer.png  东方漆器 · 朱金  ← ★ 2026-10-11 补上（见下）
+  table_poker_steam.png    蒸汽朋克 · 黄铜齿轮（**还没有，缺料时回落到经典绿绒**）
+
+★ 2026-10-11 补上 table_poker_lacquer.png
+  用**参考图模式**出的：把已画好的 `table_poker.png` 当参考图喂给魔搭的
+  `qwen-vl-image-2.1-rmbg`（`/v1/images/edits`，字段 `image` = dataURL），
+  提示词只说"换材质换配色、**刻线位置形状保持完全不变**" —— 出来的图功能布局
+  跟经典绿绒**对得上**（5 个凹槽轨线 ny 误差 < 0.003）。
+  ⚠️ 为什么必须走参考图而不是重画：`DouSpirePokerTable.ApplyMarks()` 里叠牌的坐标
+     是**写死的**（经典绿绒那组：牌位中心 y = 450/1080、格宽 96、缝 20）。
+     新画的图对不上刻线，牌就叠歪了。**这七档的功能刻线布局必须完全一样。**
+  ⚠️ 入库前必须裁掉出图四周的透明边再缩到 1654×886，否则刻线整体内缩、同样对不上。
+     脚本：`D:\work\AI产出\魔搭自由创作\process_for_mod.py`
+  ⚠️ 这张图**自带凹槽**，所以 `PlacePotAndBoard()` 里那块 `poker/board_plate.png`
+     牌匾不会铺（那句 `plateOn` 只在 `table_poker` 这一档为真）—— 是对的，别改。
+
+提示词：`../德州牌桌风格提示词-六款可复制.txt`（六段完整独立提示词）
+
+出图时把已画好的 `table_poker.png` 一并上传作参考图：只参考功能刻线位置，不参考绿绒颜色和材质。
+★ 只需生成 6 张新风格；经典绿绒已有。
+★ 这 7 张的功能刻线布局必须一模一样：中央 5 个公共牌位、底池圆圈、三个座位、三家下注位、庄家按钮位。
+  代码叠牌位置写死了，可以换台面材质、配色和外圈装饰，**任何功能凹槽的形状和位置都别动**。
+★ 出图要纯品红 #FF00FF 四角，不能给整张图加阴影；入库脚本会按四边抠图、扩边去杂色。
+★ 缺风格图时自动回落到经典绿绒桌；经典桌也缺时才回落到斗地主圆桌。只画一两张也不会白屏。
+
+【出图和入库】
+1. 原始生成图放到项目根目录 `assets/德州扑克/`，分别命名为 `table_poker_brass.png`、
+   `table_poker_obsidian.png`、`table_poker_frost.png`、`table_poker_anime.png`、
+   `table_poker_lacquer.png`、`table_poker_steam.png`。
+2. 运行 `python tools/poker-assets.py --only table_poker_`；脚本会抠图并输出到本目录。
+3. 编译一次，成品自动同步到游戏目录 `mods\DouSpire\assets\table\`。

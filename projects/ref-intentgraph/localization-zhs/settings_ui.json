@@ -1,0 +1,22 @@
+{
+    "INTENTGRAPH2.mod_title": "意图状态机",
+    "INTENTGRAPH2.mod_description": "把怪物意图显示成状态机的形式。",
+    "INTENTGRAPH2-HOTKEY.title": "快捷键",
+    "INTENTGRAPH2-TOGGLE_INTENT_GRAPH_KEY.title": "开关意图状态机",
+    "INTENTGRAPH2-DISPLAY.title": "显示",
+    "INTENTGRAPH2-SHOW_MONSTER_MOVE_NAMES.title": "显示怪物行动名称",
+    "INTENTGRAPH2-SHOW_MOVE_DETAIL.title": "显示行动详情",
+    "INTENTGRAPH2-USE_ANIMATED_INTENT_ICON.title": "使用动画图标",
+    "INTENTGRAPH2-SHOW_CURRENT_MOVE.title": "显示当前行动",
+    "INTENTGRAPH2-CONTROL.title": "控制",
+    "INTENTGRAPH2-PINABLE_INTENT_GRAPH.title": "意图状态机可固定",
+    "INTENTGRAPH2-INTENT_GRAPH_POSITION.title": "意图状态机位置",
+    "INTENTGRAPH2-INTENT_GRAPH_POSITION.Default": "默认",
+    "INTENTGRAPH2-INTENT_GRAPH_POSITION.TopLeft": "左上",
+    "INTENTGRAPH2-INTENT_GRAPH_POSITION.TopRight": "右上",
+    "INTENTGRAPH2-INTENT_GRAPH_POSITION.TopCenter": "中上",
+    "INTENTGRAPH2-INTENT_GRAPH_POSITION.TopLeftOrRight": "左上或右上",
+    "INTENTGRAPH2-INTENT_GRAPH_SCALE.title": "意图状态机缩放比例",
+    "INTENTGRAPH2-ATTACK_DAMAGE_FORMAT.title": "攻击伤害格式",
+    "INTENTGRAPH2-ATTACK_DAMAGE_FORMAT.hover.desc": "自定义显示攻击伤害数值的格式。仅在战斗中生效。\n{base} - 基础伤害。\n{modified} - 经过增益和遗物修正后的伤害。\n{base:total} - 基础伤害乘以次数。\n{modified:total} - 修正后的伤害乘以次数。"
+}

@@ -15,7 +15,15 @@
 import process from 'node:process'
 
 const PLUGIN = 'file:///D:/software/dsh-home/profiles/web/node_modules/dsh-connect-workbuddy/lib/index.js'
-process.env.WORKBUDDY_APP_EXECUTABLE ||= 'D:\\software\\WorkBuddy AI\\WorkBuddyAI.exe'
+// 2026-10-16 修正：国内版在 10-14 自动更新后又**装回来了**，但结构变了 ——
+// 旧: D:\software\WorkBuddy AI\WorkBuddy.exe
+// 新: D:\software\WorkBuddy AI\WorkBuddyAI\WorkBuddyAI.exe  （多一层子目录，exe 也改名）
+// 国际版仍在 D:\software\WorkBuddyIntl\WorkBuddyAI.exe。
+//
+// ⚠️ 踩过的坑：系统里若残留指向**国际版**的用户环境变量 WORKBUDDY_APP_EXECUTABLE，
+// 会因为下面这行 `||=` 把正确的默认值挡住 → 插件里两个账号全变 signed out。
+// 判断哪个 exe 能用：`node lib/bin.js status`，能解开凭证时 CN + Global 会同时 signed in。
+process.env.WORKBUDDY_APP_EXECUTABLE ||= 'D:\\software\\WorkBuddy AI\\WorkBuddyAI\\WorkBuddyAI.exe'
 
 const mod = await import(PLUGIN)
 const { WorkBuddyCredentialStore, WorkBuddyUpstreamClient, prepareChatBody } = mod

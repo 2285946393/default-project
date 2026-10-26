@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岗位速判 · 有花无实</title>
+<style>
+:root{
+  --ink:#3d3440; --sub:#8b7f8a; --line:rgba(180,150,175,.22);
+  --rose:#f7a8c4; --rose-deep:#e07ba0; --card:#fffdfe;
+  --ok:#5cb98a; --warn:#e0a020; --bad:#d4695f;
+  --bg:#fdf6f9;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--ink);min-height:100vh;padding:24px 16px 60px;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:920px;margin:0 auto}
+
+.hd{margin-bottom:16px}
+.hd h1{font-size:22px;font-weight:800;letter-spacing:.02em}
+.hd h1 span{color:var(--rose-deep)}
+.hd .sub{font-size:13px;color:var(--sub);margin-top:5px}
+
+.what{background:#fff5f9;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:14px 0 18px;font-size:13px}
+.what summary{font-weight:700;cursor:pointer;color:var(--rose-deep);font-size:13.5px}
+.what summary::-webkit-details-marker{display:none}
+.what summary::before{content:"▸ ";font-size:11px}
+.what[open] summary::before{content:"▾ "}
+.what .bd{margin-top:9px;color:var(--sub);line-height:1.75}
+.what .bd b{color:var(--ink)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--sub);margin-bottom:6px}
+input[type=text],textarea{
+  width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 13px;
+  font-size:13.5px;font-family:inherit;color:var(--ink);background:#fffdfe;line-height:1.6;
+}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--rose)}
+textarea{resize:vertical;min-height:170px}
+.fld{margin-bottom:14px}
+.fld:last-of-type{margin-bottom:16px}
+
+.btn{
+  border:1px solid var(--rose-deep);background:var(--rose-deep);color:#fff;
+  padding:9px 22px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:.15s;
+}
+.btn:hover{background:#d06b90}
+.btn.ghost{background:transparent;color:var(--sub);border-color:var(--line);font-weight:600;font-size:13px;padding:7px 15px}
+.btn.ghost:hover{border-color:var(--rose);color:var(--rose-deep);background:#fff5f9}
+
+/* 结果 */
+.score{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.score .num{font-size:46px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.score .num small{font-size:19px;font-weight:700;margin-left:2px}
+.score .info{flex:1;min-width:210px}
+.score .info .lv{font-size:15px;font-weight:800}
+.score .info .ds{font-size:13px;color:var(--sub);margin-top:4px;line-height:1.65}
+.score .info .ds b{color:var(--ink)}
+.lv-ok{color:var(--ok)} .lv-warn{color:var(--warn)} .lv-bad{color:var(--bad)}
+
+.meter{height:9px;background:#f6eaf0;border-radius:999px;overflow:hidden;margin-top:14px}
+.meter i{display:block;height:100%;border-radius:999px;transition:width .4s}
+.meter i.ok{background:var(--ok)} .meter i.warn{background:var(--warn)} .meter i.bad{background:var(--bad)}
+
+h3{font-size:13.5px;font-weight:800;margin:20px 0 9px;display:flex;align-items:center;gap:8px}
+h3 .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+h3 .cnt{font-size:11.5px;font-weight:600;color:var(--sub);margin-left:auto}
+.dot-ok{background:var(--ok)} .dot-warn{background:var(--warn)} .dot-bad{background:var(--bad)}
+
+.tags{display:flex;flex-wrap:wrap;gap:7px}
+.tag{
+  font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:999px;border:1px solid transparent;
+}
+.tag.ok{background:#eaf9f1;color:#2f8f63;border-color:#bfe8d3}
+.tag.warn{background:#fff7e6;color:#a8790b;border-color:#f5dfa8}
+.tag.bad{background:#fdecec;color:#b4534a;border-color:#f7cccc}
+.tag .x{opacity:.5;font-size:11px;margin-left:3px}
+
+.empty-hint{font-size:13px;color:var(--sub);padding:10px 0}
+
+.talkbox{background:#fdf2f7;border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-top:6px}
+.talkbox pre{
+  white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:13.5px;
+  line-height:1.7;margin:0;color:var(--ink);
+}
+.talkrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.talkrow b{font-size:12.5px}
+.cp{
+  border:1px solid var(--line);background:var(--card);color:var(--sub);font-size:11.5px;font-weight:700;
+  padding:3px 11px;border-radius:7px;cursor:pointer;font-family:inherit;transition:.15s;margin-left:auto;
+}
+.cp:hover{border-color:var(--rose);color:var(--rose-deep);background:#fff5f9}
+.cp.done{background:var(--ok);border-color:var(--ok);color:#fff}
+
+.note{font-size:12px;color:var(--sub);background:#fff9ec;border:1px solid #f5e3bc;border-radius:10px;padding:10px 13px;margin-top:12px;line-height:1.7}
+.note b{color:#b8860b}
+
+.foot{margin-top:22px;font-size:12px;color:var(--sub);text-align:center;line-height:1.8}
+
+@media (max-width:720px){
+  body{padding:16px 11px 50px}
+  .hd h1{font-size:19px}
+  .card{padding:14px 14px}
+  .score .num{font-size:38px}
+  .score .info{min-width:0}
+  textarea{min-height:140px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <h1>岗位速判 <span>✦</span></h1>
+    <div class="sub">把招聘页上那段要求整段贴进来 → 告诉你这个岗位能不能投、差在哪、招呼语怎么说。</div>
+  </div>
+
+  <details class="what">
+    <summary>JD 是什么？（点开）</summary>
+    <div class="bd">
+      <b>JD = Job Description</b>，中文叫「岗位描述」。<br>
+      在 BOSS 直聘上你点开一个岗位，看到的那一大段文字就是它，通常分两块：<br>
+      ① <b>岗位职责</b>——这个岗位每天要做什么<br>
+      ② <b>任职要求</b>——要什么样的人、要会哪些东西<br><br>
+      你要做的就是：<b>把那整段文字选中复制，粘到下面的框里。</b>不用整理、不用删减，原样贴进来就行。
+    </div>
+  </details>
+
+  <div class="card">
+    <div class="fld">
+      <label>岗位名称（选填，填了话术会更自然）</label>
+      <input type="text" id="role" placeholder="例：AI 应用开发工程师">
+    </div>
+    <div class="fld">
+      <label>岗位描述（必填）—— 整段粘贴，不用删减</label>
+      <textarea id="jd" placeholder="例：&#10;&#10;岗位职责：&#10;1. 负责 AI 应用的设计与开发，基于大模型构建智能问答、RAG 检索等能力&#10;2. 与产品、算法协作，推动 LLM 功能落地&#10;&#10;任职要求：&#10;1. 熟悉 Python，了解 LangChain 等框架&#10;2. 有 RAG、向量数据库使用经验者优先&#10;3. 熟悉 React / TypeScript，能独立完成前端开发"></textarea>
+    </div>
+    <button class="btn" id="go">开始分析</button>
+    <button class="btn ghost" id="clear" style="margin-left:8px">清空</button>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="foot">
+    判断依据是你简历上的技能清单（AI 应用 / 前端 / 图形 / 工程）＋ 三个真实岗位的 JD 对照。<br>
+    它是帮你<b>排优先级</b>的，不是帮你找理由不投——<b>投递量 = 机会量</b>。<br>
+    数据全部在这台电脑的浏览器里算，不上传任何地方。
+  </div>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============ 技能库 ============
+   have    = 你会，简历上写了的
+   partial = 沾边，被问到能答个大概
+   missing = 没有，面试被问到要如实说
+   keys 里以 / 开头结尾的当作正则（用于避免 java 误匹配 javascript）
+================================= */
+var DB = [
+  /* ---- have ---- */
+  {c:'have', n:'RAG / 检索增强', k:['rag','检索增强','知识库检索','检索生成','检索问答']},
+  {c:'have', n:'LLM 接入 / 大模型调用', k:['llm','大模型','大语言模型','模型接入','调用模型']},
+  {c:'have', n:'Prompt 工程', k:['prompt','提示词','指令设计','prompt工程','提示工程']},
+  {c:'have', n:'流式输出', k:['流式','streaming','sse','逐字输出','流式返回']},
+  {c:'have', n:'OpenAI 兼容接口', k:['openai','兼容接口','api 对接','接口对接','deepseek']},
+  {c:'have', n:'结构化输出 / Zod', k:['结构化输出','zod','json schema','schema 约束','结构化返回']},
+  {c:'have', n:'知识库 / 文档处理', k:['知识库','文档切分','文本切分','chunk','语料']},
+  {c:'have', n:'多轮对话', k:['多轮','对话管理','上下文管理','会话']},
+  {c:'have', n:'React', k:['react']},
+  {c:'have', n:'Next.js', k:['next.js','nextjs','next js','app router']},
+  {c:'have', n:'TypeScript', k:['typescript','/\\bts\\b/']},
+  {c:'have', n:'JavaScript', k:['javascript','/\\bjs\\b/']},
+  {c:'have', n:'Tailwind / CSS', k:['tailwind','css','样式','响应式布局']},
+  {c:'have', n:'前端工程化', k:['工程化','构建工具','vite','webpack','打包']},
+  {c:'have', n:'WebGL / GLSL', k:['webgl','glsl','shader','着色器']},
+  {c:'have', n:'Canvas / 可视化', k:['canvas','可视化','图形渲染','动画']},
+  {c:'have', n:'Rust / WASM', k:['rust','wasm','webassembly']},
+  {c:'have', n:'Git', k:['git','版本控制']},
+  {c:'have', n:'部署 / 上线', k:['部署','上线','ci/cd','vercel','cloudflare']},
+  {c:'have', n:'Node.js / 全栈', k:['node.js','nodejs','全栈','服务端开发','bff']},
+  {c:'have', n:'性能优化', k:['性能优化','首屏','加载优化','性能调优']},
+  {c:'have', n:'C# / 游戏开发', k:['c#','unity','godot','游戏开发']},
+
+  /* ---- partial ---- */
+  {c:'partial', n:'向量检索 / Embedding', k:['向量检索','embedding','语义检索','向量化','相似度检索']},
+  {c:'partial', n:'Python', k:['python','pandas','flask','fastapi']},
+  {c:'partial', n:'数据结构 / 算法', k:['数据结构','算法','leetcode','算法题']},
+  {c:'partial', n:'Docker / 容器', k:['docker','容器','镜像']},
+  {c:'partial', n:'数据库 / SQL', k:['mysql','sql','postgres','数据库','mongodb']},
+  {c:'partial', n:'Linux', k:['linux','shell','命令行']},
+  {c:'partial', n:'测试', k:['单元测试','自动化测试','jest','vitest']},
+  {c:'partial', n:'Web 安全', k:['安全','鉴权','认证','xss','csrf']},
+
+  /* ---- missing ---- */
+  {c:'missing', n:'LangChain / LangGraph', k:['langchain','langgraph','llamaindex','langsmith']},
+  {c:'missing', n:'向量数据库', k:['向量数据库','milvus','pinecone','chroma','faiss','qdrant','weaviate','pgvector']},
+  {c:'missing', n:'Agent / 智能体', k:['agent','智能体','多智能体','multi-agent','自主决策']},
+  {c:'missing', n:'工具调用 / Function Calling', k:['function calling','工具调用','tool use','tools 参数','函数调用']},
+  {c:'missing', n:'MCP 协议', k:['mcp','model context protocol']},
+  {c:'missing', n:'微调 / 训练', k:['微调','fine-tune','finetune','lora','sft','rlhf','模型训练','蒸馏']},
+  {c:'missing', n:'机器学习 / 深度学习', k:['机器学习','深度学习','pytorch','tensorflow','神经网络','nlp','计算机视觉']},
+  {c:'missing', n:'Kubernetes / K8s', k:['kubernetes','k8s','k8s 集群']},
+  {c:'missing', n:'Java / Spring', k:['/\\bjava\\b(?!script)/','spring','springboot','spring boot']},
+  {c:'missing', n:'Go', k:['/\\bgolang\\b/','/\\bgo\\b/']},
+  {c:'missing', n:'C++', k:['c++','cpp']},
+  {c:'missing', n:'消息队列', k:['kafka','rabbitmq','rocketmq','消息队列','mq']},
+  {c:'missing', n:'分布式 / 高并发', k:['分布式','高并发','微服务','限流','熔断']},
+  {c:'missing', n:'缓存', k:['redis','缓存','memcached']}
+];
+
+var KNOWN = {have:'你会', partial:'沾边', missing:'没有'};
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+  });
+}
+
+function hit(text, keys){
+  for (var i = 0; i < keys.length; i++){
+    var k = keys[i];
+    if (k.length > 2 && k.charAt(0) === '/' && k.charAt(k.length - 1) === '/'){
+      try{ if (new RegExp(k.slice(1, -1), 'i').test(text)) return true; }catch(e){}
+    } else if (text.indexOf(k) >= 0){
+      return true;
+    }
+  }
+  return false;
+}
+
+/* ============ 生成招呼语 ============ */
+function makeTalk(roleName, haveNames){
+  var joined = haveNames.join(' ');
+  var picks = [];
+
+  var isAI   = /RAG|LLM|大模型|Prompt|流式|结构化输出|OpenAI|知识库|多轮/.test(joined);
+  var isFE   = /React|Next|TypeScript|JavaScript|Tailwind|前端工程化/.test(joined);
+  var isGFX  = /WebGL|Canvas|Rust|性能优化/.test(joined);
+
+  if (isAI)  picks.push('独立做过 AI 模拟面试官（Next.js + RAG 检索 + 流式输出）');
+  if (isFE)  picks.push('另有 20+ 个可在线运行的 Web 作品');
+  if (isGFX) picks.push('以及 WebGL / WASM 图形类作品（实时流体、物理沙盒）');
+  if (!picks.length) picks.push('有 20+ 个可在线运行的 Web 作品，全部可当场打开验证');
+
+  var target = roleName ? '「' + roleName + '」' : '贵司这个岗位';
+  return '您好，2027 届电子信息工程本科。' + picks.join('，') + '。\n'
+       + '作品集：https://ephemeralbloom.dpdns.org/portfolio\n'
+       + '看到' + target + '在招，想投一份简历，请问还方便吗？';
+}
+
+/* ============ 分析 ============ */
+function analyze(){
+  var role = document.getElementById('role').value.trim();
+  var jd   = document.getElementById('jd').value.trim();
+  var box  = document.getElementById('result');
+
+  if (!jd){
+    box.innerHTML = '<div class="card"><div class="empty-hint">还没贴岗位描述。把招聘页上那段文字整段复制进来再点「开始分析」。</div></div>';
+    box.scrollIntoView({behavior:'smooth', block:'nearest'});
+    return;
+  }
+
+  var text = jd.toLowerCase();
+  var got = {have:[], partial:[], missing:[]};
+
+  DB.forEach(function(item){
+    if (hit(text, item.k)) got[item.c].push(item.n);
+  });
+
+  var total = got.have.length + got.partial.length + got.missing.length;
+
+  if (!total){
+    box.innerHTML = '<div class="card"><div class="empty-hint">'
+      + '这段文字里没识别到技能关键词。可能贴得太短，或者这段是公司介绍而不是岗位要求。<br>'
+      + '建议把「任职要求」那一整块都复制进来。</div></div>';
+    box.scrollIntoView({behavior:'smooth', block:'nearest'});
+    return;
+  }
+
+  var scoreRaw = got.have.length + got.partial.length * 0.5;
+  var score = Math.round(scoreRaw / total * 100);
+
+  var lv, cls, advice;
+  if (score >= 60){
+    lv = '方向对得上，可以投'; cls = 'ok';
+    advice = '这个岗位的核心要求你大部分能满足。面试重点讲：<b>'
+           + (got.have.slice(0, 3).join('、') || '你的项目经验') + '</b>。';
+  } else if (score >= 35){
+    lv = '可以试，但要准备解释'; cls = 'warn';
+    advice = '一半左右能对上。被问到不会的，直接说「这块我没做过，我目前用的是 XX 方案，因为 YY」。'
+           + (got.missing.length ? '提前想好 <b>' + got.missing.slice(0, 2).join('、') + '</b> 怎么说。' : '');
+  } else {
+    lv = '核心要求基本没有，优先级放低'; cls = 'bad';
+    advice = '这个岗位的主要要求你没有对应经验，回音概率低，把时间花在更匹配的岗位上更划算。'
+           + '<b>但如果你特别想去这家公司，投一下也没损失</b>——一家只要几分钟。';
+  }
+
+  var shortWarn = total < 5
+    ? '<div class="note"><b>样本偏少</b>：只识别到 ' + total + ' 个关键词，判断可能不准。建议把完整的「任职要求」整段贴进来。</div>'
+    : '';
+
+  var html = '<div class="card">';
+  html += '<div class="score">';
+  html += '<div class="num lv-' + cls + '">' + score + '<small>%</small></div>';
+  html += '<div class="info"><div class="lv lv-' + cls + '">' + lv + '</div>';
+  html += '<div class="ds">' + advice + '</div></div>';
+  html += '</div>';
+  html += '<div class="meter"><i class="' + cls + '" style="width:' + score + '%"></i></div>';
+  html += shortWarn;
+
+  ['have','partial','missing'].forEach(function(c){
+    var list = got[c];
+    var dot = {have:'ok', partial:'warn', missing:'bad'}[c];
+    html += '<h3><span class="dot dot-' + dot + '"></span>' + KNOWN[c] + '的'
+          + '<span class="cnt">' + list.length + ' 项</span></h3>';
+    if (!list.length){
+      html += '<div class="empty-hint">这个岗位没提到这类技能。</div>';
+    } else {
+      html += '<div class="tags">';
+      list.forEach(function(n){
+        html += '<span class="tag ' + dot + '">' + esc(n) + '</span>';
+      });
+      html += '</div>';
+    }
+  });
+
+  html += '<h3><span class="dot dot-ok"></span>打招呼话术<span class="cnt">按这个岗位现生成</span></h3>';
+  html += '<div class="talkbox">';
+  html += '<div class="talkrow"><b>直接复制到 BOSS</b><button class="cp" id="cpTalk">复制</button></div>';
+  html += '<pre id="talkText">' + esc(makeTalk(role, got.have)) + '</pre>';
+  html += '</div>';
+
+  if (got.missing.length >= 3){
+    html += '<div class="note"><b>提醒</b>：这个岗位有 ' + got.missing.length
+          + ' 项你没有的要求。不是不能投，但面试前想清楚——被问到「' + esc(got.missing[0])
+          + '」时你打算怎么答。<b>如实说没做过 + 说出你用的替代方案</b>，比含糊强。</div>';
+  }
+
+  html += '</div>';
+
+  box.innerHTML = html;
+  box.scrollIntoView({behavior:'smooth', block:'start'});
+
+  var btn = document.getElementById('cpTalk');
+  if (btn) btn.addEventListener('click', function(){ copyText(document.getElementById('talkText').innerText, btn); });
+}
+
+/* ============ 复制（file:// 下 clipboard API 常被禁用，需兜底） ============ */
+function copyText(txt, btn){
+  var ok = function(){
+    btn.textContent = '已复制 ✓'; btn.classList.add('done');
+    setTimeout(function(){ btn.textContent = '复制'; btn.classList.remove('done'); }, 1400);
+  };
+  var fallback = function(){
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try{ document.execCommand('copy'); ok(); }catch(e){ alert('复制失败，请手动选中'); }
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(ok, fallback);
+  } else { fallback(); }
+}
+
+document.getElementById('go').addEventListener('click', analyze);
+document.getElementById('clear').addEventListener('click', function(){
+  document.getElementById('role').value = '';
+  document.getElementById('jd').value = '';
+  document.getElementById('result').innerHTML = '';
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) analyze();
+});
+})();
+</script>
+</body>
+</html>

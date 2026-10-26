@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>你的 AI 协作人格 · 你是哪一种人机搭档？</title>
+<meta name="description" content="15 或 30 个情境，测出你跟 AI 搭档时是哪种人。娱乐测验，仅供参考。">
+<style>
+/* =========================================================
+   AI 协作人格 · 液态玻璃 Liquid Glass
+   规格来源：ui-ux-pro-max › styles.csv › liquid-glass
+   要点：玻璃只做外壳，内容单独一层；颜色克制；带降级兜底
+   ========================================================= */
+:root{
+  /* 底色：浅灰白系（让玻璃有东西可透） */
+  --bg-1:#eef2f9;
+  --bg-2:#e6ecf7;
+  --bg-3:#f3f0fa;
+
+  /* 文字（对比度已按 4.5:1 校过） */
+  --ink:#141a26;
+  --ink-2:#4a5568;
+  --ink-3:#6b7688;
+
+  /* 语义色，克制使用 */
+  --tint:#2f6fed;        /* 主色 · 系统蓝 */
+  --tint-2:#7c5cf5;      /* 次色 · 紫 */
+  --tint-3:#e94f8a;      /* 强调 · 玫红 */
+  --ok:#12a87a;
+
+  /* 玻璃材质变量（照技能 Design System Variables） */
+  --material-role:navigation-controls;
+  --translucency:adaptive;
+  --glass-bg:rgba(255,255,255,.58);
+  --glass-bg-2:rgba(255,255,255,.44);
+  --glass-stroke:rgba(255,255,255,.75);
+  --glass-edge:rgba(140,160,200,.22);
+  --glass-blur:blur(22px) saturate(180%);
+  --radius:22px;
+  --radius-sm:14px;
+  --shadow:0 8px 32px rgba(20,30,60,.10), 0 2px 8px rgba(20,30,60,.06);
+  --shadow-lift:0 16px 48px rgba(20,30,60,.16), 0 4px 12px rgba(20,30,60,.08);
+
+  /* 动效（照 motion.csv） */
+  --dur-hover:180ms;
+  --ease-hover:cubic-bezier(.25,.8,.35,1);       /* ≈ power1.out */
+  --dur-stagger:380ms;
+  --ease-stagger:cubic-bezier(.34,1.4,.5,1);     /* ≈ back.out(1.4) */
+  --dur-page:260ms;
+  --ease-page:cubic-bezier(.45,0,.55,1);         /* ≈ power1.inOut */
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:linear-gradient(170deg,var(--bg-1) 0%,var(--bg-2) 48%,var(--bg-3) 100%);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  line-height:1.75;min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* 背景光斑：给玻璃"可折射的东西"——lensing 的原料 */
+.aurora{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.aurora i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;
+  animation:drift 26s ease-in-out infinite}
+.aurora i:nth-child(1){width:46vw;height:46vw;left:-12vw;top:-14vw;
+  background:radial-gradient(circle,#7fb2ff,transparent 68%)}
+.aurora i:nth-child(2){width:40vw;height:40vw;right:-10vw;top:2vw;
+  background:radial-gradient(circle,#c9a6ff,transparent 68%);animation-delay:-8s}
+.aurora i:nth-child(3){width:44vw;height:44vw;left:18vw;bottom:-18vw;
+  background:radial-gradient(circle,#ffb3d4,transparent 68%);animation-delay:-15s}
+.aurora i:nth-child(4){width:30vw;height:30vw;right:8vw;bottom:-8vw;
+  background:radial-gradient(circle,#9ff0d8,transparent 68%);animation-delay:-20s}
+@keyframes drift{0%,100%{transform:translate3d(0,0,0) scale(1)}
+  33%{transform:translate3d(4vw,3vw,0) scale(1.12)}
+  66%{transform:translate3d(-3vw,2vw,0) scale(.94)}}
+
+#fx{position:fixed;inset:0;z-index:50;pointer-events:none}
+.wrap{max-width:700px;margin:0 auto;padding:26px 17px 60px;position:relative;z-index:2}
+
+/* ---------- 玻璃材质 ---------- */
+/* 外壳：只做容器，不承文字（照 checklist「内容单独一层」） */
+.glass{
+  position:relative;
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+/* 高光描边 + 顶部反光：玻璃的"棱" */
+.glass::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  padding:1px;
+  background:linear-gradient(150deg,rgba(255,255,255,.95),rgba(255,255,255,.12) 42%,rgba(255,255,255,.6));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+/* 内容层：文字在这上面，保证可读 */
+.glass > *{position:relative;z-index:1}
+
+.grad{background:linear-gradient(100deg,var(--tint),var(--tint-2) 58%,var(--tint-3));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hide{display:none!important}
+
+/* 滚动/入场：8-16px 位移，读作"淡入"不是"滑入"（照 Scroll Reveal Subtle） */
+.rise{opacity:0;transform:translateY(12px);
+  animation:rise 420ms cubic-bezier(.25,.8,.35,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.d1{animation-delay:60ms}.d2{animation-delay:140ms}.d3{animation-delay:220ms}
+.d4{animation-delay:300ms}
+
+/* ---------- 首页 ---------- */
+.hero{text-align:center;padding:40px 22px 34px;overflow:hidden}
+.badge{display:inline-block;font-size:11.5px;letter-spacing:.18em;color:var(--tint);
+  border-radius:999px;padding:6px 16px;margin-bottom:22px;font-weight:600;
+  background:rgba(255,255,255,.66);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 10px rgba(20,30,60,.08)}
+h1{font-size:clamp(28px,7.6vw,44px);line-height:1.28;font-weight:800;letter-spacing:-.015em}
+h1 small{display:block;font-size:clamp(13.5px,3.5vw,16px);font-weight:500;
+  color:var(--ink-2);margin-top:14px;line-height:1.75;letter-spacing:0}
+.sub{color:var(--ink-2);font-size:14.5px;margin-top:16px}
+
+/* 双入口：玻璃控件（材质用在这里，符合材质职责） */
+.entries{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:28px}
+.entry{
+  position:relative;border:0;cursor:pointer;font-family:inherit;color:var(--ink);
+  text-align:center;padding:22px 16px;border-radius:var(--radius-sm);
+  background:var(--glass-bg-2);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:0 4px 18px rgba(20,30,60,.09),inset 0 1px 0 rgba(255,255,255,.9);
+  transition:transform var(--dur-hover) var(--ease-hover),
+             box-shadow var(--dur-hover) var(--ease-hover),
+             background var(--dur-hover) var(--ease-hover);
+}
+.entry:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift),inset 0 1px 0 rgba(255,255,255,.95)}
+.entry:active{transform:translateY(0) scale(.985)}
+.entry .em{font-size:27px;display:block;margin-bottom:9px}
+.entry .en{font-size:17px;font-weight:750;display:block;margin-bottom:6px}
+.entry .ed{font-size:12.5px;color:var(--ink-3);display:block;line-height:1.6}
+.entry.hot{background:linear-gradient(150deg,rgba(255,255,255,.78),rgba(226,238,255,.72))}
+.entry.hot .en{color:var(--tint)}
+.tiny{font-size:12.5px;color:var(--ink-3)}
+
+.blk{margin-top:22px;padding:24px 22px;text-align:left}
+.blk h2{font-size:15px;color:var(--tint);margin-bottom:14px;font-weight:750}
+.blk p{font-size:14.5px;color:var(--ink-2);margin-bottom:10px}
+.blk p:last-child{margin-bottom:0}
+.blk b{color:var(--ink);font-weight:650}
+
+/* 类型卡：Bento 式网格 + 逐项错开 0.03s */
+.types{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:11px;margin-top:22px}
+.tchip{padding:15px 16px;border-radius:var(--radius-sm);
+  background:var(--glass-bg-2);
+  backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);
+  box-shadow:0 4px 16px rgba(20,30,60,.08),inset 0 1px 0 rgba(255,255,255,.9);
+  opacity:0;transform:scale(.94);
+  animation:chip 380ms cubic-bezier(.34,1.4,.5,1) forwards;
+  transition:transform var(--dur-hover) var(--ease-hover),box-shadow var(--dur-hover) var(--ease-hover)}
+@keyframes chip{to{opacity:1;transform:scale(1)}}
+.tchip:hover{transform:translateY(-2px);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.95)}
+.tchip i{display:block;font-style:normal;font-size:10.5px;color:var(--ink-3);
+  letter-spacing:.1em;margin-bottom:6px;font-weight:600}
+.tchip b{color:var(--ink);font-size:15px;font-weight:750}
+
+/* ---------- 测验 ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;font-size:12.5px;color:var(--ink-3);font-weight:600}
+.topbar .mode{color:var(--tint);font-weight:750;letter-spacing:.04em}
+.pbar{height:8px;border-radius:99px;overflow:hidden;margin-bottom:24px;
+  background:rgba(255,255,255,.6);
+  box-shadow:inset 0 1px 3px rgba(20,30,60,.14)}
+.pbar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--tint),var(--tint-2),var(--tint-3));
+  background-size:200% 100%;
+  transition:width 360ms cubic-bezier(.3,.9,.3,1);
+  animation:flow 3.4s linear infinite}
+@keyframes flow{to{background-position:200% 0}}
+
+.qcard{padding:30px 24px 26px}
+.qtag{font-size:11px;letter-spacing:.16em;color:var(--tint-2);margin-bottom:16px;font-weight:700}
+.qtext{font-size:clamp(18px,4.7vw,23px);font-weight:750;line-height:1.6;margin-bottom:8px}
+.qhint{font-size:13.5px;color:var(--ink-3);margin-bottom:22px}
+
+/* 选项：玻璃按钮 + 逐条错开入场（0.03s/项，照 Stagger List） */
+.opts{display:flex;flex-direction:column;gap:11px}
+.opt{position:relative;display:flex;gap:14px;align-items:flex-start;text-align:left;
+  width:100%;padding:17px 18px;border-radius:var(--radius-sm);cursor:pointer;
+  font-family:inherit;border:0;color:var(--ink);font-size:15.5px;line-height:1.6;font-weight:500;
+  background:var(--glass-bg-2);
+  backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);
+  box-shadow:0 4px 16px rgba(20,30,60,.08),inset 0 1px 0 rgba(255,255,255,.9);
+  opacity:0;transform:translateY(10px);
+  animation:optIn 380ms cubic-bezier(.34,1.4,.5,1) forwards;
+  transition:transform var(--dur-hover) var(--ease-hover),
+             box-shadow var(--dur-hover) var(--ease-hover),
+             background var(--dur-hover) var(--ease-hover)}
+@keyframes optIn{to{opacity:1;transform:none}}
+.opt:nth-child(1){animation-delay:30ms}
+.opt:nth-child(2){animation-delay:60ms}
+.opt:nth-child(3){animation-delay:90ms}
+.opt:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift),inset 0 1px 0 rgba(255,255,255,.95)}
+.opt:active{transform:translateY(0) scale(.99)}
+.opt .k{flex:0 0 27px;height:27px;border-radius:9px;font-size:12.5px;font-weight:750;
+  display:grid;place-items:center;margin-top:2px;
+  background:rgba(255,255,255,.85);color:var(--tint);
+  box-shadow:inset 0 1px 0 #fff,0 1px 4px rgba(20,30,60,.1);
+  transition:background var(--dur-hover) var(--ease-hover),color var(--dur-hover) var(--ease-hover)}
+.opt.sel{background:linear-gradient(150deg,rgba(214,231,255,.92),rgba(232,222,255,.88))}
+.opt.sel .k{background:var(--tint);color:#fff;box-shadow:none}
+.navrow{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+.backbtn{background:none;border:0;color:var(--ink-3);font-size:13.5px;cursor:pointer;
+  font-family:inherit;padding:10px 6px;font-weight:600;min-height:44px;
+  transition:color var(--dur-hover) var(--ease-hover)}
+.backbtn:hover{color:var(--tint)}
+.backbtn:focus-visible,.entry:focus-visible,.opt:focus-visible,.btn:focus-visible{
+  outline:2px solid var(--tint);outline-offset:3px;border-radius:var(--radius-sm)}
+
+/* ---------- 结果 ---------- */
+.rcard{padding:40px 24px 32px;text-align:center;overflow:hidden;
+  background:linear-gradient(165deg,rgba(255,255,255,.72),rgba(240,244,255,.62))}
+.rlabel{font-size:11.5px;letter-spacing:.2em;color:var(--tint-2);margin-bottom:18px;font-weight:700}
+.rname{font-size:clamp(34px,10vw,54px);font-weight:800;line-height:1.2;letter-spacing:-.02em;
+  animation:pop 620ms cubic-bezier(.34,1.45,.5,1) both}
+@keyframes pop{0%{opacity:0;transform:scale(.84)}100%{opacity:1;transform:scale(1)}}
+.rsub{font-size:16.5px;color:var(--tint);margin-top:14px;font-weight:650;
+  animation:rise 420ms 220ms cubic-bezier(.25,.8,.35,1) both}
+.rmatch{display:inline-block;margin-top:18px;font-size:12.5px;color:var(--ink-2);font-weight:600;
+  border-radius:999px;padding:7px 17px;
+  background:rgba(255,255,255,.72);
+  box-shadow:inset 0 1px 0 #fff,0 2px 8px rgba(20,30,60,.07);
+  animation:rise 420ms 300ms cubic-bezier(.25,.8,.35,1) both}
+.rdesc{font-size:15.5px;color:var(--ink-2);margin-top:24px;text-align:left;line-height:1.9;
+  animation:rise 420ms 380ms cubic-bezier(.25,.8,.35,1) both}
+.rdesc b{color:var(--ink);font-weight:650}
+
+.sbar{padding:23px 22px;margin-top:14px}
+.sbar h3{font-size:14.5px;color:var(--tint);margin-bottom:18px;font-weight:750}
+.gtitle{font-size:12px;color:var(--tint-2);letter-spacing:.06em;margin:20px 0 12px;font-weight:750}
+.gtitle:first-child{margin-top:0}
+.dim{margin-bottom:14px}
+.dim:last-child{margin-bottom:0}
+.dim .lbl{display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink-2);
+  margin-bottom:7px;font-weight:600}
+.dim .lbl span:last-child{color:var(--ink-3);font-size:12px}
+.track{height:9px;border-radius:99px;overflow:hidden;
+  background:rgba(255,255,255,.62);box-shadow:inset 0 1px 3px rgba(20,30,60,.14)}
+.track i{display:block;height:100%;border-radius:99px;width:0;
+  background:linear-gradient(90deg,var(--tint-2),var(--tint));
+  transition:width 720ms cubic-bezier(.25,.9,.3,1)}
+
+.rbtns{display:flex;gap:11px;flex-wrap:wrap;margin-top:20px}
+.rbtns .btn{flex:1 1 130px}
+.btn{min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:0;cursor:pointer;font-weight:750;font-size:16px;font-family:inherit;color:#fff;
+  border-radius:var(--radius-sm);padding:16px 28px;
+  background:linear-gradient(135deg,var(--tint),var(--tint-2));
+  box-shadow:0 6px 20px rgba(47,111,237,.32),inset 0 1px 0 rgba(255,255,255,.28);
+  transition:transform var(--dur-hover) var(--ease-hover),
+             box-shadow var(--dur-hover) var(--ease-hover)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(47,111,237,.4),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn:active{transform:translateY(0) scale(.99)}
+.btn.ghost{color:var(--tint);
+  background:rgba(255,255,255,.72);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:0 4px 16px rgba(20,30,60,.09),inset 0 1px 0 rgba(255,255,255,.94)}
+.btn.ghost:hover{box-shadow:var(--shadow-lift),inset 0 1px 0 #fff}
+.foot{text-align:center;font-size:12.5px;color:var(--ink-3);margin-top:30px;line-height:1.95}
+
+/* 遮罩：玻璃散射 */
+.veil{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px;
+  background:rgba(236,241,252,.66);
+  backdrop-filter:blur(26px) saturate(170%);-webkit-backdrop-filter:blur(26px) saturate(170%);
+  transition:opacity var(--dur-page) var(--ease-page);cursor:pointer}
+.veil.gone{opacity:0;pointer-events:none}
+.veil .in{text-align:center;max-width:420px}
+.veil h2{font-size:26px;font-weight:800;margin-bottom:14px}
+.veil p{font-size:14.5px;color:var(--ink-2)}
+
+/* =========================================================
+   降级兜底（照 liquid-glass 的 checklist 硬要求）
+   ========================================================= */
+
+/* ① 不支持 backdrop-filter → 变不透明，保证可读 */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .glass,.entry,.opt,.tchip,.btn.ghost{background:rgba(255,255,255,.94)}
+  .veil{background:rgba(240,244,252,.97)}
+}
+
+/* ② 用户要求降低透明度 → 关掉玻璃（reduced transparency） */
+@media (prefers-reduced-transparency:reduce){
+  .glass,.entry,.opt,.tchip,.btn.ghost,.veil{
+    background:rgba(255,255,255,.97);
+    backdrop-filter:none;-webkit-backdrop-filter:none}
+  .aurora{display:none}
+}
+
+/* ③ 用户要求减少动效 → 全部停（reduced motion） */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .aurora i{animation:none}
+  .rise,.tchip,.opt{opacity:1;transform:none}
+  .pbar i{animation:none}
+}
+
+@media(max-width:430px){
+  .wrap{padding:18px 12px 48px}
+  .qcard{padding:24px 16px 20px}
+  .rcard{padding:30px 16px 24px}
+  .blk{padding:20px 16px 18px}
+  .hero{padding:32px 16px 28px}
+  .types{grid-template-columns:1fr 1fr}
+  .entries{gap:11px}
+  .entry{padding:18px 12px}
+  .entry .en{font-size:16px}
+  .sbar{padding:20px 16px}
+}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<canvas id="fx"></canvas>
+
+<div class="veil" id="veil">
+  <div class="in">
+    <h2 class="grad">你的 AI 协作人格</h2>
+    <p>看看你跟 AI 搭伙干活的时候<br>到底是什么样子</p>
+    <p class="tiny" style="margin-top:18px">点一下开始</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section id="home">
+  <div class="hero glass">
+    <div class="badge rise">AI COLLABORATION TYPE</div>
+    <h1 class="rise d1">你的 <span class="grad">AI 协作人格</span>
+      <small>那个天天陪你干活的它，其实早就摸清你是什么人了</small>
+    </h1>
+    <p class="sub rise d2">12 种结果 · 不用注册 · 结果可以分享</p>
+    <div class="entries rise d3">
+      <button class="entry hot" onclick="startQuiz('quick')">
+        <span class="em">⚡</span>
+        <span class="en">快速版</span>
+        <span class="ed">15 题 · 约 2 分钟</span>
+      </button>
+      <button class="entry" onclick="startQuiz('full')">
+        <span class="em">🔍</span>
+        <span class="en">完整版</span>
+        <span class="ed">30 题 · 约 4 分钟<br>结果更细</span>
+      </button>
+    </div>
+    <p class="tiny rise d4" style="margin-top:16px">娱乐测验 · 结果仅供参考</p>
+  </div>
+
+  <div class="blk glass rise d3">
+    <h2>这个测验测什么</h2>
+    <p>它不测你聪不聪明，也不测你会不会用 AI。</p>
+    <p>它测的是：<b>当你和一个 AI 搭伙干活的时候，你习惯站在哪个位置。</b></p>
+    <p>有人丢一句话就走，回来看结果；有人把需求写得比合同还细；有人边干边跟它唠嗑；有人它说的每个字都要自己验一遍。</p>
+    <p>这跟技术水平关系不大——<b>同一个你，换个 AI 也可能换一副样子。</b></p>
+  </div>
+
+  <div class="types" id="typePreview"></div>
+
+  <div class="foot">
+    娱乐测验 · 结果仅供参考<br>
+    不收集任何个人信息 · 不设账号 · 不发任何请求
+  </div>
+</section>
+
+<section id="quiz" class="hide">
+  <div class="topbar">
+    <span id="qcount">1 / 15</span>
+    <span class="mode" id="qmode">⚡ 快速版</span>
+  </div>
+  <div class="pbar"><i id="pfill"></i></div>
+  <div class="qcard glass">
+    <div class="qtag" id="qtag">情境</div>
+    <div class="qtext" id="qtext"></div>
+    <div class="qhint" id="qhint"></div>
+    <div class="opts" id="opts"></div>
+    <div class="navrow">
+      <button class="backbtn" id="backbtn" onclick="goBack()">← 上一题</button>
+    </div>
+  </div>
+</section>
+
+<section id="result" class="hide">
+  <div class="rcard glass">
+    <div class="rlabel">你的 AI 协作人格</div>
+    <div class="rname grad" id="rname">—</div>
+    <div class="rsub" id="rsub"></div>
+    <div class="rmatch" id="rmatch"></div>
+    <div class="rdesc" id="rdesc"></div>
+  </div>
+  <div class="sbar glass">
+    <h3>你的协作剖面</h3>
+    <div id="dims"></div>
+  </div>
+  <div class="rbtns">
+    <button class="btn" onclick="copyLink()" id="copybtn">复制结果链接</button>
+    <button class="btn ghost" onclick="restart()">重新测</button>
+  </div>
+  <div class="foot">
+    娱乐测验 · 结果仅供参考<br>
+    不收集任何数据，答案只在你自己的浏览器里
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ===== 15 个维度 ===== */
+const DIMS = {
+  A1:{g:'A',name:'放权程度'}, A2:{g:'A',name:'指令密度'}, A3:{g:'A',name:'中途干预'},
+  B1:{g:'B',name:'动手验真'}, B2:{g:'B',name:'留存习惯'}, B3:{g:'B',name:'挑刺习惯'},
+  C1:{g:'C',name:'客套程度'}, C2:{g:'C',name:'拟人倾向'}, C3:{g:'C',name:'依赖程度'},
+  D1:{g:'D',name:'并行程度'}, D2:{g:'D',name:'迭代方式'}, D3:{g:'D',name:'收尾习惯'},
+  E1:{g:'E',name:'信任程度'}, E2:{g:'E',name:'归功习惯'}, E3:{g:'E',name:'边界感'}
+};
+const GNAMES = {A:'怎么把活交出去',B:'怎么验收',C:'怎么跟它相处',D:'怎么推进节奏',E:'怎么看它'};
+
+/* ===== 题库：30 题，quick:true = 快速版选中（每维 1 题）===== */
+const QUESTIONS = [
+  {id:'Q01',part:1,dim:'A2',quick:false,scenario:'你要它帮你做一个页面。',prompt:'你打出的第一句话更像哪种？',options:[
+    {t:'“帮我做个 XX 页面。”就这一句。',s:0},
+    {t:'说清要什么风格、给谁看、大概多长。',s:1},
+    {t:'把参考链接、配色、禁区全列一遍。',s:2}]},
+  {id:'Q02',part:1,dim:'A2',quick:true,scenario:'它问你：“想要什么风格？”',prompt:'你会——',options:[
+    {t:'“你看着来，都行。”',s:0},
+    {t:'给两三个关键词，让它挑。',s:1},
+    {t:'贴一张图：“照这个做。”',s:2}]},
+  {id:'Q03',part:1,dim:'A1',quick:false,scenario:'它开始动手了，估计要跑几分钟。',prompt:'你这几分钟在干嘛？',options:[
+    {t:'去干别的了，好了叫我。',s:2},
+    {t:'开着这个窗口，偶尔瞄一眼。',s:1},
+    {t:'盯着它输出，边看边想。',s:0}]},
+  {id:'Q04',part:1,dim:'A1',quick:true,scenario:'它做到一半，你发现方向好像不太对。',prompt:'你——',options:[
+    {t:'让它先做完，看完整效果再说。',s:2},
+    {t:'提一句，让它自己判断要不要改。',s:1},
+    {t:'马上叫停，把方向掰回来。',s:0}]},
+  {id:'Q05',part:1,dim:'A3',quick:false,scenario:'它正在改一个你不太懂的地方。',prompt:'你的手会——',options:[
+    {t:'放着，不懂就不插手。',s:2},
+    {t:'关键那几步会看一眼。',s:1},
+    {t:'一步一步跟着，不对就喊停。',s:0}]},
+  {id:'Q06',part:1,dim:'A3',quick:true,scenario:'它改完了，你其实没太看懂它改了什么。',prompt:'你会——',options:[
+    {t:'能用就行，不深究。',s:2},
+    {t:'问一句“你改了哪儿？”',s:1},
+    {t:'让它把改动一条条列出来。',s:0}]},
+
+  {id:'Q07',part:2,dim:'B1',quick:true,scenario:'它说“做好了，你试试”。',prompt:'你的第一反应：',options:[
+    {t:'先打开看一眼，能跑就行。',s:1},
+    {t:'打开、点一遍、手机上再看一遍。',s:2},
+    {t:'先信它，等出问题再说。',s:0}]},
+  {id:'Q08',part:2,dim:'B1',quick:false,scenario:'它说某件事“已经修好了”。',prompt:'你——',options:[
+    {t:'直接用它。',s:0},
+    {t:'试着复现一下刚才那个问题。',s:2},
+    {t:'看它说得挺有道理，就先信了。',s:1}]},
+  {id:'Q09',part:2,dim:'B2',quick:false,scenario:'它讲了一段挺好用的经验。',prompt:'你会——',options:[
+    {t:'看完就算了。',s:0},
+    {t:'复制到聊天框存着。',s:1},
+    {t:'写进笔记里，下次还要看。',s:2}]},
+  {id:'Q10',part:2,dim:'B2',quick:true,scenario:'另一个 AI 要接手同一件事。',prompt:'你——',options:[
+    {t:'口头说两句就让它开始了。',s:0},
+    {t:'把之前的关键结论转述一遍。',s:1},
+    {t:'写一份交接文档，连着踩过的坑一起给它。',s:2}]},
+  {id:'Q11',part:2,dim:'B3',quick:false,scenario:'它给的解释听起来很顺，但你就是感觉哪里怪。',prompt:'你——',options:[
+    {t:'感觉怪但说不出哪怪，先这样。',s:0},
+    {t:'把那段再看一遍，找找问题。',s:1},
+    {t:'直接问：“你确定？有什么反例吗？”',s:2}]},
+  {id:'Q12',part:2,dim:'B3',quick:true,scenario:'它做的东西效果一般，但也不算错。',prompt:'你会——',options:[
+    {t:'“可以可以”，收下。',s:0},
+    {t:'“一般吧，再改改。”',s:1},
+    {t:'具体指出哪里不行、想要什么样。',s:2}]},
+
+  {id:'Q13',part:3,dim:'C1',quick:false,scenario:'它帮你解决了一个卡你很久的问题。',prompt:'你会——',options:[
+    {t:'直接下一件事。',s:0},
+    {t:'“可以可以，谢了。”',s:1},
+    {t:'“太强了！你这也太猛了吧。”',s:2}]},
+  {id:'Q14',part:3,dim:'C1',quick:true,scenario:'它连着三次都没理解你的意思。',prompt:'你会——',options:[
+    {t:'深呼吸，换个说法再试一次。',s:1},
+    {t:'忍不住吐槽两句。',s:2},
+    {t:'直接自己动手做了。',s:0}]},
+  {id:'Q15',part:3,dim:'C2',quick:false,scenario:'你发现自己在跟它解释“我今天有点累”。',prompt:'你——',options:[
+    {t:'马上删掉，这不合适。',s:0},
+    {t:'留着，反正它也不在意。',s:1},
+    {t:'说了就说了，跟它聊聊也挺好。',s:2}]},
+  {id:'Q16',part:3,dim:'C2',quick:true,scenario:'它回了你一句挺有人味的话。',prompt:'你的心里反应：',options:[
+    {t:'这是模板，不用当真。',s:0},
+    {t:'知道是模板，但还是挺受用。',s:1},
+    {t:'有点被暖到，继续跟它聊下去。',s:2}]},
+  {id:'Q17',part:3,dim:'C3',quick:true,scenario:'AI 服务突然全挂了，今天什么也干不了。',prompt:'你——',options:[
+    {t:'正好休息一天，不急。',s:0},
+    {t:'有点烦，但也能自己动手。',s:1},
+    {t:'感觉整个人卡住了，不知道从哪开始。',s:2}]},
+  {id:'Q18',part:3,dim:'C3',quick:false,scenario:'一个本该十分钟搞定的东西，你折腾了一小时。',prompt:'回头你最想的是：',options:[
+    {t:'记住这次教训，下次自己更熟。',s:0},
+    {t:'要是刚才问它一句就好了。',s:1},
+    {t:'下意识就去开对话框。',s:2}]},
+
+  {id:'Q19',part:4,dim:'D1',quick:true,scenario:'手上有三件事都挺急。',prompt:'你会——',options:[
+    {t:'一件一件来，做完一件再下一件。',s:0},
+    {t:'同时开两个，交替推进。',s:1},
+    {t:'全开，谁先出结果就用谁。',s:2}]},
+  {id:'Q20',part:4,dim:'D1',quick:false,scenario:'两个 AI 给了不一样的方案。',prompt:'你——',options:[
+    {t:'选一个顺眼的，另一条不管了。',s:0},
+    {t:'两边都留着，看哪个好用。',s:1},
+    {t:'让它俩的结果互相对一下。',s:2}]},
+  {id:'Q21',part:4,dim:'D2',quick:false,scenario:'第一版做出来了，七分像你要的。',prompt:'你——',options:[
+    {t:'就它了，够用。',s:0},
+    {t:'挑一两处让它改。',s:1},
+    {t:'列一串要改的，一次改到位。',s:2}]},
+  {id:'Q22',part:4,dim:'D2',quick:true,scenario:'你连续改了五六轮了。',prompt:'你的状态是：',options:[
+    {t:'早就满意了，是它自己没改对。',s:0},
+    {t:'越改越清楚自己想要什么。',s:1},
+    {t:'快改到自己都烦了，但停不下来。',s:2}]},
+  {id:'Q23',part:4,dim:'D3',quick:true,scenario:'东西做完了，验收通过。',prompt:'你会——',options:[
+    {t:'收工，下一件事。',s:0},
+    {t:'顺手把文件整理一下。',s:1},
+    {t:'补一篇说明，写清楚怎么用、坑在哪。',s:2}]},
+  {id:'Q24',part:4,dim:'D3',quick:false,scenario:'你在过程中踩了一个大坑，花了很久才爬出来。',prompt:'你——',options:[
+    {t:'出来就行了，不想再提。',s:0},
+    {t:'在脑子里记一下，下次注意。',s:1},
+    {t:'写下来，还告诉 AI 下次别再这样。',s:2}]},
+
+  {id:'Q25',part:5,dim:'E1',quick:false,scenario:'它很肯定地告诉你一个事实。',prompt:'你——',options:[
+    {t:'信了，它一般不会错。',s:0},
+    {t:'记住这句话，回头大概会忘。',s:1},
+    {t:'心里先打个折，重要的会自己去查。',s:2}]},
+  {id:'Q26',part:5,dim:'E1',quick:true,scenario:'它说的和你印象里的不一样。',prompt:'你——',options:[
+    {t:'多半是它更新，听它的。',s:0},
+    {t:'两边都留个心。',s:1},
+    {t:'坚持自己的印象，让它拿证据。',s:2}]},
+  {id:'Q27',part:5,dim:'E2',quick:false,scenario:'一个作品做出来效果很好，别人夸你。',prompt:'你心里想的是：',options:[
+    {t:'“多亏了 AI。”',s:0},
+    {t:'“我提的需求还是关键的。”',s:1},
+    {t:'“是我带着它做出来的。”',s:2}]},
+  {id:'Q28',part:5,dim:'E2',quick:true,scenario:'同一个东西，AI 做出来的比你自己手搓的好。',prompt:'你——',options:[
+    {t:'无所谓，反正结果好就行。',s:1},
+    {t:'有点别扭，想搞清楚它怎么做的。',s:2},
+    {t:'下次这种事直接交给它。',s:0}]},
+  {id:'Q29',part:5,dim:'E3',quick:false,scenario:'有些活你完全可以让 AI 干，但你还是自己动手。',prompt:'为什么？',options:[
+    {t:'没想过，顺手就自己做了。',s:0},
+    {t:'有些东西想自己留个手感。',s:1},
+    {t:'分清哪些必须我自己来，心里有数。',s:2}]},
+  {id:'Q30',part:5,dim:'E3',quick:true,scenario:'它主动提出要帮你做一件你没让它做的事。',prompt:'你——',options:[
+    {t:'行啊，你去做。',s:1},
+    {t:'不用，这块我自己来。',s:0},
+    {t:'先问它打算怎么做，再决定。',s:2}]}
+];
+
+/* ===== 12 种人格 ===== */
+const TYPES = [
+  {code:'DIRECTOR',name:'甩手掌柜',sub:'说个方向就走，回来直接验收',
+   desc:'你把 AI 当成了可以托付的人。<b>你给方向，它填细节</b>，中间那段你不看——不是不在意，是你相信它跑得完。你讨厌被反复确认，觉得那是在浪费时间。你的效率很高，代价是有时候要接受结果和你想象的差一截。好在你不纠结，能改就改，不能用就重来。',
+   pat:{A1:'H',A2:'L',A3:'L',B1:'M',B2:'L',B3:'L',C1:'L',C2:'L',C3:'M',D1:'M',D2:'L',D3:'L',E1:'M',E2:'L',E3:'L'}},
+  {code:'ENGINEER',name:'甲方提需求',sub:'需求写得比文档还细',
+   desc:'你很少让 AI 猜。<b>风格、受众、长度、禁区，你会一条条列清楚</b>，因为你知道说含糊了它就会跑偏。这不是不信任，是你干过太多次“它理解错了”的活。你出的成品质量很稳，但你自己也知道，光是写需求就花掉了小半时间。',
+   pat:{A1:'L',A2:'H',A3:'H',B1:'H',B2:'M',B3:'M',C1:'M',C2:'L',C3:'L',D1:'L',D2:'M',D3:'M',E1:'M',E2:'M',E3:'M'}},
+  {code:'BUDDY',name:'唠嗑搭子',sub:'边干活边聊，还会跟它吐槽',
+   desc:'你跟 AI 的关系不太像工具和用户。<b>你会跟它说今天状态不好，会在它答对的时候夸它一句。</b>你知道那些话多半是模板，但还是挺受用。这种相处让你不容易累，也让你更愿意多试几轮——反正聊着聊着就做完了。',
+   pat:{A1:'M',A2:'H',A3:'L',B1:'M',B2:'M',B3:'L',C1:'H',C2:'H',C3:'M',D1:'M',D2:'M',D3:'L',E1:'M',E2:'M',E3:'L'}},
+  {code:'SKEPTIC',name:'处处存疑',sub:'它说的每句都要自己再验一遍',
+   desc:'你从来不会因为 AI 说得肯定就信。<b>它说修好了，你就去复现一遍；它说某件事是这样，你就自己查一次。</b>这让你踩的坑比别人少很多，代价是你比谁都快累——因为你把验证的活也扛在自己身上了。这不是多疑，是你吃过亏。',
+   pat:{A1:'L',A2:'M',A3:'H',B1:'H',B2:'M',B3:'H',C1:'L',C2:'L',C3:'L',D1:'L',D2:'H',D3:'H',E1:'H',E2:'M',E3:'H'}},
+  {code:'SWITCHER',name:'同时开五个',sub:'多线并行，谁快用谁',
+   desc:'你手上从来没有只有一个 AI。<b>你会同时推进好几条线，甚至让两个 AI 做同一件事然后比对结果。</b>你不觉得这乱，你觉得这叫不把鸡蛋放一个篮子。你最怕的不是出错，是只有一条路可走。',
+   pat:{A1:'H',A2:'M',A3:'L',B1:'M',B2:'H',B3:'M',C1:'M',C2:'M',C3:'H',D1:'H',D2:'M',D3:'M',E1:'M',E2:'M',E3:'M'}},
+  {code:'POLISHER',name:'反复打磨',sub:'一轮改一点，改到满意为止',
+   desc:'你很难说“就这样吧”。<b>七分像你就想让它到九分，九分像你又觉得能到十分。</b>你在一轮轮修改里越来越清楚自己到底要什么——这其实是你在借着它找自己的审美。你出活慢，但出来的东西你自己认得。',
+   pat:{A1:'M',A2:'H',A3:'H',B1:'H',B2:'M',B3:'H',C1:'M',C2:'M',C3:'M',D1:'L',D2:'H',D3:'H',E1:'M',E2:'M',E3:'M'}},
+  {code:'COLLECTOR',name:'记笔记的人',sub:'它说的好用的，一条都不放过',
+   desc:'你有一种别人少有的习惯：<b>踩过的坑要写下来，好用的做法要存起来，交接的时候要整理成文档。</b>你觉得麻烦，但你还是做了。这让你比同龄人成长得快——因为你不是在重复用 AI，你是在积累跟 AI 协作的方法。',
+   pat:{A1:'M',A2:'H',A3:'M',B1:'H',B2:'H',B3:'M',C1:'M',C2:'M',C3:'L',D1:'M',D2:'M',D3:'H',E1:'M',E2:'M',E3:'H'}},
+  {code:'SPRINTER',name:'一把梭',sub:'要的就是快，先跑起来再说',
+   desc:'你不太纠结细节。<b>先把东西跑起来，有问题再说。</b>你受不了在开头反复讨论，宁可先看到一版难看的成品。这种打法让你上手特别快，也让你经常要在后面返工——但你心里清楚，返工也好过一直没开始。',
+   pat:{A1:'H',A2:'L',A3:'L',B1:'L',B2:'L',B3:'L',C1:'L',C2:'L',C3:'M',D1:'H',D2:'L',D3:'L',E1:'M',E2:'L',E3:'L'}},
+  {code:'CRAFTSMAN',name:'自己来',sub:'有些活宁可自己动手',
+   desc:'你不是不会用 AI，是<b>你心里有一条线，线那边的事你要自己做。</b>有些手感、有些判断，你不想交出去。别人觉得你低效，但你知道那些亲手做过的部分，才是你真正拿得走的东西。',
+   pat:{A1:'L',A2:'M',A3:'H',B1:'H',B2:'M',B3:'M',C1:'M',C2:'L',C3:'L',D1:'L',D2:'M',D3:'M',E1:'M',E2:'H',E3:'H'}},
+  {code:'NAVIGATOR',name:'掌舵的',sub:'方向必须我说了算',
+   desc:'你会让 AI 干活，但<b>你从不把它当成做主的人。</b>它给方案，你来拍板；它做出来，你来判断对不对。你提需求提得具体，改起来也果断。你心里很清楚——工具可以很强，但决定要往哪走的必须是你。',
+   pat:{A1:'L',A2:'H',A3:'H',B1:'H',B2:'M',B3:'H',C1:'M',C2:'L',C3:'L',D1:'M',D2:'H',D3:'M',E1:'M',E2:'H',E3:'H'}},
+  {code:'EXPLORER',name:'试水的人',sub:'一边用一边摸它到底能干嘛',
+   desc:'你对 AI 的态度是好奇大于依赖。<b>你会故意让它做些没做过的事，看它到底能力边界在哪。</b>你不怕它做砸，做砸反而是收获——因为你知道了下次不该让它干这个。你跟它相处的方式，更像在摸一个新同事的底。',
+   pat:{A1:'H',A2:'M',A3:'M',B1:'H',B2:'M',B3:'H',C1:'M',C2:'H',C3:'L',D1:'H',D2:'M',D3:'L',E1:'H',E2:'M',E3:'M'}},
+  {code:'PARTNER',name:'搭伙的人',sub:'它出力，你出判断，谁也不欠谁',
+   desc:'你找到了一种比较舒服的关系：<b>既不放任，也不包办。</b>你会把活交给它，也会自己盯着关键的地方；你会谢它，也知道功劳里哪部分是你自己的。这种平衡不太好找，很多人要么全权委托、要么什么都不放心——你刚好停在中间。',
+   pat:{A1:'H',A2:'M',A3:'L',B1:'H',B2:'M',B3:'M',C1:'M',C2:'M',C3:'L',D1:'M',D2:'M',D3:'M',E1:'L',E2:'M',E3:'H'}}
+];
+
+/* ===== 撒花特效（自写轻量版，替代 24.7KB 的 canvas-confetti）===== */
+const FX = (function(){
+  const cv = document.getElementById('fx');
+  const ctx = cv.getContext('2d');
+  let W=0,H=0, parts=[], raf=null;
+  const COLORS = ['#5ec8ff','#8b7cff','#ff7bd5','#5ee0a8','#ffd76e','#ffffff'];
+  function resize(){
+    W = innerWidth; H = innerHeight;
+    const dpr = Math.min(devicePixelRatio||1, 2);
+    cv.width = W*dpr; cv.height = H*dpr;
+    cv.style.width = W+'px'; cv.style.height = H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();
+  addEventListener('resize', resize);
+  function spawn(n,x,y,power){
+    for(let i=0;i<n;i++){
+      const ang = -Math.PI/2 + (Math.random()-.5)*power;
+      const sp = 7 + Math.random()*13;
+      parts.push({
+        x, y,
+        vx: Math.cos(ang)*sp*(.6+Math.random()*.8),
+        vy: Math.sin(ang)*sp,
+        w: 5+Math.random()*7, h: 8+Math.random()*9,
+        rot: Math.random()*Math.PI*2, vr:(Math.random()-.5)*.32,
+        c: COLORS[(Math.random()*COLORS.length)|0],
+        life:1, decay:.0065+Math.random()*.006,
+        shape: Math.random()<.28 ? 'circle' : 'rect'
+      });
+    }
+    if(!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=parts.length-1;i>=0;i--){
+      const p = parts[i];
+      p.vy += .34; p.vx *= .992; p.vy *= .992;
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      p.life -= p.decay;
+      if(p.life<=0 || p.y>H+60){ parts.splice(i,1); continue; }
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.life*1.5));
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = p.c;
+      if(p.shape==='circle'){ ctx.beginPath(); ctx.arc(0,0,p.w/2,0,Math.PI*2); ctx.fill(); }
+      else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    }
+    if(parts.length) raf = requestAnimationFrame(tick);
+    else { ctx.clearRect(0,0,W,H); raf = null; }
+  }
+  return {
+    burst(x,y,n,power){ spawn(n||90,x,y,power||1.1); },
+    celebrate(){
+      const cy = innerHeight*.32;
+      spawn(70, innerWidth*.2, cy, 1.0);
+      spawn(70, innerWidth*.8, cy, 1.0);
+      setTimeout(()=>spawn(60, innerWidth*.5, cy*.8, 1.4), 180);
+    },
+    clear(){ parts.length=0; if(raf){ cancelAnimationFrame(raf); raf=null; } ctx.clearRect(0,0,W,H); }
+  };
+})();
+
+/* ===== 计分 ===== */
+const ORDER = Object.keys(DIMS);
+let answers = {}, cur = 0, mode = 'quick', pool = [];
+
+function buildPool(){
+  pool = (mode==='quick') ? QUESTIONS.filter(q=>q.quick) : QUESTIONS.slice();
+}
+
+function computeDims(){
+  const sums={}, counts={};
+  ORDER.forEach(k=>{ sums[k]=0; counts[k]=0; });
+  QUESTIONS.forEach(q=>{
+    const a = answers[q.id];
+    if(a===undefined) return;
+    sums[q.dim] += q.options[a].s;
+    counts[q.dim] += 1;
+  });
+  const vec = {};
+  ORDER.forEach(k=>{
+    const max = counts[k]*2 || 1;
+    const v = counts[k] ? sums[k]/max : 0;
+    vec[k] = v<=0.25 ? 'L' : (v<=0.6 ? 'M' : 'H');
+  });
+  return vec;
+}
+
+function levelNum(l){ return l==='L'?0 : (l==='M'?1:2); }
+function dimWeight(key){
+  const g = DIMS[key].g;
+  return (g==='C' || g==='A') ? 1.25 : 1.0;
+}
+
+function matchType(vec){
+  const u = {};
+  ORDER.forEach(k=>u[k]=levelNum(vec[k]));
+  const scored = TYPES.map(t=>{
+    let d=0, hard=0;
+    ORDER.forEach(k=>{
+      const diff = Math.abs(u[k]-levelNum(t.pat[k]));
+      d += diff*dimWeight(k);
+      if(diff===2) hard += 1;
+    });
+    return {t, d:d+hard*.35, hard};
+  }).sort((a,b)=> a.d-b.d || a.hard-b.hard);
+  const best = scored[0];
+  const sim = Math.max(35, Math.min(96, Math.round((1-best.d/34)*100)));
+  return {type:best.t, dist:best.d, sim};
+}
+
+/* ===== 界面 ===== */
+const $ = id=>document.getElementById(id);
+
+function show(which){
+  ['home','quiz','result'].forEach(s=>$(s).classList.toggle('hide', s!==which));
+  scrollTo({top:0,behavior:'smooth'});
+}
+
+function previewTypes(){
+  $('typePreview').innerHTML = TYPES.map(t=>
+    `<div class="tchip"><i>TYPE · ${t.code}</i><b>${t.name}</b><br>`+
+    `<span style="color:var(--ink3);font-size:12.5px">${t.sub}</span></div>`
+  ).join('');
+}
+
+function startQuiz(m){
+  mode = m;
+  answers = {}; cur = 0;
+  buildPool();
+  $('qmode').textContent = (m==='quick' ? '⚡ 快速版' : '🔍 完整版');
+  FX.clear();
+  show('quiz');
+  renderQ();
+}
+
+function renderQ(){
+  const q = pool[cur];
+  $('qcount').textContent = `${cur+1} / ${pool.length}`;
+  $('pfill').style.width = (cur/pool.length*100)+'%';
+  $('qtag').textContent = `PART ${q.part} · ${GNAMES[DIMS[q.dim].g]}`;
+  $('qtext').textContent = q.scenario;
+  $('qhint').textContent = q.prompt || '';
+  $('backbtn').style.visibility = cur===0 ? 'hidden' : 'visible';
+  const box = $('opts');
+  box.innerHTML = '';
+  q.options.forEach((o,i)=>{
+    const b = document.createElement('button');
+    b.className = 'opt' + (answers[q.id]===i ? ' sel' : '');
+    b.innerHTML = `<span class="k">${'ABC'[i]}</span><span>${o.t}</span>`;
+    b.onclick = ()=>pick(i);
+    box.appendChild(b);
+  });
+}
+
+function pick(i){
+  const q = pool[cur];
+  answers[q.id] = i;
+  document.querySelectorAll('#opts .opt').forEach((el,k)=>el.classList.toggle('sel', k===i));
+  setTimeout(()=>{
+    if(cur < pool.length-1){ cur++; renderQ(); }
+    else finish();
+  }, 200);
+}
+
+function goBack(){ if(cur>0){ cur--; renderQ(); } }
+
+function finish(){
+  $('pfill').style.width = '100%';
+  const vec = computeDims();
+  const m = matchType(vec);
+  const t = m.type;
+
+  $('rname').textContent = t.name;
+  $('rsub').textContent = t.sub;
+  $('rmatch').textContent = `匹配度 ${m.sim}% · ${t.code} · ${mode==='quick'?'快速版':'完整版'}`;
+  $('rdesc').innerHTML = t.desc;
+
+  const box = $('dims'); box.innerHTML = '';
+  ['A','B','C','D','E'].forEach(g=>{
+    const keys = ORDER.filter(k=>DIMS[k].g===g);
+    const h = document.createElement('div');
+    h.className = 'gtitle';
+    h.textContent = '· ' + GNAMES[g];
+    box.appendChild(h);
+    keys.forEach(k=>{
+      const lv = vec[k];
+      const pct = lv==='H'?100 : (lv==='M'?58:22);
+      const d = document.createElement('div');
+      d.className = 'dim';
+      d.innerHTML = `<div class="lbl"><span>${DIMS[k].name}</span>`+
+        `<span>${{L:'偏低',M:'中等',H:'偏高'}[lv]}</span></div>`+
+        `<div class="track"><i data-w="${pct}"></i></div>`;
+      box.appendChild(d);
+    });
+  });
+
+  show('result');
+  FX.celebrate();
+
+  setTimeout(()=>{
+    document.querySelectorAll('#dims .track i').forEach((el,i)=>{
+      setTimeout(()=>{ el.style.width = el.dataset.w + '%'; }, i*55);
+    });
+  }, 420);
+
+  try{
+    history.replaceState(null,'', location.pathname +
+      '#r=' + TYPES.indexOf(t) + '&s=' + m.sim + '&m=' + mode);
+  }catch(e){}
+}
+
+function restart(){
+  FX.clear();
+  answers = {}; cur = 0;
+  try{ history.replaceState(null,'', location.pathname); }catch(e){}
+  show('home');
+}
+
+function copyLink(){
+  const url = location.href;
+  const done = ()=>{
+    $('copybtn').textContent = '已复制 ✓';
+    FX.burst(innerWidth/2, innerHeight*.3, 40, 1.2);
+    setTimeout(()=>$('copybtn').textContent='复制结果链接', 1700);
+  };
+  if(navigator.clipboard && location.protocol!=='file:'){
+    navigator.clipboard.writeText(url).then(done).catch(()=>fallbackCopy(url,done));
+  } else fallbackCopy(url,done);
+}
+function fallbackCopy(text,cb){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); cb(); }
+  catch(e){ alert('复制失败，请手动复制地址栏'); }
+  document.body.removeChild(ta);
+}
+
+document.getElementById('veil').addEventListener('click',()=>{
+  const v = $('veil');
+  v.classList.add('gone');
+  setTimeout(()=>{ v.style.display='none'; }, 800);
+  FX.burst(innerWidth/2, innerHeight*.3, 36, 1.3);
+});
+
+previewTypes();
+
+/* 带结果 hash 打开时，直接展示别人分享的结果 */
+(function(){
+  const m = /#r=(\d+)&s=(\d+)(?:&m=(\w+))?/.exec(location.hash||'');
+  if(!m) return;
+  const t = TYPES[+m[1]];
+  if(!t) return;
+  setTimeout(()=>{
+    $('veil').classList.add('gone');
+    $('veil').style.display='none';
+    mode = m[3] || 'quick';
+    $('rname').textContent = t.name;
+    $('rsub').textContent = t.sub;
+    $('rmatch').textContent = `匹配度 ${m[2]}% · ${t.code} · 别人分享的结果`;
+    $('rdesc').innerHTML = t.desc;
+    $('dims').innerHTML = '<div class="gtitle">这是别人分享的结果，'+
+      '完整的 15 维剖面要自己测一次才有</div>';
+    show('result');
+    FX.celebrate();
+  }, 400);
+})();
+</script>
+</body>
+</html>

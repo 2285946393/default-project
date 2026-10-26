@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>intentgraph2core</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>netcoreapp9.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>11.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="GodotSharp" />
+    <Reference Include="sts2" />
+    <Reference Include="Antlr4.Runtime.Standard">
+      <HintPath>D:\software\steam\steamapps\workshop\content\2868840\3747528152\Antlr4.Runtime.Standard.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony" />
+  </ItemGroup>
+</Project>

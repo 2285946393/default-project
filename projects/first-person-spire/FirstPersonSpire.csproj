@@ -1,0 +1,33 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
+    <Sts2Dir Condition="'$(Sts2Dir)' == ''">D:\software\steam\steamapps\common\Slay the Spire 2</Sts2Dir>
+    <Sts2DataDir>$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
+    <NoWarn>$(NoWarn);MSB3270</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="sts2" HintPath="$(Sts2DataDir)\sts2.dll" Private="false"/>
+    <Reference Include="0Harmony" HintPath="$(Sts2DataDir)\0Harmony.dll" Private="false"/>
+    <Compile Remove="tests/**"/>
+    <WeaponAsset Include="../../assets/武器五种/处理后/ironclad.png;../../assets/武器五种/处理后/silent.png;../../assets/武器五种/处理后/regent.png;../../assets/武器五种/处理后/defect.png;../../assets/武器五种/处理后/necrobinder.png"/>
+    <WeaponAsset Include="../../assets/武器五种/处理后/regent_hand.png;../../assets/武器五种/处理后/regent_energy.png;../../assets/武器五种/处理后/defect_hand.png;../../assets/武器五种/处理后/defect_energy.png"/>
+    <EmbeddedResource Include="@(WeaponAsset)" LogicalName="FirstPersonSpire.Assets.%(Filename)%(Extension)"/>
+    <!-- v2 材质：按本体解包图配色重做。v1 把丛林画成米黄石板地，用户否掉。
+         第一幕两个场景各一套：Overgrowth 丛林 + Underdocks 暗潭码头。 -->
+    <RoomAsset Include="../../assets/杀戮尖塔测试/房间纹理/v2/wall-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/floor-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/ceiling-v2.png"/>
+    <RoomAsset Include="../../assets/杀戮尖塔测试/房间纹理/v2/docks-wall-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/docks-floor-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/docks-ceiling-v2.png"/>
+    <RoomAsset Include="../../assets/杀戮尖塔测试/房间纹理/v2/hive-wall-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/hive-floor-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/hive-ceiling-v2.png"/>
+    <RoomAsset Include="../../assets/杀戮尖塔测试/房间纹理/v2/glory-wall-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/glory-floor-v2.png;../../assets/杀戮尖塔测试/房间纹理/v2/glory-ceiling-flat-v2.png"/>
+    <EmbeddedResource Include="@(RoomAsset)" LogicalName="FirstPersonSpire.Room.%(Filename)%(Extension)"/>
+    <None Include="FirstPersonSpire.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+  <Target Name="CheckGame" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="找不到本体 sts2.dll，请通过 -p:Sts2Dir 指定游戏目录。"/>
+    <Error Condition="!Exists('%(WeaponAsset.Identity)')" Text="缺少武器图片 %(WeaponAsset.Identity)，请先运行 python tools/prepare_weapons.py。"/>
+    <Error Condition="!Exists('%(RoomAsset.Identity)')" Text="缺少房间纹理 %(RoomAsset.Identity)。"/>
+  </Target>
+</Project>

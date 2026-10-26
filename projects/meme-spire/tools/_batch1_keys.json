@@ -1,0 +1,127 @@
+[
+ {
+  "table": "acts",
+  "key": "DEPRECATED_ACT.title",
+  "vanilla": "已弃用阶段"
+ },
+ {
+  "table": "cards",
+  "key": "BACKSTAB.title",
+  "vanilla": "背刺"
+ },
+ {
+  "table": "cards",
+  "key": "DISTRACTION.title",
+  "vanilla": "声东击西"
+ },
+ {
+  "table": "cards",
+  "key": "FLECHETTES.title",
+  "vanilla": "飞镖"
+ },
+ {
+  "table": "cards",
+  "key": "GRAVE_WARDEN.title",
+  "vanilla": "守墓人"
+ },
+ {
+  "table": "cards",
+  "key": "MAUL.title",
+  "vanilla": "撕咬"
+ },
+ {
+  "table": "cards",
+  "key": "MOCK_QUEST_CARD.title",
+  "vanilla": "临时任务牌"
+ },
+ {
+  "table": "cards",
+  "key": "OFFERING.title",
+  "vanilla": "祭品"
+ },
+ {
+  "table": "cards",
+  "key": "OVERCLOCK.title",
+  "vanilla": "超频"
+ },
+ {
+  "table": "cards",
+  "key": "PALE_BLUE_DOT.title",
+  "vanilla": "暗淡蓝点"
+ },
+ {
+  "table": "cards",
+  "key": "PUTREFY.title",
+  "vanilla": "腐败"
+ },
+ {
+  "table": "cards",
+  "key": "QUASAR.title",
+  "vanilla": "类星体"
+ },
+ {
+  "table": "cards",
+  "key": "SPOILS_MAP.title",
+  "vanilla": "藏宝图"
+ },
+ {
+  "table": "cards",
+  "key": "STACK.title",
+  "vanilla": "堆栈"
+ },
+ {
+  "table": "cards",
+  "key": "SUBROUTINE.title",
+  "vanilla": "子程序"
+ },
+ {
+  "table": "cards",
+  "key": "TANK.title",
+  "vanilla": "肉盾"
+ },
+ {
+  "table": "cards",
+  "key": "TRACKING.title",
+  "vanilla": "跟踪"
+ },
+ {
+  "table": "cards",
+  "key": "UP_MY_SLEEVE.title",
+  "vanilla": "袖里乾坤"
+ },
+ {
+  "table": "characters",
+  "key": "DEPRECATED_CHARACTER.title",
+  "vanilla": "已弃用角色"
+ },
+ {
+  "table": "characters",
+  "key": "DEPRIVED.title",
+  "vanilla": "被剥夺者"
+ },
+ {
+  "table": "characters",
+  "key": "LOCKED.title",
+  "vanilla": "？？？"
+ },
+ {
+  "table": "orbs",
+  "key": "MOCK_COMBAT_CLEANUP_ORB.title",
+  "vanilla": "Mock Combat Cleanup"
+ },
+ {
+  "table": "potions",
+  "key": "GHOST_IN_A_JAR.title",
+  "vanilla": "罐装幽灵"
+ },
+ {
+  "table": "potions",
+  "key": "SHIP_IN_A_BOTTLE.title",
+  "vanilla": "瓶中船"
+ },
+ {
+  "table": "potions",
+  "key": "STABLE_SERUM.title",
+  "vanilla": "稳定血清"
+ }
+]

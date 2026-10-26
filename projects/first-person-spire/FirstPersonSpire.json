@@ -1,0 +1,12 @@
+{
+  "id": "FirstPersonSpire",
+  "name": "面对尖塔 · 第一人称原型",
+  "author": "有花无实",
+  "description": "实验版：F8 切换第一人称。3D 房间外壳 + 纸片怪物（贴图始终面向玩家），避免倒立、重影、失真与逐像素扫描闪退。0.9.2：修复纸片怪物尺寸写反导致画面被糊满/闪屏。保留右键拖动转头、五角色持武、四套房间材质、自己人血条固定栏。手牌问题仍未实机验收。",
+  "version": "0.9.2",
+  "min_game_version": "0.111.0",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": false
+}

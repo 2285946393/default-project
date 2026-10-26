@@ -1,0 +1,245 @@
+德州 · 二次元牌室【带角色版】—— 出图提示词
+==============================================
+
+这张是 **bg/poker_anime.png 的升级版**：还是原来那间「海边度假别墅的阳光牌室」
+（galgame / 甜蜜女友3 那种明亮动漫风），但**允许有一个人** ——
+一位二次元女主站在牌桌旁边（画面左侧，全身）。
+
+原来那版（德州扑克-生成提示词.md §1.0c）写的是 EMPTY OF PEOPLE，那是**故意的**：
+怕人挡住桌子。现在你要人在旁边，所以这一版把那条改掉了，同时补了三条约束，
+保证她**不会被后压上去的牌桌切掉**：
+
+  1. 她整个人在画面**左侧 1%~10%** 这条竖带里，绝不能越过中间 9%~91% 那块
+     （那块是留给桌子的，压上去会把人切掉一半）。
+  2. 全身：头顶在 15% 处，脚在 88% 处 —— 大概 780px 高，看得清。
+  3. 手里的东西（托盘、杯子）也留在左侧竖带里，别伸向中间。
+
+★ 出完图直接覆盖 assets/bg/poker_anime.png（文件名别改，代码按文件名取图）。
+★ 整幅画满、**不抠图**、不要品红底、不要留边 —— 和另外三张场景一样。
+★ 生成时可以把已有的 table/table_poker.png 一起丢进去当参考（只看位置，别照抄绿绒配色）。
+
+提示词正文（下面这一整段直接复制，3618 字符，QQ 上限内）：
+
+────────────────────────────────────────
+A wide 16:9 full-screen background in modern Japanese anime (visual-novel / galgame) style:
+bright, soft, airy, smooth cel shading. A sunlit private card room at a seaside resort in
+summer, seen from a seated player's point of view, looking straight ahead and slightly down.
+One young woman -- the hostess -- stands at the left, beside the card table.
+
+FINISHED SCENE, NOT A CUT-OUT.
+Fills the whole frame: no magenta, no transparency, no margins, no border. A large oval poker
+table is laid over the middle later -- plan around it. Draw no table, cards, chips or dice.
+
+LIGHT.
+High-key daylight: sun through the window on the right, soft bounce everywhere. Centre, edges
+and all four corners at similar brightness. No vignette, no dark corners, no black edges, no
+heavy shadow near the border. Rim-light the woman from her right; soft shading on her left; no
+hard shadow on her face.
+
+COMPOSITION (obey the percentages).
+Central band -- 9% in from the left to 9% in from the right, and 6% down to 84% down -- is
+where the table goes: plain calm empty floor only. No furniture, chairs, plants, rugs or
+objects, and no part of the woman.
+Right 9%: wide open window, white curtains lifting, balcony rail, blue sea, bright summer sky.
+Left 9%: light wooden wall, tall potted palm, small round table with an iced drink and a straw
+hat, a shelf of board games -- and the woman standing in front of all that, nearer the viewer.
+Never leave the edges blank, flat or white.
+Bottom 16%: pale sunlit wooden floor of wide soft planks, one soft band of window light across
+it; plain, no patterned carpet, no busy motif.
+Top 6%: white ceiling, a wooden beam, a slowly turning fan seen from below.
+Four corners: light wooden posts, soft warm glow, no dark shadows.
+
+THE WOMAN (exactly one person in the frame).
+Early twenties, same clean anime style and same quality as visual-novel character art. Upright,
+relaxed, weight on one leg, turned three-quarters toward the centre of the room. Full body: top
+of her head 15% down, feet 88% down. Slim -- about one-fifth as wide as tall -- kept inside the
+left 1%-10% of the width. Nothing of her crosses into the central band. Face turned toward the
+middle of the frame: small gentle smile, slight blush, soft friendly eyes looking toward the
+player, not straight out at the camera. Hair: long light honey-blond, warm-gold highlights,
+loose, small coral-pink ribbon at the back. Outfit: sleeveless cream-white blouse, mint-green
+knee-length skirt, thin warm-gold belt, flat cream sandals. Left hand at hip height holds a
+small round tray with a tall glass of iced tea and a lemon slice; right hand hangs at her side.
+Both hands stay in the left strip. Head not cropped, feet fully visible.
+
+PALETTE.
+Cream white #FFF6E8, pale sky blue #BFE3F5, sea teal #4FA3B8, sunlit wood #E8C48C deepening to
+#C99A5E, coral pink #F2A9A0, mint green #A8D8B9, small accents of warm gold #F2C453. Her hair
+and clothes use the same palette. Clean, light, slightly desaturated pastel -- never muddy,
+never heavy.
+
+STYLE.
+Crisp clean linework, smooth cel shading, soft airbrushed gradients, high-key pastel colours,
+gentle bloom at the window. Paint her as proper character art: clean outlines, soft cel shading
+on skin and cloth, neat simple features. Not photorealistic, not 3D, not chibi, not watercolour.
+
+ONE PERSON, NO WORDS.
+Exactly one human figure: the woman. No second person, no crowd, no faces at the window, no
+silhouette, no reflection, no portrait, photo or poster of a person. No text, letters, numbers,
+runes, signage, labels, signature or watermark. No cards, chips, dice or table anywhere.
+
+────────────────────────────────────────
+
+════════════════════════════════════════
+B 档 ·「甜3 那个味道」——金发碧眼女仆（3810 字符）
+════════════════════════════════════════
+
+《甜蜜女友3》（アマカノ3，海豹社，2025-09-26）五位女主里最有代表性的就是
+**斯卡蕾特·斑鸠·维斯塔莉亚**：主角祖母的养女、大一级的学姐、**及腰金发 + 碧眼**、
+**平时一直穿女仆装**、话少、表情不多、把主角当「ご主人様」。
+
+★ 注意：这里写的是**「那种味道」的原创角色**，不点名、不要求复刻 ——
+  直接点商业角色名，AI 常常画歪或拒画，而且放工坊也不合适。
+  外形照着这个味儿来就够了：及腰丰盈金发 + 碧眼 + 女仆装 + 沉静表情。
+
+（其余和 A 档完全一样：同一间海边度假阳光牌室、同样的构图百分比、同样的配色。）
+
+A wide 16:9 full-screen background in modern Japanese anime (visual-novel / galgame) style:
+bright, soft, airy, smooth cel shading. A sunlit private card room at a seaside resort in
+summer, seen from a seated player's point of view, looking straight ahead and slightly down.
+One young woman -- the hostess -- stands at the left, beside the card table.
+
+FINISHED SCENE, NOT A CUT-OUT.
+Fills the whole frame: no magenta, no transparency, no margins, no border. A large oval poker
+table is laid over the middle later -- plan around it. Draw no table, cards, chips or dice.
+
+LIGHT.
+High-key daylight: sun through the window on the right, soft bounce everywhere. Centre, edges
+and all four corners at similar brightness. No vignette, no dark corners, no black edges, no
+heavy shadow near the border. Rim-light the woman from her right; soft shading on her left; no
+hard shadow on her face.
+
+COMPOSITION (obey the percentages).
+Central band -- 9% in from the left to 9% in from the right, and 6% down to 84% down -- is
+where the table goes: plain calm empty floor only. No furniture, chairs, plants, rugs or
+objects, and no part of the woman.
+Right 9%: wide open window, white curtains lifting, balcony rail, blue sea, bright summer sky.
+Left 9%: light wooden wall, tall potted palm, small round table with an iced drink and a straw
+hat, a shelf of board games -- and the woman standing in front of all that, nearer the viewer.
+Never leave the edges blank, flat or white.
+Bottom 16%: pale sunlit wooden floor of wide soft planks, one soft band of window light across
+it; plain, no patterned carpet, no busy motif.
+Top 6%: white ceiling, a wooden beam, a slowly turning fan seen from below.
+Four corners: light wooden posts, soft warm glow, no dark shadows.
+
+THE WOMAN (exactly one person -- a classic galgame maid heroine: tall, calm, golden-haired,
+in a maid uniform).
+Early twenties, tall and composed, same clean anime style and same quality as visual-novel
+character art. Upright, weight on one leg, turned three-quarters toward the centre of the room.
+Full body: top of her head 15% down, feet 88% down. Slim -- about one-fifth as wide as tall --
+kept inside the left 1%-10% of the width. Nothing of her crosses into the central band. Face
+turned toward the middle of the frame: calm and almost unreadable, a very small closed-mouth
+smile, faint blush, soft blue-green eyes looking toward the player, not straight out at the
+camera. Hair: very long silky golden blond down to her waist, voluminous, soft warm-gold
+highlights, neat fringe, a small white maid headdress on top. Outfit: a classic maid uniform --
+black long-sleeved dress, white apron, white collar, white frilled headband, plain black flat
+shoes. Left hand at hip height holds a small silver tray with a tall glass of iced tea and a
+lemon slice; right hand hangs at her side. Both hands stay in the left strip. Head not cropped,
+feet fully visible.
+
+PALETTE.
+Cream white #FFF6E8, pale sky blue #BFE3F5, sea teal #4FA3B8, sunlit wood #E8C48C deepening to
+#C99A5E, coral pink #F2A9A0, mint green #A8D8B9, small accents of warm gold #F2C453. Her hair
+and clothes use the same palette. Clean, light, slightly desaturated pastel -- never muddy,
+never heavy.
+
+STYLE.
+Crisp clean linework, smooth cel shading, soft airbrushed gradients, high-key pastel colours,
+gentle bloom at the window. Paint her as proper character art: clean outlines, soft cel shading
+on skin and cloth, neat simple features. Not photorealistic, not 3D, not chibi, not watercolour.
+
+ONE PERSON, NO WORDS.
+Exactly one human figure: the woman. No second person, no crowd, no faces at the window, no
+silhouette, no reflection, no portrait, photo or poster of a person. No text, letters, numbers,
+runes, signage, labels, signature or watermark. No cards, chips, dice or table anywhere.
+
+────────────────────────────────────────
+
+════════════════════════════════════════
+C 档 ·「天津罪那个味道」——和风巫女牌室（3914 字符）
+════════════════════════════════════════
+
+《天津罪》（アマツツミ / Amatsutsumi，紫社 Purple software 第 20 作，**2016-07-29**，
+剧本 御影、原画 **克 + 月杜尋**）—— 核心设定是**言灵**：说的话会成真，但每用一次折寿，
+所以一族隐居在与世隔绝的村子「里」。舞台是**湖畔的乡下小镇「井中镇」**，
+有咖啡店「折纸」、神社、医院。主题曲《こころに響く恋ほたる》—— **萤火虫**是本作的魂。
+
+这一档把牌室换成**神社别院改的和室**：纸障子、木格窗、圆纸灯笼、旧木梁，
+窗外是夏日黄昏的庭院 + 石灯笼 + 远处鸟居 + 几点萤火。
+
+四位女主里挑了**朝比奈 响子**（神社巫女）当原型 ——
+**黑长直 + 棕瞳 + 153cm**、社恐、能看见幽灵。服装是巫女服（白衣 + 朱红袴），
+辨识度最高、AI 最好画。手里端的是**绿茶 + 甜甜圈**（原作里她擅长做甜甜圈）。
+
+★ 和 A / B 档一样：**不点名、不复刻**，只取"那种味道"的原创角色。
+  其余构图百分比、配色思路、三条保命约束（人只在左侧 1%~10% 竖带 / 头顶 15% 脚 88% /
+  手里的东西不越界）**完全照搬 A 档**，出完图同样覆盖 bg/poker_anime.png。
+
+A wide 16:9 full-screen anime background in the style of a high-end visual-novel painting:
+soft, clean, gently glowing, smooth cel shading. A private card room inside an old Japanese
+wooden house -- a shrine annex with shoji screens, paper lanterns and warm timber -- in a small
+lakeside country town in summer. Seen from a seated player's point of view, looking straight
+ahead and slightly down. One young woman in a shrine-maiden outfit stands at the left, beside
+the card table.
+
+FINISHED SCENE, NOT A CUT-OUT.
+Fills the whole frame: no magenta, no transparency, no margins, no border. A large oval poker
+table is laid over the middle later -- plan around it. Draw no table, cards, chips or dice.
+
+LIGHT.
+Late-summer evening, but FULLY LIT: warm paper-lantern light plus the last orange daylight
+through the screens on the right, soft bounce everywhere. Centre, edges and all four corners at
+similar brightness. No vignette, no dark corners, no black edges, no heavy shadow near the
+border. A few warm firefly glows drift outside the right window. Rim-light the woman from her
+right; no hard shadow on her face.
+
+COMPOSITION (obey the percentages).
+Central band -- 9% in from the left to 9% in from the right, and 6% down to 84% down -- is where
+the table goes: plain calm empty floor only. No furniture, plants, rugs or objects, and no part
+of the woman.
+Right 9%: a wooden lattice window and a half-open shoji screen; beyond it a small dusk garden --
+a stone lantern, dark tree shapes, a distant red shrine torii, a warm evening sky, a few tiny
+firefly lights.
+Left 9%: an old dark wooden wall, a low cabinet with books, a hanging round paper lantern, a
+short indigo noren curtain -- and the woman standing in front of all that, nearer the viewer.
+Never leave the edges blank, flat or white.
+Bottom 16%: pale warm wooden floor of wide soft planks, one soft band of lantern light across
+it; plain, no patterned carpet.
+Top 6%: dark wooden beams and a round paper lantern, seen from below.
+Four corners: wooden posts, warm glow, no dark shadows.
+
+THE WOMAN (one person -- a shrine maiden: jet-black long straight hair, shy, a white and
+vermilion miko outfit).
+Petite, late teens, same clean anime style and quality as visual-novel character art. Upright and
+a little reserved, weight on one leg, turned three-quarters toward the centre. Full body: top of
+her head 15% down, feet 88% down. Slim -- about one-fifth as wide as tall -- kept inside the left
+1%-10% of the width. Nothing of her crosses into the central band. Face toward the middle of the
+frame: shy, a small unsure smile, faint blush, soft brown eyes on the player, not at the camera.
+Hair: very long straight jet-black hair to her waist, glossy, neat fringe, one small hair clip.
+Outfit: white kimono top, vivid vermilion-red hakama, white tabi socks. Left hand at hip height
+holds a small lacquer tray with a cup of green tea and one sugar doughnut; right hand at her
+side. Both hands stay in the left strip. Head not cropped, feet fully visible.
+
+PALETTE.
+Paper-lantern cream #FFE7B0, warm timber #C89A63 deepening to #8C6239, pure white #FFFBF2,
+vermilion red #C0392B, dusk blue #7FA8C9, moss green #7C9A6B, firefly gold #FFF3B0. Her hair and
+clothes use the same palette. Clean, gently saturated -- never muddy, never dark.
+
+STYLE.
+Crisp linework, smooth cel shading, soft airbrushed gradients, gentle bloom around the lanterns,
+a faint warm haze. Paint her as proper character art: clean outlines, soft cel shading on skin
+and cloth, neat simple features, slightly glossy dark hair. Not photorealistic, not 3D, not
+chibi, not watercolour.
+
+ONE PERSON, NO WORDS.
+Exactly one human figure: the woman. No second person, no crowd, no faces outside the window, no
+silhouette, no reflection, no portrait, photo or poster of a person. No text, letters, numbers,
+runes, signage, labels, signature or watermark. No cards, chips, dice or table anywhere.
+
+────────────────────────────────────────
+
+附：
+1. 出完如果觉得「人在左边不如右边顺眼」，说一声，我把左右对调再给你一版。
+2. A / B / C 三档现在都是**覆盖同一张 bg/poker_anime.png**（游戏里"二次元画风"那一档）。
+   要是你三张都想要、想都留在游戏里能切 —— 那就得再加场景枚举（现在 4 档 → 5、6 档），
+   要动 DouSpireScene / InjectLabels() / SceneKey() 三处，跟我说一声我就改。
+3. 还想出别的味道（比如天津罪的「萤」——浴衣 + 萤火虫 + 夏夜），点名就行。

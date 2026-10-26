@@ -1,0 +1,51 @@
+# LoadOrderManager localization - Turkish
+open_button=Yukleme sirasi
+open_button_tooltip=Bir sonraki acilista kullanilacak mod yukleme sirasini duzenle
+title=Mod yukleme sirasi
+subtitle=Satirlari tasiyip Uygula'ya basin. Degisiklik bir sonraki acilista etkili olur.
+btn_move_up=Yukari
+btn_move_down=Asagi
+btn_move_top=En uste
+btn_move_bottom=En alta
+btn_reload=Yenile
+btn_apply=Uygula
+btn_close=Kapat
+status_ready=Hazir.
+status_load_failed=Yukleme basarisiz: {0}
+status_loaded={0} mod yuklendi.
+status_moved_pos={0}. siraya tasindi.
+status_moved_top=En uste tasindi.
+status_moved_bottom=En alta tasindi.
+status_nothing_to_save=Kaydedilecek bir sey yok.
+status_save_failed=Kaydetme basarisiz: {0}
+status_saved=Kaydedildi. Sirayi uygulamak icin oyunu yeniden baslatin.
+warning_overwritten=Uyari: guncel mod sirasi son uygulama anlik goruntusunden ({0}) farkli. Bagimlilik siralamasi veya baska bir mod tarafindan uzerine yazilmis olabilir.
+source_mods=yerel
+source_workshop=atolye
+source_unknown=bilinmiyor
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=Yeni modlari otomatik etkinlestir
+policy_auto_enable_tooltip=Acik: bu profili kaydettikten sonra abone oldugunuz modlar burada varsayilan olarak etkindir. Kapali: devre disi baslar ve elle etkinlestirmeniz gerekir.
+policy_on=acik
+policy_off=kapali
+status_new_mods_seen={0} yeni mod bu profilin yeni mod kuralina gore islendi. Kaydetmek icin Uygula'ya basin.
+status_policy_changed=Profil '{0}': yeni modlari otomatik etkinlestir = {1}
+tag_new=YENI

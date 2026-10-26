@@ -1,0 +1,7 @@
+{
+  "BLOOMLESS_SPIRE_POWER_INFINITE_CLAWS_POWER.title": "无限爪击",
+  "BLOOMLESS_SPIRE_POWER_INFINITE_CLAWS_POWER.description": "每回合开始时，将一张幽灵爪击加入手牌。",
+  "BLOOMLESS_SPIRE_POWER_INFINITE_CLAWS_POWER.smartDescription": "每回合开始时，将一张幽灵爪击加入手牌。",
+  "BLOOMLESS_SPIRE_POWER_RETURN_BLOCK_ON_CLAW_POWER.title": "以爪拒之",
+  "BLOOMLESS_SPIRE_POWER_RETURN_BLOCK_ON_CLAW_POWER.description": "被爪击牌攻击时，攻击者获得 2 点格挡。"
+}

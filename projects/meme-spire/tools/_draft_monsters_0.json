@@ -1,0 +1,152 @@
+[
+ {
+  "table": "monsters",
+  "key": "AEONGLASS.moves.INCREASING_INTENSITY.title",
+  "vanilla": "加大力度",
+  "new": ""
+ },
+ {
+  "table": "monsters",
+  "key": "BYGONE_EFFIGY.moves.SLEEP.speakLine1",
+  "vanilla": "[red][sine]你的旅程，到此为止……[/sine][/red]",
+  "new": "[sine][red]你的传说，到此为止……[/sine][/red]"
+ },
+ {
+  "table": "monsters",
+  "key": "BYGONE_EFFIGY.moves.SLEEP.speakLine2",
+  "vanilla": "那么，我们开始吧？",
+  "new": "那么，我们开始吧？"
+ },
+ {
+  "table": "monsters",
+  "key": "CALCIFIED_CULTIST.moves.INCANTATION.banter",
+  "vanilla": "[jitter]我们的力量无人能及！[/jitter]",
+  "new": "[jitter]我的实力无人能挡！[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "CEREMONIAL_BEAST.moves.PLOW.title",
+  "vanilla": "横冲直撞",
+  "new": "横冲直撞"
+ },
+ {
+  "table": "monsters",
+  "key": "CUBEX_CONSTRUCT.moves.EXPEL.title",
+  "vanilla": "排出",
+  "new": "喷吐"
+ },
+ {
+  "table": "monsters",
+  "key": "DAMP_CULTIST.moves.INCANTATION.banter",
+  "vanilla": "[jitter]咔！\n咔——[/jitter]",
+  "new": "[jitter]呱！呱——[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "DEVOTED_SCULPTOR.moves.FORBIDDEN_INCANTATION.banter",
+  "vanilla": "[jitter]咔咔——！！[/jitter]",
+  "new": "[jitter]呱呱——！！[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "FABRICATOR.moves.FABRICATE.title",
+  "vanilla": "组装",
+  "new": "组装"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.ENRAGE.speakLine1",
+  "vanilla": "哼，不付钱可以，那就付点别的吧……",
+  "new": "哼，不给钱是吧，那就付点别的吧……"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.ENRAGE.speakLine2",
+  "vanilla": "今晚你就要与异鱼同眠了！",
+  "new": "今晚你就要与异鱼同眠了！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.SPEW_COINS.speakLine1",
+  "vanilla": "大赚一笔！",
+  "new": "大赚一笔！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.SWIPE.speakLine1",
+  "vanilla": "来打啊！",
+  "new": "来打啊！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.SWIPE.title",
+  "vanilla": "顺走",
+  "new": "顺走"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.THROW_RELIC.speakLine1",
+  "vanilla": "你想要？来拿啊！",
+  "new": "想要？来拿啊！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAT_GREMLIN.moves.FLEE.banter",
+  "vanilla": "[jitter][orange]我溜啦！[/orange][/jitter]",
+  "new": "[jitter][orange]我溜啦！[/orange][/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "FAT_GREMLIN.name",
+  "vanilla": "胖地精",
+  "new": "胖地精"
+ },
+ {
+  "table": "monsters",
+  "key": "FROG_KNIGHT.name",
+  "vanilla": "青蛙骑士",
+  "new": "青蛙骑士"
+ },
+ {
+  "table": "monsters",
+  "key": "GEM_EATER.moves.GEM_LASER.title",
+  "vanilla": "宝石激光",
+  "new": "宝石激光"
+ },
+ {
+  "table": "monsters",
+  "key": "GREMLIN_MERC.moves.GIMME.banter",
+  "vanilla": "[jitter][gold]钱钱！[/gold][/jitter]\n[sine][orange]钱钱！[/orange][/sine]",
+  "new": "[jitter][gold]钱钱！[/gold][/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "GREMLIN_MERC.moves.HEHE.title",
+  "vanilla": "嘿嘿",
+  "new": "嘿嘿"
+ },
+ {
+  "table": "monsters",
+  "key": "KIN_FOLLOWER.moves.BOOMERANG.title",
+  "vanilla": "回旋镖",
+  "new": "回旋镖"
+ },
+ {
+  "table": "monsters",
+  "key": "KIN_PRIEST.moves.RITUAL.speakLine1",
+  "vanilla": "[jitter]呱——咔！！[/jitter]",
+  "new": "[jitter]呱——咔！！[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "LAGAVULIN_MATRIARCH.moves.DISEMBOWEL.title",
+  "vanilla": "开膛破肚",
+  "new": "开膛破肚"
+ },
+ {
+  "table": "monsters",
+  "key": "LEAF_SLIME_M.name",
+  "vanilla": "树叶史莱姆（中）",
+  "new": "树叶史莱姆（中）"
+ }
+]

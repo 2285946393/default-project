@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>代码导读 · 面试间 ai-interviewer</title>
+<style>
+:root{
+  --ink:#2b2733; --sub:#6b6577; --mist:#9a94a6; --line:#e8e4ee;
+  --accent:#0f766e; --accent-soft:#e8f4f2;
+  --code-bg:#1e1e2e; --code-fg:#e4e4ef; --code-dim:#8b8ba7;
+  --bg:#f7f6fa; --card:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--ink);min-height:100vh;padding:26px 16px 70px;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  line-height:1.65;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:920px;margin:0 auto}
+
+header{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:18px}
+header h1{font-size:23px;font-weight:800;letter-spacing:.02em}
+header h1 span{color:var(--accent)}
+header .sub{font-size:13px;color:var(--sub);margin-top:6px}
+header .meta{font-size:12px;color:var(--mist);margin-top:7px}
+
+.toc{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px}
+.toc a{
+  font-size:12.5px;font-weight:600;color:var(--sub);text-decoration:none;
+  border:1px solid var(--line);background:var(--card);padding:5px 12px;border-radius:999px;transition:.15s;
+}
+.toc a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px}
+section > h2{
+  font-size:16px;font-weight:800;display:flex;align-items:center;gap:9px;
+  margin-bottom:5px;padding-bottom:10px;border-bottom:1px solid var(--line);
+}
+section > h2 .n{
+  flex:0 0 auto;background:var(--accent);color:#fff;font-size:11.5px;font-weight:800;
+  padding:2px 8px;border-radius:6px;letter-spacing:.03em;
+}
+section > h2 .file{font-size:12.5px;font-weight:600;color:var(--mist);font-family:ui-monospace,Menlo,Consolas,monospace;margin-left:auto}
+.lede{font-size:13.5px;color:var(--sub);margin:11px 0 16px;line-height:1.7}
+.lede b{color:var(--ink);font-weight:600}
+
+.flow{background:#fbfaff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0;font-size:13px;line-height:1.9}
+.flow b{color:var(--accent);font-weight:700}
+.flow .arw{color:var(--mist)}
+
+h3{font-size:13.5px;font-weight:700;margin:18px 0 7px;color:var(--ink)}
+h3:first-of-type{margin-top:6px}
+
+pre{
+  background:var(--code-bg);color:var(--code-fg);padding:13px 15px;border-radius:10px;
+  overflow-x:auto;font-size:12.5px;line-height:1.7;margin:8px 0 10px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+}
+pre code{font-family:inherit;white-space:pre}
+.cm{color:var(--code-dim)}
+.hl{color:#7dd3c0;font-weight:600}
+
+p{font-size:13.5px;line-height:1.75;margin:9px 0}
+p code,li code{background:#f0eef5;color:#7a4a86;padding:1px 6px;border-radius:5px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
+ul{margin:8px 0 8px 20px}
+li{font-size:13.5px;line-height:1.75;margin:4px 0}
+li b{font-weight:600}
+
+.qa{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0 4px}
+.qa .h{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.06em;margin-bottom:8px}
+.qa .q{font-size:13px;font-weight:700;margin-top:9px}
+.qa .a{font-size:13px;color:var(--sub);margin-top:2px;line-height:1.7}
+.qa .a b{color:var(--ink);font-weight:600}
+
+.tip{background:#fff9ec;border:1px solid #f5e3bc;border-radius:10px;padding:11px 15px;margin:13px 0;font-size:13px;line-height:1.7}
+.tip b{color:#b8860b}
+
+.foot{margin-top:24px;font-size:12.5px;color:var(--mist);text-align:center;line-height:1.9}
+
+@media (max-width:720px){
+  body{padding:16px 11px 50px}
+  header h1{font-size:19px}
+  section{padding:16px 15px}
+  section > h2{font-size:14.5px;flex-wrap:wrap}
+  section > h2 .file{margin-left:0;width:100%;font-size:11.5px}
+  pre{font-size:11.5px;padding:11px 12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>代码导读 <span>·</span> 面试间</h1>
+    <div class="sub">5 个文件、约 470 行。读完你就知道「RAG / 流式 / 降级」这些词，对应你项目里的哪几行。</div>
+    <div class="meta">路径：<code>projects/ai-interviewer/</code> ｜ 建议：编辑器左边开代码，浏览器开这页，对着看</div>
+  </header>
+
+  <nav class="toc">
+    <a href="#overview">0 · 全局</a>
+    <a href="#ai">1 · lib/ai.ts</a>
+    <a href="#rag">2 · lib/rag.ts</a>
+    <a href="#chat">3 · chat/route.ts</a>
+    <a href="#generate">4 · generate/route.ts</a>
+    <a href="#feedback">5 · feedback/route.ts</a>
+    <a href="#qa">6 · 面试问答汇总</a>
+  </nav>
+
+  <section id="overview">
+    <h2><span class="n">0</span>全局：这个项目在干什么 <span class="file">先看这张图</span></h2>
+    <p class="lede">一句话：<b>你贴一个岗位，它出题；你答，它追问；结束给你一份评分报告。</b>全程不需要注册，没配 API Key 也能跑完。</p>
+
+    <div class="flow">
+      浏览器 <span class="arw">→</span> 贴 JD / 简历<br>
+      <span class="arw">↓</span> <b>RAG 检索</b>　<code>lib/rag.ts</code>　从你的资料里挑出最相关的 4 段<br>
+      <span class="arw">↓</span> <b>出题</b>　<code>generate/route.ts</code>　把挑出来的段落塞进 prompt，让模型出 5 道题<br>
+      <span class="arw">↓</span> 你答题<br>
+      <span class="arw">↓</span> <b>追问</b>　<code>chat/route.ts</code>　流式返回面试官点评<br>
+      <span class="arw">↓</span> <b>评分</b>　<code>feedback/route.ts</code>　Zod 约束的结构化报告
+    </div>
+
+    <p>这一整条链路上，<b>每一环都有一个「AI 挂了怎么办」的兜底</b>。这是这个项目最值得讲的地方——它不是「调通了一次 API 的 demo」，而是「任何一环挂掉，用户都能把面试走完」。</p>
+  </section>
+
+  <section id="ai">
+    <h2><span class="n">1</span>Provider 抽象层 <span class="file">lib/ai.ts · 15 行</span></h2>
+    <p class="lede">15 行，但它是整个项目的<b>地基</b>。</p>
+
+<pre><code>export const provider = createOpenAICompatible({
+  name:    process.env.AI_PROVIDER_NAME || "deepseek",
+  baseURL: process.env.AI_BASE_URL    || "https://api.deepseek.com/v1",
+  apiKey:  process.env.AI_API_KEY     || process.env.DEEPSEEK_API_KEY || "",
+});
+
+export const chatModel = provider.chatModel(MODEL);
+
+export const hasApiKey = Boolean(
+  process.env.AI_API_KEY || process.env.DEEPSEEK_API_KEY
+);</code></pre>
+
+    <h3>在干什么</h3>
+    <ul>
+      <li><code>createOpenAICompatible</code> 的意思：<b>只要对方兼容 OpenAI 的接口格式，我就能接</b>。DeepSeek、硅基流动、智谱都兼容，所以换模型 = 改 <code>.env.local</code> 三行，业务代码一行不动。</li>
+      <li><code>chatModel</code> 是导出的统一模型对象，其他文件都只 <code>import</code> 它，不关心背后是哪家。</li>
+      <li><code>hasApiKey</code> 是个布尔标志，<b>每个 API route 第一件事就是检查它</b>——没配 Key 就走本地兜底，而不是崩掉。</li>
+    </ul>
+
+    <div class="qa">
+      <div class="h">面试会问</div>
+      <div class="q">Q：为什么要做这层抽象？</div>
+      <div class="a">A：AI 模型迭代快、价格变动频繁，业务代码不该绑定某一家。<b>我统一走 OpenAI 兼容协议，换供应商只改环境变量。</b></div>
+      <div class="q">Q：<code>hasApiKey</code> 这个标志是干嘛的？</div>
+      <div class="a">A：让「没配 Key」变成一种<b>正常状态</b>而不是崩溃。这是我的设计目标——不配 Key 也能把整场面试走完。</div>
+    </div>
+  </section>
+
+  <section id="rag">
+    <h2><span class="n">2</span>检索：BM25 <span class="file">lib/rag.ts · 183 行</span></h2>
+    <p class="lede">这个文件只干一件事：<b>你打一句话，它从你的资料里挑出最相关的几段。</b>五个步骤。</p>
+
+    <h3>① 切词 —— 中文没空格怎么切（15–38 行）</h3>
+<pre><code>for (let i = 0; i &lt; segment.length - 1; i += 1) {
+  tokens.push(segment.slice(i, i + 2));
+}</code></pre>
+    <p>「模拟面试」切成 <code>模拟 / 拟面 / 面试</code>。英文数字按空格原样切。</p>
+    <ul>
+      <li><b>为什么不切单字？</b>会丢顺序——「面试」和「试面」就分不出来了。</li>
+      <li><b>为什么不切词？</b>要引词典，麻烦。</li>
+      <li><b>两个字是折中</b>：不用词典，又保住了局部语序。</li>
+    </ul>
+
+    <h3>② 切块 —— 长文怎么切（40–70 行）</h3>
+<pre><code>const cut = Math.max(
+  window.lastIndexOf("\n"),
+  window.lastIndexOf("。"),
+  window.lastIndexOf("；"),
+  window.lastIndexOf(". ")
+);
+if (cut &gt; size * 0.5) end = start + cut + 1;   <span class="cm">// 别把一句话劈成两半</span></code></pre>
+    <p>每块 420 字，相邻块重叠 80 字。重叠是因为怕答案正好卡在两块的交界处被切断。<code>cut &gt; size * 0.5</code> 是防止切得太靠前、块变得太短。</p>
+
+    <h3>③ 算 IDF —— 提前知道哪个词值钱（98–120 行）</h3>
+<pre><code>for (const token of new Set(chunk.tokens)) {
+  df.set(token, (df.get(token) ?? 0) + 1);     <span class="cm">// 用 Set 去重：同一块里出现 10 次也只算 1</span>
+}
+this.idf.set(token, Math.log(1 + (N - freq + 0.5) / (freq + 0.5)));</code></pre>
+    <p>一个词出现在<b>越少的块</b>里，它越值钱。「的」「了」到处都是 → IDF 接近 0 → 不影响打分。</p>
+
+    <h3>④ 打分 —— 心脏在这里（122–151 行）</h3>
+<pre><code>score += (idf * (f * (this.k1 + 1))) /
+         (f + this.k1 * (1 - this.b + (this.b * dl) / this.avgdl));</code></pre>
+    <p><b>这三行就是 BM25 的全部。</b>拆开看：</p>
+    <ul>
+      <li><code>f</code> = 这个词在这块里出现了几次 → 越多分越高</li>
+      <li>但分母里也有 <code>f</code>，所以分数会<b>饱和</b>——出现 10 次不等于重要 10 倍。<code>k1 = 1.5</code> 控制饱和的快慢</li>
+      <li><code>dl</code> = 这块多长。越长分母越大、分越低——因为长块天然容易命中，不公平。<code>b = 0.75</code> 控制惩罚力度（0 = 不罚，1 = 全罚）</li>
+    </ul>
+
+    <h3>⑤ 拼上下文（160–182 行）</h3>
+<pre><code>const text = hits.map(({ chunk }, i) =&gt;
+  `【片段 ${i + 1}｜来源：${chunk.docTitle}】\n${chunk.text}`
+).join("\n\n");</code></pre>
+    <p>把选中的块拼成一段文字，带上来源标注，最后塞进出题的 prompt。</p>
+
+    <div class="tip">
+      <b>主动说这个</b>：第 167 行 <code>new BM25Index(buildChunks(docs))</code> —— <b>每次检索都重建索引</b>。文档少没事，文档上千就是瓶颈。<br>
+      面试时主动讲出这一点，比被问出来强得多——它证明你知道自己实现的边界在哪。
+    </div>
+
+    <div class="qa">
+      <div class="h">面试会问</div>
+      <div class="q">Q：为什么用 BM25 不用向量检索？</div>
+      <div class="a">A：三条理由——<b>场景</b>（中文短文档、词汇重合度高，关键词匹配够用）、<b>成本</b>（BM25 纯 JS 毫秒级零成本，向量要么调 API 要么下几十 MB 模型）、<b>可解释</b>（能显示命中了哪段、为什么命中，向量很难 debug）。如果知识库涨到几百篇长文档，我会换混合检索。</div>
+      <div class="q">Q：k1 和 b 是干什么的？</div>
+      <div class="a">A：<b>k1 控制词频饱和</b>，<b>b 控制长度归一化</b>。我用的是文献默认值，没针对语料调参——这是可以改进的点。</div>
+      <div class="q">Q：这个实现的瓶颈在哪？</div>
+      <div class="a">A：每次检索重建索引。文档多了要建倒排索引并缓存、挪到 Web Worker。</div>
+    </div>
+  </section>
+
+  <section id="chat">
+    <h2><span class="n">3</span>流式追问 <span class="file">app/api/interview/chat/route.ts · 60 行</span></h2>
+    <p class="lede">「流式输出」这个词，在你项目里就是<b>两行代码</b>。</p>
+
+<pre><code>const result = streamText({
+  model: chatModel,
+  system: `...`,
+  prompt: `...`,
+});
+
+return result.toTextStreamResponse();   <span class="cm">// ← 流式就这一行</span></code></pre>
+    <p><code>streamText</code> 让模型一个字一个字往外吐；<code>toTextStreamResponse()</code> 把它转成 HTTP 流返回给前端。</p>
+
+    <h3>prompt 里那 6 条硬性规则（45–51 行）</h3>
+<pre><code>硬性规则：
+1. 每次回复不超过 130 个字
+2. 先用一句话点出回答里真实存在的亮点（要具体，不要"很好很棒"这种空话）
+3. 如果回答含糊、缺少细节或存在明显漏洞，追问一个具体问题
+4. 你是面试官不是讲师，不要长篇讲解知识点
+5. 纯口语中文，像真人说话
+6. <span class="hl">绝对不要使用 markdown 符号、星号、井号、列表符号（这段文字会被语音朗读出来）</span></code></pre>
+
+    <p>第 6 条是<b>整个 prompt 里最值钱的一句</b>。为什么？因为这段文字会被<b>语音朗读</b>——<code>*</code>、<code>#</code>、反引号读出来全是噪音。</p>
+    <p>这就是「<b>AI 的输出要服务于下游消费者</b>」——你的下游不是眼睛，是 TTS。</p>
+
+    <div class="qa">
+      <div class="h">面试会问</div>
+      <div class="q">Q：为什么用流式？</div>
+      <div class="a">A：<b>首字延迟</b>。用户不用等整段生成完，体验上像真人在说话。</div>
+      <div class="q">Q：prompt 里为什么禁用 markdown？</div>
+      <div class="a">A：因为要被朗读。这是我踩过才知道的——<b>提示词要服务于下游消费者</b>。</div>
+    </div>
+  </section>
+
+  <section id="generate">
+    <h2><span class="n">4</span>出题 + 解析兜底 <span class="file">app/api/interview/generate/route.ts · 114 行</span></h2>
+    <p class="lede">两件事：让模型出题，然后<b>保证无论它吐什么，我都能解析出来</b>。</p>
+
+    <h3>四级兜底 <code>parseQuestions</code>（8–42 行）</h3>
+<pre><code><span class="cm">// 第 1 级：先去掉可能的 ``` 包裹，直接 parse</span>
+const parsed = JSON.parse(cleaned);
+
+<span class="cm">// 第 2 级：正则抠出 [...] 再 parse</span>
+const bracketMatch = cleaned.match(/\[[\s\S]*\]/);
+
+<span class="cm">// 第 3 级：提取所有长度 &gt; 6 的引号串</span>
+const quoted = [...cleaned.matchAll(/"([^"]{6,})"/g)];
+
+<span class="cm">// 第 4 级：按行切，剥掉 1. - * 这类列表符号</span>
+cleaned.split("\n").map(line =&gt; line.replace(/^[\s\-*\d.、）)]+/, "").trim())</code></pre>
+
+    <p><b>为什么需要四级？</b>因为模型不保证只吐 JSON。它经常在外面包一层「好的，以下是题目：」，或者包个 ```json 代码块。所以第 9–12 行先把 ``` 清掉，然后一层层往下退。</p>
+
+    <h3>降级：AI 挂了怎么办（96–113 行）</h3>
+<pre><code>return Response.json({
+  success: true,
+  source: "fallback",            <span class="cm">// ← 关键：告诉前端这是兜底结果</span>
+  questions: fallback,
+  message: "AI 生成失败，已回退到内置题库",
+});</code></pre>
+    <p><code>fallback</code> 是内置题库（<code>ROLE_MAP</code> 里每个岗位预制的题）。<b>注意 <code>source</code> 字段</b>——它让前端能显示「当前用的是内置题库」，降级是透明的，不是偷偷糊弄。</p>
+
+    <div class="qa">
+      <div class="h">面试会问</div>
+      <div class="q">Q：模型返回的不是合法 JSON 怎么办？</div>
+      <div class="a">A：这四级兜底就是答案。<b>层层降级：直接解析 → 抠中括号数组 → 提取引号串 → 按行切并剥列表符号。</b>真实跑下来模型偶尔会在 JSON 外面包一层解释文字，前两级就能救回来。</div>
+      <div class="q">Q：为什么返回体要带 source 字段？</div>
+      <div class="a">A：<b>降级是为了用户体验，不是为了藏问题。</b>带 source 前端才能如实告诉用户当前用的是兜底数据。</div>
+    </div>
+  </section>
+
+  <section id="feedback">
+    <h2><span class="n">5</span>评分：schema 约束 <span class="file">app/api/interview/feedback/route.ts · 98 行</span></h2>
+    <p class="lede">「结构化输出」这个词，在你项目里就是 <code>generateObject</code> + 一个 schema。</p>
+
+<pre><code>const { object } = await generateObject({
+  model: chatModel,
+  schema: feedbackSchema,     <span class="cm">// ← 用 Zod 定义的 schema</span>
+  mode: "json",
+  system: "...",
+  prompt: `...`,
+});</code></pre>
+
+    <p>不用「让模型吐 JSON 然后我自己解析」，而是<b>用 schema 直接约束它</b>——返回的 <code>object</code> 已经是类型安全的对象，不用手写校验。</p>
+
+    <h3>prompt 里两个关键约束（75–83 行）</h3>
+    <ul>
+      <li><b>5 个维度名称必须完全一致</b>（<code>FEEDBACK_CATEGORIES.join("、")</code>）——否则前端按名字渲染会崩</li>
+      <li><b>「60 分代表能达到面试及格线」</b>——防止模型一律给高分。不给这个锚点，模型倾向于讨好用户</li>
+    </ul>
+
+    <h3>降级：本地估算 <code>localFallback</code>（8–33 行）</h3>
+<pre><code>const completion = Math.round((answered / total) * 100);      <span class="cm">// 作答覆盖率</span>
+const depthScore = Math.min(95, Math.round(avgLength / 3) + 40); <span class="cm">// 按回答长度粗估深度</span>
+const totalScore = Math.round((completion + depthScore) / 2);</code></pre>
+    <p>粗糙，但保证 AI 挂掉时界面不白屏——用户至少能拿到一份「本地估算报告」。</p>
+
+    <div class="qa">
+      <div class="h">面试会问</div>
+      <div class="q">Q：为什么用 <code>generateObject</code> 而不是让模型自己吐 JSON？</div>
+      <div class="a">A：评分报告结构固定，用 Zod schema 约束后返回值直接是<b>类型安全</b>的对象，不用手写校验；不合格时 SDK 会重试或抛错，我再兜底到本地估算。</div>
+      <div class="q">Q：降级会不会掩盖真实错误？</div>
+      <div class="a">A：会，所以每次降级都带 <code>source</code> 字段，服务端也 <code>console.error</code> 了原始错误。<b>降级是为了体验，不是为了藏问题。</b></div>
+    </div>
+  </section>
+
+  <section id="qa">
+    <h2><span class="n">6</span>面试问答汇总 <span class="file">背这 10 条</span></h2>
+    <p class="lede">上面每个文件都配了问答。这一节把它们合起来，面试前扫一遍。</p>
+    <ul>
+      <li><b>为什么做 Provider 抽象？</b> → 换模型只改环境变量，业务代码零改动</li>
+      <li><b>为什么用 BM25 不用向量检索？</b> → 场景 / 成本 / 可解释，三条</li>
+      <li><b>k1 和 b 是什么？</b> → 词频饱和 + 长度归一化</li>
+      <li><b>中文为什么用 bigram？</b> → 不用词典的折中，保住局部语序</li>
+      <li><b>检索的瓶颈在哪？</b> → 每次重建索引（主动说）</li>
+      <li><b>为什么用流式？</b> → 首字延迟</li>
+      <li><b>prompt 为什么禁 markdown？</b> → 会被语音朗读</li>
+      <li><b>模型不吐合法 JSON 怎么办？</b> → 四级兜底，一层层退</li>
+      <li><b>为什么用 generateObject？</b> → Zod schema 约束，类型安全</li>
+      <li><b>降级会不会掩盖错误？</b> → source 字段暴露来源，服务端有 log</li>
+    </ul>
+
+    <div class="tip">
+      <b>被问到没做过的</b>（LangChain / 向量数据库 / 多 Agent / 微调）——直接说：<br>
+      「这块我没做过，我目前用的是 BM25 方案，因为……」。<b>主动说出「我没用 XX，因为 YY」，比含糊其辞加分得多。</b>
+    </div>
+  </section>
+
+  <div class="foot">
+    读法：先把 <code>lib/ai.ts</code>（15 行）看懂 → 再啃 <code>lib/rag.ts</code>（183 行，最花时间）→ 剩下三个 route 每个 1 小时。<br>
+    验收标准：<b>合上代码，能讲出「我打一句话，系统怎么找到最相关的几段」。</b>
+  </div>
+
+</div>
+</body>
+</html>

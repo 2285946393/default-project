@@ -1,0 +1,74 @@
+This mod predicts random outcomes across combat, events, Ancients, and other game flows, reducing unnecessary Save & Load cycles while improving play flow.
+
+This mod supports both [b]singleplayer[/b] and [b]multiplayer[/b], and [b]not everyone[/b] in a multiplayer run needs to install it. By default, it only shows information that can be obtained through Save & Load. Each prediction feature can be toggled independently in the RitsuLib settings page.
+
+This mod supports both the [b]public[/b] branch and the [b]public-beta[/b] branch, but some new features may only be available on the beta branch.
+Currently supported game versions:
+[list]
+[*]public: [b]v0.107.1[/b] (mod version [b]v0.8.4[/b])
+[*]public-beta: [b]v0.111.0[/b] (mod version [b]v0.13.18[/b])
+[/list]
+
+GitHub: [url=https://github.com/hotwords123/StS2.RandomForeseer]StS2.RandomForeseer[/url]
+
+[h2]Features[/h2]
+
+Most features show predictions when you hover the relevant item, including but not limited to:
+
+[list]
+[*]In combat, predicts random results for card generation effects (potions and card effects), card selection effects ([b]True Grit[/b], [b]Thrash[/b]), draw-pile autoplay effects ([b]Havoc[/b], [b]Distilled Chaos[/b]), and transform effects ([b]Entropy[/b]).
+[*]In combat, predicts random targets for attack cards and orbs ([b]Sword Boomerang[/b], [b]Dualcast[/b], [b]Tempest[/b]) as well as end-of-turn passive effects ([b]Lightning[/b] orbs), showing damage sources and numbers above creatures (shown by default when hovering the End Turn button) and damage forecasts on health bars (always shown by default). Hover a creature to inspect each predicted damage line and source.
+[*]In events and Ancients, predicts random option results, such as Neow relics ([b]New Leaf[/b], [b]Neow's Bones[/b]) and card choices from the [b]Colorful Philosophers[/b] event.
+[*]Predicts transform results from events ([b]Morphic Grove[/b], [b]The Trial[/b]) and relics ([b]New Leaf[/b], [b]Astrolabe[/b]), showing what each card in your deck would transform into.
+[*]Predicts random results from [b]The Courier[/b] restocks, [b]Driftwood[/b] rerolls, [b]Pael's Wing[/b] sacrifices, relics ([b]Whetstone[/b], [b]Orrery[/b]), and rest-site options ([b]Dream Catcher[/b], [b]Shovel[/b]).
+[*]On the first two Acts' boss reward screens, predicts the next Act's Ancient and boss, shown on the top bar.
+[*]When viewing the draw pile, shows cards in actual draw order and previews the order after an in-turn shuffle.
+[*]When [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747548124]Lemon Spire 2[/url] is installed, selected teammate hand, relic, and shop predictions are also supported.
+[*]When [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3795496596]Relic Rewards: Choose One of Three[/url] is installed, hovering a relic choice also shows supported pickup effect predictions.
+[/list]
+
+Only vanilla content is currently supported. Other mods that change game content may make prediction results inaccurate.
+
+[h2]Settings[/h2]
+
+You can manage each prediction feature from the settings page provided by RitsuLib. If a feature feels too powerful, or if you only want to use predictions in multiplayer to improve the experience, you can adjust it there.
+
+[list]
+[*]Singleplayer and multiplayer prediction can be enabled or disabled separately.
+[*][b]Fair mode[/b] is enabled by default. For out-of-combat options, it only shows information obtainable through Save & Load.
+[*]When [b]fair mode[/b] is enabled, some Ancient relics that cannot be checked with Save & Load in singleplayer, such as [b]New Leaf[/b], [b]Leafy Poultice[/b], and the curse from [b]Neow's Bones[/b], will not show predictions. [b]Silken Tress[/b] will not reveal the card choice from the next reward, and card-generation potions viewed outside combat will not preview the cards they would generate in combat.
+[/list]
+
+[h2]Credits[/h2]
+
+Special thanks: cover art by 月上猫啊 (Bilibili: @[url=https://space.bilibili.com/325913526]yuepcat[/url])
+
+Thanks to the friends who played multiplayer with me. They helped test the prototype mod and suggested many improvements.
+
+[h2]FAQ[/h2]
+
+Here are some common questions. [b]Please try these solutions before reporting an issue.[/b]
+
+[b]Q:[/b] Where is the mod settings page?
+[b]A:[/b] Click the RitsuLib icon in the top-right corner of the main menu, or open [b]Game Settings[/b], scroll to the bottom, open [b]Mod Settings (RitsuLib)[/b], then find [b]Random Foreseer[/b] in the list on the left after it finishes loading. All settings are available there.
+
+[b]Q:[/b] I installed the mod, but I still cannot see predictions.
+[b]A:[/b] First, make sure the required RitsuLib dependency is installed and enabled. You can confirm this from the settings page mentioned above. Then try temporarily disabling other mods, except RitsuLib, to rule out mod conflicts. If the issue remains, please follow the reporting instructions below.
+
+[b]Q:[/b] Why does a prediction differ from the actual result?
+[b]A:[/b] There are many possible causes, including but not limited to: mods that change vanilla content, teammates advancing RNG first in multiplayer, secondary effects from some cards advancing RNG, or game updates breaking predictions. If you can reproduce a specific issue, please report it. Please read the reporting instructions below first.
+
+[b]Q:[/b] Why can't [b]Leafy Poultice[/b], the curse from [b]Neow's Bones[/b], [b]Pandora's Box[/b], [b]Astrolabe[/b], and so on be predicted?
+[b]A:[/b] In singleplayer, Save & Load cannot be used to reveal these Ancient relics' results ahead of time, so predictions only show after disabling [b]fair mode[/b] in settings.
+
+[b]Q:[/b] Does this mod support more detailed Crystal Sphere prediction?
+[b]A:[/b] It currently shows item locations and types behind the fog. For more detailed prediction, you can use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3747839337]this mod[/url].
+
+[h2]Reporting Issues[/h2]
+
+If none of the above solves your issue, you can report it in the [url=https://steamcommunity.com/workshop/filedetails/discussion/3747531952/567037949153327700/]Steam discussions[/url] or [url=https://github.com/hotwords123/StS2.RandomForeseer/issues]GitHub Issues[/url].
+
+For mod loading failures, broken functionality, conflict errors, and similar issues, a description of the symptoms alone is usually not enough to identify the cause. The information in the log is required for troubleshooting. [b]Therefore, please be sure to include the complete game log when reporting these issues.[/b] ([url=https://steamcommunity.com/workshop/filedetails/discussion/3747531952/567037949153327700/]How do I find the log?[/url])
+You can share the log through a cloud storage service or email it to [b]hotwords123@outlook.com[/b]. After emailing it, please post a message in the Steam discussions or on GitHub Issues to let me know.
+
+Feedback that lacks substantive information and has no follow-up may be removed after a period of time.

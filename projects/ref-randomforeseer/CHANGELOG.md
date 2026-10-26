@@ -1,0 +1,671 @@
+# Changelog
+
+## v0.13.18
+
+### feat
+
+- 回合结束效果预测现在支持更多回合末伤害，并计入虚无卡牌消耗后抽牌触发的连带伤害。<br>
+  End-turn effect prediction now supports more end-of-turn damage and includes damage triggered by draws after Ethereal cards are exhausted.
+
+### fix
+
+- 修复与“多人药水显示”模组一起使用时，预测卡牌的悬浮提示显示异常的问题。<br>
+  Fixed display issues with predicted card hover tips when used with Multiplayer Potion View.
+
+- 修复预测牌的悬浮提示可能将尚未获得的卡牌记录为已见的问题。<br>
+  Fixed predicted-card hover tips potentially marking cards that have not been obtained as seen.
+
+- 修复战斗伤害预测标签偶尔无法正常显示并反复报错的问题。<br>
+  Fixed combat damage prediction labels occasionally failing to render and repeatedly logging errors.
+
+## v0.13.17
+
+### feat
+
+- 战斗中悬停需要选择目标的卡牌时，如果存在多个可选目标，默认显示对首个目标打出的预测。<br>
+  When hovering a combat card with multiple selectable targets, show a default prediction for playing it on the first target.
+
+### fix
+
+- 修复战斗结束时，卡牌生成预测可能提示获得实际未进入牌堆的卡牌。<br>
+  Fixed combat card-generation predictions showing cards that never enter a pile when combat is ending.
+
+## v0.13.16
+
+### feat
+
+- 新增与“遗物奖励三选一”模组的兼容，候选遗物现在会显示拾起效果预测。<br>
+  Added compatibility with Relic Rewards: Choose One of Three, showing pickup effect predictions for relic choices.
+
+## v0.13.15
+
+### fix
+
+- 修复伤害预测未计入蟹之怒在盟友死亡后获得的格挡的问题。<br>
+  Fixed damage predictions missing the Block granted by Crab Rage after an ally dies.
+
+### misc
+
+- 更新 RitsuLib 依赖到 0.5.14。<br>
+  Updated the RitsuLib dependency to 0.5.14.
+
+## v0.13.14
+
+### fix
+
+- 修复手牌含 X 费或 X 星费牌时，干瘪之手的随机目标预测可能不正确的问题。<br>
+  Fixed incorrect random target predictions for Mummified Hand when the hand contains X-energy or X-star cards.
+
+- 修复致死性、幻影之刃和一心化万在连锁出牌中的伤害预测，以及奥斯提承伤和战斗结束后的生命损失预测可能不正确的问题。<br>
+  Fixed incorrect damage predictions for Lethality, Phantom Blades, and One for All during chained card plays, as well as Osty's damage absorption and HP loss after combat ends.
+
+- 修复部分卡牌施加易伤时未显示凶恶触发的抽牌预测的问题。<br>
+  Fixed missing predictions for draws triggered by Vicious when certain cards apply Vulnerable.
+
+- 修复打出重振精神时未显示黑暗之拥因逐张消耗卡牌而触发的抽牌预测的问题。<br>
+  Fixed missing predictions for draws triggered by Dark Embrace as Second Wind exhausts each card.
+
+## v0.13.13
+
+### fix
+
+- 修复已授权的使用统计、Mod 清单和诊断信息可能无法正常上报的问题。<br>
+  Fixed consented usage statistics, mod inventories, and diagnostics potentially failing to report.
+
+- 修复凡庸、昏眩和执迷的出牌限制在战斗预测中可能判断不正确的问题。<br>
+  Fixed combat predictions potentially evaluating card-play restrictions from Normality, Ringing, and Enthralled incorrectly.
+
+## v0.13.12
+
+### feat
+
+- 战斗卡牌预测新增对回响斩击和万向斩的支持，现在会正确处理其特殊攻击效果。<br>
+  Combat card prediction now supports Echoing Slash and Omnislice, correctly handling their special attack effects.
+
+### fix
+
+- 修复伤害预测指示器初始化失败后，后续刷新可能反复报错的问题。<br>
+  Fixed repeated errors during subsequent updates when a damage prediction indicator fails to initialize.
+
+## v0.13.11
+
+### fix
+
+- 修复预测过程中升级卡牌后，同名卡牌的洗牌预测可能不正确的问题。<br>
+  Fixed shuffle predictions for cards with the same name potentially being incorrect if one of them was upgraded during prediction.
+
+- 修复部分 Mod 让遗物拾取流程提前返回时，遗物拾取预测清理上下文可能发生异常的问题。<br>
+  Fixed relic pickup prediction cleanup potentially throwing when another mod short-circuits the relic-obtain flow.
+
+## v0.13.10
+
+### feat
+
+- 战斗卡牌预测新增对大部分原版多段攻击牌的支持，现在会正确处理其条件命中次数、累计战斗状态及相关牌堆效果。<br>
+  Combat card prediction now supports most vanilla multi-hit attacks, including conditional hit counts, accumulated combat state, and related pile effects.
+
+### fix
+
+- 修复连锁出牌预测的因果提示可能将嵌套卡牌的效果错误归因到外层卡牌的问题。<br>
+  Fixed causal tips for chained card predictions potentially attributing nested-card effects to the outer card.
+
+- 修复其它 Mod 刷新先古选项后，新选项无法显示拾取效果预测的问题。<br>
+  Fixed newly refreshed Ancient options not showing pickup effect predictions when refreshed by another mod.
+
+## v0.13.9
+
+### feat
+
+- 新增 Mod 兼容性选项，当预测功能与其它 Mod 冲突时，可以尝试开启以规避部分问题。<br>
+  Added mod compatibility options to attempt to work around issues when prediction features conflict with other mods.
+
+### fix
+
+- 修复某些罕见情况下伤害预测指示器可能刷新失败的问题。<br>
+  Fixed damage prediction indicators potentially failing to refresh in rare cases.
+
+## v0.13.8
+
+### fix
+
+- 关闭预测偏移提示后，战斗伤害预测数值不再显示表示预测偏移风险的星号。<br>
+  Combat damage prediction values no longer show the drift-risk asterisk when prediction drift warnings are disabled.
+
+- 战斗预测现在会正确跳过因战斗结束而取消的结算效果。<br>
+  Combat predictions now correctly skip resolving effects canceled when combat ends.
+
+- 修复与部分卡图 Mod 的兼容性问题，现在会在卡图资源不可用时采用默认回退。<br>
+  Fixed compatibility issues with certain card portrait mods, now falling back to default when card portrait resources are unavailable.
+
+## v0.13.7
+
+### feat
+
+- 诊断遥测现在会附带小型结构化异常上下文，并在发送的事件中附加 Mod 版本，以便更可靠地归类和定位问题。<br>
+  Diagnostic telemetry now includes small structured exception contexts and tags events sent with the mod version for more reliable issue classification and diagnosis.
+
+### fix
+
+- Steam 创意工坊多版本加载器现在会将游戏内报告的 Mod 版本与实际加载的版本保持一致。<br>
+  The Steam Workshop multi-version loader now aligns the in-game reported Mod version with the version actually loaded.
+
+- 优化冻结之眼本地化文本替换的健壮性。<br>
+  Improved the robustness of Frozen Eye localization text replacement.
+
+## v0.13.6
+
+### fix
+
+- 修复战斗尚未完成初始化时，卡牌或药水预测可能访问尚未创建的玩家战斗状态并失败的问题。<br>
+  Fixed card or potion predictions potentially failing by accessing player combat state before combat initialization completed.
+
+- 修复 Mod 卡牌使用非标准动态变量时，卡牌打出效果推断可能因类型不匹配或缺少键而中断战斗预测的问题。<br>
+  Fixed combat predictions potentially being interrupted by type mismatches or missing keys while inferring card-play effects for Mod cards with nonstandard dynamic variables.
+
+- 修复正在施加模仿学习且目标玩家尚未初始化时，战斗卡牌预测可能失败的问题。<br>
+  Fixed combat card prediction potentially failing while applying Imitation Learning before its target player had been initialized.
+
+- 现在下一阶段预测会正确处理没有先古之民或终点 Boss 的 Act，并在无可用预测时隐藏图标。<br>
+  Next-Act prediction now correctly handles Acts without an Ancient or ending boss and hides the icon when no prediction is available.
+
+## v0.13.5
+
+### feat
+
+- 新增基于 RitsuLib 授权机制的可选遥测，分别申请基础使用信息、Mod 清单和诊断信息，用于了解功能启用情况、分析兼容性并定位 Mod 错误。<br>
+  Added optional telemetry through RitsuLib's consent system, with separate requests for basic usage, mod inventory, and diagnostics to understand feature adoption, analyze compatibility, and diagnose mod errors.
+
+## v0.13.4
+
+### fix
+
+- 修复战斗卡牌预测将使用动态伤害值的奥斯提攻击牌错误按角色本体结算的问题。<br>
+  Fixed combat card predictions treating Osty attack cards that use calculated damage values as attacks by the player.
+
+## v0.13.3
+
+### feat
+
+- 战斗卡牌预测现在会按原版顺序模拟已支持附魔的打出效果。<br>
+  Combat card prediction now simulates supported enchantment play effects in vanilla order.
+
+### fix
+
+- 预测偏移警告现在默认关闭以减少打扰；仍可手动在设置中重新开启。<br>
+  Prediction drift warnings are now disabled by default to reduce interruptions and can still be manually re-enabled in settings.
+
+- 现在当公平模式启用时，战斗中不满足打出条件的手牌不会显示出牌预测；支持的战斗选牌界面也会按选中后的手牌状态模拟出牌。<br>
+  When fair mode is enabled, cards in hand that cannot be played no longer show play predictions; supported combat card-choice screens now also simulate plays using the selected card's resulting hand state.
+
+## v0.13.2
+
+### feat
+
+- 遗物拾起预测现在支持华美手镯，会显示随机获得迅捷附魔的卡牌。<br>
+  Relic pickup prediction now supports Beautiful Bracelet, showing which cards will randomly receive the Swift enchantment.
+
+### fix
+
+- 适配《杀戮尖塔 2》0.111.0。<br>
+  Adapted to Slay the Spire 2 0.111.0.
+
+- 修复多人战斗中后排角色变暗时，其伤害预测指示器仍保持原亮度的问题。<br>
+  Fixed damage prediction indicators remaining at full brightness when back-row characters are dimmed in multiplayer combat.
+
+### misc
+
+- 更新 RitsuLib 依赖到 0.5.12。<br>
+  Updated the RitsuLib dependency to 0.5.12.
+
+## v0.13.1
+
+### fix
+
+- 修复公平模式下战斗奖励页面会显示随机印牌药水结果的问题。<br>
+  Fixed combat reward screens revealing random-card-generation potion results in fair mode.
+
+## v0.13.0
+
+### feat
+
+- 局外预测设置现在按通用、事件和遗物分组，并将遗物拾起效果拆分为一般遗物和先古遗物开关；事件遗物改由事件预测开关控制。<br>
+  Out-of-combat prediction settings are now grouped into general, event, and relic categories, with separate pickup-effect toggles for regular and Ancient relics; Event relics are now controlled by event prediction.
+
+- 卡牌打出效果推断和连锁出牌预测现在默认启用，并移入卡牌结算范围设置；移除原实验性设置项。<br>
+  Card-play effect inference and chained card-play prediction are now enabled by default and moved into the card resolution scope settings; the original experimental settings have been removed.
+
+- 拥有送货员时，悬浮商店中可以购买的卡牌、药水或遗物会显示购买后补货的商品。<br>
+  While you have The Courier, hovering merchant cards, potions, or relics you can afford now shows the item that will restock that slot after purchase.
+
+- 战斗卡牌预测现在会按原版顺序模拟卡牌打出前后的支持钩子效果。<br>
+  Combat card prediction now simulates supported before/after-play hook effects in vanilla order.
+
+### fix
+
+- 修复多段伤害预测在滑溜、缓冲或振翅层数耗尽后仍重复应用其减伤效果的问题。<br>
+  Fixed multi-hit damage predictions continuing to apply Slippery, Buffer, or Flutter mitigation after their stacks were consumed.
+
+- 修复连续伤害预测未累计硬化外壳和律动残余的本回合受伤量，导致后续生命损失上限错误的问题。<br>
+  Fixed chained damage predictions not accumulating Hardened Shell or Beating Remnant damage taken this turn, which caused incorrect HP-loss caps on later hits.
+
+- 修复连续攻击预测在活力或超巨化层数耗尽后仍重复应用其增伤效果的问题。<br>
+  Fixed chained attack predictions continuing to apply Vigor or Gigantification damage bonuses after their stacks were consumed.
+
+- 修复连续卡牌预测会重复使用弹回，或错误计算野性和怀旧返回牌堆次数的问题。<br>
+  Fixed chained card predictions reusing Rebound or miscounting Feral and Nostalgia result-pile effects.
+
+- 修复连续卡牌预测未正确消费额外打出次数效果的问题，包括爆发、复制、连环拳、信号增强、多人组队和投斧；回响形态现在也会计入预测内已打出的牌。<br>
+  Fixed chained card predictions not consuming replay effects from Burst, Duplication, One-Two Punch, Signal Boost, Tag Team, and Throwing Axe; Echo Form now also counts cards played within the prediction.
+
+- 模组设置页现在会根据卡牌、药水和回合结束预测入口正确启用战斗伤害及自动推断卡牌效果设置。<br>
+  The mod settings page now correctly enables combat damage and automatic card-effect inference settings based on the card, potion, and end-turn prediction entry points.
+
+## v0.12.1
+
+### feat
+
+- 回合结束效果预测现在会模拟支持的手牌回合结束伤害，包括灼伤、腐朽、悔恨等卡牌。<br>
+  End-turn effect prediction now simulates supported turn-end-in-hand damage, including cards such as Burn, Decay, and Regret.
+
+- 战斗伤害预测指示器现在会使用卡牌插画、药水图标和附魔图标标识伤害来源。<br>
+  Combat damage prediction indicators now identify damage sources with card portraits, potion icons, and enchantment icons.
+
+### fix
+
+- 修复实验性通用卡牌预测无法识别以敌人为目标的技能牌（如违逆）所提供格挡的问题。<br>
+  Fixed experimental general card prediction not recognizing block granted by enemy-targeting Skills such as Defy.
+
+- 战斗伤害预测变化时现在会同步刷新多人游戏左上角的玩家血条。<br>
+  Multiplayer player health bars in the top-left now refresh alongside combat damage prediction changes.
+
+- 修复战斗伤害预测指示器可能和玩家的充能球栏位重叠的问题。<br>
+  Fixed combat damage prediction indicators potentially overlapping player orb slots.
+
+- 模组设置页现在会在关闭事件选项预测时同步禁用“滑脚木桥重掷预览次数”，并将该设置移到对应总开关之后。<br>
+  The mod settings page now disables Slippery Bridge reroll previews when event option prediction is off and places that setting after its corresponding master switch.
+
+### perf
+
+- 回合结束效果预测现在会等待玩家操作完整结算后再刷新，避免针对结算中间状态重复模拟。<br>
+  End-turn effect prediction now waits for player actions to finish before refreshing, avoiding repeated simulations of intermediate resolution states.
+
+## v0.12.0
+
+### feat
+
+- 重构模组设置页面，将局外和局内预测分别整理到独立子页面，并按预测入口和效果类型分组；新增卡牌和药水预测入口总开关。<br>
+  Reorganized the mod settings into dedicated out-of-combat and in-combat subpages grouped by prediction trigger and effect type, with new master switches for card and potion prediction entry points.
+
+- 战斗抽牌预测现在支持群星荟萃，会显示目标队友将抽到的牌。<br>
+  Combat card draw prediction now supports Constellation, showing the targeted teammate's card draw.
+
+- 充能球效果预测现在支持黑暗精华，包括填充栏位时被释放的充能球造成的伤害和目标。<br>
+  Orb effect prediction now supports Essence of Darkness, including damage and targets from orbs evoked while filling the queue.
+
+- 统一战斗卡牌和药水预测入口，现在一次模拟即可同时展示支持的卡牌或药水效果、伤害、手牌高亮和因果说明，并新增控制充能球、随机目标攻击和回合结束伤害显示的战斗伤害总开关。<br>
+  Unified combat card and potion prediction entry points so one simulation can show supported card or potion effects, damage, hand highlights, and causal explanations together, with a new combat-damage master switch governing orb, random-target attack, and end-turn damage displays.
+
+- 实验性功能：战斗预测可通过通用规则识别更多未单独适配卡牌的攻击、格挡和抽牌行为，并显示这些卡牌触发的连带效果。默认关闭。<br>
+  Experimental: Combat prediction can use general rules to recognize attack, block, and card-draw behavior for more cards without dedicated support, and show related effects triggered by those cards. Disabled by default.
+
+- 实验性功能：战斗预测现在可以显示被破灭、倾泻、精炼混沌等来源自动打出的卡牌的后续效果，并提供因果说明。默认关闭。<br>
+  Experimental: Combat prediction can now show downstream effects from cards auto-played by sources such as Havoc, Cascade, and Distilled Chaos, with causal explanations. Disabled by default.
+
+### fix
+
+- 适配《杀戮尖塔 2》0.110.0。<br>
+  Adapted to Slay the Spire 2 0.110.0.
+
+- 精简战斗预测偏移提示，分别汇总未完整模拟的结算、未纳入预测的玩家选择和达到模拟上限的效果。<br>
+  Streamlined combat prediction drift warnings by separately summarizing incomplete simulation, unresolved player choices, and simulation limits.
+
+- 修复选择队友作为卡牌或药水目标时，悬停左上角队友名字牌不会显示对应预测的问题。<br>
+  Fixed card and potion predictions not updating when hovering a teammate's nameplate while selecting them as the target.
+
+- 修复“战史学家 付袭”事件打开宝箱时，遗物预测未计入先生成的两瓶药水所推进的奖励随机数的问题。<br>
+  Fixed relic predictions for the chest in War Historian, Repy not accounting for reward RNG consumed by the two preceding potion rewards.
+
+- 修复创意工坊版本启动时重复关联 Mod 程序集的问题。<br>
+  Fixed duplicate mod assembly association during Workshop version startup.
+
+### perf
+
+- 优化预测期间的模型方法分发，减少不必要的追踪与内存分配。<br>
+  Improved model method dispatch during prediction by reducing unnecessary tracing and allocations.
+
+### misc
+
+- 更新 RitsuLib 依赖到 0.5.0。<br>
+  Updated the RitsuLib dependency to 0.5.0.
+
+## v0.11.0
+
+### feat
+
+- 战斗随机印牌预测现在支持富足，包括升级后的能力牌候选。<br>
+  Combat card generation prediction now supports Abundance, including its upgraded Power card options.
+
+- 战斗随机选牌预测现在支持横祸和狠揍。<br>
+  Combat card selection prediction now supports Catastrophe and Beat Down.
+
+- 药水预测现在支持给队友使用的药水，并在选择目标时显示对应队友的预测结果。<br>
+  Potion prediction now supports potions used on teammates and shows the corresponding teammate's predicted results while selecting a target.
+
+### fix
+
+- 适配《杀戮尖塔 2》0.109.0。<br>
+  Adapted to Slay the Spire 2 0.109.0.
+
+- 修复由单张牌组成的多组卡牌预测之间间距过大的问题。<br>
+  Fixed excessive spacing between multiple card prediction bundles containing one card each.
+
+- 优化变牌预测提示及随机印牌、随机选牌和洗牌后牌序预测的设置文案，使预测范围和展示方式更清晰。<br>
+  Improved transform prediction tips and settings text for random card generation, random card selection, and post-shuffle draw order predictions to clarify their scope and presentation.
+
+### misc
+
+- 更新 RitsuLib 依赖到 0.4.58。<br>
+  Updated the RitsuLib dependency to 0.4.58.
+
+## v0.10.0
+
+### feat
+
+- 当只有一个有效目标时，战斗随机选牌和充能球效果现在可在悬停手牌时直接显示预测，无需先拖拽指向目标。<br>
+  Combat random card selection and orb effect predictions now appear directly on hand hover when there is only one valid target, without requiring the card to be dragged over that target first.
+
+- Steam 创意工坊包现在会为当前的游戏版本同时携带所需的历史版本 DLL/PCK，并在启动时按游戏版本自动选择最新兼容 Mod 版本；GitHub Releases 继续提供单版本包。<br>
+  Steam Workshop packages now bundle the required historical DLL/PCK variants for active game versions and select the newest compatible Mod version at startup; GitHub Releases continue to provide a single-version package.
+
+## v0.9.0
+
+### feat
+
+- 充能球效果预测现在支持球状闪电、冰寒、寒流、吞噬暗影、冷静头脑、冰之长枪、引火、陨石打击、空值、折射、打碎和特斯拉线圈。<br>
+  Orb effect prediction now supports Ball Lightning, Chill, Cold Snap, Consuming Shadow, Coolheaded, Ice Lance, Ignition, Meteor Strike, Null, Refract, Shatter, and Tesla Coil.
+
+- 战斗随机选牌预测现在会在拖拽攻击牌并指向目标时模拟攻击结算后的随机选牌结果。<br>
+  Combat random card selection prediction now simulates target-dependent attack resolution while dragging attack cards over a target.
+
+- 新增随机目标攻击预测，支持散射炮、连续反弹、狂乱撕扯、星尘、扫荡凝视、飞剑回旋镖和连射。<br>
+  Added random-target attack prediction for Flak Cannon, Ricochet, Rip and Tear, Stardust, Sweeping Gaze, Sword Boomerang, and Volley.
+
+- 战斗伤害预测指示器现在会在有伤害被格挡时显示实际未格挡伤害，并提高全部格挡时的描边可见度。<br>
+  Combat damage prediction indicators now show actual unblocked damage when damage is blocked, with a more visible outline for fully blocked damage.
+
+- 回合结束预测现在会模拟彼岸咆哮和所向无敌的自动打出效果。<br>
+  End-turn prediction now simulates autoplay effects for Howl From Beyond and I Am Invincible.
+
+- 部分战斗预测现在能处理重放的效果。<br>
+  Some combat predictions now handle Replay effects.
+
+### fix
+
+- 修复 v0.108.0 后灾厄对玩家在 AfterSideTurnEnd 触发、对敌人在 BeforeSideTurnEnd 触发导致回合结束预测的判定条件问题。<br>
+  Fixed end-turn prediction criteria for Doom after v0.108.0, where it triggers on AfterSideTurnEnd for the player and BeforeSideTurnEnd for enemies.
+
+- 修复“药水的未来？”和“长者兰伟德”事件选项会同时显示药水自身随机印牌预测的问题。<br>
+  Fixed The Future of Potions? and Ranwid the Elder event options also showing the potion's own random-card-generation prediction.
+
+- 修复公平模式开启时，单人模式下涅奥骨骰奖励页面的第一个待领取遗物不显示拾起或变牌预测的问题。<br>
+  Fixed the first pending relic on a Neow’s Bones reward screen not showing pickup or transform predictions in singleplayer with fair mode enabled.
+
+## v0.8.2
+
+### fix
+
+- 适配《杀戮尖塔 2》0.108.0。<br>
+  Adapted to Slay the Spire 2 0.108.0.
+
+### misc
+
+- 更新 RitsuLib 依赖到 0.4.47。<br>
+  Updated the RitsuLib dependency to 0.4.47.
+
+## v0.8.1
+
+### fix
+
+- 修复涅奥骨骰预测随机诅咒时，没有先模拟拾起随机涅奥遗物造成的随机数推进，导致部分遗物组合预测错误的问题；当两件遗物的拾起顺序会影响诅咒时，现在会分别显示两种结果。<br>
+  Fixed Neow's Bones curse prediction not accounting for RNG consumed by picking up the random Neow relics first; when relic pickup order changes the curses, both outcomes are now shown.
+
+- 修复部分卡牌奖励预测没有触发原版 CardReward 修饰效果的问题，包括万花筒和部分事件/遗物卡牌奖励。<br>
+  Fixed some card reward predictions missing vanilla CardReward modifiers, including Kaleidoscope and some event/relic card rewards.
+
+## v0.8.0
+
+### feat
+
+- 充能球效果和回合结束预测现在会在目标血条上显示预测的生命值损失，默认为黄色（可配置）。<br>
+  Combat damage predictions now show actual HP loss on target health bars with a configurable color, defaulting to yellow.
+
+- 回合结束预测的血条显示时机现在有独立设置，默认在玩家回合内始终显示，不再跟随预测图标显示时机。<br>
+  End-turn health bar forecast timing now has its own setting, defaulting to always during the player turn instead of following prediction overlay timing.
+
+- 回合结束预测现在会在悬停目标生物或预测图标时显示逐条伤害来源详情。<br>
+  End-turn prediction now shows per-hit damage source details when hovering a target creature or prediction indicator.
+
+- Boss 奖励界面的状态栏现在会预测下一阶段起点的先古之民和终点 Boss。<br>
+  The top bar on boss reward screens now predicts the next Act's starting Ancient and ending boss.
+
+## v0.7.0
+
+### feat
+
+- 新增充能球效果预测，支持混沌、漆黑、双重释放、聚变、冰川、玻璃工艺、多重释放、四重释放、彩虹、暗影之盾、旋转工艺（升级后）、暴风雨、电流相生和电击。<br>
+  Added orb effect prediction for Chaos, Darkness, Dualcast, Fusion, Glacier, Glasswork, Multi-Cast, Quadcast, Rainbow, Shadow Shield, Spinner (upgraded), Tempest, Voltaic, and Zap.
+
+- 新增回合结束效果预测，会按目标显示所有结束回合玩家的支持伤害效果总计，并可设置为悬停结束回合按钮时显示或玩家回合内始终显示。<br>
+  Added end-turn effect prediction, showing aggregated supported damage for all players ending their turn, with display options for End Turn button hover or always during the player turn.
+
+- 遗物交换商事件中，交换得到的遗物现在也会显示拾起效果预测。<br>
+  Relic Trader now also shows pickup effect predictions for the relic received from a trade.
+
+- 佩尔之翼的献祭按钮现在会在本次献祭触发奖励时显示将获得的遗物及其拾起效果预测。<br>
+  Pael's Wing's Sacrifice button now shows the awarded relic and pickup effect predictions when the sacrifice will trigger a reward.
+
+### misc
+
+- 更新了 Mod 封面图。
+  Updated the mod cover art.
+
+## v0.6.3
+
+### feat
+
+- 战斗中支持对三选一界面的卡牌也显示预测。<br>
+  Added prediction for cards shown in choose-one screens during combat.
+
+- 真理石板选项现在会同时预览后续随机升级结果，直到最后一次升级所有卡牌之前。<br>
+  Tablet of Truth options now also preview later random upgrades until before the final upgrade-all choice.
+
+### fix
+
+- 修复单组卡牌预测顺序被错误反转的问题。<br>
+  Fixed single-bundle card predictions being shown in reversed order.
+
+- 修复局外变牌预测中，玩家返回重新选择时预测错误的问题。<br>
+  Fixed incorrect out-of-combat transform predictions after returning to reselect cards.
+
+## v0.6.2
+
+### feat
+
+- 新增水晶球事件透视，可透过未揭开的迷雾查看小游戏中的物品位置和类型。(@GuMengSama)<br>
+  Added Crystal Sphere clairvoyance, showing item locations and types through unrevealed fog in the minigame. (@GuMengSama)
+
+- 改进局内和局外变牌悬停预测，会按选择位置显示同一张牌的所有可能结果，并将非当前位置结果变暗。<br>
+  Improved in-combat and out-of-combat transform hover prediction to show all position results for the hovered card, dimming non-current positions.
+
+### fix
+
+- 修复小型扭蛋预测错误地受公平模式限制的问题。<br>
+  Fixed Small Capsule prediction being incorrectly gated by fair mode.
+
+## v0.6.1
+
+### fix
+
+- 修复奖励页中同页还有其它未领取遗物时，华美发束预测可能错误显示的问题。<br>
+  Fixed Silken Tress prediction on reward screens where other unclaimed relics can shift the immediate pickup result.
+
+### perf
+
+- 适配《杀戮尖塔 2》0.107.1，并优化随机数状态克隆以减少预测开销。<br>
+  Adapted to Slay the Spire 2 0.107.1 and optimized RNG state cloning to reduce prediction overhead.
+
+## v0.6.0
+
+### feat
+
+- 新增抽牌预测，支持迅捷药水、明晰提取物、痊愈药水、发光水、异蛇之油、瓶装潜能、重启和计算下注；抽牌堆不足时会预览洗牌后的后续结果，异蛇之油还会显示完整手牌和随机费用。<br>
+  Added draw prediction for Swift Potion, Clarity Extract, Cure All, Glowwater Potion, Snecko Oil, Bottled Potential, Reboot, and Calculated Gamble, including post-shuffle draws when the draw pile is short and full-hand/random-cost previews for Snecko Oil.
+
+- 改进冻结之眼，玩家回合查看抽牌堆时会以亮度降低的卡牌预览当前弃牌堆洗入后的顺序；抽牌堆为空但可显示洗牌预览时也允许打开抽牌堆界面。<br>
+  Improved Frozen Eye so the draw pile screen previews the discard pile's shuffled-in order with dimmed cards during the player's turn, and can open an empty draw pile when a shuffle preview is available.
+
+- 新增 lemonSpire2 联动，队友面板中的手牌、先古之民遗物奖励、商店遗物和商店药水会复用 Random Foreseer 的现有预测提示。<br>
+  Added lemonSpire2 integration, reusing Random Foreseer's existing predictions for teammate hand cards, Ancient relic rewards, merchant relics, and merchant potions.
+
+- 新增茂密的植被休息奖励预测。<br>
+  Added Dense Vegetation rest reward prediction.
+
+- 改进预测偏移警告，统一为全局开关，并在可识别时显示可能导致预测偏移的具体来源。<br>
+  Improved drift warnings with a shared global toggle and source names when the possible cause can be identified.
+
+### fix
+
+- 修复奖励药水不显示预测、历史记录中的药水错误显示预测的问题。<br>
+  Fixed potion predictions missing on reward potions and appearing incorrectly in run history.
+
+- 修复休息处铲子挖掘预测只显示遗物本体、不显示遗物拾起即时效果的问题。<br>
+  Fixed rest-site Shovel dig prediction showing only the relic itself instead of also showing immediate pickup effects.
+
+- 修复无休之处“就这样休息”选项错误显示遗物预测的问题。<br>
+  Fixed Unrest Site relic prediction appearing on the Rest Anyways option.
+
+- 修复遗物提示中的预测卡牌在空间不足时没有应用回退布局的问题。<br>
+  Fixed predicted cards in relic tooltips not using the fallback layout when space is limited.
+
+## v0.5.0
+
+### feat
+
+- 新增抽牌堆自动出牌预测，支持破灭、倾泻和精炼混沌，并可在抽牌堆不足时预览洗牌后的后续结果。<br>
+  Added draw-pile autoplay prediction for Havoc, Cascade, and Distilled Chaos, including post-shuffle previews when the draw pile is short.
+
+### fix
+
+- 修复药水随机印牌预测未正确受公平模式限制的问题。<br>
+  Fixed potion card predictions not being properly gated by fair mode.
+
+- 修复预览模型克隆对 canonical 实例的依赖，避免部分悬停来源无法生成预测。<br>
+  Fixed preview model cloning requiring canonical instances, which prevented predictions from being produced for some hover sources.
+
+- 修复完整熵变牌选择悬停预测、生成卡牌原始费用显示和战斗预测悬停阶段判断等问题。<br>
+  Fixed full Entropy transform hover prediction, original cost display for generated cards, and combat prediction hover phase checks.
+
+- 修复部分事件预测的公平模式或战斗结束效果处理，包括重拳出击奖励和事件选项中的战斗结束随机结果。<br>
+  Fixed fair-mode or combat-end-effect handling for some event predictions, including Punch Off rewards and combat-end random results from event options.
+
+## v0.4.0
+
+### feat
+
+- 新增随机生成药水预测，支持混沌药水和炼制药水，并覆盖商店里的混沌药水。<br>
+  Added potion generation prediction for Entropic Brew and Alchemize, including Entropic Brew in merchant stock.
+
+- 新增战斗随机变牌预测，战斗中“熵”选择手牌变牌时显示即将变化得到的卡牌。<br>
+  Added combat transform prediction, showing the cards that Entropy will transform selected hand cards into during combat.
+
+- 改进变牌选择网格悬停预测，已选中牌按选择顺序显示结果，未选中牌按下一个选择位置显示结果。<br>
+  Improved transform selection grid hover prediction so selected cards show results in selection order and unselected cards show the next-position result.
+
+### fix
+
+- 修复预测卡牌悬停提示的水平重叠和垂直裁剪回退布局问题。<br>
+  Fixed horizontal overlap and vertical clamping fallback issues in predicted card hover tips.
+
+- 修复拖动战斗手牌时预测提示被隐藏的问题。<br>
+  Fixed combat card prediction tips being hidden while dragging cards.
+
+- 适配《杀戮尖塔 2》0.107.0。<br>
+  Adapted predictions for Slay the Spire 2 0.107.0.
+
+## v0.3.0
+
+### feat
+
+- 新增变牌选择网格悬停预测，在选择前显示按当前选择位置计算的变牌结果。<br>
+  Added transform selection grid hover prediction, showing transform results for the current selection position before confirming.
+
+- 新增宝箱房遗物拾取预测，悬停宝箱中的遗物时显示获得后的即时随机结果。<br>
+  Added treasure room relic pickup prediction, showing immediate random results when hovering chest relics.
+
+- 新增华美发束卡牌奖励预测。<br>
+  Added Silken Tress card reward prediction.
+
+- 新增休息处铲子挖掘遗物和其它休息处随机结果预测。<br>
+  Added Shovel dig relic prediction and other rest-site random result predictions.
+
+### fix
+
+- 修复预测卡牌悬停提示可能重叠或过早换列的问题。<br>
+  Fixed predicted card hover tips that could overlap or wrap to a side column too early.
+
+- 修复单张卡牌包预测显示为多层分组的问题。<br>
+  Fixed single-card bundle predictions being displayed as nested groups.
+
+## v0.2.0
+
+### feat
+
+- 新增战斗随机选牌预测，支持坚毅、余烬、痛殴、未掘宝石、能量汲取、天选、探寻打击和骚动。<br>
+  Added combat card selection prediction for True Grit, Cinder, Thrash, Hidden Gem, Drain Power, Anointed, Seeker Strike, and Uproar.
+
+- 新增随机选牌预测警告，用于提示可能因伤害、格挡、死亡、抽牌或自动出牌等副作用发生偏移的预测。<br>
+  Added warning tips for selection predictions that can shift because of side effects such as damage, block, death, draw, or auto-played cards.
+
+- 新增慷慨捐助的队友选择随机印牌预测。<br>
+  Added Largesse combat card generation prediction for teammate choices.
+
+### fix
+
+- 改进预测卡牌悬停提示布局，为预测卡牌预览增加侧边间距。<br>
+  Improved prediction hover tip layout with extra side spacing for predicted card previews.
+
+### refactor
+
+- 重构预测界面文本的共享本地化处理，统一中文和英文提示文本。<br>
+  Refactored shared prediction UI localization for cleaner Chinese and English text handling.
+
+## v0.1.0
+
+### feat
+
+- 初版发布，支持在不推进真实随机数的前提下预览多类随机结果。<br>
+  Initial release with RNG previews that do not advance the real game RNG.
+
+- 支持变牌结果预测，覆盖星盘、新叶和多个事件来源的变牌确认预览。<br>
+  Added transform prediction for Astrolabe, New Leaf, and multiple event transform confirmation previews.
+
+- 支持随机给牌药水预测，显示随机药水即将生成的卡牌。<br>
+  Added random-card potion prediction to show the cards generated by supported potions.
+
+- 支持战斗随机印牌预测，悬停手牌中的随机印牌效果时显示即将生成的卡牌。<br>
+  Added combat card generation prediction for supported in-hand random-card effects.
+
+- 支持浮木卡牌奖励重掷预测，悬停重掷按钮时显示下一组奖励。<br>
+  Added Driftwood card reward reroll prediction.
+
+- 支持遗物拾起效果预测，覆盖先古之民遗物选项、遗物奖励和商店遗物的即时随机结果。<br>
+  Added relic pickup effect prediction for Ancient relic options, relic rewards, and merchant relics.
+
+- 支持非先古之民事件选项预测，显示即时随机奖励、随机升级/降级和后续随机选项。<br>
+  Added non-Ancient event option prediction for immediate random rewards, random upgrades/downgrades, and random follow-up options.
+
+- 支持冻结之眼，在战斗抽牌堆界面按实际抽牌顺序显示卡牌。<br>
+  Added Frozen Eye support to show the combat draw pile in actual draw order.
+
+- 新增 Mod 设置和公平模式，可单独开关各类预测并限制只显示可通过保存和读档获取的信息。<br>
+  Added mod settings and fair mode, including per-feature toggles and limits for information obtainable through Save & Load.

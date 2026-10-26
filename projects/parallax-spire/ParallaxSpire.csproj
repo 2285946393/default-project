@@ -1,0 +1,23 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
+    <Sts2Dir Condition="'$(Sts2Dir)' == ''">D:\software\steam\steamapps\common\Slay the Spire 2</Sts2Dir>
+    <Sts2DataDir>$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
+    <NoWarn>$(NoWarn);MSB3270</NoWarn>
+    <AssemblyName>ParallaxSpire</AssemblyName>
+    <RootNamespace>ParallaxSpire</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="sts2" HintPath="$(Sts2DataDir)\sts2.dll" Private="false"/>
+    <Reference Include="0Harmony" HintPath="$(Sts2DataDir)\0Harmony.dll" Private="false"/>
+    <Compile Remove="tests/**"/>
+    <None Include="ParallaxSpire.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+  <Target Name="CheckGame" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="找不到本体 sts2.dll，请通过 -p:Sts2Dir 指定游戏目录。"/>
+  </Target>
+</Project>

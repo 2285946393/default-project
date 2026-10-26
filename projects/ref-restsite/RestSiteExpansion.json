@@ -1,0 +1,17 @@
+{
+  "id": "RestSiteExpansion",
+  "name": "休息处扩展",
+  "author": "Dixie",
+  "description": "休息处扩展：为休息处（RestSite）系统追加自定义选项与机制。\nRest site expansion: adds custom rest site options and mechanics.",
+  "version": "1.1.0",
+  "min_game_version": "0.107.1",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.5.20"
+    }
+  ],
+  "affects_gameplay": true
+}

@@ -1,0 +1,1487 @@
+[
+ {
+  "table": "acts",
+  "key": "DEPRECATED_ACT.title",
+  "vanilla": "已弃用阶段"
+ },
+ {
+  "table": "afflictions",
+  "key": "MOCK_NO_UNPLAYABLE_AFFLICTION.title",
+  "vanilla": "临时不可打出苦痛"
+ },
+ {
+  "table": "afflictions",
+  "key": "MOCK_SELF_DAMAGE_AFFLICTION.title",
+  "vanilla": "临时自伤苦痛"
+ },
+ {
+  "table": "afflictions",
+  "key": "MOCK_USELESS_AFFLICTION.title",
+  "vanilla": "临时无用苦痛"
+ },
+ {
+  "table": "ancients",
+  "key": "ERROR.title",
+  "vanilla": "锁定"
+ },
+ {
+  "table": "ancients",
+  "key": "NEOW.title",
+  "vanilla": "涅奥"
+ },
+ {
+  "table": "ancients",
+  "key": "NONUPEIPE.title",
+  "vanilla": "诺奴佩普"
+ },
+ {
+  "table": "ancients",
+  "key": "OROBAS.pages.INITIAL.options.OPTION_POOL_3_LOCKED.title",
+  "vanilla": "锁定"
+ },
+ {
+  "table": "ancients",
+  "key": "OROBAS.title",
+  "vanilla": "欧洛巴斯"
+ },
+ {
+  "table": "ancients",
+  "key": "PAEL.title",
+  "vanilla": "佩尔"
+ },
+ {
+  "table": "ancients",
+  "key": "PROCEED.title",
+  "vanilla": "继续"
+ },
+ {
+  "table": "ancients",
+  "key": "TANX.title",
+  "vanilla": "坦克斯"
+ },
+ {
+  "table": "ancients",
+  "key": "TEZCATARA.title",
+  "vanilla": "特兹卡塔拉"
+ },
+ {
+  "table": "ancients",
+  "key": "VAKUU.title",
+  "vanilla": "瓦库"
+ },
+ {
+  "table": "badges",
+  "key": "ILIKESHINY.title",
+  "vanilla": "我爱亮闪闪"
+ },
+ {
+  "table": "card_reward_ui",
+  "key": "OPTION_SACRIFICE.name",
+  "vanilla": "献祭"
+ },
+ {
+  "table": "cards",
+  "key": "BACKSTAB.title",
+  "vanilla": "背刺"
+ },
+ {
+  "table": "cards",
+  "key": "DISTRACTION.title",
+  "vanilla": "声东击西"
+ },
+ {
+  "table": "cards",
+  "key": "FLECHETTES.title",
+  "vanilla": "飞镖"
+ },
+ {
+  "table": "cards",
+  "key": "GRAVE_WARDEN.title",
+  "vanilla": "守墓人"
+ },
+ {
+  "table": "cards",
+  "key": "MAUL.title",
+  "vanilla": "撕咬"
+ },
+ {
+  "table": "cards",
+  "key": "MOCK_QUEST_CARD.title",
+  "vanilla": "临时任务牌"
+ },
+ {
+  "table": "cards",
+  "key": "OFFERING.title",
+  "vanilla": "祭品"
+ },
+ {
+  "table": "cards",
+  "key": "OVERCLOCK.title",
+  "vanilla": "超频"
+ },
+ {
+  "table": "cards",
+  "key": "PALE_BLUE_DOT.title",
+  "vanilla": "暗淡蓝点"
+ },
+ {
+  "table": "cards",
+  "key": "PUTREFY.title",
+  "vanilla": "腐败"
+ },
+ {
+  "table": "cards",
+  "key": "QUASAR.title",
+  "vanilla": "类星体"
+ },
+ {
+  "table": "cards",
+  "key": "SPOILS_MAP.title",
+  "vanilla": "藏宝图"
+ },
+ {
+  "table": "cards",
+  "key": "STACK.title",
+  "vanilla": "堆栈"
+ },
+ {
+  "table": "cards",
+  "key": "SUBROUTINE.title",
+  "vanilla": "子程序"
+ },
+ {
+  "table": "cards",
+  "key": "TANK.title",
+  "vanilla": "肉盾"
+ },
+ {
+  "table": "cards",
+  "key": "TRACKING.title",
+  "vanilla": "跟踪"
+ },
+ {
+  "table": "cards",
+  "key": "UP_MY_SLEEVE.title",
+  "vanilla": "袖里乾坤"
+ },
+ {
+  "table": "characters",
+  "key": "DEPRECATED_CHARACTER.title",
+  "vanilla": "已弃用角色"
+ },
+ {
+  "table": "characters",
+  "key": "DEPRIVED.title",
+  "vanilla": "被剥夺者"
+ },
+ {
+  "table": "characters",
+  "key": "LOCKED.title",
+  "vanilla": "？？？"
+ },
+ {
+  "table": "enchantments",
+  "key": "SOULS_POWER.title",
+  "vanilla": "灵魂之力"
+ },
+ {
+  "table": "enchantments",
+  "key": "TEZCATARAS_EMBER.title",
+  "vanilla": "特兹卡塔拉的余烬"
+ },
+ {
+  "table": "encounters",
+  "key": "FROG_KNIGHT_NORMAL.title",
+  "vanilla": "青蛙骑士"
+ },
+ {
+  "table": "encounters",
+  "key": "MECHA_KNIGHT_ELITE.title",
+  "vanilla": "机甲骑士"
+ },
+ {
+  "table": "encounters",
+  "key": "OWL_MAGISTRATE_NORMAL.title",
+  "vanilla": "猫头鹰法官"
+ },
+ {
+  "table": "encounters",
+  "key": "SCROLLS_OF_BITING_WEAK.title",
+  "vanilla": "咬人卷轴"
+ },
+ {
+  "table": "encounters",
+  "key": "SEWER_CLAM_NORMAL.title",
+  "vanilla": "下水道蚌"
+ },
+ {
+  "table": "encounters",
+  "key": "THE_KIN_BOSS.title",
+  "vanilla": "同族小队"
+ },
+ {
+  "table": "epochs",
+  "key": "COLORLESS1_EPOCH.title",
+  "vanilla": "先子星"
+ },
+ {
+  "table": "epochs",
+  "key": "CUSTOM_AND_SEEDS_EPOCH.title",
+  "vanilla": "种子"
+ },
+ {
+  "table": "epochs",
+  "key": "DEFECT8_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "DEFECT9_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "EVENT4_EPOCH.title",
+  "vanilla": "The TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "IRONCLAD5_EPOCH.title",
+  "vanilla": "火光冲天"
+ },
+ {
+  "table": "epochs",
+  "key": "IRONCLAD7_EPOCH.title",
+  "vanilla": "我的脸"
+ },
+ {
+  "table": "epochs",
+  "key": "IRONCLAD8_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "IRONCLAD9_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "NECROBINDER1_EPOCH.title",
+  "vanilla": "生与死"
+ },
+ {
+  "table": "epochs",
+  "key": "NECROBINDER5_EPOCH.title",
+  "vanilla": "巨人"
+ },
+ {
+  "table": "epochs",
+  "key": "NECROBINDER8_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "NECROBINDER9_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "NEOW_EPOCH.title",
+  "vanilla": "涅奥"
+ },
+ {
+  "table": "epochs",
+  "key": "OROBAS_EPOCH.title",
+  "vanilla": "欧洛巴斯"
+ },
+ {
+  "table": "epochs",
+  "key": "POTION1_EPOCH.title",
+  "vanilla": "开放"
+ },
+ {
+  "table": "epochs",
+  "key": "REGENT3_EPOCH.title",
+  "vanilla": "我们需要一个英雄！"
+ },
+ {
+  "table": "epochs",
+  "key": "REGENT5_EPOCH.title",
+  "vanilla": "朋友"
+ },
+ {
+  "table": "epochs",
+  "key": "REGENT8_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "REGENT9_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "RELIC3_EPOCH.title",
+  "vanilla": "文明"
+ },
+ {
+  "table": "epochs",
+  "key": "RELIC4_EPOCH.title",
+  "vanilla": "后果"
+ },
+ {
+  "table": "epochs",
+  "key": "RELIC5_EPOCH.title",
+  "vanilla": "醒来"
+ },
+ {
+  "table": "epochs",
+  "key": "SILENT2_EPOCH.title",
+  "vanilla": "更大的猎物"
+ },
+ {
+  "table": "epochs",
+  "key": "SILENT4_EPOCH.title",
+  "vanilla": "战利品"
+ },
+ {
+  "table": "epochs",
+  "key": "SILENT8_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "epochs",
+  "key": "SILENT9_EPOCH.title",
+  "vanilla": "TODO"
+ },
+ {
+  "table": "events",
+  "key": "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.DEFECT.title",
+  "vanilla": "蓝色"
+ },
+ {
+  "table": "events",
+  "key": "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.IRONCLAD.title",
+  "vanilla": "红色"
+ },
+ {
+  "table": "events",
+  "key": "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.NECROBINDER.title",
+  "vanilla": "粉色"
+ },
+ {
+  "table": "events",
+  "key": "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.REGENT.title",
+  "vanilla": "橙色"
+ },
+ {
+  "table": "events",
+  "key": "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.SILENT.title",
+  "vanilla": "绿色"
+ },
+ {
+  "table": "events",
+  "key": "CRYSTAL_SPHERE.pages.INITIAL.options.PAYMENT_PLAN.title",
+  "vanilla": "分期付款"
+ },
+ {
+  "table": "events",
+  "key": "CRYSTAL_SPHERE.title",
+  "vanilla": "水晶球"
+ },
+ {
+  "table": "events",
+  "key": "ENDLESS_CONVEYOR.DISHES.CAVIAR.title",
+  "vanilla": "鱼子酱"
+ },
+ {
+  "table": "events",
+  "key": "ENDLESS_CONVEYOR.DISHES.CLAM_ROLL.title",
+  "vanilla": "蚌肉卷"
+ },
+ {
+  "table": "events",
+  "key": "ENDLESS_CONVEYOR.DISHES.FRIED_EEL.title",
+  "vanilla": "炸鳗鱼"
+ },
+ {
+  "table": "events",
+  "key": "ENDLESS_CONVEYOR.DISHES.GOLDEN_FYSH.title",
+  "vanilla": "金色异鱼"
+ },
+ {
+  "table": "events",
+  "key": "ENDLESS_CONVEYOR.DISHES.JELLY_LIVER.title",
+  "vanilla": "水母肝"
+ },
+ {
+  "table": "events",
+  "key": "ENDLESS_CONVEYOR.DISHES.SPICY_SNAPPY.title",
+  "vanilla": "香辣薄脆"
+ },
+ {
+  "table": "events",
+  "key": "ERROR.title",
+  "vanilla": "锁定"
+ },
+ {
+  "table": "events",
+  "key": "HUNGRY_FOR_MUSHROOMS.pages.INITIAL.options.BIG_MUSHROOM.title",
+  "vanilla": "大蘑菇"
+ },
+ {
+  "table": "events",
+  "key": "PROCEED.title",
+  "vanilla": "继续"
+ },
+ {
+  "table": "events",
+  "key": "SPIRIT_GRAFTER.pages.INITIAL.options.REJECTION.title",
+  "vanilla": "拒绝"
+ },
+ {
+  "table": "events",
+  "key": "SUNKEN_TREASURY.pages.INITIAL.options.FIRST_CHEST.title",
+  "vanilla": "第一个箱子"
+ },
+ {
+  "table": "events",
+  "key": "SUNKEN_TREASURY.pages.INITIAL.options.SECOND_CHEST.title",
+  "vanilla": "第二个箱子"
+ },
+ {
+  "table": "events",
+  "key": "TABLET_OF_TRUTH.pages.INITIAL.options.DECIPHER_1.title",
+  "vanilla": "解读"
+ },
+ {
+  "table": "events",
+  "key": "TEA_MASTER.title",
+  "vanilla": "茶艺大师"
+ },
+ {
+  "table": "events",
+  "key": "THE_FUTURE_OF_POTIONS.title",
+  "vanilla": "药水的未来？"
+ },
+ {
+  "table": "events",
+  "key": "THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.NAB_THE_MAP.title",
+  "vanilla": "顺走地图"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.ATTACK.title",
+  "vanilla": "武器"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.POWER.title",
+  "vanilla": "装置"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.SKILL.title",
+  "vanilla": "护具"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.CHAOS.title",
+  "vanilla": "混沌"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.CHOKING.title",
+  "vanilla": "扼杀"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.CURIOUS.title",
+  "vanilla": "好奇"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.ENERGIZED.title",
+  "vanilla": "充能"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.EXPERTISE.title",
+  "vanilla": "专长"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.IMPROVEMENT.title",
+  "vanilla": "精进"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.SAPPING.title",
+  "vanilla": "削弱"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.VIOLENCE.title",
+  "vanilla": "暴力"
+ },
+ {
+  "table": "events",
+  "key": "TINKER_TIME.pages.CHOOSE_RIDER.options.WISDOM.title",
+  "vanilla": "智慧"
+ },
+ {
+  "table": "events",
+  "key": "TRASH_HEAP.title",
+  "vanilla": "垃圾堆"
+ },
+ {
+  "table": "events",
+  "key": "TRIAL.pages.INITIAL.options.ACCEPT.title",
+  "vanilla": "接受"
+ },
+ {
+  "table": "events",
+  "key": "TRIAL.pages.INITIAL.options.REJECT.title",
+  "vanilla": "拒绝"
+ },
+ {
+  "table": "events",
+  "key": "TRIAL.pages.REJECT.options.ACCEPT.title",
+  "vanilla": "接受"
+ },
+ {
+  "table": "events",
+  "key": "WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.PRICKLY_SPONGE.title",
+  "vanilla": "扎手海绵"
+ },
+ {
+  "table": "events",
+  "key": "WOOD_CARVINGS.pages.INITIAL.options.BIRD.title",
+  "vanilla": "鸟"
+ },
+ {
+  "table": "events",
+  "key": "WOOD_CARVINGS.pages.INITIAL.options.SNAKE.title",
+  "vanilla": "蛇"
+ },
+ {
+  "table": "events",
+  "key": "WOOD_CARVINGS.title",
+  "vanilla": "木雕"
+ },
+ {
+  "table": "events",
+  "key": "ZEN_WEAVER.pages.INITIAL.options.ARACHNID_ACUPUNCTURE.title",
+  "vanilla": "蜘蛛针灸"
+ },
+ {
+  "table": "events",
+  "key": "ZEN_WEAVER.pages.INITIAL.options.EMOTIONAL_AWARENESS.title",
+  "vanilla": "情绪觉察"
+ },
+ {
+  "table": "map",
+  "key": "CLEAR_DRAWING.title",
+  "vanilla": "清除绘画"
+ },
+ {
+  "table": "map",
+  "key": "LEGEND_BOSS.hoverTip.title",
+  "vanilla": "Boss"
+ },
+ {
+  "table": "map",
+  "key": "LEGEND_BOSS.title",
+  "vanilla": "Boss"
+ },
+ {
+  "table": "map",
+  "key": "LEGEND_ELITE.hoverTip.title",
+  "vanilla": "精英"
+ },
+ {
+  "table": "map",
+  "key": "LEGEND_ELITE.title",
+  "vanilla": "精英"
+ },
+ {
+  "table": "map",
+  "key": "LEGEND_MAP.hoverTip.title",
+  "vanilla": "地图"
+ },
+ {
+  "table": "map",
+  "key": "LEGEND_MERCHANT.title",
+  "vanilla": "商人"
+ },
+ {
+  "table": "map",
+  "key": "LEGEND_TREASURE.title",
+  "vanilla": "宝箱"
+ },
+ {
+  "table": "map",
+  "key": "SHARE.title",
+  "vanilla": "分享"
+ },
+ {
+  "table": "modifiers",
+  "key": "VINTAGE.title",
+  "vanilla": "上等好货"
+ },
+ {
+  "table": "monsters",
+  "key": "BYGONE_EFFIGY.moves.SLEEP.speakLine1",
+  "vanilla": "[red][sine]你的旅程，到此为止……[/sine][/red]"
+ },
+ {
+  "table": "monsters",
+  "key": "BYGONE_EFFIGY.moves.SLEEP.speakLine2",
+  "vanilla": "那么，我们开始吧？"
+ },
+ {
+  "table": "monsters",
+  "key": "CALCIFIED_CULTIST.moves.INCANTATION.banter",
+  "vanilla": "[jitter]我们的力量无人能及！[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "CEREMONIAL_BEAST.moves.PLOW.title",
+  "vanilla": "横冲直撞"
+ },
+ {
+  "table": "monsters",
+  "key": "DAMP_CULTIST.moves.INCANTATION.banter",
+  "vanilla": "[jitter]咔！\n咔——[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "DEVOTED_SCULPTOR.moves.FORBIDDEN_INCANTATION.banter",
+  "vanilla": "[jitter]咔咔——！！[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.ENRAGE.speakLine1",
+  "vanilla": "哼，不付钱可以，那就付点别的吧……"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.ENRAGE.speakLine2",
+  "vanilla": "今晚你就要与异鱼同眠了！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.SPEW_COINS.speakLine1",
+  "vanilla": "大赚一笔！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.SWIPE.speakLine1",
+  "vanilla": "来打啊！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.SWIPE.title",
+  "vanilla": "顺走"
+ },
+ {
+  "table": "monsters",
+  "key": "FAKE_MERCHANT_MONSTER.moves.THROW_RELIC.speakLine1",
+  "vanilla": "你想要？来拿啊！"
+ },
+ {
+  "table": "monsters",
+  "key": "FAT_GREMLIN.moves.FLEE.banter",
+  "vanilla": "[jitter][orange]我溜啦！[/orange][/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "FAT_GREMLIN.name",
+  "vanilla": "胖地精"
+ },
+ {
+  "table": "monsters",
+  "key": "FROG_KNIGHT.name",
+  "vanilla": "青蛙骑士"
+ },
+ {
+  "table": "monsters",
+  "key": "GEM_EATER.moves.GEM_LASER.title",
+  "vanilla": "宝石激光"
+ },
+ {
+  "table": "monsters",
+  "key": "GREMLIN_MERC.moves.GIMME.banter",
+  "vanilla": "[jitter][gold]钱钱！[/gold][/jitter]\n[sine][orange]钱钱！[/orange][/sine]"
+ },
+ {
+  "table": "monsters",
+  "key": "GREMLIN_MERC.moves.HEHE.title",
+  "vanilla": "嘿嘿"
+ },
+ {
+  "table": "monsters",
+  "key": "KIN_FOLLOWER.moves.BOOMERANG.title",
+  "vanilla": "回旋镖"
+ },
+ {
+  "table": "monsters",
+  "key": "KIN_PRIEST.moves.RITUAL.speakLine1",
+  "vanilla": "[jitter]呱——咔！！[/jitter]"
+ },
+ {
+  "table": "monsters",
+  "key": "LAGAVULIN_MATRIARCH.moves.DISEMBOWEL.title",
+  "vanilla": "开膛破肚"
+ },
+ {
+  "table": "monsters",
+  "key": "LEAF_SLIME_M.name",
+  "vanilla": "树叶史莱姆（中）"
+ },
+ {
+  "table": "monsters",
+  "key": "LEAF_SLIME_S.name",
+  "vanilla": "树叶史莱姆（小）"
+ },
+ {
+  "table": "monsters",
+  "key": "THE_BELL.name",
+  "vanilla": "铃铛"
+ },
+ {
+  "table": "monsters",
+  "key": "THIEVING_HOPPER.moves.HAT_TRICK.title",
+  "vanilla": "帽子戏法"
+ },
+ {
+  "table": "orbs",
+  "key": "MOCK_COMBAT_CLEANUP_ORB.title",
+  "vanilla": "Mock Combat Cleanup"
+ },
+ {
+  "table": "potions",
+  "key": "GHOST_IN_A_JAR.title",
+  "vanilla": "罐装幽灵"
+ },
+ {
+  "table": "potions",
+  "key": "SHIP_IN_A_BOTTLE.title",
+  "vanilla": "瓶中船"
+ },
+ {
+  "table": "potions",
+  "key": "STABLE_SERUM.title",
+  "vanilla": "稳定血清"
+ },
+ {
+  "table": "powers",
+  "key": "ADAPTABLE_POWER.title",
+  "vanilla": "适者生存"
+ },
+ {
+  "table": "powers",
+  "key": "ADAPTATION_POWER.title",
+  "vanilla": "适应"
+ },
+ {
+  "table": "powers",
+  "key": "BLACK_HOLE_POWER.title",
+  "vanilla": "黑洞"
+ },
+ {
+  "table": "powers",
+  "key": "BURST_POWER.title",
+  "vanilla": "爆发"
+ },
+ {
+  "table": "powers",
+  "key": "COVERED_POWER.title",
+  "vanilla": "掩护"
+ },
+ {
+  "table": "powers",
+  "key": "CURIOUS_POWER.title",
+  "vanilla": "好奇"
+ },
+ {
+  "table": "powers",
+  "key": "DECREE_OF_ENTROPY_POWER.title",
+  "vanilla": "熵之律令"
+ },
+ {
+  "table": "powers",
+  "key": "DECREE_OF_UNMAKING_POWER.title",
+  "vanilla": "亡之律令"
+ },
+ {
+  "table": "powers",
+  "key": "DEMISE_POWER.title",
+  "vanilla": "消亡"
+ },
+ {
+  "table": "powers",
+  "key": "DISINTEGRATION_POWER.title",
+  "vanilla": "瓦解"
+ },
+ {
+  "table": "powers",
+  "key": "DUPLICATION_POWER.title",
+  "vanilla": "复制"
+ },
+ {
+  "table": "powers",
+  "key": "FAN_OF_KNIVES_POWER.title",
+  "vanilla": "刀扇"
+ },
+ {
+  "table": "powers",
+  "key": "GRAVITY_POWER.title",
+  "vanilla": "引力"
+ },
+ {
+  "table": "powers",
+  "key": "HEATSINKS_POWER.title",
+  "vanilla": "散热片"
+ },
+ {
+  "table": "powers",
+  "key": "ITERATION_POWER.title",
+  "vanilla": "迭代"
+ },
+ {
+  "table": "powers",
+  "key": "LOOP_POWER.title",
+  "vanilla": "循环"
+ },
+ {
+  "table": "powers",
+  "key": "MAGIC_BOMB_POWER.title",
+  "vanilla": "魔法炸弹"
+ },
+ {
+  "table": "powers",
+  "key": "NECRO_MASTERY_POWER.title",
+  "vanilla": "亡灵精通"
+ },
+ {
+  "table": "powers",
+  "key": "NOXIOUS_FUMES_POWER.title",
+  "vanilla": "毒雾"
+ },
+ {
+  "table": "powers",
+  "key": "PALE_BLUE_DOT_POWER.title",
+  "vanilla": "暗淡蓝点"
+ },
+ {
+  "table": "powers",
+  "key": "PARRY_POWER.title",
+  "vanilla": "招架"
+ },
+ {
+  "table": "powers",
+  "key": "PILLAR_OF_CREATION_POWER.title",
+  "vanilla": "创世之柱"
+ },
+ {
+  "table": "powers",
+  "key": "PLOW_POWER.title",
+  "vanilla": "横冲直撞"
+ },
+ {
+  "table": "powers",
+  "key": "PREP_TIME_POWER.title",
+  "vanilla": "准备时间"
+ },
+ {
+  "table": "powers",
+  "key": "RADIANCE_POWER.title",
+  "vanilla": "明耀"
+ },
+ {
+  "table": "powers",
+  "key": "RAMPART_POWER.title",
+  "vanilla": "盾墙"
+ },
+ {
+  "table": "powers",
+  "key": "REAPER_FORM_POWER.title",
+  "vanilla": "死神形态"
+ },
+ {
+  "table": "powers",
+  "key": "ROLLING_BOULDER_POWER.title",
+  "vanilla": "滚石"
+ },
+ {
+  "table": "powers",
+  "key": "RUPTURE_POWER.title",
+  "vanilla": "撕裂"
+ },
+ {
+  "table": "powers",
+  "key": "SHRIEK_POWER.title",
+  "vanilla": "尖叫"
+ },
+ {
+  "table": "powers",
+  "key": "SKITTISH_POWER.title",
+  "vanilla": "胆小"
+ },
+ {
+  "table": "powers",
+  "key": "SMOKESTACK_POWER.title",
+  "vanilla": "烟囱"
+ },
+ {
+  "table": "powers",
+  "key": "SOULBOUND_POWER.title",
+  "vanilla": "灵魂绑定"
+ },
+ {
+  "table": "powers",
+  "key": "SOW_POWER.title",
+  "vanilla": "播种"
+ },
+ {
+  "table": "powers",
+  "key": "SPECTRUM_SHIFT_POWER.title",
+  "vanilla": "光谱偏移"
+ },
+ {
+  "table": "powers",
+  "key": "SPIRIT_OF_ASH_POWER.title",
+  "vanilla": "灰烬之灵"
+ },
+ {
+  "table": "powers",
+  "key": "STEAM_ERUPTION_POWER.title",
+  "vanilla": "蒸汽喷发"
+ },
+ {
+  "table": "powers",
+  "key": "STRATAGEM_POWER.title",
+  "vanilla": "计策"
+ },
+ {
+  "table": "powers",
+  "key": "SUBROUTINE_POWER.title",
+  "vanilla": "子程序"
+ },
+ {
+  "table": "powers",
+  "key": "SUMMON_NEXT_TURN_POWER.title",
+  "vanilla": "下回合召唤"
+ },
+ {
+  "table": "powers",
+  "key": "SWORD_SAGE_POWER.title",
+  "vanilla": "剑圣"
+ },
+ {
+  "table": "powers",
+  "key": "TANK_POWER.title",
+  "vanilla": "肉盾"
+ },
+ {
+  "table": "powers",
+  "key": "TEZCATARAS_BLIGHT.title",
+  "vanilla": "特兹卡塔拉的荒疫"
+ },
+ {
+  "table": "powers",
+  "key": "THE_BOMB_POWER.title",
+  "vanilla": "炸弹"
+ },
+ {
+  "table": "powers",
+  "key": "THE_SEALED_THRONE_POWER.title",
+  "vanilla": "封印王座"
+ },
+ {
+  "table": "powers",
+  "key": "THUNDER_POWER.title",
+  "vanilla": "雷霆"
+ },
+ {
+  "table": "powers",
+  "key": "TYRANNY_POWER.title",
+  "vanilla": "暴政"
+ },
+ {
+  "table": "powers",
+  "key": "VIGOR_POWER.title",
+  "vanilla": "活力"
+ },
+ {
+  "table": "powers",
+  "key": "VITAL_SPARK_POWER.title",
+  "vanilla": "活力火花"
+ },
+ {
+  "table": "powers",
+  "key": "VOID_FORM_POWER.title",
+  "vanilla": "虚空形态"
+ },
+ {
+  "table": "powers",
+  "key": "WRAITH_FORM_POWER.title",
+  "vanilla": "幽魂形态"
+ },
+ {
+  "table": "relics",
+  "key": "BELLOWS.title",
+  "vanilla": "风箱"
+ },
+ {
+  "table": "relics",
+  "key": "BIG_HAT.title",
+  "vanilla": "大帽子"
+ },
+ {
+  "table": "relics",
+  "key": "BIIIG_HUG.title",
+  "vanilla": "大～抱抱"
+ },
+ {
+  "table": "relics",
+  "key": "BLACK_STAR.title",
+  "vanilla": "黑星"
+ },
+ {
+  "table": "relics",
+  "key": "BLESSED_ANTLER.title",
+  "vanilla": "赐福鹿角"
+ },
+ {
+  "table": "relics",
+  "key": "BONE_FLUTE.title",
+  "vanilla": "骨笛"
+ },
+ {
+  "table": "relics",
+  "key": "BOOKMARK.title",
+  "vanilla": "书签"
+ },
+ {
+  "table": "relics",
+  "key": "BOOK_OF_FIVE_RINGS.title",
+  "vanilla": "五轮书"
+ },
+ {
+  "table": "relics",
+  "key": "BREAD.title",
+  "vanilla": "面包"
+ },
+ {
+  "table": "relics",
+  "key": "BRIMSTONE.title",
+  "vanilla": "硫磺"
+ },
+ {
+  "table": "relics",
+  "key": "CANDELABRA.title",
+  "vanilla": "烛台"
+ },
+ {
+  "table": "relics",
+  "key": "CHEMICAL_X.title",
+  "vanilla": "化学物X"
+ },
+ {
+  "table": "relics",
+  "key": "CIRCLET.title",
+  "vanilla": "头环"
+ },
+ {
+  "table": "relics",
+  "key": "CLOAK_CLASP.title",
+  "vanilla": "斗篷扣"
+ },
+ {
+  "table": "relics",
+  "key": "DAUGHTER_OF_THE_WIND.title",
+  "vanilla": "风的女儿"
+ },
+ {
+  "table": "relics",
+  "key": "DRAGON_FRUIT.title",
+  "vanilla": "火龙果"
+ },
+ {
+  "table": "relics",
+  "key": "DREAM_CATCHER.title",
+  "vanilla": "捕梦网"
+ },
+ {
+  "table": "relics",
+  "key": "FIDDLE.title",
+  "vanilla": "小提琴"
+ },
+ {
+  "table": "relics",
+  "key": "GAME_PIECE.title",
+  "vanilla": "棋子"
+ },
+ {
+  "table": "relics",
+  "key": "GLITTER.title",
+  "vanilla": "亮片"
+ },
+ {
+  "table": "relics",
+  "key": "GOLDEN_COMPASS.title",
+  "vanilla": "黄金罗盘"
+ },
+ {
+  "table": "relics",
+  "key": "HAPPY_FLOWER.title",
+  "vanilla": "开心小花"
+ },
+ {
+  "table": "relics",
+  "key": "HISTORY_COURSE.title",
+  "vanilla": "历史课"
+ },
+ {
+  "table": "relics",
+  "key": "HORN_CLEAT.title",
+  "vanilla": "船夹板"
+ },
+ {
+  "table": "relics",
+  "key": "ICE_CREAM.title",
+  "vanilla": "冰淇淋"
+ },
+ {
+  "table": "relics",
+  "key": "INK_BOTTLE.title",
+  "vanilla": "墨水瓶"
+ },
+ {
+  "table": "relics",
+  "key": "KALEIDOSCOPE.title",
+  "vanilla": "万花筒"
+ },
+ {
+  "table": "relics",
+  "key": "KUNAI.title",
+  "vanilla": "苦无"
+ },
+ {
+  "table": "relics",
+  "key": "KUSARIGAMA.title",
+  "vanilla": "锁镰"
+ },
+ {
+  "table": "relics",
+  "key": "LANTERN.title",
+  "vanilla": "灯笼"
+ },
+ {
+  "table": "relics",
+  "key": "LASTING_CANDY.title",
+  "vanilla": "吃不完的糖"
+ },
+ {
+  "table": "relics",
+  "key": "LAVA_LAMP.title",
+  "vanilla": "熔岩灯"
+ },
+ {
+  "table": "relics",
+  "key": "MANGO.title",
+  "vanilla": "芒果"
+ },
+ {
+  "table": "relics",
+  "key": "MERCURY_HOURGLASS.title",
+  "vanilla": "水银沙漏"
+ },
+ {
+  "table": "relics",
+  "key": "METRONOME.title",
+  "vanilla": "节拍器"
+ },
+ {
+  "table": "relics",
+  "key": "NEOWS_TALISMAN.title",
+  "vanilla": "涅奥的护符"
+ },
+ {
+  "table": "relics",
+  "key": "NINJA_SCROLL.title",
+  "vanilla": "忍术卷轴"
+ },
+ {
+  "table": "relics",
+  "key": "NUNCHAKU.title",
+  "vanilla": "双截棍"
+ },
+ {
+  "table": "relics",
+  "key": "PAELS_GROWTH.title",
+  "vanilla": "佩尔的增生组织"
+ },
+ {
+  "table": "relics",
+  "key": "PANDORAS_BOX.title",
+  "vanilla": "潘多拉魔盒"
+ },
+ {
+  "table": "relics",
+  "key": "PANTOGRAPH.title",
+  "vanilla": "缩放仪"
+ },
+ {
+  "table": "relics",
+  "key": "PEN_NIB.title",
+  "vanilla": "钢笔尖"
+ },
+ {
+  "table": "relics",
+  "key": "PHILOSOPHERS_STONE.title",
+  "vanilla": "贤者之石"
+ },
+ {
+  "table": "relics",
+  "key": "POCKETWATCH.title",
+  "vanilla": "怀表"
+ },
+ {
+  "table": "relics",
+  "key": "POLLINOUS_CORE.title",
+  "vanilla": "花粉核心"
+ },
+ {
+  "table": "relics",
+  "key": "POTION_BELT.title",
+  "vanilla": "药水腰带"
+ },
+ {
+  "table": "relics",
+  "key": "PRECISE_SCISSORS.title",
+  "vanilla": "精准剪刀"
+ },
+ {
+  "table": "relics",
+  "key": "PRISMATIC_GEM.title",
+  "vanilla": "棱彩宝石"
+ },
+ {
+  "table": "relics",
+  "key": "PUNCH_DAGGER.title",
+  "vanilla": "拳刃"
+ },
+ {
+  "table": "relics",
+  "key": "RAINBOW_RING.title",
+  "vanilla": "彩虹戒指"
+ },
+ {
+  "table": "relics",
+  "key": "RED_MASK.title",
+  "vanilla": "红面具"
+ },
+ {
+  "table": "relics",
+  "key": "REGAL_PILLOW.title",
+  "vanilla": "皇家枕头"
+ },
+ {
+  "table": "relics",
+  "key": "RUNIC_PYRAMID.title",
+  "vanilla": "符文金字塔"
+ },
+ {
+  "table": "relics",
+  "key": "SAI.title",
+  "vanilla": "钗"
+ },
+ {
+  "table": "relics",
+  "key": "SAND_CASTLE.title",
+  "vanilla": "沙堡"
+ },
+ {
+  "table": "relics",
+  "key": "SCROLL_BOXES.title",
+  "vanilla": "卷轴箱"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.DEFECT.title",
+  "vanilla": "齿轮玻璃"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.IRONCLAD.title",
+  "vanilla": "恶魔玻璃"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.NECROBINDER.title",
+  "vanilla": "巫妖玻璃"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.REGENT.title",
+  "vanilla": "贵族玻璃"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.SILENT.title",
+  "vanilla": "毒液玻璃"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.title",
+  "vanilla": "海玻璃"
+ },
+ {
+  "table": "relics",
+  "key": "SHOVEL.title",
+  "vanilla": "铲子"
+ },
+ {
+  "table": "relics",
+  "key": "SHURIKEN.title",
+  "vanilla": "手里剑"
+ },
+ {
+  "table": "relics",
+  "key": "SOZU.title",
+  "vanilla": "添水"
+ },
+ {
+  "table": "relics",
+  "key": "STONE_CRACKER.title",
+  "vanilla": "碎石钻"
+ },
+ {
+  "table": "relics",
+  "key": "STRAWBERRY.title",
+  "vanilla": "草莓"
+ },
+ {
+  "table": "relics",
+  "key": "SYMBIOTIC_VIRUS.title",
+  "vanilla": "共生病毒"
+ },
+ {
+  "table": "relics",
+  "key": "THE_ABACUS.title",
+  "vanilla": "算盘"
+ },
+ {
+  "table": "relics",
+  "key": "TOOLBOX.title",
+  "vanilla": "工具箱"
+ },
+ {
+  "table": "relics",
+  "key": "TUNING_FORK.title",
+  "vanilla": "音叉"
+ },
+ {
+  "table": "relics",
+  "key": "VAJRA.title",
+  "vanilla": "金刚杵"
+ },
+ {
+  "table": "relics",
+  "key": "VERY_HOT_COCOA.title",
+  "vanilla": "烫嘴可可"
+ },
+ {
+  "table": "relics",
+  "key": "WHETSTONE.title",
+  "vanilla": "磨刀石"
+ },
+ {
+  "table": "relics",
+  "key": "WHITE_BEAST_STATUE.title",
+  "vanilla": "白兽雕像"
+ },
+ {
+  "table": "relics",
+  "key": "WHITE_STAR.title",
+  "vanilla": "白星"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "BOSS.title",
+  "vanilla": "{BossName}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "DECK.title",
+  "vanilla": "牌组{Hotkey:choose(None):|（{}）}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "DISCARD_PILE.title",
+  "vanilla": "弃牌堆{Hotkey:choose(None):|（{}）}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "DOUBLE_BOSS.title",
+  "vanilla": "{BossName1} & {BossName2}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "DRAW_PILE.title",
+  "vanilla": "抽牌堆{Hotkey:choose(None):|（{}）}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "END_TURN.title",
+  "vanilla": "结束回合{Hotkey:choose(None):|（{}）}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "EXHAUST_PILE.title",
+  "vanilla": "消耗牌堆{Hotkey:choose(None):|（{}）}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "MAP.title",
+  "vanilla": "地图{Hotkey:choose(None):|（{}）}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "ROOM_BOSS.title",
+  "vanilla": "Boss"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "ROOM_ELITE.title",
+  "vanilla": "精英"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "ROOM_MAP.title",
+  "vanilla": "前厅"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "ROOM_TREASURE.title",
+  "vanilla": "宝箱房"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "SETTINGS.title",
+  "vanilla": "设置（ESC）"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "SUMMON_DYNAMIC.title",
+  "vanilla": "召唤{Summon}"
+ },
+ {
+  "table": "static_hover_tips",
+  "key": "SUMMON_STATIC.title",
+  "vanilla": "召唤"
+ }
+]

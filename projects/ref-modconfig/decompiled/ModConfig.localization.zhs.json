@@ -1,0 +1,9 @@
+{
+  "tab_mods": "模组配置",
+  "no_configs": "暂无模组注册配置项。",
+  "reset_defaults": "重置",
+  "press_any_key": "按任意键...",
+  "key_unbound": "未绑定",
+  "keybind_tooltip": "点击可重新绑定。按 Esc 或点击任意位置可清空绑定。",
+  "color_picker_tooltip": "点击选择颜色。"
+}

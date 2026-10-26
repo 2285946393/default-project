@@ -1,0 +1,10 @@
+{
+  "ANCIENT": "[gold][font_size=28][b]先古：[/b][/font_size][/gold]先古大佬送的遗物。",
+  "COMMON": "[gold][font_size=28][b]普通：[/b][/font_size][/gold]烂大街的小遗物。",
+  "EVENT": "[gold][font_size=28][b]事件：[/b][/font_size][/gold]只能靠事件拿到的遗物。",
+  "RARE": "[gold][font_size=28][b]稀有：[/b][/font_size][/gold]又强又少见的好东西。",
+  "SHOP": "[gold][font_size=28][b]商店：[/b][/font_size][/gold]只能在商人那儿买。",
+  "STARTER": "[gold][font_size=28][b]初始：[/b][/font_size][/gold]开局自带的。",
+  "UNCOMMON": "[gold][font_size=28][b]罕见：[/b][/font_size][/gold]比普通强一点、也少见一点。",
+  "UNKNOWN_ANCIENT": "？？？"
+}

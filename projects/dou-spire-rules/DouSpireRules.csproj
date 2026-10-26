@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- 斗地主规则判定器（原型）。
+       纯 C#，不依赖游戏、不依赖引擎、不依赖任何 NuGet 包。
+       目的：把斗地主的全部规则（牌型识别 + 大小比较）先验证到手，
+       之后再整段搬进 mod（FrostSpire/QuestSpire 同款 net9.0 环境，可原样复用）。 -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DouSpireRules</RootNamespace>
+    <AssemblyName>DouSpireRules</AssemblyName>
+    <LangVersion>13.0</LangVersion>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

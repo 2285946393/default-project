@@ -1,0 +1,51 @@
+# LoadOrderManager localization - French
+open_button=Ordre de chargement
+open_button_tooltip=Modifier l ordre de chargement des mods pour le prochain lancement
+title=Ordre de chargement des mods
+subtitle=Deplacez les lignes puis cliquez sur Appliquer. Le changement prendra effet au prochain lancement.
+btn_move_up=Monter
+btn_move_down=Descendre
+btn_move_top=Mettre en haut
+btn_move_bottom=Mettre en bas
+btn_reload=Recharger
+btn_apply=Appliquer
+btn_close=Fermer
+status_ready=Pret.
+status_load_failed=Echec du chargement : {0}
+status_loaded={0} mods charges.
+status_moved_pos=Deplace a la position {0}.
+status_moved_top=Deplace en haut.
+status_moved_bottom=Deplace en bas.
+status_nothing_to_save=Rien a enregistrer.
+status_save_failed=Echec de l enregistrement : {0}
+status_saved=Enregistre. Redemarrez le jeu pour appliquer l ordre.
+warning_overwritten=Avertissement : l ordre actuel des mods differe du dernier instantane applique ({0}). Il a peut-etre ete ecrase par le tri des dependances ou un autre mod.
+source_mods=local
+source_workshop=atelier
+source_unknown=inconnu
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=Activer automatiquement les nouveaux mods
+policy_auto_enable_tooltip=Active : les mods auxquels vous vous abonnez apres avoir enregistre ce profil sont actives ici par defaut. Desactive : ils sont desactives et a activer manuellement.
+policy_on=active
+policy_off=desactive
+status_new_mods_seen={0} nouveau(x) mod(s) traite(s) selon la regle des nouveaux mods de ce profil. Cliquez sur Appliquer pour enregistrer.
+status_policy_changed=Profil '{0}' : activation automatique des nouveaux mods = {1}
+tag_new=NOUVEAU

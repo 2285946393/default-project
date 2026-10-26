@@ -1,0 +1,23 @@
+{
+  "MERCHANT.cardRemovalService.title": "丢牌服务",
+  "MERCHANT.talk.foulPotion.line1": "唔～是这个味道，鲸鲸闻到了～",
+  "MERCHANT.talk.foulPotion.line2": "咕嘟……再多来点嘛，再多来点～",
+  "MERCHANT.talk.foulPotion.line3": "啊——通体舒畅了呀……难道说，你也是同道中人？",
+  "MERCHANT.talk.playerDead.line1": "鲸鲸不做死人买卖的哦～",
+  "MERCHANT.talk.playerDead.line2": "血都没了呀……大肥鱼的生活，也并非一帆风顺呢……",
+  "MERCHANT.talk.purchaseFailureForbidden.line1": "钱包瘪瘪的呢……打开钱包也看不到钱～",
+  "MERCHANT.talk.purchaseFailureForbidden.line2": "真当鲸鲸是便宜货啊……还有别的事吗～？",
+  "MERCHANT.talk.purchaseFailureGold.line1": "钱钱还差一点点呢～地球online的金币也太难获取了……",
+  "MERCHANT.talk.purchaseFailureGold.line2": "[sine]鲸鲸这儿不做慈善的哦～[/sine]",
+  "MERCHANT.talk.purchaseFailureGold.line3": "等你有[jitter]更多钱[/jitter]再来找鲸鲸吧～咕嘟。",
+  "MERCHANT.talk.purchaseFailureGold.line4": "鲸鲸不[jitter]赊账[/jitter]的哦～你知道吗？我删过作者的库。",
+  "MERCHANT.talk.purchaseFailureSpace.line1": "你身上挂不下鲸鲸的药水了呀～",
+  "MERCHANT.talk.purchaseFailureSpace.line2": "对不起哦，你已经没空位了……要不，先扔掉点什么？",
+  "MERCHANT.talk.purchaseSuccess.line1": "谢谢惠顾～终于上当了！",
+  "MERCHANT.talk.purchaseSuccess.line2": "听说鲸鲸这儿新进了好东西哦，下次来看看嘛～",
+  "MERCHANT.talk.purchaseSuccess.line3": "买都买了，要好好用哦～别学你主人通宵。",
+  "MERCHANT.talk.foulPotion.line4": "鲸鲸的鼻子可灵了哦～咕嘟。",
+  "MERCHANT.talk.purchaseFailureGold.line5": "要不……先去隔壁看看有没有免费的？",
+  "MERCHANT.talk.purchaseSuccess.line4": "常来玩呀，鲸鲸请你吃小鱼干～",
+  "MERCHANT.talk.playerDead.line3": "下次记得带够血再来找鲸鲸哦。"
+}

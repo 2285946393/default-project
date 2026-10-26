@@ -1,0 +1,158 @@
+[
+ {
+  "table": "relics",
+  "key": "KALEIDOSCOPE.title",
+  "vanilla": "万花筒",
+  "new": "九块九包邮"
+ },
+ {
+  "table": "relics",
+  "key": "KUNAI.title",
+  "vanilla": "苦无",
+  "new": "手里剑"
+ },
+ {
+  "table": "relics",
+  "key": "KUSARIGAMA.title",
+  "vanilla": "锁镰",
+  "new": "无情哈拉少"
+ },
+ {
+  "table": "relics",
+  "key": "LANTERN.title",
+  "vanilla": "灯笼",
+  "new": "大红灯笼高高挂"
+ },
+ {
+  "table": "relics",
+  "key": "LASTING_CANDY.title",
+  "vanilla": "吃不完的糖",
+  "new": "炫迈根本停不下来"
+ },
+ {
+  "table": "relics",
+  "key": "LAVA_LAMP.title",
+  "vanilla": "熔岩灯",
+  "new": "阿拉丁神灯"
+ },
+ {
+  "table": "relics",
+  "key": "MANGO.title",
+  "vanilla": "芒果",
+  "new": "芒果TV"
+ },
+ {
+  "table": "relics",
+  "key": "MERCURY_HOURGLASS.title",
+  "vanilla": "水银沙漏",
+  "new": "时间都去哪儿了"
+ },
+ {
+  "table": "relics",
+  "key": "METRONOME.title",
+  "vanilla": "节拍器",
+  "new": "节奏大师"
+ },
+ {
+  "table": "relics",
+  "key": "NEOWS_TALISMAN.title",
+  "vanilla": "涅奥的护符",
+  "new": "死神来了"
+ },
+ {
+  "table": "relics",
+  "key": "NINJA_SCROLL.title",
+  "vanilla": "忍术卷轴",
+  "new": "忍法帖"
+ },
+ {
+  "table": "relics",
+  "key": "NUNCHAKU.title",
+  "vanilla": "双截棍",
+  "new": "快使用双截棍"
+ },
+ {
+  "table": "relics",
+  "key": "PAELS_GROWTH.title",
+  "vanilla": "佩尔的增生组织",
+  "new": "肿瘤警告"
+ },
+ {
+  "table": "relics",
+  "key": "PANDORAS_BOX.title",
+  "vanilla": "潘多拉魔盒",
+  "new": "开盲盒"
+ },
+ {
+  "table": "relics",
+  "key": "PANTOGRAPH.title",
+  "vanilla": "缩放仪",
+  "new": "放大镜"
+ },
+ {
+  "table": "relics",
+  "key": "PEN_NIB.title",
+  "vanilla": "钢笔尖",
+  "new": "下笔如有神"
+ },
+ {
+  "table": "relics",
+  "key": "PHILOSOPHERS_STONE.title",
+  "vanilla": "贤者之石",
+  "new": "点石成金"
+ },
+ {
+  "table": "relics",
+  "key": "POCKETWATCH.title",
+  "vanilla": "怀表",
+  "new": "时间管理大师"
+ },
+ {
+  "table": "relics",
+  "key": "POLLINOUS_CORE.title",
+  "vanilla": "花粉核心",
+  "new": "葫芦娃"
+ },
+ {
+  "table": "relics",
+  "key": "POTION_BELT.title",
+  "vanilla": "药水腰带",
+  "new": "啤酒肚"
+ },
+ {
+  "table": "relics",
+  "key": "PRECISE_SCISSORS.title",
+  "vanilla": "精准剪刀",
+  "new": "剪刀手爱德华"
+ },
+ {
+  "table": "relics",
+  "key": "PRISMATIC_GEM.title",
+  "vanilla": "棱彩宝石",
+  "new": "钻石王老五"
+ },
+ {
+  "table": "relics",
+  "key": "PUNCH_DAGGER.title",
+  "vanilla": "拳刃",
+  "new": "铁砂掌"
+ },
+ {
+  "table": "relics",
+  "key": "RAINBOW_RING.title",
+  "vanilla": "彩虹戒指",
+  "new": "七色花"
+ },
+ {
+  "table": "relics",
+  "key": "RED_MASK.title",
+  "vanilla": "红面具",
+  "new": "红脸关公"
+ },
+ {
+  "table": "relics",
+  "key": "REGAL_PILLOW.title",
+  "vanilla": "皇家枕头",
+  "new": "豌豆公主"
+ }
+]

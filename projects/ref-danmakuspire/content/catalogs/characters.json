@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "characters": {
+    "IRONCLAD": { "name": "战士", "color": "CB282B", "avatar": "ironclad" },
+    "SILENT": { "name": "猎人", "color": "2F6729", "avatar": "silent" },
+    "REGENT": { "name": "储君", "color": "935206", "avatar": "regent" },
+    "NECROBINDER": { "name": "骨头人", "color": "AC0486", "avatar": "necrobinder" },
+    "DEFECT": { "name": "鸡煲", "color": "0D638C", "avatar": "defect" }
+  }
+}

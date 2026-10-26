@@ -1,0 +1,22 @@
+{
+  "id": "DouSpireDev",
+  "name": "斗地主尖塔（开发版）/ DouSpire Dev",
+  "pck_name": "DouSpireDev",
+  "author": "有花无实",
+  "description": "【本地开发版，不要订阅/分享】斗地主尖塔的开发中版本，和创意工坊那条「斗地主尖塔」是同一份代码，但用的是独立的 mod id，目的是让本地开发版能和你订阅的工坊版**同时存在于游戏目录里**（工坊不允许两条同 id 的 mod）。\n\n⚠️ 别和工坊版同时启用 —— 两个都开会在主菜单出现两个入口、F9 抢热键、牌桌重复注册。要联机请只启用工坊版。\n⚠️ 设置存在 mod_configs\\DouSpireDev.cfg，和工坊版的 DouSpire.cfg 互不相通。\n⚠️ 网络 opcode 命名空间跟着 id 走，所以**开发版连不上工坊版玩家**。",
+  "version": "0.2.43",
+  "has_pck": false,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.6.6"
+    },
+    {
+      "id": "BaseLib",
+      "min_version": "v3.4.7"
+    }
+  ]
+}

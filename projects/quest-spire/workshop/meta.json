@@ -1,0 +1,31 @@
+{
+  "title": "尖塔任务 Quest Spire｜杀戮尖塔2 任务系统 目标 成就 挑战 奖励 遗物 三选一 附魔 联机 中文 Mod",
+  "visibility": "public",
+  "changeNote": "0.2.30：界面整体缩小。任务面板和「接取任务」浮层一起变小——浮层原来不跟随「界面缩放」设置，怎么调都很大，这次修好了；「界面缩放」范围放宽到 0.1~1.4，觉得还大可以一路拉到底。",
+  "tags": [
+    "Relics",
+    "gameplay",
+    "schinese",
+    "english",
+    "Quests",
+    "Challenges",
+    "Objectives",
+    "Rewards",
+    "Cards",
+    "Multiplayer",
+    "Achievements",
+    "UI"
+  ],
+  "dependencies": [
+    3747602295,
+    3737335127
+  ],
+  "contentDescriptors": [],
+  "_说明": {
+    "visibility": "先传成 private（只有自己可见）。想公开时改成 public，或在工坊网页上改。",
+    "dependencies": "3747602295 = STS2-RitsuLib 的工坊 id。⚠️ 必须写成数字，写成字符串 \"3747602295\" 会让上传器报 'Exception thrown while parsing the workshop config' 而整个上传失败。",
+    "tags": "标签可以自己填，不用非得用官方那套。语言标签用 schinese / english 这种写法。",
+    "description": "正文在 description.md，prepare_workshop.py 会读它并塞进 workshop.json。支持 BBCode：[h1][h2][b][i][u][list][*][url][quote][code][hr][img]，公版模组都靠这个排版。",
+    "mod_id": "3806270140（第一次上传后写进工作区的 mod_id.txt，之后上传都是更新这一条）。"
+  }
+}

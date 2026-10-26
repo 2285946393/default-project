@@ -1,0 +1,18 @@
+{
+  "id": "RandomForeseer",
+  "name": "随机数预测 (RandomForeseer)",
+  "pck_name": "RandomForeseer",
+  "author": "hotwords123",
+  "description": "预测随机，预见未来。\nPredicts random outcomes and foresees the future.",
+  "version": "0.13.18",
+  "has_pck": false,
+  "has_dll": true,
+  "affects_gameplay": false,
+  "min_game_version": "0.107.1",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.4.9"
+    }
+  ]
+}

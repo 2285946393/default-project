@@ -1,0 +1,22 @@
+{
+  "id": "DouSpireLite",
+  "name": "斗地主尖塔·简洁版 / DouSpire Lite",
+  "pck_name": "DouSpireLite",
+  "author": "有花无实",
+  "description": "斗地主尖塔的纯玩法精简版：完整斗地主规则（猜拳抢地主 / 明牌 / 加倍 / 炸弹翻倍）、联机同桌、出牌特效、背景音乐、本体角色语音。不含四位二次元客串角色，包体约 40MB。与完整版「斗地主尖塔」二选一订阅。",
+  "version": "1.1.0",
+  "has_pck": false,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.6.6"
+    },
+    {
+      "id": "BaseLib",
+      "min_version": "v3.4.7"
+    }
+  ]
+}

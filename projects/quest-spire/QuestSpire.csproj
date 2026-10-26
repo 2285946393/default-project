@@ -1,0 +1,162 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+    <Import Project=".\local.props" Condition="Exists('.\local.props')"/>
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>13.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <RootNamespace>QuestSpire</RootNamespace>
+        <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
+        <PathMap>$(AppOutputBase)=.\</PathMap>
+        <NoWarn>$(NoWarn);MSB3270;CS0436</NoWarn>
+
+        <!-- 纯逻辑 mod：不需要导出 pck，构建产物只有 dll + json。 -->
+        <RunPckExport>false</RunPckExport>
+        <Sts2Dir Condition="'$(Sts2Dir)' == ''">$(MSBuildProgramFiles32)\Steam\steamapps\common\Slay the Spire 2</Sts2Dir>
+        <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
+        <ModOutputDir>$(Sts2Dir)\mods\$(MSBuildProjectName)\</ModOutputDir>
+        <RitsuLibDeployDir Condition="'$(RitsuLibDeployDir)' == ''">$(Sts2Dir)\mods\STS2-RitsuLib</RitsuLibDeployDir>
+        <CopyModOnBuild Condition="'$(CopyModOnBuild)' == ''">true</CopyModOnBuild>
+        <!-- 前置 BaseLib（创意工坊 3737335127）：提供「选一张牌升级 / 变牌」这类奖励零件。
+             Private=False = 不把它的 dll 复制进我们的 mod（游戏从它自己的目录加载）。 -->
+        <BaseLibPath Condition="'$(BaseLibPath)' == ''">$(Sts2Dir)\..\..\workshop\content\2868840\3737335127\BaseLib\BaseLib.dll</BaseLibPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Krafs.Publicizer" Version="2.2.1" PrivateAssets="all"/>
+        <PackageReference Include="STS2.RitsuLib" Version="0.6.6" GeneratePathProperty="true"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Publicize Include="sts2" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- ⚠️ Private=False：用**游戏自带**那份 0Harmony，别再复制一份进 mods（两份会打架）。 -->
+        <Reference Include="0Harmony" HintPath="$(Sts2DataDir)\0Harmony.dll" Private="False"/>
+        <Reference Include="sts2" HintPath="$(Sts2DataDir)\sts2.dll" Private="True"/>
+        <Reference Include="Steamworks.NET" HintPath="$(Sts2DataDir)\Steamworks.NET.dll" Private="True"/>
+        <Reference Include="BaseLib" HintPath="$(BaseLibPath)" Private="False" Condition="Exists('$(BaseLibPath)')"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+        <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+        <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+
+        <None Include="QuestSpire.json"/>
+        <None Include="project.godot"/>
+        <None Include=".gitignore"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="local.props" Condition="Exists('local.props')"/>
+    </ItemGroup>
+
+    <Target Name="ValidateSts2GameInstall" BeforeTargets="ResolveAssemblyReferences">
+        <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="Could not find sts2.dll under '$(Sts2DataDir)'. Copy local.props.template to local.props and set Sts2Dir/Sts2DataDir for your local game install."/>
+    </Target>
+
+    <Target Name="CopyMod" AfterTargets="Build" DependsOnTargets="SyncManifestDependencies"
+            Condition="'$(CopyModOnBuild)' != 'false'">
+        <MakeDir Directories="$(ModOutputDir)"/>
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModOutputDir)"/>
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\$(MSBuildProjectName).json" DestinationFolder="$(ModOutputDir)"/>
+        <!-- pck（图标 + 本地化）也要一起部署，否则游戏里遗物会退回成锁头 -->
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\$(MSBuildProjectName).pck" DestinationFolder="$(ModOutputDir)"
+              Condition="Exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).pck')"/>
+    </Target>
+
+    <!-- ============================================================
+         依赖版本同步：把 manifest 里 dependencies[STS2-RitsuLib].version
+         改成**游戏里实际装的那个版本**。
+
+         ⚠️ 2026-10-08 在 DouSpire 上踩过四个坑，这里一并规避，别再犯：
+
+         ① **时机**：原来写 `AfterTargets="Build" BeforeTargets="CopyMod"`。
+            两个 target 都挂在 Build 后面时，MSBuild 按**声明顺序**跑，
+            而这个 target 声明在 CopyMod **之后** → 实际是
+            `Build → 拷旧 json 到 mods/ → 才改源码 json`，
+            改完没人再拷一遍 → **部署那份永远是旧的**。
+            现在改成由 CopyMod `DependsOnTargets` 显式依赖，顺序 100% 确定。
+
+         ② **版本号来源**：csproj 里引用写的是 `Version="*"`（永远取最新），
+            NuGet 缓存里会躺好几个版本，`$(PkgSTS2_RitsuLib)` 指向**最新**那个，
+            不是游戏里装的那个。现在优先读游戏目录 manifest 的真实版本。
+
+         ③ **禁用 $1 / ${1} 反向引用**：MSBuild 会先把 ${1} 当自己的属性语法
+            展开成空串，再交给正则；配合 (?s) 让 .*? 跨行，会把整个 manifest
+            吞掉写坏（DouSpire 2026-10-08 真的写坏过一次）。
+            现在用唯一占位符替换 → 数个数 → 必须恰好 1 个才落盘。
+
+         ④ **WriteLinesToFile 不要配 Regex::Split**：拆行再写会毁掉 JSON
+            字符串里的 \n 转义（报 "Invalid control character"）。
+            现在整个 JSON 作为单行一次写出。
+         ============================================================ -->
+    <Target Name="SyncManifestDependencies" Condition="'$(DesignTimeBuild)' != 'true'">
+        <PropertyGroup>
+            <ManifestFile>$(MSBuildProjectDirectory)\$(MSBuildProjectName).json</ManifestFile>
+
+            <_RitsuManifest Condition="'$(RitsuLibDeployDir)' != ''">$(RitsuLibDeployDir)\mod_manifest.json</_RitsuManifest>
+            <_RitsuJson Condition="Exists('$(_RitsuManifest)')">$([System.IO.File]::ReadAllText('$(_RitsuManifest)'))</_RitsuJson>
+            <_RitsuVerPattern>&quot;version&quot;\s*:\s*&quot;([^&quot;]+)&quot;</_RitsuVerPattern>
+            <_FromGame Condition="'$(_RitsuJson)' != ''">$([System.Text.RegularExpressions.Regex]::Match('$(_RitsuJson)', '$(_RitsuVerPattern)').Groups[1].Value)</_FromGame>
+
+            <_FromNuget>$([System.IO.Path]::GetFileName('$(PkgSTS2_RitsuLib)'))</_FromNuget>
+        </PropertyGroup>
+
+        <!-- ★ min_version 是下限，不是精确钉版。
+             写"实装最新版"会把还没更新的玩家全部拦在门外
+             （游戏 ModManager.cs:916 `installed.CompareTo(required) < 0` → Failed）。
+             ⇒ 取 manifest 现值 与 实装值 里较小的那个：只许降，不许抬。
+             ⚠️ MSBuild 里 [System.Version]::Parse() 的返回值被当成字符串，不能链式
+                .CompareTo()；且没有 Version.Compare(a,b) 静态方法。必须拆属性比较。 -->
+        <PropertyGroup>
+            <!-- 先从本 mod 自己的 manifest 读出当前值（用于"取小"） -->
+            <_CurJson>$([System.IO.File]::ReadAllText('$(ManifestFile)'))</_CurJson>
+            <_CurPat>&quot;id&quot;\s*:\s*&quot;STS2-RitsuLib&quot;\s*,\s*&quot;(?:min_)?version&quot;\s*:\s*&quot;([^&quot;]+)&quot;</_CurPat>
+            <_FromManifest>$([System.Text.RegularExpressions.Regex]::Match('$(_CurJson)', '$(_CurPat)').Groups[1].Value)</_FromManifest>
+
+            <_MFver Condition="'$(_FromManifest)' != ''">$([System.Version]::Parse('$(_FromManifest)'))</_MFver>
+            <_GMver Condition="'$(_FromGame)' != ''">$([System.Version]::Parse('$(_FromGame)'))</_GMver>
+            <_Lower Condition="'$(_MFver)' != '' and '$(_GMver)' != ''">$(_MFver.CompareTo($(_GMver)))</_Lower>
+
+            <RitsuLibVersion Condition="'$(_Lower)' == '1'">$(_FromGame)</RitsuLibVersion>
+            <RitsuLibVersion Condition="'$(RitsuLibVersion)' == ''">$(_FromManifest)</RitsuLibVersion>
+            <RitsuLibVersion Condition="'$(RitsuLibVersion)' == ''">$(_FromNuget)</RitsuLibVersion>
+            <RitsuLibVersionSource Condition="'$(_Lower)' == '1'">实装更低，降到 $(_FromGame)</RitsuLibVersionSource>
+            <RitsuLibVersionSource Condition="'$(RitsuLibVersionSource)' == '' and '$(RitsuLibVersion)' != ''">manifest 现值（$(_FromManifest)，未被抬高）</RitsuLibVersionSource>
+        </PropertyGroup>
+
+        <Warning Condition="'$(RitsuLibVersion)' == ''"
+                 Text="SyncManifestDependencies: 拿不到 RitsuLib 版本，manifest 未同步。" />
+
+        <PropertyGroup Condition="'$(RitsuLibVersion)' != ''">
+            <_Json>$([System.IO.File]::ReadAllText('$(ManifestFile)'))</_Json>
+            <_Pat>&quot;id&quot;\s*:\s*&quot;STS2-RitsuLib&quot;\s*,\s*&quot;(?:min_)?version&quot;\s*:\s*&quot;[^&quot;]*&quot;</_Pat>
+            <_Marked>$([System.Text.RegularExpressions.Regex]::Replace('$(_Json)', '$(_Pat)', '@@RITSULIB_DEP@@'))</_Marked>
+            <_Hits>$([System.Text.RegularExpressions.Regex]::Matches('$(_Marked)', '@@RITSULIB_DEP@@').Count)</_Hits>
+        </PropertyGroup>
+
+        <Warning Condition="'$(_Hits)' != '1' and '$(RitsuLibVersion)' != ''"
+                 Text="SyncManifestDependencies: STS2-RitsuLib 依赖匹配到 $(_Hits) 处（应为 1），跳过改写以免写坏 manifest。" />
+
+        <PropertyGroup Condition="'$(_Hits)' == '1'">
+            <_Rep>&quot;id&quot;: &quot;STS2-RitsuLib&quot;,&#10;      &quot;min_version&quot;: &quot;$(RitsuLibVersion)&quot;</_Rep>
+            <_Updated>$(_Marked.Replace('@@RITSULIB_DEP@@', '$(_Rep)'))</_Updated>
+            <_Changed Condition="'$(_Updated)' != '$(_Json)'">true</_Changed>
+        </PropertyGroup>
+
+        <WriteLinesToFile Condition="'$(_Changed)' == 'true'"
+                          File="$(ManifestFile)"
+                          Lines="$(_Updated)"
+                          Overwrite="true"
+                          WriteOnlyWhenDifferent="true" />
+
+        <Message Condition="'$(_Changed)' == 'true'" Importance="high"
+                 Text="SyncManifestDependencies: RitsuLib 依赖已同步为 $(RitsuLibVersion)（来源：$(RitsuLibVersionSource)）" />
+    </Target>
+</Project>

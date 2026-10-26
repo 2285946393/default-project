@@ -1,0 +1,51 @@
+# LoadOrderManager localization - Italian
+open_button=Ordine di caricamento
+open_button_tooltip=Modifica l ordine di caricamento dei mod per il prossimo avvio
+title=Ordine di caricamento mod
+subtitle=Sposta le righe e poi fai clic su Applica. La modifica avra effetto al prossimo avvio.
+btn_move_up=Su
+btn_move_down=Giu
+btn_move_top=In cima
+btn_move_bottom=In fondo
+btn_reload=Ricarica
+btn_apply=Applica
+btn_close=Chiudi
+status_ready=Pronto.
+status_load_failed=Caricamento non riuscito: {0}
+status_loaded=Caricati {0} mod.
+status_moved_pos=Spostato alla posizione {0}.
+status_moved_top=Spostato in cima.
+status_moved_bottom=Spostato in fondo.
+status_nothing_to_save=Nulla da salvare.
+status_save_failed=Salvataggio non riuscito: {0}
+status_saved=Salvato. Riavvia il gioco per applicare l ordine.
+warning_overwritten=Avviso: l ordine mod corrente differisce dall ultima istantanea applicata ({0}). Potrebbe essere stato sovrascritto dal riordino dipendenze o da un altro mod.
+source_mods=locale
+source_workshop=workshop
+source_unknown=sconosciuto
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=Attiva automaticamente i nuovi mod
+policy_auto_enable_tooltip=Attivo: i mod a cui ti iscrivi dopo aver salvato questo profilo partono attivi qui. Disattivo: partono disattivati e vanno attivati a mano.
+policy_on=attivo
+policy_off=disattivo
+status_new_mods_seen={0} mod nuovi gestiti dalla regola dei nuovi mod di questo profilo. Fai clic su Applica per salvare.
+status_policy_changed=Profilo '{0}': attivazione automatica nuovi mod = {1}
+tag_new=NUOVO

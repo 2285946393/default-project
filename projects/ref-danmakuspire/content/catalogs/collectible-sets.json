@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "keyCardsByCharacter": {
+    "IRONCLAD": [
+      "BLOODLETTING",
+      "DARK_EMBRACE",
+      "DOMINATE",
+      "OFFERING",
+      "STOKE"
+    ],
+    "SILENT": [
+      "ADRENALINE",
+      "FOOTWORK",
+      "PIERCING_WAIL",
+      "PREPARED"
+    ],
+    "DEFECT": [
+      "COMPACT",
+      "DOUBLE_ENERGY",
+      "REBOOT",
+      "SUPERCRITICAL",
+      "WHITE_NOISE"
+    ],
+    "REGENT": [
+      "BULWARK",
+      "CONVERGENCE",
+      "DYING_STAR",
+      "REFLECT"
+    ],
+    "NECROBINDER": [
+      "DEFY",
+      "DREDGE",
+      "ENFEEBLING_TOUCH"
+    ]
+  },
+  "overpoweredCards": [
+    "BRIGHTEST_FLAME",
+    "HIDDEN_GEM",
+    "THE_SEALED_THRONE",
+    "WELL_LAID_PLANS",
+    "WRAITH_FORM"
+  ],
+  "startupCards": [
+    "ACCELERANT",
+    "ADRENALINE",
+    "APOTHEOSIS",
+    "ARSENAL",
+    "BORROWED_TIME",
+    "BULLET_TIME",
+    "DARK_EMBRACE",
+    "DECISIONS_DECISIONS",
+    "DEMON_FORM",
+    "DIRGE",
+    "DOUBLE_ENERGY",
+    "ECHO_FORM",
+    "HANG",
+    "HIDDEN_GEM",
+    "JACKPOT",
+    "MASTER_PLANNER",
+    "NEUROSURGE",
+    "ORBIT",
+    "PILLAR_OF_CREATION",
+    "PRIMAL_FORCE",
+    "PYRE",
+    "REAPER_FORM",
+    "REBOOT",
+    "ROLLING_BOULDER",
+    "SHADOW_STEP",
+    "STOKE",
+    "SUPERCRITICAL",
+    "SWORD_SAGE",
+    "THE_BALL",
+    "THE_SMITH",
+    "TRACKING",
+    "VOID_FORM",
+    "VOLTAIC",
+    "WELL_LAID_PLANS"
+  ],
+  "futureCards": [
+    "ACCELERANT",
+    "BULLET_TIME",
+    "CORROSIVE_WAVE",
+    "DARK_EMBRACE",
+    "DEMON_FORM",
+    "ECHO_FORM",
+    "ORBIT",
+    "PILLAR_OF_CREATION",
+    "PYRE",
+    "REAPER_FORM",
+    "SUPERMASSIVE",
+    "TEMPEST",
+    "TRACKING",
+    "VOID_FORM",
+    "VOLTAIC"
+  ],
+  "overpoweredRelics": [
+    "BEATING_REMNANT",
+    "MINIATURE_TENT"
+  ],
+  "combos": [
+    {
+      "id": "tempest-to-voltaic",
+      "source": {
+        "kind": "card",
+        "id": "TEMPEST",
+        "name": "暴风雨",
+        "typeName": "Tempest"
+      },
+      "target": {
+        "kind": "card",
+        "id": "VOLTAIC",
+        "name": "电流相生",
+        "typeName": "Voltaic"
+      }
+    },
+    {
+      "id": "double-energy-to-ice-cream",
+      "source": {
+        "kind": "card",
+        "id": "DOUBLE_ENERGY",
+        "name": "双倍能量",
+        "typeName": "DoubleEnergy"
+      },
+      "target": {
+        "kind": "relic",
+        "id": "ICE_CREAM",
+        "name": "冰淇淋",
+        "typeName": "IceCream"
+      }
+    },
+    {
+      "id": "membership-card-to-courier",
+      "source": {
+        "kind": "relic",
+        "id": "MEMBERSHIP_CARD",
+        "name": "会员卡",
+        "typeName": "MembershipCard"
+      },
+      "target": {
+        "kind": "relic",
+        "id": "THE_COURIER",
+        "name": "送货员",
+        "typeName": "TheCourier"
+      }
+    },
+    {
+      "id": "courier-to-membership-card",
+      "source": {
+        "kind": "relic",
+        "id": "THE_COURIER",
+        "name": "送货员",
+        "typeName": "TheCourier"
+      },
+      "target": {
+        "kind": "relic",
+        "id": "MEMBERSHIP_CARD",
+        "name": "会员卡",
+        "typeName": "MembershipCard"
+      }
+    },
+    {
+      "id": "x-cost-card-to-chemical-x",
+      "source": {
+        "kind": "xcost"
+      },
+      "target": {
+        "kind": "relic",
+        "id": "CHEMICAL_X",
+        "name": "化学物X",
+        "typeName": "ChemicalX"
+      }
+    },
+    {
+      "id": "enchanted-attack-to-mystic-lighter",
+      "source": {
+        "kind": "enchantedAttack"
+      },
+      "target": {
+        "kind": "relic",
+        "id": "MYSTIC_LIGHTER",
+        "name": "神秘打火机",
+        "typeName": "MysticLighter"
+      }
+    },
+    {
+      "id": "meat-cleaver-to-miniature-tent",
+      "source": {
+        "kind": "relic",
+        "id": "MEAT_CLEAVER",
+        "name": "切肉刀",
+        "typeName": "MeatCleaver"
+      },
+      "target": {
+        "kind": "relic",
+        "id": "MINIATURE_TENT",
+        "name": "微型帐篷",
+        "typeName": "MiniatureTent"
+      }
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+[
+ {
+  "table": "relics",
+  "key": "RUNIC_PYRAMID.title",
+  "vanilla": "符文金字塔",
+  "new": "符文金字塔"
+ },
+ {
+  "table": "relics",
+  "key": "SAI.title",
+  "vanilla": "钗",
+  "new": "金枝欲孽"
+ },
+ {
+  "table": "relics",
+  "key": "SAND_CASTLE.title",
+  "vanilla": "沙堡",
+  "new": "一沙一世界"
+ },
+ {
+  "table": "relics",
+  "key": "SCROLL_BOXES.title",
+  "vanilla": "卷轴箱",
+  "new": "百宝箱"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.DEFECT.title",
+  "vanilla": "齿轮玻璃",
+  "new": "变形金刚"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.IRONCLAD.title",
+  "vanilla": "恶魔玻璃",
+  "new": "恶魔之眼"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.NECROBINDER.title",
+  "vanilla": "巫妖玻璃",
+  "new": "亡灵法师"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.REGENT.title",
+  "vanilla": "贵族玻璃",
+  "new": "贵族气质"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.SILENT.title",
+  "vanilla": "毒液玻璃",
+  "new": "鹤顶红"
+ },
+ {
+  "table": "relics",
+  "key": "SEA_GLASS.title",
+  "vanilla": "海玻璃",
+  "new": "玻璃心"
+ },
+ {
+  "table": "relics",
+  "key": "SHOVEL.title",
+  "vanilla": "铲子",
+  "new": "洛阳铲"
+ },
+ {
+  "table": "relics",
+  "key": "SHURIKEN.title",
+  "vanilla": "手里剑",
+  "new": "小李飞刀"
+ },
+ {
+  "table": "relics",
+  "key": "SOZU.title",
+  "vanilla": "添水",
+  "new": "农夫山泉"
+ },
+ {
+  "table": "relics",
+  "key": "STONE_CRACKER.title",
+  "vanilla": "碎石钻",
+  "new": "金刚钻"
+ },
+ {
+  "table": "relics",
+  "key": "STRAWBERRY.title",
+  "vanilla": "草莓",
+  "new": "小可爱"
+ },
+ {
+  "table": "relics",
+  "key": "SYMBIOTIC_VIRUS.title",
+  "vanilla": "共生病毒",
+  "new": "新冠"
+ },
+ {
+  "table": "relics",
+  "key": "THE_ABACUS.title",
+  "vanilla": "算盘",
+  "new": "铁算盘"
+ },
+ {
+  "table": "relics",
+  "key": "TOOLBOX.title",
+  "vanilla": "工具箱",
+  "new": "哆啦A梦"
+ },
+ {
+  "table": "relics",
+  "key": "TUNING_FORK.title",
+  "vanilla": "音叉",
+  "new": "音痴"
+ },
+ {
+  "table": "relics",
+  "key": "VAJRA.title",
+  "vanilla": "金刚杵",
+  "new": "定海神针"
+ },
+ {
+  "table": "relics",
+  "key": "VERY_HOT_COCOA.title",
+  "vanilla": "烫嘴可可",
+  "new": "多喝热水"
+ },
+ {
+  "table": "relics",
+  "key": "WHETSTONE.title",
+  "vanilla": "磨刀石",
+  "new": "钝刀"
+ },
+ {
+  "table": "relics",
+  "key": "WHITE_BEAST_STATUE.title",
+  "vanilla": "白兽雕像",
+  "new": "狐假虎威"
+ },
+ {
+  "table": "relics",
+  "key": "WHITE_STAR.title",
+  "vanilla": "白星",
+  "new": "启明星"
+ }
+]

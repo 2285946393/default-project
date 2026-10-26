@@ -1,0 +1,152 @@
+[
+ {
+  "table": "monsters",
+  "key": "LEAF_SLIME_S.name",
+  "vanilla": "树叶史莱姆（小）",
+  "new": "树叶史莱姆（小）"
+ },
+ {
+  "table": "monsters",
+  "key": "MAGI_KNIGHT.moves.MAGIC_BOMB.title",
+  "vanilla": "魔法炸弹",
+  "new": "惊雷"
+ },
+ {
+  "table": "monsters",
+  "key": "MECHA_KNIGHT.name",
+  "vanilla": "机甲骑士",
+  "new": "钢铁侠"
+ },
+ {
+  "table": "monsters",
+  "key": "MYTE.moves.BIG_SUCK.title",
+  "vanilla": "大吸一口",
+  "new": "先吸为敬"
+ },
+ {
+  "table": "monsters",
+  "key": "NIBBIT.moves.HISS.title",
+  "vanilla": "哈气",
+  "new": "傲娇"
+ },
+ {
+  "table": "monsters",
+  "key": "OWL_MAGISTRATE.name",
+  "vanilla": "猫头鹰法官",
+  "new": "法外狂徒"
+ },
+ {
+  "table": "monsters",
+  "key": "PHANTASMAL_GARDENER.moves.ENLARGE.title",
+  "vanilla": "变大",
+  "new": "膨胀"
+ },
+ {
+  "table": "monsters",
+  "key": "PHANTASMAL_GARDENER.moves.FLAIL.title",
+  "vanilla": "猛晃",
+  "new": "手舞足蹈"
+ },
+ {
+  "table": "monsters",
+  "key": "PHROG_PARASITE.moves.INFECT.title",
+  "vanilla": "感染",
+  "new": "中招"
+ },
+ {
+  "table": "monsters",
+  "key": "PUNCH_CONSTRUCT.moves.READY.title",
+  "vanilla": "准备就绪",
+  "new": "万事俱备"
+ },
+ {
+  "table": "monsters",
+  "key": "QUEEN.moves.IMPOSSIBLE.title",
+  "vanilla": "绝无可能",
+  "new": "想得美"
+ },
+ {
+  "table": "monsters",
+  "key": "QUEEN.moves.YOURE_MINE.title",
+  "vanilla": "你是我的了",
+  "new": "名花有主"
+ },
+ {
+  "table": "monsters",
+  "key": "ROCKET.moves.LASER.title",
+  "vanilla": "激光",
+  "new": "祖传激光"
+ },
+ {
+  "table": "monsters",
+  "key": "ROCKET.name",
+  "vanilla": "火箭",
+  "new": "窜天猴"
+ },
+ {
+  "table": "monsters",
+  "key": "SCROLL_OF_BITING.moves.CHOMP.title",
+  "vanilla": "大啃",
+  "new": "狼吞虎咽"
+ },
+ {
+  "table": "monsters",
+  "key": "SCROLL_OF_BITING.name",
+  "vanilla": "咬人卷轴",
+  "new": "龇牙咧嘴"
+ },
+ {
+  "table": "monsters",
+  "key": "SEAPUNK.moves.BUBBLE_BURP.title",
+  "vanilla": "吐泡泡",
+  "new": "口吐白沫"
+ },
+ {
+  "table": "monsters",
+  "key": "SEAPUNK.moves.SPINNING_KICK.title",
+  "vanilla": "回旋踢",
+  "new": "无影脚"
+ },
+ {
+  "table": "monsters",
+  "key": "SEWER_CLAM.name",
+  "vanilla": "下水道蚌",
+  "new": "蚌埠住了"
+ },
+ {
+  "table": "monsters",
+  "key": "SHRINKER_BEETLE.moves.CHOMP.title",
+  "vanilla": "大啃",
+  "new": "狼吞虎咽"
+ },
+ {
+  "table": "monsters",
+  "key": "SKULKING_COLONY.moves.INERTIA.title",
+  "vanilla": "惯性",
+  "new": "佛系"
+ },
+ {
+  "table": "monsters",
+  "key": "SLUDGE_SPINNER.moves.OIL_SPRAY.title",
+  "vanilla": "喷油",
+  "new": "火上浇油"
+ },
+ {
+  "table": "monsters",
+  "key": "SNAPPING_JAXFRUIT.moves.ENERGY_ORB.title",
+  "vanilla": "能量球",
+  "new": "元气弹"
+ },
+ {
+  "table": "monsters",
+  "key": "SOUL_FYSH.moves.GAZE.title",
+  "vanilla": "凝视",
+  "new": "目不转睛"
+ },
+ {
+  "table": "monsters",
+  "key": "SOUL_NEXUS.moves.MAELSTROM.title",
+  "vanilla": "大漩涡",
+  "new": "天旋地转"
+ }
+]

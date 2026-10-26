@@ -1,0 +1,12 @@
+{
+    "id": "intentgraph2",
+    "name": "Intent Graph",
+    "author": "Chaofan",
+    "description": "Show monster intent as a state machine.",
+    "version": "1.6.0",
+    "has_pck": true,
+    "has_dll": true,
+    "dependencies": [],
+    "affects_gameplay": false,
+    "min_game_version": "0.107.1"
+}

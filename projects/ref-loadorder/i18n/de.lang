@@ -1,0 +1,51 @@
+# LoadOrderManager localization - German
+open_button=Ladereihenfolge
+open_button_tooltip=Die Mod-Ladereihenfolge fuer den naechsten Start bearbeiten
+title=Mod-Ladereihenfolge
+subtitle=Eintraege verschieben und dann auf Anwenden klicken. Die Aenderung gilt ab dem naechsten Start.
+btn_move_up=Nach oben
+btn_move_down=Nach unten
+btn_move_top=Ganz nach oben
+btn_move_bottom=Ganz nach unten
+btn_reload=Neu laden
+btn_apply=Anwenden
+btn_close=Schliessen
+status_ready=Bereit.
+status_load_failed=Laden fehlgeschlagen: {0}
+status_loaded={0} Mods geladen.
+status_moved_pos=Auf Position {0} verschoben.
+status_moved_top=Nach oben verschoben.
+status_moved_bottom=Nach unten verschoben.
+status_nothing_to_save=Nichts zu speichern.
+status_save_failed=Speichern fehlgeschlagen: {0}
+status_saved=Gespeichert. Starte das Spiel neu, um die Reihenfolge anzuwenden.
+warning_overwritten=Warnung: Die aktuelle Mod-Reihenfolge weicht vom letzten Apply-Snapshot ({0}) ab. Sie wurde moeglicherweise durch Abhaengigkeitssortierung oder ein anderes Mod ueberschrieben.
+source_mods=Lokal
+source_workshop=Workshop
+source_unknown=Unbekannt
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=Neue Mods automatisch aktivieren
+policy_auto_enable_tooltip=An: Mods, die du nach dem Speichern dieses Profils abonnierst, sind hier standardmaessig aktiv. Aus: sie sind deaktiviert und muessen manuell aktiviert werden.
+policy_on=an
+policy_off=aus
+status_new_mods_seen={0} neue Mod(s) gemaess der Neumod-Regel dieses Profils behandelt. Zum Speichern auf Anwenden klicken.
+status_policy_changed=Profil '{0}': neue Mods automatisch aktivieren = {1}
+tag_new=NEU

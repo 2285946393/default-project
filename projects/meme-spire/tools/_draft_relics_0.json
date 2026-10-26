@@ -1,0 +1,158 @@
+[
+ {
+  "table": "relics",
+  "key": "BELLOWS.title",
+  "vanilla": "风箱",
+  "new": "鼓风机"
+ },
+ {
+  "table": "relics",
+  "key": "BIG_HAT.title",
+  "vanilla": "大帽子",
+  "new": "绿帽子"
+ },
+ {
+  "table": "relics",
+  "key": "BIIIG_HUG.title",
+  "vanilla": "大～抱抱",
+  "new": "抱抱"
+ },
+ {
+  "table": "relics",
+  "key": "BLACK_STAR.title",
+  "vanilla": "黑星",
+  "new": "扫把星"
+ },
+ {
+  "table": "relics",
+  "key": "BLESSED_ANTLER.title",
+  "vanilla": "赐福鹿角",
+  "new": "锦鲤附体"
+ },
+ {
+  "table": "relics",
+  "key": "BONE_FLUTE.title",
+  "vanilla": "骨笛",
+  "new": "骨笛"
+ },
+ {
+  "table": "relics",
+  "key": "BOOKMARK.title",
+  "vanilla": "书签",
+  "new": "书签"
+ },
+ {
+  "table": "relics",
+  "key": "BOOK_OF_FIVE_RINGS.title",
+  "vanilla": "五轮书",
+  "new": "五轮书"
+ },
+ {
+  "table": "relics",
+  "key": "BREAD.title",
+  "vanilla": "面包",
+  "new": "面包"
+ },
+ {
+  "table": "relics",
+  "key": "BRIMSTONE.title",
+  "vanilla": "硫磺",
+  "new": "火药桶"
+ },
+ {
+  "table": "relics",
+  "key": "CANDELABRA.title",
+  "vanilla": "烛台",
+  "new": "烛台"
+ },
+ {
+  "table": "relics",
+  "key": "CHEMICAL_X.title",
+  "vanilla": "化学物X",
+  "new": "绝命毒师"
+ },
+ {
+  "table": "relics",
+  "key": "CIRCLET.title",
+  "vanilla": "头环",
+  "new": "紧箍咒"
+ },
+ {
+  "table": "relics",
+  "key": "CLOAK_CLASP.title",
+  "vanilla": "斗篷扣",
+  "new": "斗篷扣"
+ },
+ {
+  "table": "relics",
+  "key": "DAUGHTER_OF_THE_WIND.title",
+  "vanilla": "风的女儿",
+  "new": "风一样的女子"
+ },
+ {
+  "table": "relics",
+  "key": "DRAGON_FRUIT.title",
+  "vanilla": "火龙果",
+  "new": "火龙果"
+ },
+ {
+  "table": "relics",
+  "key": "DREAM_CATCHER.title",
+  "vanilla": "捕梦网",
+  "new": "捕梦网"
+ },
+ {
+  "table": "relics",
+  "key": "FIDDLE.title",
+  "vanilla": "小提琴",
+  "new": "小提琴"
+ },
+ {
+  "table": "relics",
+  "key": "GAME_PIECE.title",
+  "vanilla": "棋子",
+  "new": "棋子"
+ },
+ {
+  "table": "relics",
+  "key": "GLITTER.title",
+  "vanilla": "亮片",
+  "new": "亮片"
+ },
+ {
+  "table": "relics",
+  "key": "GOLDEN_COMPASS.title",
+  "vanilla": "黄金罗盘",
+  "new": "指南针"
+ },
+ {
+  "table": "relics",
+  "key": "HAPPY_FLOWER.title",
+  "vanilla": "开心小花",
+  "new": "开心小花"
+ },
+ {
+  "table": "relics",
+  "key": "HISTORY_COURSE.title",
+  "vanilla": "历史课",
+  "new": "历史课"
+ },
+ {
+  "table": "relics",
+  "key": "HORN_CLEAT.title",
+  "vanilla": "船夹板",
+  "new": "船夹板"
+ },
+ {
+  "table": "relics",
+  "key": "ICE_CREAM.title",
+  "vanilla": "冰淇淋",
+  "new": "冰淇淋"
+ },
+ {
+  "table": "relics",
+  "key": "INK_BOTTLE.title",
+  "vanilla": "墨水瓶",
+  "new": "墨水瓶"
+ }
+]

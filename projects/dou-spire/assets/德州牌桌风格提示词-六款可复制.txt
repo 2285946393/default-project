@@ -1,0 +1,401 @@
+德州扑克牌桌风格 · 六款完整出图提示词
+
+用途：生成 6 张新的德州牌桌桌面贴图。每个代码框都是完整提示词，可单独复制，长度均低于 QQ 的 5000 字符上限。
+
+生成每一张时，把已经画好的 `assets/table/table_poker.png` 一并作为参考图上传：只参考它的椭圆外轮廓和功能刻线位置；不要照抄绿绒、胡桃木或黄铜配色。六张新桌面必须保留完全相同的功能刻线布局。
+
+出图后按提示词里的文件名保存。原图先放项目根目录 `assets/德州扑克/`，再用 `python tools/poker-assets.py --only table_poker_` 入库；成品会到 `projects/dou-spire/assets/table/`。
+
+────────────────────────
+暗黑黄铜 · 酒红皮革
+文件：table_poker_brass.png
+长度：3792 字符
+────────────────────────
+
+```
+A wide 16:9 game asset for a dark-fantasy card game: the complete top surface of an ornate oval
+poker-table, seen straight down from directly overhead in a perfectly flat orthographic view,
+the table filling the frame from the left side to the right side.
+
+MATERIALS.
+The playing surface in the middle is deep oxblood leather (#6E1F1F) with a fine even grain --
+one flat solid colour, entirely empty, with no pattern, no lines, no gradient and no tooling
+marks across it. Around it runs a broad ring of dark polished walnut (#5A4230, deepening to
+#3A2A1E in the grain and toward the outer edge) with straight grain following the curve of the
+oval. Set into that wood band is a thick inlaid ring of aged brass (#B08D57) whose upper-left
+arc catches the light (#E8CF9A) and whose lower-right arc sits in shadow (#6B4E2E), engraved
+all the way round with a repeating row of small abstract knotwork marks -- purely decorative,
+absolutely not letters and not numbers. At the four extreme points of the oval -- left, top,
+right and bottom -- sit four cast-brass shield bosses, each with a shallow engraved rosette.
+Brass is warm and slightly tarnished, never chrome or silver.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change:
+Match the attached green table’s inlay geometry exactly; use this style’s trim metal.
+1) Centre: one straight horizontal row of five identical card recesses, evenly spaced and sized
+for flat playing cards; one thin rule above and below the row.
+2) Directly below: one empty circle two card-widths across, thin ring and four tiny dots (pot).
+3) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+4) In front of each seat: one empty horizontal oval betting-number recess, thin frame, one rivet
+at each corner.
+5) Beside the lower-left seat: one empty small circle for the dealer button.
+6) Around each seat: three nested engraved chevrons pointing inward.
+7) One thin empty circular groove around the five-card row.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+RESTRAINT AND AGE.
+Keep the surface calm and readable so cards and chips stand out. No busy pattern, filigree or
+colour inside any recess. Bare tabletop only: a faint old glass ring, two fine dried wax drips
+near the left edge and a few tiny scratches. No cards, chips, coins, dice, hands, people, food,
+bottles, ashtrays or ornaments.
+
+GEOMETRY.
+Strict top-down orthographic view: no perspective, thickness, legs or chairs. Centre one wide
+horizontal oval close to the left and right frame edges. Outside the oval, all four corners are
+uniform pure magenta #FF00FF -- no gradient and no cast shadow.
+
+STYLE.
+Dark-fantasy 2D card-game illustration: crisp hand-drawn near-black outline #1A1512, clean
+readable shapes, restrained cel shading and minimal texture. One upper-left key light, with its
+colour following this table’s stated palette. Keep clear light/mid/dark separation and make all
+five card wells easy to read. Illustrated, not photorealistic, not 3D and not flat vector.
+
+KEY.
+Everything outside the complete tabletop silhouette is perfectly flat pure magenta #FF00FF:
+uniform, with no shadow, gradient, texture, glow, floor or scene. No magenta on the table.
+Leave a small even magenta margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, blur, grain, noise, vignette or border.
+```
+
+────────────────────────
+黑曜石 · 熔金纹
+文件：table_poker_obsidian.png
+长度：3708 字符
+────────────────────────
+
+```
+A wide 16:9 game asset for a dark-fantasy card game: the complete top surface of an ornate oval
+poker-table, seen straight down from directly overhead in a perfectly flat orthographic view,
+the table filling the frame from the left side to the right side.
+
+MATERIALS.
+The playing surface in the middle is polished black obsidian (#1A1512) -- one flat solid colour,
+entirely empty, with no pattern, no lines and no gradient across it; only a very faint cold
+sheen so it reads as stone and not as a void. Around it runs a broad ring of dark grey basalt
+(#3A3430) with fine straight striations following the curve of the oval. Set into that stone
+band is a thick inlaid ring of molten gold (#F2C453) whose upper-left arc is bright (#FFF0B8)
+and whose lower-right arc cools into shadow (#8A6A20), engraved all the way round with a
+repeating row of small abstract angular marks -- purely decorative, absolutely not letters and
+not numbers. At the four extreme points of the oval sit four cast-brass shield bosses with
+shallow engraved rosettes. The gold glows warmly against the black stone.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change:
+Match the attached green table’s inlay geometry exactly; use this style’s trim metal.
+1) Centre: one straight horizontal row of five identical card recesses, evenly spaced and sized
+for flat playing cards; one thin rule above and below the row.
+2) Directly below: one empty circle two card-widths across, thin ring and four tiny dots (pot).
+3) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+4) In front of each seat: one empty horizontal oval betting-number recess, thin frame, one rivet
+at each corner.
+5) Beside the lower-left seat: one empty small circle for the dealer button.
+6) Around each seat: three nested engraved chevrons pointing inward.
+7) One thin empty circular groove around the five-card row.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+RESTRAINT AND AGE.
+Keep the surface calm and readable so cards and chips stand out. No busy pattern, filigree or
+colour inside any recess. Bare tabletop only: a faint old glass ring, two fine dried wax drips
+near the left edge and a few tiny scratches. No cards, chips, coins, dice, hands, people, food,
+bottles, ashtrays or ornaments.
+
+GEOMETRY.
+Strict top-down orthographic view: no perspective, thickness, legs or chairs. Centre one wide
+horizontal oval close to the left and right frame edges. Outside the oval, all four corners are
+uniform pure magenta #FF00FF -- no gradient and no cast shadow.
+
+STYLE.
+Dark-fantasy 2D card-game illustration: crisp hand-drawn near-black outline #1A1512, clean
+readable shapes, restrained cel shading and minimal texture. One upper-left key light, with its
+colour following this table’s stated palette. Keep clear light/mid/dark separation and make all
+five card wells easy to read. Illustrated, not photorealistic, not 3D and not flat vector.
+
+KEY.
+Everything outside the complete tabletop silhouette is perfectly flat pure magenta #FF00FF:
+uniform, with no shadow, gradient, texture, glow, floor or scene. No magenta on the table.
+Leave a small even magenta margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, blur, grain, noise, vignette or border.
+```
+
+────────────────────────
+冰蓝水晶 · 月白
+文件：table_poker_frost.png
+长度：3694 字符
+────────────────────────
+
+```
+A wide 16:9 game asset for a dark-fantasy card game: the complete top surface of an ornate oval
+poker-table, seen straight down from directly overhead in a perfectly flat orthographic view,
+the table filling the frame from the left side to the right side.
+
+MATERIALS.
+The playing surface in the middle is pale moon-white stone (#E8E2D4) -- one flat solid colour,
+entirely empty, with no pattern, no lines and no gradient across it; cool rather than warm, with
+a soft matte finish. Around it runs a broad ring of pale ash wood (#C9BFA8, deepening to #9A8E76
+toward the outer edge) with straight grain following the curve of the oval. Set into that band
+is a thick inlaid ring of brushed silver (#C8D2D8) whose upper-left arc catches a cold highlight
+(#F2F7F9) and whose lower-right arc sits in blue shadow (#7C8E99), engraved all the way round
+with a repeating row of small abstract frost-crystal marks -- purely decorative, absolutely not
+letters and not numbers. At the four extreme points of the oval sit four polished steel shield
+bosses with shallow engraved rosettes.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change:
+Match the attached green table’s inlay geometry exactly; use this style’s trim metal.
+1) Centre: one straight horizontal row of five identical card recesses, evenly spaced and sized
+for flat playing cards; one thin rule above and below the row.
+2) Directly below: one empty circle two card-widths across, thin ring and four tiny dots (pot).
+3) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+4) In front of each seat: one empty horizontal oval betting-number recess, thin frame, one rivet
+at each corner.
+5) Beside the lower-left seat: one empty small circle for the dealer button.
+6) Around each seat: three nested engraved chevrons pointing inward.
+7) One thin empty circular groove around the five-card row.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+RESTRAINT AND AGE.
+Keep the surface calm and readable so cards and chips stand out. No busy pattern, filigree or
+colour inside any recess. Bare tabletop only: a faint old glass ring, two fine dried wax drips
+near the left edge and a few tiny scratches. No cards, chips, coins, dice, hands, people, food,
+bottles, ashtrays or ornaments.
+
+GEOMETRY.
+Strict top-down orthographic view: no perspective, thickness, legs or chairs. Centre one wide
+horizontal oval close to the left and right frame edges. Outside the oval, all four corners are
+uniform pure magenta #FF00FF -- no gradient and no cast shadow.
+
+STYLE.
+Dark-fantasy 2D card-game illustration: crisp hand-drawn near-black outline #1A1512, clean
+readable shapes, restrained cel shading and minimal texture. One upper-left key light, with its
+colour following this table’s stated palette. Keep clear light/mid/dark separation and make all
+five card wells easy to read. Illustrated, not photorealistic, not 3D and not flat vector.
+
+KEY.
+Everything outside the complete tabletop silhouette is perfectly flat pure magenta #FF00FF:
+uniform, with no shadow, gradient, texture, glow, floor or scene. No magenta on the table.
+Leave a small even magenta margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, blur, grain, noise, vignette or border.
+```
+
+────────────────────────
+二次元明亮
+文件：table_poker_anime.png
+长度：3553 字符
+────────────────────────
+
+```
+A wide 16:9 game asset for a bright Japanese anime card game: the complete top surface of a
+cheerful oval poker-table, seen straight down from directly overhead in a perfectly flat
+orthographic view, the table filling the frame from the left side to the right side.
+
+MATERIALS.
+The playing surface in the middle is soft mint green (#A8D8B9) -- one flat solid colour, entirely
+empty, with no pattern, no lines and no gradient across it; clean, bright and pastel. Around it
+runs a broad ring of light honey wood (#E8C48C, deepening to #C99A5E toward the outer edge) with
+fine straight grain following the curve of the oval. Set into that band is a thin inlaid ring of
+pale gold (#F2C453) whose upper-left arc is bright (#FFF0B8) and whose lower-right arc is warm
+(#D8A63A), engraved all the way round with a repeating row of small abstract flower-and-leaf
+marks -- purely decorative, absolutely not letters and not numbers. At the four extreme points
+of the oval sit four small gold fittings shaped like flattened flower bosses.
+
+STYLE OF THIS ONE.
+This table is drawn in modern Japanese anime / visual-novel style, not dark fantasy: crisp clean
+linework, smooth cel shading, soft airbrushed gradients, high-key pastel colours, gentle bloom
+around the highlights. Never muddy, never heavy, no dark shadows anywhere.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change:
+Match the attached green table’s inlay geometry exactly; use this style’s trim metal.
+1) Centre: one straight horizontal row of five identical card recesses, evenly spaced and sized
+for flat playing cards; one thin rule above and below the row.
+2) Directly below: one empty circle two card-widths across, thin ring and four tiny dots (pot).
+3) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+4) In front of each seat: one empty horizontal oval betting-number recess, thin frame, one rivet
+at each corner.
+5) Beside the lower-left seat: one empty small circle for the dealer button.
+6) Around each seat: three nested engraved chevrons pointing inward.
+7) One thin empty circular groove around the five-card row.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+RESTRAINT AND AGE.
+Keep the surface calm and readable so cards and chips stand out. No busy pattern, filigree or
+colour inside any recess. Bare tabletop only: a faint old glass ring, two fine dried wax drips
+near the left edge and a few tiny scratches. No cards, chips, coins, dice, hands, people, food,
+bottles, ashtrays or ornaments.
+
+GEOMETRY.
+Strict top-down orthographic view: no perspective, thickness, legs or chairs. Centre one wide
+horizontal oval close to the left and right frame edges. Outside the oval, all four corners are
+uniform pure magenta #FF00FF -- no gradient and no cast shadow.
+
+KEY.
+Everything outside the complete tabletop silhouette is perfectly flat pure magenta #FF00FF:
+uniform, with no shadow, gradient, texture, glow, floor or scene. No magenta on the table.
+Leave a small even magenta margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, blur, grain, noise, vignette or border.
+```
+
+────────────────────────
+东方漆器 · 朱金
+文件：table_poker_lacquer.png
+长度：3651 字符
+────────────────────────
+
+```
+A wide 16:9 game asset for a dark-fantasy card game: the complete top surface of an ornate oval
+poker-table, seen straight down from directly overhead in a perfectly flat orthographic view,
+the table filling the frame from the left side to the right side.
+
+MATERIALS.
+The playing surface in the middle is deep cinnabar-red lacquer (#8C1F1A) with a mirror-smooth
+finish -- one flat solid colour, entirely empty, with no pattern, no lines and no gradient across
+it. Around it runs a broad ring of black lacquered wood (#1A1512, with a faint dark-red depth in
+the grain) following the curve of the oval. Set into that band is a thick inlaid ring of gold
+leaf (#F2C453) whose upper-left arc is bright (#FFF0B8) and whose lower-right arc is warm
+(#C89A2E), engraved all the way round with a repeating row of small abstract cloud-and-knot
+marks -- purely decorative, absolutely not letters, not numbers and no Chinese characters. At
+the four extreme points of the oval sit four gilt bronze shield bosses with shallow engraved
+rosettes.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change:
+Match the attached green table’s inlay geometry exactly; use this style’s trim metal.
+1) Centre: one straight horizontal row of five identical card recesses, evenly spaced and sized
+for flat playing cards; one thin rule above and below the row.
+2) Directly below: one empty circle two card-widths across, thin ring and four tiny dots (pot).
+3) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+4) In front of each seat: one empty horizontal oval betting-number recess, thin frame, one rivet
+at each corner.
+5) Beside the lower-left seat: one empty small circle for the dealer button.
+6) Around each seat: three nested engraved chevrons pointing inward.
+7) One thin empty circular groove around the five-card row.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+RESTRAINT AND AGE.
+Keep the surface calm and readable so cards and chips stand out. No busy pattern, filigree or
+colour inside any recess. Bare tabletop only: a faint old glass ring, two fine dried wax drips
+near the left edge and a few tiny scratches. No cards, chips, coins, dice, hands, people, food,
+bottles, ashtrays or ornaments.
+
+GEOMETRY.
+Strict top-down orthographic view: no perspective, thickness, legs or chairs. Centre one wide
+horizontal oval close to the left and right frame edges. Outside the oval, all four corners are
+uniform pure magenta #FF00FF -- no gradient and no cast shadow.
+
+STYLE.
+Dark-fantasy 2D card-game illustration: crisp hand-drawn near-black outline #1A1512, clean
+readable shapes, restrained cel shading and minimal texture. One upper-left key light, with its
+colour following this table’s stated palette. Keep clear light/mid/dark separation and make all
+five card wells easy to read. Illustrated, not photorealistic, not 3D and not flat vector.
+
+KEY.
+Everything outside the complete tabletop silhouette is perfectly flat pure magenta #FF00FF:
+uniform, with no shadow, gradient, texture, glow, floor or scene. No magenta on the table.
+Leave a small even magenta margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, blur, grain, noise, vignette or border.
+```
+
+────────────────────────
+蒸汽朋克 · 黄铜齿轮
+文件：table_poker_steam.png
+长度：3607 字符
+────────────────────────
+
+```
+A wide 16:9 game asset for a dark-fantasy card game: the complete top surface of an ornate oval
+poker-table, seen straight down from directly overhead in a perfectly flat orthographic view,
+the table filling the frame from the left side to the right side.
+
+MATERIALS.
+The playing surface in the middle is dark oiled canvas (#3A3229) -- one flat solid colour,
+entirely empty, with no pattern, no lines and no gradient across it. Around it runs a broad ring
+of riveted brass plate (#B08D57) whose upper-left arc is bright (#E8CF9A) and whose lower-right
+arc is tarnished (#6B4E2E), carrying a visible row of small round rivets and two inlaid strips of
+gear-teeth following the curve of the oval. Outside that plate runs a narrow rim of dark iron
+(#2A2622) with a few small flat gear wheels set flush into it. At the four extreme points of the
+oval sit four heavy brass pipe-fittings with shallow engraved rosettes. All the metal is aged,
+warm and slightly greasy, never chrome or silver.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change:
+Match the attached green table’s inlay geometry exactly; use this style’s trim metal.
+1) Centre: one straight horizontal row of five identical card recesses, evenly spaced and sized
+for flat playing cards; one thin rule above and below the row.
+2) Directly below: one empty circle two card-widths across, thin ring and four tiny dots (pot).
+3) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+4) In front of each seat: one empty horizontal oval betting-number recess, thin frame, one rivet
+at each corner.
+5) Beside the lower-left seat: one empty small circle for the dealer button.
+6) Around each seat: three nested engraved chevrons pointing inward.
+7) One thin empty circular groove around the five-card row.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+RESTRAINT AND AGE.
+Keep the surface calm and readable so cards and chips stand out. No busy pattern, filigree or
+colour inside any recess. Bare tabletop only: a faint old glass ring, two fine dried wax drips
+near the left edge and a few tiny scratches. No cards, chips, coins, dice, hands, people, food,
+bottles, ashtrays or ornaments.
+
+GEOMETRY.
+Strict top-down orthographic view: no perspective, thickness, legs or chairs. Centre one wide
+horizontal oval close to the left and right frame edges. Outside the oval, all four corners are
+uniform pure magenta #FF00FF -- no gradient and no cast shadow.
+
+STYLE.
+Dark-fantasy 2D card-game illustration: crisp hand-drawn near-black outline #1A1512, clean
+readable shapes, restrained cel shading and minimal texture. One upper-left key light, with its
+colour following this table’s stated palette. Keep clear light/mid/dark separation and make all
+five card wells easy to read. Illustrated, not photorealistic, not 3D and not flat vector.
+
+KEY.
+Everything outside the complete tabletop silhouette is perfectly flat pure magenta #FF00FF:
+uniform, with no shadow, gradient, texture, glow, floor or scene. No magenta on the table.
+Leave a small even magenta margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, blur, grain, noise, vignette or border.
+```

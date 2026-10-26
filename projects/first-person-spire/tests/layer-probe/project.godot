@@ -1,0 +1,9 @@
+config_version=5
+
+[application]
+config/name="LayerProbe"
+run/main_scene="res://probe.tscn"
+
+[display]
+window/size/viewport_width=1920
+window/size/viewport_height=1080

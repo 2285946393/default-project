@@ -1,0 +1,7 @@
+﻿{
+"initializerType": "ModPresetManager.Scripts.Entry",
+"initializerMethod": "Init",
+"entries": [
+    { "id": "0.107.1", "minGameVersion": "0.107.1", "maxGameVersionExclusive": "0.108.0", "runtimeAssembly": "runtimes/0.107.1/ModPresetManager.Runtime.dll", "probeDirectories": ["runtimes/0.107.1"], "dependencies": [""], "probeAllDlls": false },    { "id": "0.111.0", "minGameVersion": "0.111.0", "maxGameVersionExclusive": "0.112.0", "runtimeAssembly": "runtimes/0.111.0/ModPresetManager.Runtime.dll", "probeDirectories": ["runtimes/0.111.0"], "dependencies": [""], "probeAllDlls": false },    { "id": "0.111.0-newer-fallback", "minGameVersion": "0.112.0", "maxGameVersionExclusive": "", "runtimeAssembly": "runtimes/0.111.0/ModPresetManager.Runtime.dll", "probeDirectories": ["runtimes/0.111.0"], "dependencies": [""], "probeAllDlls": false }
+]
+}

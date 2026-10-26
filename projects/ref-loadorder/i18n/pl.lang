@@ -1,0 +1,51 @@
+# LoadOrderManager localization - Polish
+open_button=Kolejnosc ladowania
+open_button_tooltip=Edytuj kolejnosc ladowania modow dla nastepnego uruchomienia
+title=Kolejnosc ladowania modow
+subtitle=Przesun wiersze i kliknij Zastosuj. Zmiana zadziala przy nastepnym uruchomieniu.
+btn_move_up=Do gory
+btn_move_down=W dol
+btn_move_top=Na poczatek
+btn_move_bottom=Na koniec
+btn_reload=Przeladuj
+btn_apply=Zastosuj
+btn_close=Zamknij
+status_ready=Gotowe.
+status_load_failed=Blad ladowania: {0}
+status_loaded=Zaladowano modow: {0}.
+status_moved_pos=Przeniesiono na pozycje {0}.
+status_moved_top=Przeniesiono na poczatek.
+status_moved_bottom=Przeniesiono na koniec.
+status_nothing_to_save=Brak danych do zapisania.
+status_save_failed=Blad zapisu: {0}
+status_saved=Zapisano. Uruchom ponownie gre, aby zastosowac kolejnosc.
+warning_overwritten=Ostrzezenie: biezaca kolejnosc modow rozni sie od ostatniej zapisanej migawki zastosowania ({0}). Mogla zostac nadpisana przez sortowanie zaleznosci lub inny mod.
+source_mods=lokalne
+source_workshop=warsztat
+source_unknown=nieznane
+
+# Added for manual alpha sort + clipboard import/export
+btn_sort_alpha=Sort A-Z
+btn_export_clipboard=Export Clipboard
+btn_import_clipboard=Import Clipboard
+status_sorted_alpha=Sorted by alphabet.
+status_nothing_to_sort=Nothing to sort.
+status_nothing_to_export=Nothing to export.
+status_exported_clipboard=Exported {0} entries to clipboard.
+status_export_failed=Export failed: {0}
+status_clipboard_empty=Clipboard is empty.
+status_import_invalid_format=Clipboard format is invalid.
+status_import_no_valid=No valid import entries found.
+status_import_no_match=No matching installed mods found (ignored: {0}).
+status_import_parse_failed=Import parse failed: {0}
+status_imported_clipboard=Imported {0} entries (ignored missing: {1}, duplicates: {2}). Click Apply to save.
+status_import_failed=Import failed: {0}
+
+# New-mod policy (v0.4.0)
+policy_auto_enable=Automatycznie wlaczaj nowe mody
+policy_auto_enable_tooltip=Wlaczone: mody subskrybowane po zapisaniu tego profilu sa tu domyslnie wlaczone. Wylaczone: sa domyslnie wylaczone i trzeba je wlaczyc recznie.
+policy_on=wlaczone
+policy_off=wylaczone
+status_new_mods_seen=Wykryto nowe mody: {0}. Zastosowano regule nowych modow tego profilu. Kliknij Zastosuj, aby zapisac.
+status_policy_changed=Profil '{0}': automatyczne wlaczanie nowych modow = {1}
+tag_new=NOWY

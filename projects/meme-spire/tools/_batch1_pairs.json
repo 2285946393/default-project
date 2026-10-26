@@ -1,0 +1,152 @@
+[
+ {
+  "table": "acts",
+  "key": "DEPRECATED_ACT.title",
+  "vanilla": "已弃用阶段",
+  "new": "时代的眼泪"
+ },
+ {
+  "table": "cards",
+  "key": "BACKSTAB.title",
+  "vanilla": "背刺",
+  "new": "背刺"
+ },
+ {
+  "table": "cards",
+  "key": "DISTRACTION.title",
+  "vanilla": "声东击西",
+  "new": "声东击西"
+ },
+ {
+  "table": "cards",
+  "key": "FLECHETTES.title",
+  "vanilla": "飞镖",
+  "new": "夺命飞镖"
+ },
+ {
+  "table": "cards",
+  "key": "GRAVE_WARDEN.title",
+  "vanilla": "守墓人",
+  "new": "看门大爷"
+ },
+ {
+  "table": "cards",
+  "key": "MAUL.title",
+  "vanilla": "撕咬",
+  "new": "饿虎扑食"
+ },
+ {
+  "table": "cards",
+  "key": "MOCK_QUEST_CARD.title",
+  "vanilla": "临时任务牌",
+  "new": "日结工"
+ },
+ {
+  "table": "cards",
+  "key": "OFFERING.title",
+  "vanilla": "祭品",
+  "new": "电子木鱼"
+ },
+ {
+  "table": "cards",
+  "key": "OVERCLOCK.title",
+  "vanilla": "超频",
+  "new": "要裂开了"
+ },
+ {
+  "table": "cards",
+  "key": "PALE_BLUE_DOT.title",
+  "vanilla": "暗淡蓝点",
+  "new": "一粒尘埃"
+ },
+ {
+  "table": "cards",
+  "key": "PUTREFY.title",
+  "vanilla": "腐败",
+  "new": "发馊了"
+ },
+ {
+  "table": "cards",
+  "key": "QUASAR.title",
+  "vanilla": "类星体",
+  "new": "亮瞎双眼"
+ },
+ {
+  "table": "cards",
+  "key": "SPOILS_MAP.title",
+  "vanilla": "藏宝图",
+  "new": "寻宝奇兵"
+ },
+ {
+  "table": "cards",
+  "key": "STACK.title",
+  "vanilla": "堆栈",
+  "new": "叠罗汉"
+ },
+ {
+  "table": "cards",
+  "key": "SUBROUTINE.title",
+  "vanilla": "子程序",
+  "new": "跑龙套"
+ },
+ {
+  "table": "cards",
+  "key": "TANK.title",
+  "vanilla": "肉盾",
+  "new": "皮糙肉厚"
+ },
+ {
+  "table": "cards",
+  "key": "TRACKING.title",
+  "vanilla": "跟踪",
+  "new": "跟屁虫"
+ },
+ {
+  "table": "cards",
+  "key": "UP_MY_SLEEVE.title",
+  "vanilla": "袖里乾坤",
+  "new": "杀手锏"
+ },
+ {
+  "table": "characters",
+  "key": "DEPRECATED_CHARACTER.title",
+  "vanilla": "已弃用角色",
+  "new": "过气明星"
+ },
+ {
+  "table": "characters",
+  "key": "DEPRIVED.title",
+  "vanilla": "被剥夺者",
+  "new": "余额清零"
+ },
+ {
+  "table": "characters",
+  "key": "LOCKED.title",
+  "vanilla": "？？？",
+  "new": "付费观看"
+ },
+ {
+  "table": "orbs",
+  "key": "MOCK_COMBAT_CLEANUP_ORB.title",
+  "vanilla": "Mock Combat Cleanup",
+  "new": "群演杀青"
+ },
+ {
+  "table": "potions",
+  "key": "GHOST_IN_A_JAR.title",
+  "vanilla": "罐装幽灵",
+  "new": "装神弄鬼"
+ },
+ {
+  "table": "potions",
+  "key": "SHIP_IN_A_BOTTLE.title",
+  "vanilla": "瓶中船",
+  "new": "泰坦尼克"
+ },
+ {
+  "table": "potions",
+  "key": "STABLE_SERUM.title",
+  "vanilla": "稳定血清",
+  "new": "稳如老狗"
+ }
+]

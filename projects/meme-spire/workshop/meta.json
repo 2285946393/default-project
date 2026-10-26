@@ -1,0 +1,27 @@
+{
+  "title": "梗化尖塔 Meme Spire｜卡牌遗物怪物事件全网梗改名｜整活 沙雕 抽象 搞笑 谐音梗 中文本地化",
+  "visibility": "public",
+  "changeNote": "0.1.4：把最后能改的台词槽全部补完——假商人事件 34 条、水晶球占卜 13 条、纪年故事名 8、怪物台词 6、护盾上下线/抑制/腐化/战斗提示各 1；商人台词整张重写；零散再补遗物 5 / 卡牌 1 / 悬停提示 1。图鉴累计 3403 条。",
+  "tags": [
+    "Localization",
+    "Translation",
+    "schinese",
+    "english",
+    "Cards",
+    "Relics",
+    "Monsters",
+    "Events",
+    "Funny",
+    "Meme",
+    "Joke",
+    "UI"
+  ],
+  "dependencies": [],
+  "contentDescriptors": [],
+  "_说明": {
+    "visibility": "public（用户要求能被搜到）。想先自己看就改成 private，或上传后在工坊网页改。",
+    "dependencies": "纯文本 mod，无前置，留空数组。",
+    "description": "正文在 description.md，prepare_workshop.py 读它塞进 workshop.json。支持 BBCode。",
+    "mod_id": "第一次上传后写进工作区的 mod_id.txt，之后更新都用这一条。"
+  }
+}

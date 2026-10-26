@@ -1,0 +1,6 @@
+{
+  "COMMON": "[gold][font_size=28][b]普通：[/b][/font_size][/gold]塔里最常见的药水。",
+  "RARE": "[gold][font_size=28][b]稀有：[/b][/font_size][/gold]又强又少见，很少碰到。",
+  "SPECIAL": "[gold][font_size=28][b]特殊：[/b][/font_size][/gold]得靠事件或别的门路拿。",
+  "UNCOMMON": "[gold][font_size=28][b]罕见：[/b][/font_size][/gold]更给力一点，也比普通少见。"
+}

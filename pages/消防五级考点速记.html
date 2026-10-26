@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<title>消防设施操作员 五级 · 考点速记</title>
+<style>
+:root{
+  --bg:#faf8f5; --card:#fff; --ink:#242020; --ink2:#5c5450; --ink3:#9a918c;
+  --line:#e8e2dc; --accent:#c1272d; --accent-soft:#fdf0f0;
+  --hl:#c1272d; --hl-bg:#fff0e8;
+  --ok:#2f7d5d; --ok-bg:#eef7f2;
+  --warn:#b26a00; --warn-bg:#fdf5e6;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#161413; --card:#211e1d; --ink:#ece6e2; --ink2:#b0a8a3; --ink3:#7a726d;
+    --line:#332e2c; --accent:#e8545a; --accent-soft:#2a1c1c;
+    --hl:#ff8a6b; --hl-bg:#3a221c;
+    --ok:#5fbf95; --ok-bg:#1a2a22;
+    --warn:#e0a030; --warn-bg:#2a2216;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  font-size:16px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- 顶部 ---------- */
+header{
+  position:sticky;top:0;z-index:100;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  padding:14px 18px 12px;
+}
+.hd-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.01em}
+.hd-sub{font-size:12.5px;color:var(--ink3)}
+.badge{
+  display:inline-block;background:var(--accent);color:#fff;
+  font-size:11px;padding:2px 7px;border-radius:5px;font-weight:600;
+  vertical-align:2px;margin-left:2px;
+}
+.searchwrap{position:relative;margin-top:10px}
+#search{
+  width:100%;padding:10px 38px 10px 13px;font-size:15px;
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+  color:var(--ink);outline:none;transition:border-color .15s;
+  font-family:inherit;
+}
+#search:focus{border-color:var(--accent)}
+#search::placeholder{color:var(--ink3)}
+#clear{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  border:0;background:var(--line);color:var(--ink2);
+  width:24px;height:24px;border-radius:50%;cursor:pointer;
+  font-size:15px;line-height:1;display:none;padding:0;
+}
+#search:not(:placeholder-shown)+#clear{display:block}
+
+/* ---------- 导航 ---------- */
+nav{
+  position:sticky;top:97px;z-index:99;
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  overflow-x:auto;overflow-y:hidden;white-space:nowrap;
+  padding:8px 12px;scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+nav a{
+  display:inline-block;padding:5px 11px;margin-right:4px;
+  font-size:13px;color:var(--ink2);text-decoration:none;
+  border-radius:7px;transition:.15s;
+}
+nav a:hover{background:var(--card);color:var(--ink)}
+nav a.on{background:var(--accent);color:#fff;font-weight:600}
+
+/* ---------- 主体 ---------- */
+main{max-width:820px;margin:0 auto;padding:20px 16px 100px}
+section{margin-bottom:34px}
+h2{
+  font-size:17px;margin:0 0 14px;font-weight:700;
+  display:flex;align-items:center;gap:9px;
+  padding-bottom:9px;border-bottom:2px solid var(--accent);
+}
+h2 .num{
+  background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+  width:22px;height:22px;border-radius:6px;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+h3{
+  font-size:15px;margin:20px 0 9px;font-weight:700;color:var(--ink);
+  padding-left:10px;border-left:3px solid var(--accent);
+}
+p{margin:9px 0}
+b,strong{color:var(--hl);font-weight:700}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:15px 17px;margin:12px 0;box-shadow:var(--shadow);
+}
+.card.tight{padding:12px 15px}
+ul,ol{margin:9px 0;padding-left:22px}
+li{margin:6px 0}
+li::marker{color:var(--accent)}
+
+/* 表格 */
+.tw{overflow-x:auto;margin:13px 0;border-radius:11px;border:1px solid var(--line)}
+table{
+  width:100%;border-collapse:collapse;font-size:14.5px;
+  background:var(--card);
+}
+th{
+  background:var(--accent-soft);color:var(--hl);
+  font-weight:700;text-align:left;padding:9px 12px;
+  border-bottom:1.5px solid var(--line);white-space:nowrap;
+  font-size:13.5px;
+}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:color-mix(in srgb,var(--accent) 3%,transparent)}
+
+/* 提示块 */
+.note{
+  background:var(--warn-bg);border-left:3px solid var(--warn);
+  padding:11px 14px;border-radius:0 9px 9px 0;margin:13px 0;
+  font-size:14.5px;color:var(--ink2);
+}
+.note b{color:var(--warn)}
+.tip{
+  background:var(--ok-bg);border-left:3px solid var(--ok);
+  padding:11px 14px;border-radius:0 9px 9px 0;margin:13px 0;
+  font-size:14.5px;color:var(--ink2);
+}
+.tip b{color:var(--ok)}
+
+/* 色标圆点 */
+.dot{
+  display:inline-block;width:13px;height:13px;border-radius:50%;
+  vertical-align:-2px;margin-right:7px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.12) inset;
+}
+
+/* 关键词速查条 */
+.kv{
+  display:flex;gap:12px;padding:10px 0;
+  border-bottom:1px dashed var(--line);align-items:baseline;
+  font-size:14.5px;
+}
+.kv:last-child{border-bottom:0}
+.kv .k{
+  flex:0 0 42%;font-weight:700;color:var(--hl);
+}
+.kv .v{flex:1;color:var(--ink2)}
+
+/* 搜索高亮 */
+mark{background:var(--hl-bg);color:var(--hl);border-radius:3px;padding:0 2px;font-weight:700}
+.hide{display:none !important}
+
+/* 顶部进度 */
+#prog{
+  position:fixed;top:0;left:0;height:2.5px;width:0;
+  background:var(--accent);z-index:200;transition:width .1s;
+}
+#totop{
+  position:fixed;right:18px;bottom:22px;z-index:150;
+  width:42px;height:42px;border-radius:50%;border:1px solid var(--line);
+  background:var(--card);color:var(--ink2);font-size:17px;
+  cursor:pointer;box-shadow:var(--shadow);display:none;
+}
+#totop.show{display:block}
+.nores{text-align:center;color:var(--ink3);padding:40px 0;font-size:14px}
+
+@media(max-width:600px){
+  main{padding:16px 13px 90px}
+  .kv{flex-direction:column;gap:3px}
+  .kv .k{flex:none}
+  body{font-size:15.5px}
+  nav{top:93px}
+  html{scroll-padding-top:112px}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<header>
+  <div class="hd-top">
+    <h1>消防设施操作员 · 五级<span class="badge">初级</span></h1>
+    <span class="hd-sub">红色加粗 = 必考核心字</span>
+  </div>
+  <div class="searchwrap">
+    <input id="search" placeholder="搜关键词：喷头 / 灭火器 / 复位 / 报警阀…" autocomplete="off">
+    <button id="clear" aria-label="清空">×</button>
+  </div>
+</header>
+
+<nav id="toc">
+  <a href="#s1">火灾分类</a>
+  <a href="#s2">灭火器</a>
+  <a href="#s3">喷头色标</a>
+  <a href="#s4">喷水系统</a>
+  <a href="#s5">报警控制器</a>
+  <a href="#s6">消火栓</a>
+  <a href="#s7">防火门卷帘</a>
+  <a href="#s8">防排烟</a>
+  <a href="#s9">应急照明</a>
+  <a href="#s10">应急处置</a>
+  <a href="#s11">关键词速查</a>
+  <a href="#s12">数字速记</a>
+</nav>
+
+<main>
+
+<!-- ========== 1 ========== -->
+<section id="s1">
+  <h2><span class="num">1</span>火灾分类 · 灭火原理</h2>
+
+  <h3>六类火灾</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>类别</th><th>烧什么</th><th>典型物质</th></tr></thead>
+    <tbody>
+      <tr><td><b>A 类</b></td><td><b>固体</b></td><td>木材、棉、毛、麻、纸张</td></tr>
+      <tr><td><b>B 类</b></td><td><b>液体</b>或可熔化固体</td><td>汽油、煤油、甲醇、乙醇、沥青、石蜡</td></tr>
+      <tr><td><b>C 类</b></td><td><b>气体</b></td><td>煤气、天然气、甲烷、乙炔、氢气</td></tr>
+      <tr><td><b>D 类</b></td><td><b>金属</b></td><td>钾、钠、镁、钛、锆、铝镁合金</td></tr>
+      <tr><td><b>E 类</b></td><td><b>带电</b>火灾</td><td>电气设备、线路带电燃烧</td></tr>
+      <tr><td><b>F 类</b></td><td><b>烹饪油脂</b></td><td>厨房油锅、动植物油脂</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip"><b>记法：</b>固液气金电油 —— 按这个顺序背 A B C D E F，一辈子不会乱。</div>
+
+  <h3>燃烧三要素</h3>
+  <div class="card tight">
+    <b>可燃物</b> + <b>助燃物</b>（氧化剂，通常氧气）+ <b>引火源</b>（达到着火温度）<br>
+    <span style="color:var(--ink3);font-size:14px">三个缺一个就烧不起来，灭火就是破坏其中一个。</span>
+  </div>
+
+  <h3>四种灭火原理</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>原理</th><th>怎么干的</th><th>对应手段</th></tr></thead>
+    <tbody>
+      <tr><td><b>冷却</b></td><td>降温到着火点以下</td><td>用水浇</td></tr>
+      <tr><td><b>窒息</b></td><td>隔绝氧气</td><td>盖湿棉被、二氧化碳、泡沫</td></tr>
+      <tr><td><b>隔离</b></td><td>把可燃物挪走</td><td>拆房子、关阀门断气源</td></tr>
+      <tr><td><b>化学抑制</b></td><td>中断燃烧链式反应</td><td><b>干粉</b>（唯一靠这个原理的）</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note"><b>考题陷阱：</b>问"哪种灭火器靠化学抑制作用"——只选<b>干粉</b>。水是冷却，泡沫和二氧化碳是窒息。</div>
+</section>
+
+<!-- ========== 2 ========== -->
+<section id="s2">
+  <h2><span class="num">2</span>灭火器 · 选择与检查</h2>
+
+  <h3>按火灾类型选灭火器</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>灭火器</th><th>能灭</th><th>不能灭 / 注意</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>干粉（ABC）</b></td>
+        <td><b>A B C E</b> 全通吃</td>
+        <td>精密仪器慎用，粉末难清</td>
+      </tr>
+      <tr>
+        <td><b>二氧化碳</b></td>
+        <td><b>B C E</b></td>
+        <td>不能灭 A 类（有复燃风险）；<b>不导电</b>，适合带电和精密设备</td>
+      </tr>
+      <tr>
+        <td><b>水基型 / 泡沫</b></td>
+        <td><b>A B</b></td>
+        <td><b>绝对不能用于带电</b>；泡沫不能灭 C 类气体</td>
+      </tr>
+      <tr>
+        <td><b>洁净气体</b></td>
+        <td><b>B C E</b></td>
+        <td>机房、档案馆等不能有水渍的场所</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>手提式灭火器操作（提、拔、握、压）</h3>
+  <ol>
+    <li><b>提</b>起灭火器，快速赶到现场</li>
+    <li><b>拔</b>掉保险销</li>
+    <li>一手<b>握</b>住喷管（喇叭筒根部），另一手握压把</li>
+    <li>站在<b>上风方向</b>，距火源 <b>2~3 米</b></li>
+    <li><b>压</b>下压把，<b>对准火焰根部</b>左右扫射</li>
+  </ol>
+  <div class="note"><b>必考：</b>对准的是<b>火焰根部</b>，不是火苗尖。站<b>上风</b>方向，不是下风。</div>
+
+  <h3>压力表怎么看</h3>
+  <div class="card tight">
+    <b>绿区</b> = 正常可用<br>
+    <b>红区</b> = 压力不足，<b>失效不能喷</b>，必须充装<br>
+    <b>黄区</b> = 压力过高，需处理
+  </div>
+
+  <h3>维修与报废年限</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>项目</th><th>年限</th></tr></thead>
+    <tbody>
+      <tr><td>手提式干粉首次维修</td><td>出厂期满 <b>5 年</b></td></tr>
+      <tr><td>首次维修之后</td><td>每满 <b>2 年</b>维修一次</td></tr>
+      <tr><td>水基型灭火器报废</td><td><b>6 年</b></td></tr>
+      <tr><td>干粉灭火器报废</td><td><b>10 年</b></td></tr>
+      <tr><td>洁净气体灭火器报废</td><td><b>10 年</b></td></tr>
+      <tr><td>二氧化碳灭火器报废</td><td><b>12 年</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip"><b>记法：</b>水 6、干粉和洁净 10、二氧化碳 12 —— 越危险的介质年限越长。</div>
+</section>
+
+<!-- ========== 3 ========== -->
+<section id="s3">
+  <h2><span class="num">3</span>喷头色标 · 温度对照</h2>
+  <div class="card">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px">
+      <div><span class="dot" style="background:#f07b28"></span><b>橙</b> 57℃</div>
+      <div><span class="dot" style="background:#d92b2b"></span><b>红</b> 68℃</div>
+      <div><span class="dot" style="background:#e8c02c"></span><b>黄</b> 79℃</div>
+      <div><span class="dot" style="background:#3aa04a"></span><b>绿</b> 93℃</div>
+      <div><span class="dot" style="background:#2f6fd0"></span><b>蓝</b> 141℃</div>
+      <div><span class="dot" style="background:#8a4fbf"></span><b>紫</b> 182℃</div>
+    </div>
+  </div>
+  <div class="note">
+    <b>最常考：红 68℃。</b>这是绝大多数场所的标准喷头。<br>
+    顺序按<b>温度从低到高</b>：橙 → 红 → 黄 → 绿 → 蓝 → 紫，温度一路往上。
+  </div>
+  <div class="tip"><b>一眼判断法：</b>题目问"68℃的喷头是什么颜色"，看到 68 直接选<b>红</b>；问"什么颜色温度最高"，选<b>紫 182℃</b>。</div>
+</section>
+
+<!-- ========== 4 ========== -->
+<section id="s4">
+  <h2><span class="num">4</span>自动喷水灭火系统</h2>
+
+  <h3>四种系统 · 用在哪</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>系统</th><th>特点</th><th>适用场所</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>湿式</b></td>
+        <td>管内<b>常年充水</b>，喷头一破立即喷水，<b>反应最快</b></td>
+        <td>环境温度 <b>4~70℃</b> 的场所，<b>最常用</b></td>
+      </tr>
+      <tr>
+        <td><b>干式</b></td>
+        <td>管内充<b>压缩空气</b>，喷头破后先排气再进水</td>
+        <td><b>低于 4℃</b> 或<b>高于 70℃</b> 的场所</td>
+      </tr>
+      <tr>
+        <td><b>预作用</b></td>
+        <td>平时管里<b>没水也没气</b>，火灾报警后才充水</td>
+        <td><b>不允许有水渍损失</b>的场所（机房、档案室、博物馆）</td>
+      </tr>
+      <tr>
+        <td><b>雨淋</b></td>
+        <td>开式喷头，一动作<b>大面积同时喷水</b></td>
+        <td>火势蔓延快、闭式喷头来不及的场所（剧院舞台、炸药库）</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>湿式系统部件 · 谁干什么（最容易混）</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>部件</th><th>一句话职责</th></tr></thead>
+    <tbody>
+      <tr><td><b>湿式报警阀</b></td><td>只允许水<b>单向</b>流入系统；<b>打开后触发报警</b></td></tr>
+      <tr><td><b>水力警铃</b></td><td>靠<b>水流冲击</b>发声，是现场报警器</td></tr>
+      <tr><td><b>压力开关</b></td><td>把压力变化转成<b>电信号</b>，<b>启动消防泵</b>并向控制器报警</td></tr>
+      <tr><td><b>水流指示器</b></td><td>只报告<b>哪个分区</b>有水流，<b>不报警、不启泵</b></td></tr>
+      <tr><td><b>延迟器</b></td><td>防止水压<b>波动误报</b>，只装在湿式系统上</td></tr>
+      <tr><td><b>末端试水装置</b></td><td>在系统最不利点<b>放水测试</b>，检验整套系统是否正常</td></tr>
+      <tr><td><b>闭式喷头</b></td><td><b>感温</b>元件，达到温度自动破裂喷水</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <b>最容易考的区分：</b><br>
+    · 问「<b>启动消防泵</b>」→ <b>压力开关</b><br>
+    · 问「<b>报告哪个防火分区</b>」→ <b>水流指示器</b><br>
+    · 问「<b>防止误报</b>」→ <b>延迟器</b><br>
+    · 问「<b>测试系统是否正常</b>」→ <b>末端试水装置</b><br>
+    · 问「<b>现场发出声响报警</b>」→ <b>水力警铃</b>
+  </div>
+
+  <h3>末端试水装置测什么</h3>
+  <div class="card tight">
+    打开末端试水阀，能同时检验 <b>5 项</b>：<br>
+    ① <b>水流指示器</b>动作 ② <b>报警阀</b>开启 ③ <b>水力警铃</b>响 ④ <b>压力开关</b>动作并<b>启泵</b> ⑤ 系统<b>压力</b>是否正常
+  </div>
+  <div class="tip">末端试水装置的流量系数相当于 <b>1 个喷头</b>（K=80），出水压力<b>不低于 0.05MPa</b>。</div>
+</section>
+
+<!-- ========== 5 ========== -->
+<section id="s5">
+  <h2><span class="num">5</span>火灾报警控制器 · 指示灯与操作</h2>
+
+  <h3>三种状态 · 看灯认信号</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>状态</th><th>灯色</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td><b>火警</b></td><td><b>红</b></td><td>真有着火信号，<b>必须立即确认</b></td></tr>
+      <tr><td><b>故障</b></td><td><b>黄</b></td><td>设备坏了、线路断了、断电了</td></tr>
+      <tr><td><b>屏蔽 / 隔离</b></td><td><b>黄</b></td><td>某个设备被<b>人为</b>停用，不再报警</td></tr>
+      <tr><td><b>监管</b></td><td><b>红</b></td><td>非火警的监管信号（如阀门被关）</td></tr>
+      <tr><td><b>主电工作</b></td><td><b>绿</b></td><td>用市电供电，正常</td></tr>
+      <tr><td><b>备电工作</b></td><td><b>绿</b></td><td>市电断了，靠电池撑着</td></tr>
+      <tr><td><b>系统故障</b></td><td>黄</td><td>控制器本体出问题</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>四个基本操作</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>操作</th><th>干什么</th><th>关键区别</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>消音</b></td>
+        <td>把响着的<b>声音关掉</b></td>
+        <td><b>只关声音，灯还亮着，状态不变</b></td>
+      </tr>
+      <tr>
+        <td><b>复位</b></td>
+        <td>让控制器<b>回到正常监视状态</b></td>
+        <td><b>火警处理完了才按</b>；先消音再复位</td>
+      </tr>
+      <tr>
+        <td><b>屏蔽</b></td>
+        <td>把某个<b>坏掉的设备</b>临时停用</td>
+        <td>故障一直修不好时才用，<b>要记录</b></td>
+      </tr>
+      <tr>
+        <td><b>自检</b></td>
+        <td>检查控制器自身功能是否正常</td>
+        <td>不改变任何状态</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">
+    <b>考题核心：</b>「<b>消音后火警灯还亮着</b>」这句话是对的。<br>
+    消音 ≠ 消除火警。要彻底清掉必须<b>先处理完现场，再按复位</b>。
+  </div>
+
+  <h3>联动控制状态</h3>
+  <div class="card tight">
+    <b>自动</b>状态：接到两个独立报警信号后，<b>自动</b>启动喷淋、排烟、广播、卷帘等联动设备。<br>
+    <b>手动</b>状态：必须<b>人工按按钮</b>才动作。<br>
+    <span style="color:var(--ink3)">消防控制室值班期间应保持<b>自动</b>状态。</span>
+  </div>
+</section>
+
+<!-- ========== 6 ========== -->
+<section id="s6">
+  <h2><span class="num">6</span>消火栓系统</h2>
+
+  <h3>室内消火栓箱里有什么</h3>
+  <div class="card tight">
+    <b>水枪</b> + <b>水带</b> + <b>消火栓接口</b> + 消防卷盘（有的有）+ <b>报警按钮</b>（有的有）
+  </div>
+
+  <h3>关键尺寸</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>项目</th><th>数值</th></tr></thead>
+    <tbody>
+      <tr><td>栓口公称直径</td><td><b>DN65</b>（65mm）</td></tr>
+      <tr><td>水带长度</td><td><b>25 m</b></td></tr>
+      <tr><td>水枪喷嘴口径</td><td><b>16 mm 或 19 mm</b></td></tr>
+      <tr><td>栓口中心距地面高度</td><td><b>1.1 m</b></td></tr>
+      <tr><td>栓口出水方向</td><td>宜<b>向下</b>或与墙面成 <b>90°</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>室内消火栓使用步骤</h3>
+  <ol>
+    <li>打开消火栓<b>箱门</b></li>
+    <li>取出<b>水带</b>，向火场方向<b>展开</b>（不要打折）</li>
+    <li>水带一端接<b>消火栓接口</b>，另一端接<b>水枪</b></li>
+    <li>一人<b>握水枪</b>对准火场，另一人<b>缓慢开启</b>阀门</li>
+    <li>确认出水正常后，<b>对准火焰根部</b>喷射</li>
+  </ol>
+  <div class="note"><b>两个扣分点：</b>① 水带<b>打结、扭曲</b>；② 阀门<b>猛开</b>（水锤会伤人，也会崩水带）。</div>
+
+  <h3>水带盘卷</h3>
+  <div class="card tight">
+    <b>单卷法</b>：从一端卷起，边卷边排空气。<br>
+    <b>双卷法（对折卷）</b>：水带对折，两个接口并在一起，从折口处向外卷。<br>
+    <span style="color:var(--ink3)">考场要求：卷得<b>紧、实、齐</b>，接口露在外面。</span>
+  </div>
+
+  <h3>室外消火栓</h3>
+  <div class="card tight">
+    分 <b>地上式</b> 和 <b>地下式</b> 两种。地上式目标明显、便于操作；地下式不占地方、不影响交通，但需要<b>井盖和标志</b>。
+  </div>
+</section>
+
+<!-- ========== 7 ========== -->
+<section id="s7">
+  <h2><span class="num">7</span>防火门 · 防火卷帘</h2>
+
+  <h3>防火门等级</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>等级</th><th>耐火极限</th><th>常装在哪</th></tr></thead>
+    <tbody>
+      <tr><td><b>甲级</b></td><td><b>1.5 h</b></td><td>防火墙、重要设备房</td></tr>
+      <tr><td><b>乙级</b></td><td><b>1.0 h</b></td><td>疏散楼梯间、前室</td></tr>
+      <tr><td><b>丙级</b></td><td><b>0.5 h</b></td><td>管道井、电缆井</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip"><b>记法：</b>甲 1.5、乙 1.0、丙 0.5 —— <b>甲乙丙，减半再减半</b>。</div>
+
+  <h3>常闭 vs 常开</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>类型</th><th>平时状态</th><th>火灾时</th><th>检查什么</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>常闭防火门</b></td>
+        <td><b>保持关闭</b></td>
+        <td>本来就是关的</td>
+        <td><b>闭门器</b>、<b>顺序器</b>是否完好；<b>不能上锁、不能垫东西</b></td>
+      </tr>
+      <tr>
+        <td><b>常开防火门</b></td>
+        <td><b>保持开启</b></td>
+        <td><b>自动关闭</b></td>
+        <td>释放器、电磁铁、联动功能是否正常</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note"><b>最常考的违规行为：</b>常闭防火门<b>被人为敞开、用东西顶住、上锁</b> —— 这是重大隐患。</div>
+
+  <h3>防火卷帘</h3>
+  <ul>
+    <li>卷帘下方 <b>0.3 m 范围内不得堆放物品</b>（堆了卷帘落不下来）</li>
+    <li>温控释放装置动作温度：<b>73℃ ± 0.5℃</b></li>
+    <li>检查：<b>手动</b>升降是否顺畅、<b>自动</b>降落是否到位、有无卡阻</li>
+  </ul>
+</section>
+
+<!-- ========== 8 ========== -->
+<section id="s8">
+  <h2><span class="num">8</span>防烟排烟系统</h2>
+
+  <h3>防烟 vs 排烟（一字之差）</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>系统</th><th>干什么</th><th>装在哪</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>防烟</b>（加压送风）</td>
+        <td>往里面<b>吹干净空气</b>，让烟进不来，<b>正压</b></td>
+        <td><b>楼梯间、前室、避难层</b></td>
+      </tr>
+      <tr>
+        <td><b>排烟</b></td>
+        <td>把烟<b>抽出去</b></td>
+        <td><b>走道、房间、中庭</b></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip"><b>一句话分：</b><b>防烟</b>= 保住逃生的路（楼梯间）；<b>排烟</b>= 把烟赶出去（着火的地方）。</div>
+
+  <h3>关键数字</h3>
+  <div class="card tight">
+    排烟风机应能在 <b>280℃</b> 下连续运转 <b>30 min</b>。<br>
+    <span style="color:var(--ink3)">排烟防火阀在 <b>280℃</b> 时自动关闭。</span>
+  </div>
+
+  <h3>检查要点</h3>
+  <ul>
+    <li>送风口、排烟口<b>不能被遮挡、封堵</b></li>
+    <li>风机控制柜处于<b>自动</b>状态</li>
+    <li>手动开启送风口/排烟口，风机应能<b>联动启动</b></li>
+  </ul>
+</section>
+
+<!-- ========== 9 ========== -->
+<section id="s9">
+  <h2><span class="num">9</span>应急照明 · 疏散指示</h2>
+
+  <h3>持续时间</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>场所</th><th>连续供电时间</th></tr></thead>
+    <tbody>
+      <tr><td>一般场所</td><td>不少于 <b>0.5 h</b></td></tr>
+      <tr><td>医疗建筑、老年人照料设施、总建筑面积大于 10 万㎡的公共建筑等</td><td>不少于 <b>1.0 h</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>疏散指示标志间距</h3>
+  <div class="card tight">
+    一般走道：不大于 <b>20 m</b><br>
+    <b>袋形走道</b>：不大于 <b>10 m</b>（尽头是死路，要更密）
+  </div>
+
+  <h3>地面最低水平照度</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>部位</th><th>照度</th></tr></thead>
+    <tbody>
+      <tr><td>疏散走道</td><td>不低于 <b>1.0 lx</b></td></tr>
+      <tr><td>人员密集场所、避难层</td><td>不低于 <b>3.0 lx</b></td></tr>
+      <tr><td>楼梯间、前室、合用前室</td><td>不低于 <b>5.0 lx</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip"><b>记法：</b>越靠近逃生关键部位，照度越高 —— 走道 1、人多 3、楼梯 5。</div>
+
+  <h3>检查要点</h3>
+  <ul>
+    <li>灯具<b>外观完好</b>、无破损</li>
+    <li>按<b>试验按钮</b>，应能切换到应急状态</li>
+    <li>标志灯<b>指示方向正确</b>（指向最近安全出口）</li>
+    <li>不能被广告牌、货物<b>遮挡</b></li>
+  </ul>
+</section>
+
+<!-- ========== 10 ========== -->
+<section id="s10">
+  <h2><span class="num">10</span>应急处置 · 必背流程</h2>
+
+  <h3>消防控制室接警处置（口述必考）</h3>
+  <div class="card">
+    <ol style="margin:0">
+      <li>接到火灾报警信号，<b>立即以最快方式确认</b>（通知巡查人员现场查看或调监控）</li>
+      <li>确认火灾后，立即确认火灾报警<b>联动控制开关处于自动状态</b></li>
+      <li>同时拨打 <b>119</b> 报警</li>
+      <li>报警时说清：<b>着火单位地点、起火部位、着火物种类、火势大小、报警人姓名和联系电话</b></li>
+      <li>立即启动单位内部<b>应急疏散和灭火预案</b></li>
+      <li>同时<b>报告单位负责人</b></li>
+    </ol>
+  </div>
+  <div class="note"><b>顺序不能乱：</b>先<b>确认</b> → 再<b>转自动</b> → 再<b>打119</b> → 再<b>启动预案</b> → 再<b>报领导</b>。<br>注意是「<b>确认火灾后</b>才打 119」，不是一报警就打。</div>
+
+  <h3>消防控制室值班要求</h3>
+  <ul>
+    <li>实行<b>每日 24 小时</b>值班，<b>每班不少于 2 人</b></li>
+    <li>值班人员必须<b>持证上岗</b>（就是你要考的这个证）</li>
+    <li>应设置<b>直拨 119 的专用电话</b></li>
+    <li>做好<b>值班记录</b>，交接班要签字</li>
+  </ul>
+
+  <h3>初起火灾处置原则</h3>
+  <div class="card tight">
+    <b>救人第一</b>、<b>先控制后消灭</b>、<b>先重点后一般</b>
+  </div>
+
+  <h3>疏散引导</h3>
+  <ol>
+    <li>通过<b>应急广播</b>通知人员疏散</li>
+    <li>引导人员走<b>安全出口</b>和<b>疏散楼梯</b>，<b>严禁使用电梯</b></li>
+    <li>提醒用<b>湿毛巾</b>捂口鼻、<b>低姿</b>前进</li>
+    <li>清点人数，防止<b>返回</b>取物</li>
+  </ol>
+
+  <h3>过滤式消防自救呼吸器佩戴</h3>
+  <ol>
+    <li>打开<b>盒盖</b>，取出呼吸器</li>
+    <li>撕开<b>真空包装袋</b></li>
+    <li>拔掉滤毒罐<b>前后两个密封塞</b>（<b>两个都要拔</b>，这是扣分点）</li>
+    <li>套上头部，<b>拉紧头带</b>，调整到不漏气</li>
+  </ol>
+</section>
+
+<!-- ========== 11 ========== -->
+<section id="s11">
+  <h2><span class="num">11</span>看见这个词 · 就选这个</h2>
+  <p style="color:var(--ink3);font-size:14px;margin-top:-4px">题干再长也别慌，先找这几个词，答案基本就定了。</p>
+
+  <div class="card">
+    <div class="kv"><div class="k">启动消防泵</div><div class="v">压力开关</div></div>
+    <div class="kv"><div class="k">报告哪个分区</div><div class="v">水流指示器</div></div>
+    <div class="kv"><div class="k">防止误报</div><div class="v">延迟器</div></div>
+    <div class="kv"><div class="k">现场响铃</div><div class="v">水力警铃</div></div>
+    <div class="kv"><div class="k">测试系统是否正常</div><div class="v">末端试水装置</div></div>
+    <div class="kv"><div class="k">只许水单向流入</div><div class="v">湿式报警阀</div></div>
+    <div class="kv"><div class="k">感温破裂自动喷水</div><div class="v">闭式喷头</div></div>
+    <div class="kv"><div class="k">化学抑制</div><div class="v">干粉灭火器</div></div>
+    <div class="kv"><div class="k">带电设备 / 精密仪器</div><div class="v">二氧化碳灭火器</div></div>
+    <div class="kv"><div class="k">厨房油锅</div><div class="v">F 类火灾，用湿布盖或专用灭火器，<b>不能用水</b></div></div>
+    <div class="kv"><div class="k">金属钠镁燃烧</div><div class="v">D 类，<b>严禁用水</b>，用干砂或专用干粉</div></div>
+    <div class="kv"><div class="k">只关声音不改变状态</div><div class="v">消音</div></div>
+    <div class="kv"><div class="k">回到正常监视状态</div><div class="v">复位</div></div>
+    <div class="kv"><div class="k">设备坏了临时停用</div><div class="v">屏蔽（要记录）</div></div>
+    <div class="kv"><div class="k">楼梯间加压</div><div class="v">防烟系统</div></div>
+    <div class="kv"><div class="k">走道房间抽走烟气</div><div class="v">排烟系统</div></div>
+    <div class="kv"><div class="k">280℃ 连续 30 分钟</div><div class="v">排烟风机</div></div>
+    <div class="kv"><div class="k">73℃ 自动释放</div><div class="v">防火卷帘温控释放装置</div></div>
+    <div class="kv"><div class="k">疏散楼梯间的门</div><div class="v">乙级防火门（1.0h）</div></div>
+    <div class="kv"><div class="k">管道井、电缆井</div><div class="v">丙级防火门（0.5h）</div></div>
+    <div class="kv"><div class="k">不允许有水渍损失</div><div class="v">预作用系统</div></div>
+    <div class="kv"><div class="k">环境低于 4℃</div><div class="v">干式系统</div></div>
+    <div class="kv"><div class="k">舞台、火势蔓延快</div><div class="v">雨淋系统</div></div>
+    <div class="kv"><div class="k">每班不少于 2 人</div><div class="v">消防控制室值班</div></div>
+    <div class="kv"><div class="k">不能坐电梯</div><div class="v">疏散时一律走楼梯</div></div>
+  </div>
+</section>
+
+<!-- ========== 12 ========== -->
+<section id="s12">
+  <h2><span class="num">12</span>数字速记表</h2>
+  <p style="color:var(--ink3);font-size:14px;margin-top:-4px">考试里数字题占很大比例，这张表扫一遍就够。</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>数字</th><th>是什么</th></tr></thead>
+    <tbody>
+      <tr><td><b>4~70℃</b></td><td>湿式系统适用环境温度</td></tr>
+      <tr><td><b>57 / 68 / 79 / 93 / 141 / 182℃</b></td><td>喷头色标：橙 红 黄 绿 蓝 紫</td></tr>
+      <tr><td><b>2~3 m</b></td><td>灭火器喷射距火源距离</td></tr>
+      <tr><td><b>5 年</b></td><td>手提式干粉灭火器首次维修（之后每 2 年）</td></tr>
+      <tr><td><b>6 / 10 / 10 / 12 年</b></td><td>水基 / 干粉 / 洁净气体 / 二氧化碳 报废年限</td></tr>
+      <tr><td><b>DN65</b></td><td>室内消火栓栓口直径</td></tr>
+      <tr><td><b>25 m</b></td><td>室内消火栓水带长度</td></tr>
+      <tr><td><b>16 / 19 mm</b></td><td>水枪喷嘴口径</td></tr>
+      <tr><td><b>1.1 m</b></td><td>消火栓栓口中心距地面高度</td></tr>
+      <tr><td><b>1.3~1.5 m</b></td><td>手动火灾报警按钮安装高度</td></tr>
+      <tr><td><b>1.5 / 1.0 / 0.5 h</b></td><td>甲 / 乙 / 丙级防火门耐火极限</td></tr>
+      <tr><td><b>0.3 m</b></td><td>防火卷帘下方禁止堆物范围</td></tr>
+      <tr><td><b>73℃</b></td><td>防火卷帘温控释放装置动作温度</td></tr>
+      <tr><td><b>280℃ / 30 min</b></td><td>排烟风机耐高温要求</td></tr>
+      <tr><td><b>0.5 h / 1.0 h</b></td><td>应急照明持续时间（一般 / 特殊场所）</td></tr>
+      <tr><td><b>20 m / 10 m</b></td><td>疏散指示标志间距（一般走道 / 袋形走道）</td></tr>
+      <tr><td><b>1 / 3 / 5 lx</b></td><td>疏散走道 / 人员密集 / 楼梯间 最低照度</td></tr>
+      <tr><td><b>800 kg</b></td><td>消防电梯最小载重量</td></tr>
+      <tr><td><b>60 s</b></td><td>消防电梯从首层到顶层最长运行时间</td></tr>
+      <tr><td><b>2 min</b></td><td>消防水泵自动启动最长时间</td></tr>
+      <tr><td><b>5 min</b></td><td>消防水泵机械应急启动最长时间</td></tr>
+      <tr><td><b>2 人</b></td><td>消防控制室每班最少值班人数</td></tr>
+      <tr><td><b>119</b></td><td>火警电话（控制室要有直拨专线）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="tip" style="margin-top:22px">
+    <b>怎么用这一页：</b><br>
+    ① 先看第 <b>11 章关键词速查</b>，把「看见什么选什么」过两遍；<br>
+    ② 再做第 <b>1~3 章</b>（火灾分类、灭火器、喷头色标）—— 这三块是送分题，必须 100%；<br>
+    ③ 最后扫第 <b>12 章数字表</b>，考试前 10 分钟再看一遍。<br>
+    <span style="color:var(--ink3)">刷题时遇到想不通的，回来搜关键词，这里没有的再截图问 AI。</span>
+  </div>
+</section>
+
+<div id="nores" class="nores hide">没有匹配的内容，换个词试试</div>
+
+</main>
+
+<button id="totop" aria-label="回到顶部">↑</button>
+
+<script>
+(function(){
+  const search = document.getElementById('search');
+  const clear  = document.getElementById('clear');
+  const nores  = document.getElementById('nores');
+  const totop  = document.getElementById('totop');
+  const prog   = document.getElementById('prog');
+  const navA   = [...document.querySelectorAll('#toc a')];
+  const secs   = [...document.querySelectorAll('main section')];
+
+  // 保存原始 HTML 以便搜索后还原
+  const orig = new Map();
+  document.querySelectorAll('main section, main .card, main .tw, main h3, main p, main ul, main ol, main .kv, main .note, main .tip')
+    .forEach(el => orig.set(el, el.innerHTML));
+
+  function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+  function restore(){
+    orig.forEach((html, el) => { el.innerHTML = html; });
+    secs.forEach(s => s.classList.remove('hide'));
+    nores.classList.add('hide');
+  }
+
+  let timer;
+  search.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(doSearch, 130);
+  });
+
+  // 用 TreeWalker 遍历文本节点做高亮，最准确
+  function highlight(root, re){
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(n){
+        if(!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const p = n.parentNode.nodeName;
+        if(p === 'SCRIPT' || p === 'STYLE' || p === 'MARK') return NodeFilter.FILTER_REJECT;
+        return re.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const hits = [];
+    let node;
+    while((node = walker.nextNode())) hits.push(node);
+
+    hits.forEach(tn => {
+      const frag = document.createDocumentFragment();
+      let last = 0, m;
+      const txt = tn.nodeValue;
+      re.lastIndex = 0;
+      while((m = re.exec(txt)) !== null){
+        if(m.index > last) frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+        const mk = document.createElement('mark');
+        mk.textContent = m[0];
+        frag.appendChild(mk);
+        last = m.index + m[0].length;
+        if(m[0].length === 0) re.lastIndex++;
+      }
+      if(last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+      tn.parentNode.replaceChild(frag, tn);
+    });
+    return hits.length;
+  }
+
+  function doSearch(){
+    const q = search.value.trim();
+    if(!q){ restore(); return; }
+    restore();
+
+    const re = new RegExp(esc(q), 'gi');
+
+    // 先按纯文本判断哪些 section 有命中
+    const hitSections = new Set();
+    secs.forEach(sec => {
+      re.lastIndex = 0;
+      if(re.test(sec.textContent)) hitSections.add(sec.id);
+    });
+
+    // 隐藏没命中的 section
+    secs.forEach(sec => sec.classList.toggle('hide', !hitSections.has(sec.id)));
+
+    // 在可见 section 内做高亮
+    let total = 0;
+    secs.forEach(sec => {
+      if(hitSections.has(sec.id)) total += highlight(sec, re);
+    });
+
+    nores.classList.toggle('hide', total > 0);
+  }
+
+  clear.addEventListener('click', () => { search.value=''; restore(); search.focus(); });
+
+  // 滚动进度 + 回顶 + 导航高亮
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const h = document.documentElement;
+      const pct = h.scrollTop / (h.scrollHeight - h.clientHeight || 1) * 100;
+      prog.style.width = Math.min(pct,100) + '%';
+      totop.classList.toggle('show', h.scrollTop > 400);
+
+      let cur = secs[0];
+      for(const s of secs){
+        if(s.getBoundingClientRect().top <= 150) cur = s;
+      }
+      navA.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#'+cur.id));
+      ticking = false;
+    });
+  }, {passive:true});
+
+  totop.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+
+  // 导航横向滚动跟随
+  navA.forEach(a => a.addEventListener('click', () => {
+    const nav = document.getElementById('toc');
+    nav.scrollTo({left: a.offsetLeft - nav.clientWidth/2 + a.clientWidth/2, behavior:'smooth'});
+  }));
+
+  // 键盘：/ 聚焦搜索，Esc 清空
+  document.addEventListener('keydown', e => {
+    if(e.key === '/' && document.activeElement !== search){ e.preventDefault(); search.focus(); }
+    if(e.key === 'Escape'){ search.value=''; restore(); search.blur(); }
+  });
+})();
+</script>
+</body>
+</html>

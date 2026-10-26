@@ -1,0 +1,11 @@
+{
+  "BLOCKED_BY_HOOK": "[red]{BlockingHook}[/red]不让。",
+  "HAND_FULL": "手牌塞不下了……",
+  "NOT_ENOUGH_ENERGY": "我没\n足够的[red]能量[/red]了。",
+  "NOT_ENOUGH_STARS": "我没\n足够的[red]辉星[/red]。",
+  "NO_DRAW": "没牌可抽了。",
+  "NO_LIVING_ALLIES": "我没有\n队友。",
+  "OPEN_EMPTY_DISCARD": "弃牌堆是[red]空的[/red]。",
+  "OPEN_EMPTY_DRAW": "抽牌堆是[red]空的[/red]。",
+  "UNPLAYABLE": "这张牌我\n打不出去。"
+}

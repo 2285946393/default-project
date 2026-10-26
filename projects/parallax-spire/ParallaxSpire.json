@@ -1,0 +1,13 @@
+{
+  "id": "ParallaxSpire",
+  "name": "立体尖塔 · 战斗场景视差",
+  "author": "有花无实",
+  "description": "实验版：战斗背景按图层分层，随鼠标产生远近不同的视差偏移，让场景有深度感。不移动怪物、不碰手牌和 UI，不改战斗规则。",
+  "version": "0.1.1",
+  "min_game_version": "0.111.0",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": false
+}
+

@@ -1,0 +1,1264 @@
+[
+ {
+  "name": "ConversionBasicDevotion1",
+  "len": 236,
+  "fields": [
+   [
+    "_basicValue",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "ConversionBasicDevotion2",
+  "len": 224,
+  "fields": [
+   [
+    "_basicValue",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "ConversionBasicDevotion3",
+  "len": 224,
+  "fields": [
+   [
+    "_basicValue",
+    3.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillAreaRadius1",
+  "len": 212,
+  "fields": [
+   [
+    "_areaRadius",
+    0.35
+   ]
+  ]
+ },
+ {
+  "name": "DrillAreaRadius2",
+  "len": 200,
+  "fields": [
+   [
+    "_areaRadius",
+    0.5
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamage1",
+  "len": 224,
+  "fields": [
+   [
+    "_damage",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamage2",
+  "len": 216,
+  "fields": [
+   [
+    "_damage",
+    16.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamage3",
+  "len": 188,
+  "fields": [
+   [
+    "_damage",
+    4.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamage5",
+  "len": 204,
+  "fields": [
+   [
+    "_damage",
+    25.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamage6",
+  "len": 192,
+  "fields": [
+   [
+    "_damage",
+    900.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamage7",
+  "len": 220,
+  "fields": [
+   [
+    "_damage",
+    450.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamageMultiplier1",
+  "len": 220,
+  "fields": [
+   [
+    "_damageMultiplier",
+    0.35
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamageMultiplier2",
+  "len": 228,
+  "fields": [
+   [
+    "_damageMultiplier",
+    0.5
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamageMultiplier_Combo",
+  "len": 180,
+  "fields": [
+   [
+    "_damageMultiplier",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamageReload1",
+  "len": 208,
+  "fields": [
+   [
+    "_damageReload",
+    0.5
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamageReload2",
+  "len": 236,
+  "fields": [
+   [
+    "_damageReload",
+    0.8
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamageReload3",
+  "len": 208,
+  "fields": [
+   [
+    "_damageReload",
+    1.5
+   ]
+  ]
+ },
+ {
+  "name": "DrillDamageReload_Combo",
+  "len": 204,
+  "fields": [
+   [
+    "_damageReload",
+    0.75
+   ]
+  ]
+ },
+ {
+  "name": "DrillDistance1",
+  "len": 200,
+  "fields": [
+   [
+    "_distance",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillDistance2",
+  "len": 196,
+  "fields": [
+   [
+    "_distance",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillExtraCritChance1",
+  "len": 212,
+  "fields": [
+   [
+    "_extraCritChance",
+    0.05
+   ]
+  ]
+ },
+ {
+  "name": "DrillExtraDamagePerConsecutiveHit1",
+  "len": 268,
+  "fields": [
+   [
+    "_extraDamagePerConsecutiveHit",
+    0.05
+   ]
+  ]
+ },
+ {
+  "name": "DrillExtraDamageToDangers1",
+  "len": 244,
+  "fields": [
+   [
+    "_extraDamageToDangers",
+    0.15
+   ]
+  ]
+ },
+ {
+  "name": "DrillMaxUses1",
+  "len": 200,
+  "fields": [
+   [
+    "_maxUses",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillMaxUses2",
+  "len": 204,
+  "fields": [
+   [
+    "_maxUses",
+    4.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillMaxUses3",
+  "len": 188,
+  "fields": [
+   [
+    "_maxUses",
+    5.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillMaxUses4",
+  "len": 188,
+  "fields": [
+   [
+    "_maxUses",
+    12.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillMaxUses_Combo",
+  "len": 184,
+  "fields": [
+   [
+    "_maxUses",
+    12.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillRechargeAmount1",
+  "len": 208,
+  "fields": [
+   [
+    "_rechargeUses",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillRechargeAmount_Combo",
+  "len": 208,
+  "fields": [
+   [
+    "_rechargeUses",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "DrillRechargeReload1",
+  "len": 236,
+  "fields": [
+   [
+    "_rechargeReload",
+    0.2
+   ]
+  ]
+ },
+ {
+  "name": "ExpertiseCurrentMax1",
+  "len": 232,
+  "fields": [
+   [
+    "_currentCopies",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "ExpertiseCurrentMax2",
+  "len": 220,
+  "fields": [
+   [
+    "_currentCopies",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionDeepInTime1",
+  "len": 224,
+  "fields": [
+   [
+    "_deepInTime",
+    10.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionDeepInTime2",
+  "len": 236,
+  "fields": [
+   [
+    "_deepInTime",
+    5.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionDuration1",
+  "len": 228,
+  "fields": [
+   [
+    "_duration",
+    10.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionDuration2",
+  "len": 208,
+  "fields": [
+   [
+    "_duration",
+    8.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionDuration3",
+  "len": 216,
+  "fields": [
+   [
+    "_duration",
+    10.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionDuration4",
+  "len": 204,
+  "fields": [
+   [
+    "_duration",
+    8.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionTimeBlocks1",
+  "len": 252,
+  "fields": [
+   [
+    "_timeByBlock",
+    0.0
+   ],
+   [
+    "_timeBlocks",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionTimeBlocks2",
+  "len": 240,
+  "fields": [
+   [
+    "_timeByBlock",
+    0.0
+   ],
+   [
+    "_timeBlocks",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "IncursionTimeByBlock1",
+  "len": 208,
+  "fields": [
+   [
+    "_timeByBlock",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "ItemAmount1",
+  "len": 180,
+  "fields": [
+   [
+    "_amount",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "ItemAmount_Combo",
+  "len": 180,
+  "fields": [
+   [
+    "_amount",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "ItemCreateChance1",
+  "len": 208,
+  "fields": [
+   [
+    "_createItemChance",
+    0.015
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitAmount1",
+  "len": 192,
+  "fields": [
+   [
+    "_bitAmount",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitChance1",
+  "len": 212,
+  "fields": [
+   [
+    "_blockBitChance",
+    0.02
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitChance2",
+  "len": 212,
+  "fields": [
+   [
+    "_blockBitChance",
+    0.03
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitChance3",
+  "len": 204,
+  "fields": [
+   [
+    "_blockBitChance",
+    0.02
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitChance4",
+  "len": 200,
+  "fields": [
+   [
+    "_blockBitChance",
+    0.03
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitChance5",
+  "len": 212,
+  "fields": [
+   [
+    "_blockBitChance",
+    0.1
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitChance_Combo",
+  "len": 196,
+  "fields": [
+   [
+    "_blockBitChance",
+    0.02
+   ]
+  ]
+ },
+ {
+  "name": "LevelBitValue1",
+  "len": 216,
+  "fields": [
+   [
+    "_bitValue",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "LevelDeepInBits1",
+  "len": 200,
+  "fields": [
+   [
+    "_deepInBits",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "LevelDeepInBits2",
+  "len": 200,
+  "fields": [
+   [
+    "_deepInBits",
+    3.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenCloneLifetime1",
+  "len": 236,
+  "fields": [
+   [
+    "_chosenCloneLifetime",
+    8.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenCritChance1",
+  "len": 216,
+  "fields": [
+   [
+    "_chosenCritChance",
+    0.1
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenCritDamage1",
+  "len": 228,
+  "fields": [
+   [
+    "_chosenCritDamage",
+    0.75
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenDamage1",
+  "len": 232,
+  "fields": [
+   [
+    "_chosenDamage",
+    20.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenDamage2",
+  "len": 204,
+  "fields": [
+   [
+    "_chosenDamage",
+    150.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenExtraBlocks1",
+  "len": 220,
+  "fields": [
+   [
+    "_chosenExtraBlocks",
+    10.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenReload1",
+  "len": 216,
+  "fields": [
+   [
+    "_chosenReload",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionChosenThrowDistance1",
+  "len": 224,
+  "fields": [
+   [
+    "_chosenThrowDistance",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionHasChosenOne1",
+  "len": 216,
+  "fields": [
+   [
+    "_chosenDamage",
+    0.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize1",
+  "len": 228,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize10",
+  "len": 168,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize11",
+  "len": 164,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize2",
+  "len": 168,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize3",
+  "len": 164,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize4",
+  "len": 164,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize5",
+  "len": 168,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize6",
+  "len": 168,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize7",
+  "len": 168,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize8",
+  "len": 168,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionArmySize9",
+  "len": 164,
+  "fields": [
+   [
+    "_armySize",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage1",
+  "len": 220,
+  "fields": [
+   [
+    "_damage",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage2",
+  "len": 228,
+  "fields": [
+   [
+    "_damage",
+    5.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage3",
+  "len": 228,
+  "fields": [
+   [
+    "_damage",
+    35.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage4",
+  "len": 204,
+  "fields": [
+   [
+    "_damage",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage5",
+  "len": 204,
+  "fields": [
+   [
+    "_damage",
+    10.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage6",
+  "len": 204,
+  "fields": [
+   [
+    "_damage",
+    175.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage7",
+  "len": 192,
+  "fields": [
+   [
+    "_damage",
+    50.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamage8",
+  "len": 188,
+  "fields": [
+   [
+    "_damage",
+    29.9
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamageMultiplier1",
+  "len": 232,
+  "fields": [
+   [
+    "_damageMultiplier",
+    0.15
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamageMultiplier2",
+  "len": 228,
+  "fields": [
+   [
+    "_damageMultiplier",
+    0.25
+   ]
+  ]
+ },
+ {
+  "name": "MinionDamageMultiplier_Combo",
+  "len": 216,
+  "fields": [
+   [
+    "_damageMultiplier",
+    0.2
+   ]
+  ]
+ },
+ {
+  "name": "MinionHasRestingTime1",
+  "len": 204,
+  "fields": [
+   [
+    "_restingTime",
+    0.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionJobBlocks1",
+  "len": 228,
+  "fields": [
+   [
+    "_minimumBlocksBeforeWander",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionJobBlocks2",
+  "len": 228,
+  "fields": [
+   [
+    "_minimumBlocksBeforeWander",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionJobBlocks3",
+  "len": 216,
+  "fields": [
+   [
+    "_minimumBlocksBeforeWander",
+    2.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionReload1",
+  "len": 204,
+  "fields": [
+   [
+    "_actionReload",
+    0.15
+   ]
+  ]
+ },
+ {
+  "name": "MinionReload2",
+  "len": 212,
+  "fields": [
+   [
+    "_actionReload",
+    0.25
+   ]
+  ]
+ },
+ {
+  "name": "MinionReload3",
+  "len": 220,
+  "fields": [
+   [
+    "_actionReload",
+    0.35
+   ]
+  ]
+ },
+ {
+  "name": "MinionReload4",
+  "len": 208,
+  "fields": [
+   [
+    "_actionReload",
+    0.5
+   ]
+  ]
+ },
+ {
+  "name": "MinionSpeed1",
+  "len": 204,
+  "fields": [
+   [
+    "_speed",
+    0.2
+   ]
+  ]
+ },
+ {
+  "name": "MinionSpeed2",
+  "len": 188,
+  "fields": [
+   [
+    "_speed",
+    0.2
+   ]
+  ]
+ },
+ {
+  "name": "MinionWanderLess1",
+  "len": 200,
+  "fields": [
+   [
+    "_restingTime",
+    -1.0
+   ]
+  ]
+ },
+ {
+  "name": "MinionWanderLess2",
+  "len": 200,
+  "fields": [
+   [
+    "_restingTime",
+    -1.0
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCollectionRadius1",
+  "len": 224,
+  "fields": [
+   [
+    "_collectionRadius",
+    0.25
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCollectionRadius_Combo",
+  "len": 180,
+  "fields": [
+   [
+    "_collectionRadius",
+    0.25
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCritChance1",
+  "len": 232,
+  "fields": [
+   [
+    "_critDamage",
+    0.0
+   ],
+   [
+    "_critChance",
+    0.05
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCritChance2",
+  "len": 232,
+  "fields": [
+   [
+    "_critDamage",
+    0.0
+   ],
+   [
+    "_critChance",
+    0.075
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCritChance3",
+  "len": 232,
+  "fields": [
+   [
+    "_critDamage",
+    0.0
+   ],
+   [
+    "_critChance",
+    0.08
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCritChance_Combo",
+  "len": 212,
+  "fields": [
+   [
+    "_critDamage",
+    0.0
+   ],
+   [
+    "_critChance",
+    0.05
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCritDamage1",
+  "len": 200,
+  "fields": [
+   [
+    "_critDamage",
+    0.15
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCritDamage2",
+  "len": 200,
+  "fields": [
+   [
+    "_critDamage",
+    0.25
+   ]
+  ]
+ },
+ {
+  "name": "PlayerCritDamage3",
+  "len": 200,
+  "fields": [
+   [
+    "_critDamage",
+    0.3
+   ]
+  ]
+ },
+ {
+  "name": "PlayerMaxDistance1",
+  "len": 212,
+  "fields": [
+   [
+    "_maxThrowDistance",
+    0.6
+   ]
+  ]
+ },
+ {
+  "name": "PlayerMaxDistance2",
+  "len": 224,
+  "fields": [
+   [
+    "_maxThrowDistance",
+    0.75
+   ]
+  ]
+ },
+ {
+  "name": "PlayerSpeed1",
+  "len": 220,
+  "fields": [
+   [
+    "_playerSpeed",
+    0.2
+   ]
+  ]
+ },
+ {
+  "name": "PlayerSpeed2",
+  "len": 216,
+  "fields": [
+   [
+    "_playerSpeed",
+    0.33
+   ]
+  ]
+ },
+ {
+  "name": "PlayerThrowChargeTime1",
+  "len": 220,
+  "fields": [
+   [
+    "_throwChargeTime",
+    -0.24
+   ]
+  ]
+ },
+ {
+  "name": "PlayerThrowChargeTime2",
+  "len": 216,
+  "fields": [
+   [
+    "_throwChargeTime",
+    -0.18
+   ]
+  ]
+ },
+ {
+  "name": "PlayerThrowChargeTime3",
+  "len": 212,
+  "fields": [
+   [
+    "_throwChargeTime",
+    -0.2
+   ]
+  ]
+ },
+ {
+  "name": "RedirectorSpeed1",
+  "len": 200,
+  "fields": [
+   [
+    "_extraSpeed",
+    0.3
+   ]
+  ]
+ },
+ {
+  "name": "TotemsBoundExtraArea1",
+  "len": 212,
+  "fields": [
+   [
+    "_boundExtraArea",
+    0.25
+   ]
+  ]
+ },
+ {
+  "name": "TotemsBoundExtraDamage1",
+  "len": 236,
+  "fields": [
+   [
+    "_boundExtraDamage",
+    0.5
+   ]
+  ]
+ },
+ {
+  "name": "TotemsBoundExtraDamage2",
+  "len": 220,
+  "fields": [
+   [
+    "_boundExtraDamage",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "TotemsBoundExtraMovement1",
+  "len": 224,
+  "fields": [
+   [
+    "_boundExtraMovement",
+    0.5
+   ]
+  ]
+ },
+ {
+  "name": "TotemsUnlockBound1",
+  "len": 288,
+  "fields": [
+   [
+    "_boundExtraDamage",
+    0.0
+   ],
+   [
+    "_boundExtraMovement",
+    0.0
+   ],
+   [
+    "_boundExtraDistance",
+    0.0
+   ]
+  ]
+ },
+ {
+  "name": "TownCave2BySecond1",
+  "len": 172,
+  "fields": [
+   [
+    "_cave2PerSecond",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "TownCave3BySecond1",
+  "len": 172,
+  "fields": [
+   [
+    "_cave3PerSecond",
+    1.0
+   ]
+  ]
+ },
+ {
+  "name": "TownTentaclesBySecond1",
+  "len": 180,
+  "fields": [
+   [
+    "_tentaclesPerSecond",
+    1.0
+   ]
+  ]
+ }
+]

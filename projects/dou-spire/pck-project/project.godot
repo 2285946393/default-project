@@ -1,0 +1,20 @@
+; ============================================================================
+;  DouSpire **图标包**工程 —— 只用来导出 `DouSpire.icon.pck`。
+;
+;  为什么要单独一个工程：本 mod 平时是 has_pck:false 的纯 dll mod（assets 全是
+;  运行时从磁盘读的散图，能随时改、不用重编）。但**篝火选项的图标走的是 res://**，
+;  没有 pck 就没有 res:// —— 于是只能显示成本体的「克隆」图标（用户："你没改对"）。
+;
+;  ⇒ 单独打一个**只含那一个 png** 的小 pck。故意不并进主工程：
+;    主工程 assets/ 里有 800 多张贴图 + 音乐 + 语音，all_resources 一次会全打进去
+;   （包体爆炸，而且 assets/music 里那几首是**别人的歌**，打进去就是侵权）。
+;
+;  ⚠️ config/features 必须跟游戏一致的 Godot 大版本（4.5）。
+;     Godot 版本比游戏新 → 游戏加载不了这个 pck。
+; ============================================================================
+config_version=5
+
+[application]
+
+config/name="DouSpireIconPack"
+config/features=PackedStringArray("4.5", "Forward Plus")

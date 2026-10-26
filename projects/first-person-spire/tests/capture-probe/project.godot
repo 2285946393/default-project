@@ -1,0 +1,8 @@
+config_version=5
+
+[application]
+config/name="CaptureProbe"
+run/main_scene="res://probe.tscn"
+
+[rendering]
+renderer/rendering_method="mobile"

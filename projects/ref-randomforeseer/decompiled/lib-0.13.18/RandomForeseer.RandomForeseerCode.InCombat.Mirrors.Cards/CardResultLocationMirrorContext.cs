@@ -1,0 +1,14 @@
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
+
+namespace RandomForeseer.RandomForeseerCode.InCombat.Mirrors.Cards;
+
+internal sealed class CardResultLocationMirrorContext : CombatCardMirrorContext<CardModel>
+{
+	public required CardLocation BaseResult { get; init; }
+
+	protected override AbstractModel GetDispatchSource(CardModel _)
+	{
+		return (AbstractModel)(object)base.OriginalCard;
+	}
+}

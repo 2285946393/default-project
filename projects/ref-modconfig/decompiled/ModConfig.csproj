@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ModConfig</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>netcoreapp9.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>11.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="ModConfig.localization.en.json" />
+    <None Remove="ModConfig.localization.zhs.json" />
+    <EmbeddedResource Include="ModConfig.localization.en.json" LogicalName="ModConfig.localization.en.json" />
+    <EmbeddedResource Include="ModConfig.localization.zhs.json" LogicalName="ModConfig.localization.zhs.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GodotSharp" />
+    <Reference Include="sts2" />
+  </ItemGroup>
+</Project>

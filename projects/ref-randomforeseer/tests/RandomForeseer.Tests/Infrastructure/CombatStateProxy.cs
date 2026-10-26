@@ -1,0 +1,40 @@
+using System.Reflection;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
+
+namespace RandomForeseer.Tests.Infrastructure;
+
+/// <summary>Provides the subset of <see cref="ICombatState"/> required by headless combat tests.</summary>
+/// <remarks>
+/// DispatchProxy requires a public, non-sealed type. Unsupported members throw rather than return defaults;
+/// extend this proxy explicitly when a test needs another member. Collection setters invoke the owning fixture's
+/// arrangement guard, so configure them before prediction starts. Raw model references are not write-protected.
+/// </remarks>
+public class CombatStateProxy : DispatchProxy
+{
+    internal Action EnsureArrange { get; set; } = () => { };
+    internal IReadOnlyList<Creature> Allies { get; set { EnsureArrange(); field = value; } } = [];
+    internal IReadOnlyList<Creature> Enemies { get; set { EnsureArrange(); field = value; } } = [];
+    /// <summary>Gets or configures additional source listeners beyond creature Powers.</summary>
+    /// <remarks>Materializes the input during arrangement; the setter rejects changes after fixture startup.</remarks>
+    internal IEnumerable<AbstractModel> Listeners { get; set { EnsureArrange(); field = value.ToArray(); } } = [];
+    internal IEnumerable<AbstractModel> HookListeners =>
+        Listeners.Concat(Allies.Concat(Enemies).SelectMany(creature => creature.Powers)).Distinct();
+
+    protected override object? Invoke(MethodInfo? targetMethod, object?[]? args) => targetMethod!.Name switch
+    {
+        "get_Allies" => Allies,
+        "get_Enemies" => Enemies,
+        "get_Creatures" => Allies.Concat(Enemies).ToArray(),
+        "get_Players" => Allies.Select(creature => creature.Player!).ToArray(),
+        "get_RunState" => NullRunState.Instance,
+        "IterateHookListeners" => HookListeners,
+        "get_RoundNumber" => 1,
+        "get_CurrentSide" => CombatSide.Player,
+        "GetOpponentsOf" => ((Creature)args![0]!).Side == CombatSide.Player ? Enemies : Allies,
+        "GetPlayer" => Allies.Select(creature => creature.Player).Single(player => player!.NetId == (ulong)args![0]!),
+        _ => throw new NotSupportedException($"Combat test fixture does not implement {targetMethod.Name}.")
+    };
+}

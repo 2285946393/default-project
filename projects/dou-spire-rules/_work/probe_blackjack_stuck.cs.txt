@@ -1,0 +1,158 @@
+// 复现：21 点"出不来牌"（卡住）到底卡在哪。
+//
+// 背景：`BlackjackSelfTest` 的 2 万局自战**每局都 new 一个 BlackjackGame**（新牌靴），
+// 而游戏里 `_game` 是**开桌时建一次、之后一局局复用**的（`StartRound` 里 `_seed++` 重新 new）。
+// 所以自检覆盖不到"牌靴反复重洗"和"UI 按钮真实调用序列"这两条路。
+//
+// 这个探针照 UI（DouSpireBlackjackTable）的真实调用方式跑，专门找**卡住不动**的局面：
+//   卡住 = Phase 还是 PlayerTurn，但 TurnSeat 指向一个**已经不需要动作**的座位，
+//          于是 UI 里"轮到我"永远不成立、也永远不会推进 —— 表现就是"出不来牌"。
+
+using System.Text;
+using DouSpireRules;
+
+var sb = new StringBuilder();
+
+// ══════════════ 一、UI 真实序列：一个 game 连打多局 ══════════════
+
+int stuck = 0, played = 0, shoeIssues = 0;
+string firstStuck = "";
+
+for (var seed = 0; seed < 4000; seed++)
+{
+    // UI 每局都是 new（见 StartRound），但**种子连着涨**、且模拟"连打"的观感
+    var g = new BlackjackGame(3, seed);
+    for (var s = 0; s < 3; s++) { g.Seats[s].IsAi = s != 0; }
+    for (var s = 0; s < 3; s++) g.PlaceBet(s, 100);
+
+    g.Deal();
+    played++;
+
+    // 玩家座位 0 用 UI 按钮的三种走法轮着来（Hit 主路径 / Stand / 偶尔 Double-Split）
+    var actions = 0;
+    while (g.Phase == BlackjackGame.BjPhase.PlayerTurn)
+    {
+        if (++actions > 300) { stuck++; if (firstStuck.Length == 0) firstStuck = Describe(g, seed); break; }
+
+        var seat = g.TurnSeat;
+
+        // ★ 关键：TurnSeat == -1 但 Phase 还是 PlayerTurn = 已经卡死（没人推进）
+        if (seat < 0) { stuck++; if (firstStuck.Length == 0) firstStuck = Describe(g, seed); break; }
+        if (seat >= g.Seats.Count) { stuck++; if (firstStuck.Length == 0) firstStuck = Describe(g, seed); break; }
+
+        var hand = g.Seats[seat].Current;
+        var move = BlackjackAi.Decide(hand, g.DealerUpCard, g.CanSplit(9999), g.CanDouble(9999));
+        if (!g.Apply(move, 9999))
+        {
+            // UI 的兜底：做不了就 Stand。**如果 Stand 也返回 false，就没人推进了**
+            if (!g.Apply(BlackjackGame.BjMove.Stand, 9999))
+            {
+                stuck++;
+                if (firstStuck.Length == 0)
+                    firstStuck = Describe(g, seed) + $"  ← 连 Stand 都被拒（move={move}）";
+                break;
+            }
+        }
+    }
+
+    // 牌靴边界：打完这局，看有没有出现"重洗后位置不对"
+    var left = g.ShoeLeft;
+    if (left < 0f || left > 1f) shoeIssues++;
+}
+
+sb.AppendLine("── 一、UI 真实序列（4000 局，玩家座位用基本策略 + Stand 兜底）──");
+sb.AppendLine($"   打完 {played} 局，卡死 {stuck} 局，牌靴越界 {shoeIssues} 次");
+if (firstStuck.Length > 0) sb.AppendLine("   首个卡死现场：\n" + firstStuck);
+
+// ══════════════ 二、死盯"庄家偷看 + 玩家全黑杰克"的边界 ══════════════
+
+var peekStuck = 0;
+string peekDetail = "";
+for (var seed = 0; seed < 200000; seed++)
+{
+    var g = new BlackjackGame(3, seed);
+    for (var s = 0; s < 3; s++) { g.Seats[s].IsAi = s != 0; g.PlaceBet(s, 100); }
+    g.Deal();
+
+    // Deal() 里如果庄家偷看成立（明牌 A/10 且底牌凑 21），应当直接 Settled。
+    // 反例：DealerBlackjack 为真但 Phase 没进 Settled → UI 会停在 PlayerTurn 空等。
+    if (g.DealerBlackjack && g.Phase != BlackjackGame.BjPhase.Settled)
+    {
+        peekStuck++;
+        if (peekDetail.Length == 0)
+            peekDetail = $"seed={seed} 庄家={g.Dealer} 明牌={g.DealerUpCard} Phase={g.Phase} TurnSeat={g.TurnSeat}";
+    }
+}
+sb.AppendLine();
+sb.AppendLine("── 二、庄家偷看：黑杰克必须当场结算（20 万局）──");
+sb.AppendLine($"   黑杰克却没结算：{peekStuck} 局");
+if (peekDetail.Length > 0) sb.AppendLine("   首个：\n   " + peekDetail);
+
+// ══════════════ 三、分牌 A 锁死那手之后，座位会不会推进 ══════════════
+
+var splitStuck = 0;
+string splitDetail = "";
+for (var seed = 0; seed < 200000; seed++)
+{
+    var g = new BlackjackGame(3, seed);
+    for (var s = 0; s < 3; s++) { g.Seats[s].IsAi = s != 0; g.PlaceBet(s, 100); }
+    g.Deal();
+    if (g.Phase != BlackjackGame.BjPhase.PlayerTurn || g.TurnSeat < 0) continue;
+    if (!g.CanSplit(9999)) continue;
+
+    g.Apply(BlackjackGame.BjMove.Split, 9999);
+
+    // 分完牌，必须满足：要么还在 PlayerTurn 且 TurnSeat 是一个**真需要动作**的座位，
+    // 要么已经推进（TurnSeat 变了 / 进 DealerTurn / Settled）。不能悬着。
+    if (g.Phase == BlackjackGame.BjPhase.PlayerTurn && g.TurnSeat >= 0)
+    {
+        var cur = g.Seats[g.TurnSeat].Current;
+        if (cur.IsDone)
+        {
+            splitStuck++;
+            if (splitDetail.Length == 0)
+                splitDetail = $"seed={seed} TurnSeat={g.TurnSeat} 那手={cur} IsDone={cur.IsDone}";
+        }
+    }
+}
+sb.AppendLine();
+sb.AppendLine("── 三、分牌后：TurnSeat 不能指向已经打完的手（20 万局）──");
+sb.AppendLine($"   指向死手：{splitStuck} 次");
+if (splitDetail.Length > 0) sb.AppendLine("   首个：\n   " + splitDetail);
+
+// ══════════════ 四、加倍边界：钱刚好够 / 不够 ══════════════
+
+var dblBad = 0;
+for (var seed = 0; seed < 100000; seed++)
+{
+    var g = new BlackjackGame(1, seed);
+    g.PlaceBet(0, 100);
+    g.Deal();
+    if (g.Phase != BlackjackGame.BjPhase.PlayerTurn || g.TurnSeat != 0) continue;
+
+    // purse 正好 = 注码 → 应该允许加倍
+    var can = g.CanDouble(100);
+    var before = g.Seats[0].Current.Bet;
+    var ok = g.Apply(BlackjackGame.BjMove.Double, 100);
+    if (can != ok) dblBad++;
+    if (ok && g.Seats[0].Hands[0].Bet != before * 2) dblBad++;
+}
+sb.AppendLine();
+sb.AppendLine("── 四、加倍：CanDouble(100) 与 Apply 必须一致（10 万局）──");
+sb.AppendLine($"   不一致：{dblBad} 次");
+
+Console.WriteLine(sb.ToString());
+
+static string Describe(BlackjackGame g, int seed)
+{
+    var parts = new List<string>();
+    for (var s = 0; s < g.Seats.Count; s++)
+    {
+        var seat = g.Seats[s];
+        var hands = string.Join(" | ", seat.Hands.Select((h, i) =>
+            $"[{i}{(i == seat.ActiveHand ? "*" : "")}]{h} done={h.IsDone}"));
+        parts.Add($"    座位{s}: {hands}");
+    }
+    return $"   seed={seed} Phase={g.Phase} TurnSeat={g.TurnSeat} 庄家={g.Dealer} 明牌={g.DealerUpCard}\n"
+           + string.Join("\n", parts);
+}

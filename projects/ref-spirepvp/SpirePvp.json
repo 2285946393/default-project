@@ -1,0 +1,15 @@
+{
+  "id": "SpirePvp",
+  "name": "Spire PvP / 尖塔决斗",
+  "author": "SpirePvp",
+  "description": "双人 PvP：10/15/20 张选牌与现开套牌；可调整生命、格挡、召唤、受到灾厄及中毒倍率，切换壁垒。普通爬塔 Boss 后 PvP 暂时停用。",
+  "version": "0.2.5",
+  "has_pck": false,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [{ "id": "BaseLib", "min_version": "3.4.7" }]
+}
+
+
+

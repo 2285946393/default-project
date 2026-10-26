@@ -1,0 +1,289 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+    <Import Project=".\local.props" Condition="Exists('.\local.props')"/>
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>13.0</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <RootNamespace>DouSpire</RootNamespace>
+        <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
+        <PathMap>$(AppOutputBase)=.\</PathMap>
+        <NoWarn>$(NoWarn);MSB3270;CS0436</NoWarn>
+
+        <!-- 纯逻辑 mod：界面全用 C# 代码搭（照 quest-spire 的 UiKit/QuestPanel 套路），
+             没有 .tscn / 贴图，所以不需要导出 pck。产物只有 dll + json。 -->
+        <RunPckExport>false</RunPckExport>
+        <Sts2Dir Condition="'$(Sts2Dir)' == ''">$(MSBuildProgramFiles32)\Steam\steamapps\common\Slay the Spire 2</Sts2Dir>
+        <Sts2DataDir Condition="'$(Sts2DataDir)' == ''">$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
+
+        <!-- ============================================================
+             ★ 2026-10-09：**本地开发版改名**（默认 DouSpireDev）。
+             为什么：工坊订阅版和本地开发版的 mod id 都是 `DouSpire` ——
+             游戏不允许两个同名/同 id 的 mod 共存，而用户要「订工坊版和别人联机」。
+             所以本地开发版整条身份链改成 DouSpireDev：
+               manifest（DouSpireDev.json）/ dll（DouSpireDev.dll）/
+               部署目录（mods\DouSpireDev）/ Entry.ModId / 网络 opcode 命名空间。
+
+             ★ 要打**工坊包**时，用这个（会变回工坊身份、部署回 mods\DouSpire）：
+                 dotnet build -c Debug -p:ModName=DouSpire
+             见 tools/build-workshop.sh。
+
+             ⚠️ 副作用（都是预期）：① 设置改存 mod_configs\DouSpireDev.cfg，旧的 DouSpire.cfg 不继承；
+             ② 网络 opcode 命名空间跟着 ModId 走 ⇒ **开发版不能和工坊版玩家联机**（要联机请用工坊版）。
+             ============================================================ -->
+        <ModName Condition="'$(ModName)' == ''">DouSpireDev</ModName>
+        <AssemblyName>$(ModName)</AssemblyName>
+        <!-- ModId 走同一份事实来源：只有 ModName=DouSpireDev 时才定义 DOUSPIRE_DEV（见 Entry.cs） -->
+        <DefineConstants Condition="'$(ModName)' == 'DouSpireDev'">$(DefineConstants);DOUSPIRE_DEV</DefineConstants>
+
+        <ModOutputDir>$(Sts2Dir)\mods\$(ModName)\</ModOutputDir>
+        <RitsuLibDeployDir Condition="'$(RitsuLibDeployDir)' == ''">$(Sts2Dir)\mods\STS2-RitsuLib</RitsuLibDeployDir>
+        <CopyModOnBuild Condition="'$(CopyModOnBuild)' == ''">true</CopyModOnBuild>
+        <!-- 前置 BaseLib（创意工坊 3737335127）：提供设置页等零件。
+             Private=False = 不把它的 dll 复制进我们的 mod（游戏从它自己的目录加载）。 -->
+        <BaseLibPath Condition="'$(BaseLibPath)' == ''">$(Sts2Dir)\..\..\workshop\content\2868840\3737335127\BaseLib\BaseLib.dll</BaseLibPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Krafs.Publicizer" Version="2.2.1" PrivateAssets="all"/>
+        <PackageReference Include="STS2.RitsuLib" Version="0.6.6" GeneratePathProperty="true"/>
+        <!-- DouZero AI（创意工坊致谢：kwai/DouZero，Apache-2.0）。CPU 推理，毫秒级。 -->
+        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.19.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Publicize Include="sts2" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- ⚠️ Private=False：用**游戏自带**那份 0Harmony，别再复制一份进 mods（两份会打架）。 -->
+        <Reference Include="0Harmony" HintPath="$(Sts2DataDir)\0Harmony.dll" Private="False"/>
+        <Reference Include="sts2" HintPath="$(Sts2DataDir)\sts2.dll" Private="True"/>
+        <Reference Include="Steamworks.NET" HintPath="$(Sts2DataDir)\Steamworks.NET.dll" Private="True"/>
+        <Reference Include="BaseLib" HintPath="$(BaseLibPath)" Private="False" Condition="Exists('$(BaseLibPath)')"/>
+    </ItemGroup>
+
+    <!-- ============================================================
+         规则内核：**直接链接原型工程的源码**，不复制一份。
+         好处：改一处两边同时生效，永远不会出现"原型修好了、mod 里还是旧的"这种鬼事。
+         这些文件是纯 C#（namespace DouSpireRules，无任何依赖），原样编进本 mod 的 dll。
+         唯一的隐含约定：本工程必须有 ImplicitUsings（上面已开）——那几个文件没写 using。
+         只链规则文件，**不链** Program.cs / TextTable.cs / Simulation.cs / RlcardCrossCheck.cs /
+         BidirectionalCrossCheck.cs（那些是控制台专用，带 Main 和 Console，进 mod 会打架）。
+         ============================================================ -->
+    <ItemGroup>
+        <Compile Include="..\dou-spire-rules\Cards.cs" Link="Rules\Cards.cs"/>
+        <Compile Include="..\dou-spire-rules\Combo.cs" Link="Rules\Combo.cs"/>
+        <Compile Include="..\dou-spire-rules\ComboJudge.cs" Link="Rules\ComboJudge.cs"/>
+        <Compile Include="..\dou-spire-rules\Game\GameState.cs" Link="Rules\GameState.cs"/>
+        <Compile Include="..\dou-spire-rules\Game\MoveGenerator.cs" Link="Rules\MoveGenerator.cs"/>
+        <Compile Include="..\dou-spire-rules\Game\RuleAi.cs" Link="Rules\RuleAi.cs"/>
+
+        <!-- 德州扑克内核（玩法二，2026-10-09）。同样是纯 C#、零依赖。
+             ⚠️ **PokerCrossCheck.cs 不在这里** —— 那个是控制台自检（命令行加 poker 参数跑），
+                带 Console 输出，进 mod 没意义。
+             这 4 个文件是德州桌（DouSpirePokerTable）唯一的规则来源 ——
+             桌面层一行规则都不写，钱算得对不对全看它们。 -->
+        <Compile Include="..\dou-spire-rules\Poker\PokerCard.cs" Link="Rules\Poker\PokerCard.cs"/>
+        <Compile Include="..\dou-spire-rules\Poker\HandEval.cs" Link="Rules\Poker\HandEval.cs"/>
+        <Compile Include="..\dou-spire-rules\Poker\HoldemGame.cs" Link="Rules\Poker\HoldemGame.cs"/>
+        <Compile Include="..\dou-spire-rules\Poker\PokerAi.cs" Link="Rules\Poker\PokerAi.cs"/>
+
+        <!-- 21 点内核（玩法三，2026-10-11）。纯 C#、零依赖，规则全在这里，
+             桌面层（DouSpireBlackjackTable）一行规则都不写。
+             ⚠️ **BlackjackSelfTest.cs 不在这里** —— 那是控制台自检（命令行加 bj 参数跑），
+                带 Console 输出，进 mod 没意义。 -->
+        <Compile Include="..\dou-spire-rules\Blackjack\BlackjackGame.cs" Link="Rules\Blackjack\BlackjackGame.cs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+        <EmbeddedResource Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+        <None Remove=".godot/**;.idea/**;.vs/**;bin/**;obj/**"/>
+
+        <None Include="DouSpire.json"/>
+        <None Include="project.godot"/>
+        <None Include=".gitignore"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="local.props" Condition="Exists('local.props')"/>
+    </ItemGroup>
+
+    <Target Name="ValidateSts2GameInstall" BeforeTargets="ResolveAssemblyReferences">
+        <Error Condition="!Exists('$(Sts2DataDir)\sts2.dll')" Text="Could not find sts2.dll under '$(Sts2DataDir)'. Copy local.props.template to local.props and set Sts2Dir/Sts2DataDir for your local game install."/>
+    </Target>
+
+    <Target Name="CopyMod" AfterTargets="Build" DependsOnTargets="SyncManifestDependencies"
+            Condition="'$(CopyModOnBuild)' != 'false'">
+        <MakeDir Directories="$(ModOutputDir)"/>
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModOutputDir)"/>
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\$(ModName).json" DestinationFolder="$(ModOutputDir)"/>
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\$(ModName).pck" DestinationFolder="$(ModOutputDir)"
+              Condition="Exists('$(MSBuildProjectDirectory)\$(ModName).pck')"/>
+    </Target>
+
+    <!-- ============================================================
+         素材自动部署：把工程里 assets\ 下的图原样拷到 mods\DouSpire\assets\。
+         运行时是按**文件系统路径**读这个目录的（mod 没打 pck），所以
+         美术只管往 assets\ 里丢图 → 编译一次 → 游戏里立刻生效，不用重启。
+         .md 只是给人看的清单，不往 mod 目录里拷（那边是发创意工坊的）。
+         _orig\ 是**未压缩的原图**（55MB），每个文件在正式目录里都有小几倍的处理版，
+         代码里没有任何一处引用它 —— 既不进 mod 目录，也不进工坊包。
+         ============================================================ -->
+    <Target Name="CopyAssets" AfterTargets="Build"
+            Condition="'$(CopyModOnBuild)' != 'false' and Exists('$(MSBuildProjectDirectory)\assets')">
+        <ItemGroup>
+            <_DouSpireArt Include="$(MSBuildProjectDirectory)\assets\**\*.*"
+                          Exclude="$(MSBuildProjectDirectory)\assets\**\*.md;$(MSBuildProjectDirectory)\assets\_orig\**\*.*"/>
+        </ItemGroup>
+        <MakeDir Directories="$(ModOutputDir)assets"/>
+        <Copy SourceFiles="@(_DouSpireArt)"
+              DestinationFiles="@(_DouSpireArt->'$(ModOutputDir)assets\%(RecursiveDir)%(Filename)%(Extension)')"
+              SkipUnchangedFiles="true"/>
+    </Target>
+
+    <!-- ============================================================
+         DouZero AI 部署：模型（_douzero\onnx\*.onnx）+ ONNX Runtime 原生 dll。
+         模型源：HuggingFace palemoky/douzero-baselines（官方 baselines 的 ONNX 转换，
+         Apache-2.0）。运行时 DouZeroAi.cs 用 NativeLibrary.Load 显式挂原生库，
+         托管 dll（Microsoft.ML.OnnxRuntime.dll）也从 mod 根目录显式 Load ——
+         不依赖游戏的程序集解析顺序，谁先谁后都不会挂。
+         ============================================================ -->
+    <Target Name="CopyDouZero" AfterTargets="Build"
+            Condition="'$(CopyModOnBuild)' != 'false'">
+        <MakeDir Directories="$(ModOutputDir)onnx"/>
+        <ItemGroup>
+            <_DouZeroModels Include="$(MSBuildProjectDirectory)\_douzero\onnx\*.onnx"/>
+            <_OrtNative Include="$(OutDir)runtimes\win-x64\native\*.dll"/>
+            <_OrtManaged Include="$(OutDir)Microsoft.ML.OnnxRuntime.dll"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(_DouZeroModels)" DestinationFolder="$(ModOutputDir)onnx" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(_OrtNative)" DestinationFolder="$(ModOutputDir)" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(_OrtManaged)" DestinationFolder="$(ModOutputDir)" SkipUnchangedFiles="true"/>
+    </Target>
+
+    <!-- ============================================================
+         依赖版本同步：把 manifest 里 dependencies[STS2-RitsuLib].version
+         改成**游戏里实际装的那个版本**。
+
+         ⚠️ 2026-10-08 修过两个问题，都别再犯：
+
+         ① **时机**：原来写 `AfterTargets="Build" BeforeTargets="CopyMod"`。
+            两个 target 都挂在 Build 后面时，MSBuild 按**声明顺序**跑，
+            而这个 target 声明在 CopyMod **之后** → 实际是
+            `Build → 拷旧 json 到 mods/ → 才改源码 json`，
+            改完没人再拷一遍 → **部署那份永远是旧的**。
+            现在改成由 CopyMod `DependsOnTargets` 显式依赖，顺序 100% 确定。
+
+         ② **版本号来源**：csproj 里引用写的是 `Version="*"`（永远取最新），
+            NuGet 缓存里会躺好几个版本（0.6.2/0.6.5/0.6.6/0.6.7…），
+            `$(PkgSTS2_RitsuLib)` 指向**最新**那个 —— 不是游戏里装的那个。
+            结果：人写 0.6.6，它改成 0.6.7，而游戏里装的是 0.6.6 → 声明和现实又对不上。
+            现在改成**优先读游戏目录里那份 manifest 的真实版本**，
+            读不到才退回 NuGet 路径（那时也没更好的办法了）。
+
+         ⚠️ **但"读实装版本"这个策略本身有个陷阱**（2026-10-08 晚补，重要）：
+            manifest 里这个字段是 **`min_version`（下限）**，不是"精确钉版"。
+            游戏 ModManager.cs:916 的判断是
+                `installedVersion.CompareTo(requiredMinVersion) < 0` → **硬失败**，
+            mod 状态置 `Failed`（`MOD_ERROR.DEPENDENCY_VERSION_UNSUPPORTED`），
+            整个 mod 拒绝加载。
+            所以**写"实装的最高版本"= 把所有还没更新的玩家拦在门外**：
+            我们写 0.6.7，玩家装着 0.6.6 → 直接加载失败。
+            写 **0.6.6** 才是最稳的：0.6.6 玩家过、0.6.7 玩家也过
+            （`0.6.7.CompareTo("0.6.6") >= 0`）。
+            → 这个目标应该钉**已知能跑的最低版本**，不是"实装的最新版本"。
+            留个 TODO：把逻辑改成"取 ci 里记录的最低兼容版本"，而不是自动跟随实装版本。
+         ============================================================ -->
+    <!-- ── 实现 ────────────────────────────────────────────────────────
+         ⚠️ 这里**不能用 $1 反向引用**：MSBuild 会先把 ${1} / $1 当成自己的
+         属性语法展开成空串，再交给正则引擎；配合原来的 (?s) 让 .*? 跨行，
+         会把整个 manifest 吞掉写坏（2026-10-08 真的写坏过一次）。
+         改成：用唯一占位符替换 → 数占位符个数 → 必须**恰好 1 个**才落盘。
+         ================================================================ -->
+    <Target Name="SyncManifestDependencies" Condition="'$(DesignTimeBuild)' != 'true'">
+        <PropertyGroup>
+            <ManifestFile>$(MSBuildProjectDirectory)\$(MSBuildProjectName).json</ManifestFile>
+
+            <!-- 当前 manifest 里已经写的值（视为"已知能跑的下限"） -->
+            <_CurJson>$([System.IO.File]::ReadAllText('$(ManifestFile)'))</_CurJson>
+            <_CurPat>&quot;id&quot;\s*:\s*&quot;STS2-RitsuLib&quot;\s*,\s*&quot;(?:min_)?version&quot;\s*:\s*&quot;([^&quot;]+)&quot;</_CurPat>
+            <_FromManifest>$([System.Text.RegularExpressions.Regex]::Match('$(_CurJson)', '$(_CurPat)').Groups[1].Value)</_FromManifest>
+
+            <!-- 游戏目录里实装的那个版本 -->
+            <_RitsuManifest Condition="'$(RitsuLibDeployDir)' != ''">$(RitsuLibDeployDir)\mod_manifest.json</_RitsuManifest>
+            <_RitsuJson Condition="Exists('$(_RitsuManifest)')">$([System.IO.File]::ReadAllText('$(_RitsuManifest)'))</_RitsuJson>
+            <_RitsuVerPattern>&quot;version&quot;\s*:\s*&quot;([^&quot;]+)&quot;</_RitsuVerPattern>
+            <_FromGame Condition="'$(_RitsuJson)' != ''">$([System.Text.RegularExpressions.Regex]::Match('$(_RitsuJson)', '$(_RitsuVerPattern)').Groups[1].Value)</_FromGame>
+
+            <_FromNuget>$([System.IO.Path]::GetFileName('$(PkgSTS2_RitsuLib)'))</_FromNuget>
+        </PropertyGroup>
+
+        <!-- ★ 关键：这个字段是 min_version（下限），不是精确钉版。
+             写"实装最新版"会**把还没更新的玩家全部拦在门外**
+             —— 游戏 ModManager.cs:916 `installed.CompareTo(required) < 0` 直接 Failed。
+             所以取 **manifest 现值 与 实装值 里较小的那个**：
+               · 现值 < 实装（玩家已在旧版上验过能跑）→ 保持现值不动 ✔
+               · 现值 > 实装（现值写高了会拦人）      → 降到实装值      ✔
+             Version 属性按 System.Version 语义比较（0.6.6 < 0.6.7 成立）。 -->
+        <PropertyGroup>
+            <_Req Condition="'$(_FromManifest)' != ''">$(_FromManifest)</_Req>
+            <_Req Condition="'$(_Req)' == ''">$(_FromGame)</_Req>
+            <_Req Condition="'$(_Req)' == ''">$(_FromNuget)</_Req>
+
+            <!-- 先按"取小"定默认：只有实装值更小才降。
+                 ⚠️ 踩过两个坑：
+                  (1) [System.Version]::Parse() 的返回值在 MSBuild 里被当成字符串，
+                      不能链式 .CompareTo() → Invalid cast from String to Version；
+                  (2) .NET Framework / MSBuild 里没有 Version.Compare(a,b) 静态方法
+                      → Method not found。
+                 可用的只有 Parse 出来的实例方法 CompareTo，所以必须拆到三个属性：
+                   _MFver / _GMver 各自 Parse → _Lower 用 .CompareTo() 实例调用。
+                 返回语义：manifest 更小 → -1（保持不动）；manifest 更大 → 1（要降到实装值）。 -->
+            <_MFver Condition="'$(_FromManifest)' != ''">$([System.Version]::Parse('$(_FromManifest)'))</_MFver>
+            <_GMver Condition="'$(_FromGame)' != ''">$([System.Version]::Parse('$(_FromGame)'))</_GMver>
+            <_Lower Condition="'$(_MFver)' != '' and '$(_GMver)' != ''">$(_MFver.CompareTo($(_GMver)))</_Lower>
+        </PropertyGroup>
+
+        <PropertyGroup>
+            <RitsuLibVersion Condition="'$(_Lower)' == '1'">$(_FromGame)</RitsuLibVersion>
+            <RitsuLibVersion Condition="'$(RitsuLibVersion)' == ''">$(_Req)</RitsuLibVersion>
+            <RitsuLibVersionSource Condition="'$(_Lower)' == '1'">实装更低，降到 $(_FromGame)</RitsuLibVersionSource>
+            <RitsuLibVersionSource Condition="'$(RitsuLibVersionSource)' == ''">manifest 现值（$(_FromManifest)，未被抬高）</RitsuLibVersionSource>
+        </PropertyGroup>
+
+        <Warning Condition="'$(RitsuLibVersion)' == ''"
+                 Text="SyncManifestDependencies: 拿不到 RitsuLib 版本，manifest 未同步。" />
+
+        <PropertyGroup Condition="'$(RitsuLibVersion)' != ''">
+            <_Json>$([System.IO.File]::ReadAllText('$(ManifestFile)'))</_Json>
+            <_Pat>&quot;id&quot;\s*:\s*&quot;STS2-RitsuLib&quot;\s*,\s*&quot;(?:min_)?version&quot;\s*:\s*&quot;[^&quot;]*&quot;</_Pat>
+            <_Marked>$([System.Text.RegularExpressions.Regex]::Replace('$(_Json)', '$(_Pat)', '@@RITSULIB_DEP@@'))</_Marked>
+            <_Hits>$([System.Text.RegularExpressions.Regex]::Matches('$(_Marked)', '@@RITSULIB_DEP@@').Count)</_Hits>
+        </PropertyGroup>
+
+        <Warning Condition="'$(_Hits)' != '1' and '$(RitsuLibVersion)' != ''"
+                 Text="SyncManifestDependencies: STS2-RitsuLib 依赖匹配到 $(_Hits) 处（应为 1），跳过改写以免写坏 manifest。" />
+
+        <PropertyGroup Condition="'$(_Hits)' == '1'">
+            <!-- 缩进：这段替换从 "id" 的那个引号开始匹配，所以第一行沿用源码里原有的
+                 6 个空格缩进；换行后必须手动补同样 6 个空格，第二行才不会缩进不齐。 -->
+            <_Rep>&quot;id&quot;: &quot;STS2-RitsuLib&quot;,&#10;      &quot;min_version&quot;: &quot;$(RitsuLibVersion)&quot;</_Rep>
+            <_Updated>$(_Marked.Replace('@@RITSULIB_DEP@@', '$(_Rep)'))</_Updated>
+            <_Changed Condition="'$(_Updated)' != '$(_Json)'">true</_Changed>
+        </PropertyGroup>
+
+        <WriteLinesToFile Condition="'$(_Changed)' == 'true'"
+                          File="$(ManifestFile)"
+                          Lines="$(_Updated)"
+                          Overwrite="true"
+                          WriteOnlyWhenDifferent="true" />
+
+        <Message Condition="'$(_Changed)' == 'true'" Importance="high"
+                 Text="SyncManifestDependencies: RitsuLib 依赖已同步为 $(RitsuLibVersion)（来源：$(RitsuLibVersionSource)）" />
+    </Target>
+</Project>

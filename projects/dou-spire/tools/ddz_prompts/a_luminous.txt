@@ -1,0 +1,72 @@
+IMPORTANT ABOUT THE REFERENCE IMAGE: the attached green table is for a DIFFERENT game (Texas hold'em). Use it ONLY for the oval silhouette and overall proportions. Its engraved layout is WRONG for this asset -- wherever the text below disagrees with the reference (especially the row of card recesses near the top: this asset needs exactly FOUR, the reference shows five), obey the TEXT, never the reference.
+
+A wide 16:9 game asset: the complete top surface of an ornate round card table, seen straight
+down from directly overhead in a perfectly flat orthographic view.
+
+SIZE IS RIGID: the oval's left and
+right edges touch the frame sides (width exactly 90% of the frame), its top and bottom edges
+come within about 5% of the frame edges (height exactly 89% of the frame). The oval's
+width-to-height ratio is always about 1.8 : 1. Do not shrink the table, do not add margins,
+do not crop it.
+
+MATERIALS.
+The playing surface in the middle is deep midnight-indigo woven cloth (#232A4A) with a very fine
+even weave -- one flat solid colour, entirely empty, no pattern, no lines, no gradient and no
+marks across it. Around it runs a broad ring of dark polished lacquer (#151A30) whose grain
+follows the curve of the oval. Set into that band is a thick inlaid ring of polished gold (#D9A441)
+whose upper-left arc catches a neon-cyan light (#7FE3FF) and whose lower-right arc sinks into a
+warm magenta shadow (#8A3A6E), engraved all the way round with a repeating row of small abstract
+angular marks -- purely decorative, absolutely not letters and not numbers. At the four extreme
+points of the oval sit four cast-gold shield bosses with shallow engraved rosettes. Gold and
+lacquer both read warm and glossy, never chrome.
+
+LAYOUT (shallow engraved outlines only; keep every field completely empty).
+Draw this exact layout on every style -- its positions must never change. Centre the table at
+(50%, 45.5%) of the frame with width 89.6% and height 88.6%. On it:
+1) Centre-bottom area, at (50.2%, 51.8%) of the whole frame: one wide horizontal empty recess
+big enough for a row of flat playing cards, about 27% of the frame width and 24% of the frame
+height, with one thin rule above and below it. IMPORTANT: the game overlays a large ornate
+golden logo watermark on this recess -- keep this recess perfectly plain and empty, it is the
+stage for that logo.
+2) At (50.2%, 26.9%) of the whole frame, well ABOVE the centre: one straight horizontal row of
+FOUR identical card recesses, evenly spaced, each sized 99 x 153 pixels out of 1920 x 1080 with
+a gap of about 6% of a card width between neighbours; the whole row spans about 430 pixels and
+is centred horizontally.
+3) Left of centre at (31.5%, 37.2%) and right of centre at (68.5%, 37.2%) of the whole frame:
+two small empty squares, mirror images of each other, each sized for a stacked deck.
+4) Exactly at (50%, 39.5%) of the whole frame, centred between the three-card row above and the
+playing recess below: one empty circular medallion about 220 pixels across with a thin double rim.
+5) Three shallow half-disc seat plates: bottom-centre facing inward, upper-left and upper-right;
+each with a thin rim and three small radial notches.
+6) One thin empty circular groove enclosing the central group of items.
+Keep the whole central column (roughly the middle 55% wide by 62% tall) perfectly plain -- all
+decoration stays in the outer ring only.
+All recesses stay empty -- no cards, chips, numbers, letters, symbols or colour inside.
+
+LIGHT AND COLOUR.
+Multi-point pseudo-lighting that does not respect physics: one bright cool-white key from the
+upper-left, a secondary neon-cyan rim light from the right edge, and a faint magenta bounce from
+below. Use high-contrast complementary colour pairs -- cyan against magenta, gold against indigo --
+so the eye snaps to the centre and the outer ring recedes. Shade with the animation cel
+convention: crisp hard-edged shadow shapes in two tones, never airbrushed mush.
+
+STYLE.
+Modern high-end Japanese digital anime illustration. Clean confident linework in a dark ink
+outline (#120F22), raked along the rings and the outer trim. Edge highlights are sharp and thin.
+Finish with a faint film-grain texture and a very subtle chromatic-fringing shimmer along the
+strongest edges, as if a still frame pulled from an animation. Smooth, glossy and luminous --
+strong cel shading fused with a little digital painting. Illustrated and dramatic, not
+photorealistic, not 3D, not flat vector, not minimal.
+
+KEY.
+Everything outside the complete tabletop silhouette is one perfectly flat solid pure white
+(#FFFFFF) background: uniform, with no shadow, gradient, texture, glow, floor or scene. The
+table's outline must be closed and cleanly drawn so the white can be separated from it.
+Leave a small even white margin; do not crop the oval.
+
+AVOID.
+No words, letters, digits, Chinese characters, runes, labels, logos, signatures or watermarks.
+No extra objects: no cards, chips, coins, dice, hands, people, bottles or chairs. No scene or
+background except flat magenta; no reflections or cast shadows outside the tabletop. No 3D,
+photorealism, blur, noise, vignette or border. Not minimal, not modern, not sci-fi UI, not flat
+corporate design.

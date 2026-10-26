@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>走进方块世界</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #e9e4ff;
+    font-family: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif; }
+  #c { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  #c.drag { cursor: grabbing; }
+  .hud { position: fixed; left: 50%; top: 16px; transform: translateX(-50%);
+    padding: 8px 16px; border-radius: 999px; font-size: 12.5px; color: #4a3f78; white-space: nowrap;
+    background: rgba(255,255,255,.62); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(120,100,180,.18); pointer-events: none; user-select: none; z-index: 3; }
+  #stick { position: fixed; left: 22px; bottom: 24px; width: 116px; height: 116px; border-radius: 50%;
+    background: rgba(255,255,255,.3); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.75);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); touch-action: none; display: none; z-index: 3; }
+  #stick .knob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; border-radius: 50%;
+    transform: translate(-50%,-50%); background: rgba(255,255,255,.88);
+    box-shadow: 0 4px 12px rgba(120,100,180,.3); }
+  @media (pointer: coarse) { #stick { display: block; } .hud { font-size: 11.5px; } }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="hud">WASD / 方向键 走路 · 拖动鼠标 看四周</div>
+<div id="stick"><div class="knob"></div></div>
+<script>
+(function () {
+  'use strict';
+
+  window.onerror = function (msg) {
+    var h = document.querySelector('.hud');
+    if (h) h.textContent = '出错了: ' + msg;
+  };
+
+  var cv = document.getElementById('c');
+  var gl = cv.getContext('webgl', { antialias: true, alpha: false }) ||
+           cv.getContext('experimental-webgl', { antialias: true, alpha: false });
+  if (!gl) { document.body.innerHTML = '<p style="font:16px sans-serif;padding:24px">这个浏览器不支持 WebGL 😢</p>'; return; }
+
+  /* ================= 矩阵小工具（列主序） ================= */
+  function mIdent(o) { o[0]=1;o[1]=0;o[2]=0;o[3]=0;o[4]=0;o[5]=1;o[6]=0;o[7]=0;o[8]=0;o[9]=0;o[10]=1;o[11]=0;o[12]=0;o[13]=0;o[14]=0;o[15]=1; return o; }
+
+  function mPerspective(o, fovy, aspect, near, far) {
+    var f = 1 / Math.tan(fovy / 2);
+    mIdent(o);
+    o[0] = f / aspect; o[5] = f;
+    o[10] = (far + near) / (near - far); o[11] = -1;
+    o[14] = 2 * far * near / (near - far); o[15] = 0;
+    return o;
+  }
+
+  function mLookAt(o, ex, ey, ez, cx, cy, cz) {
+    var zx = ex - cx, zy = ey - cy, zz = ez - cz;
+    var l = 1 / Math.hypot(zx, zy, zz); zx *= l; zy *= l; zz *= l;
+    var xx = zz, xy = 0, xz = -zx;                 // up = (0,1,0): x = up × z
+    l = Math.hypot(xx, xy, xz); if (l) { l = 1 / l; xx *= l; xy *= l; xz *= l; } else { xx = 1; xy = 0; xz = 0; }
+    var yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
+    o[0]=xx; o[1]=yx; o[2]=zx; o[3]=0;
+    o[4]=xy; o[5]=yy; o[6]=zy; o[7]=0;
+    o[8]=xz; o[9]=yz; o[10]=zz; o[11]=0;
+    o[12] = -(xx*ex + xy*ey + xz*ez);
+    o[13] = -(yx*ex + yy*ey + yz*ez);
+    o[14] = -(zx*ex + zy*ey + zz*ez);
+    o[15] = 1;
+    return o;
+  }
+
+  // 平移 + 绕 Y/X 旋转 + 均匀缩放
+  function mCompose(o, tx, ty, tz, ry, rx, s) {
+    var cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx);
+    o[0] = cy*s;    o[1] = 0;     o[2] = -sy*s;    o[3] = 0;
+    o[4] = sy*sx*s; o[5] = cx*s;  o[6] = cy*sx*s;  o[7] = 0;
+    o[8] = sy*cx*s; o[9] = -sx*s; o[10] = cy*cx*s; o[11] = 0;
+    o[12] = tx; o[13] = ty; o[14] = tz; o[15] = 1;
+    return o;
+  }
+
+  /* ================= 着色器 ================= */
+  var VS = [
+    'precision highp float;',
+    'attribute vec3 aPos;',
+    'attribute vec3 aNrm;',
+    'uniform mat4 uProj; uniform mat4 uView; uniform mat4 uModel;',
+    'uniform mat3 uNrm; uniform vec3 uColor; uniform vec3 uCam;',
+    'varying vec3 vColor; varying vec3 vNrm; varying vec3 vWorld;',
+    'void main(){',
+    '  vec4 w = uModel * vec4(aPos, 1.0);',
+    '  vWorld = w.xyz;',
+    '  vNrm = uNrm * aNrm;',
+    '  vColor = uColor;',
+    '  gl_Position = uProj * uView * w;',
+    '}'
+  ].join('\n');
+
+  var FS = [
+    'precision highp float;',
+    'varying vec3 vColor; varying vec3 vNrm; varying vec3 vWorld;',
+    'uniform vec3 uCam; uniform vec3 uFog; uniform vec3 uLight; uniform float uGrid;',
+    'void main(){',
+    '  vec3 n = normalize(vNrm);',
+    '  float diff = max(dot(n, uLight), 0.0);',
+    '  vec3 col = vColor * (0.58 + 0.68 * diff);',
+    '  vec3 vd = normalize(uCam - vWorld);',
+    '  vec3 hv = normalize(vd + uLight);',
+    '  col += vec3(0.20) * pow(max(dot(n, hv), 0.0), 34.0);',
+    '  if (uGrid > 0.5) {',
+    '    vec2 g = abs(fract(vWorld.xz * 0.5) - 0.5);',
+    '    float line = smoothstep(0.45, 0.5, max(g.x, g.y));',
+    '    vec2 cc = floor(vWorld.xz * 0.5);',
+    '    float chk = mod(cc.x + cc.y, 2.0);',
+    '    col *= (0.93 + 0.07 * chk);',
+    '    col += vec3(0.15) * line;',
+    '    float fade = smoothstep(8.0, 34.0, distance(vWorld.xz, uCam.xz));',
+    '    col = mix(col, uFog, fade);',
+    '  }',
+    '  float fog = smoothstep(16.0, 44.0, distance(vWorld, uCam));',
+    '  col = mix(col, uFog, fog);',
+    '  gl_FragColor = vec4(col, 1.0);',
+    '}'
+  ].join('\n');
+
+  function compile(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  var prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  gl.useProgram(prog);
+
+  var A = {
+    pos: gl.getAttribLocation(prog, 'aPos'),
+    nrm: gl.getAttribLocation(prog, 'aNrm')
+  };
+  var U = {};
+  ['uProj','uView','uModel','uNrm','uColor','uCam','uFog','uLight','uGrid'].forEach(function (k) {
+    U[k] = gl.getUniformLocation(prog, k);
+  });
+
+  /* ================= 几何 ================= */
+  function makeCube() {
+    var P = [], N = [], idx = [];
+    var faces = [
+      [[ 1, 0, 0], [[ 1,-1,-1],[ 1,-1, 1],[ 1, 1, 1],[ 1, 1,-1]]],
+      [[-1, 0, 0], [[-1,-1, 1],[-1,-1,-1],[-1, 1,-1],[-1, 1, 1]]],
+      [[ 0, 1, 0], [[-1, 1,-1],[ 1, 1,-1],[ 1, 1, 1],[-1, 1, 1]]],
+      [[ 0,-1, 0], [[-1,-1, 1],[ 1,-1, 1],[ 1,-1,-1],[-1,-1,-1]]],
+      [[ 0, 0, 1], [[-1,-1, 1],[-1, 1, 1],[ 1, 1, 1],[ 1,-1, 1]]],
+      [[ 0, 0,-1], [[ 1,-1,-1],[ 1, 1,-1],[-1, 1,-1],[-1,-1,-1]]]
+    ];
+    faces.forEach(function (f, fi) {
+      var nn = f[0], vs = f[1], b = fi * 4;
+      vs.forEach(function (v) { P.push(v[0], v[1], v[2]); N.push(nn[0], nn[1], nn[2]); });
+      idx.push(b, b+1, b+2, b, b+2, b+3);
+    });
+    return { pos: new Float32Array(P), nrm: new Float32Array(N), idx: new Uint16Array(idx) };
+  }
+
+  function makeGround(size) {
+    var h = size / 2;
+    return {
+      pos: new Float32Array([-h,0,-h,  h,0,-h,  h,0,h,  -h,0,h]),
+      nrm: new Float32Array([0,1,0, 0,1,0, 0,1,0, 0,1,0]),
+      idx: new Uint16Array([0,2,1, 0,3,2])
+    };
+  }
+
+  function upload(g) {
+    var bp = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bp);
+    gl.bufferData(gl.ARRAY_BUFFER, g.pos, gl.STATIC_DRAW);
+    var bn = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bn);
+    gl.bufferData(gl.ARRAY_BUFFER, g.nrm, gl.STATIC_DRAW);
+    var bi = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bi);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, g.idx, gl.STATIC_DRAW);
+    return { pos: bp, nrm: bn, idx: bi, count: g.idx.length };
+  }
+
+  var cubeG = upload(makeCube());
+  var groundG = upload(makeGround(220));
+
+  /* ================= 场景 ================= */
+  var FOG = [0.94, 0.90, 1.0];
+  var LIGHT = [0.45, 0.82, 0.35];
+  var GROUND_COLOR = [0.72, 0.66, 0.94];
+
+  var PAL = [
+    [1.00, 0.60, 0.78], [0.72, 0.62, 1.00], [0.52, 0.90, 0.90],
+    [1.00, 0.86, 0.52], [1.00, 0.74, 0.86], [0.66, 0.88, 0.72]
+  ];
+
+  var SPAWN = { x: 0, z: 14 };
+  var boxes = [];
+  (function seed() {
+    var guard = 0;
+    while (boxes.length < 48 && guard++ < 900) {
+      var a = Math.random() * Math.PI * 2;
+      var r = 4 + Math.random() * 34;
+      var bx = Math.cos(a) * r, bz = Math.sin(a) * r;
+      if (Math.hypot(bx - SPAWN.x, bz - SPAWN.z) < 11) continue;   // 出生点留一块空地
+      boxes.push({
+        x: bx, z: bz,
+        y0: 1.2 + Math.random() * 7,
+        s: 0.5 + Math.random() * 1.9,
+        ry: Math.random() * 6.28, rx: Math.random() * 6.28,
+        vr: (Math.random() - 0.5) * 0.6,
+        vx: (Math.random() - 0.5) * 0.45,
+        ph: Math.random() * 6.28,
+        amp: 0.3 + Math.random() * 0.9,
+        c: PAL[(Math.random() * PAL.length) | 0]
+      });
+    }
+  })();
+
+  /* ================= 相机 & 输入 ================= */
+  var yaw = 0, pitch = -0.18;
+  var px = 0, py = 1.75, pz = 14;
+  var keys = {};
+
+  // 用 e.code（物理键位）：中文输入法开着时 e.key 会变成 'Process'，键就"失灵"了
+  window.addEventListener('keydown', function (e) {
+    keys[e.code] = true;
+    if (e.code.indexOf('Arrow') === 0) e.preventDefault();
+  });
+  window.addEventListener('keyup', function (e) { keys[e.code] = false; });
+
+  var dragging = false, lastX = 0, lastY = 0;
+  cv.addEventListener('pointerdown', function (e) {
+    dragging = true; lastX = e.clientX; lastY = e.clientY; cv.classList.add('drag');
+  });
+  window.addEventListener('pointerup', function () { dragging = false; cv.classList.remove('drag'); });
+  window.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    yaw -= (e.clientX - lastX) * 0.0034;
+    pitch -= (e.clientY - lastY) * 0.0034;
+    pitch = Math.max(-1.35, Math.min(1.35, pitch));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+
+  // 手机摇杆
+  var stickVec = { x: 0, y: 0 };
+  (function initStick() {
+    var el = document.getElementById('stick');
+    var knob = el.querySelector('.knob');
+    var on = false, cx = 0, cy = 0, R = 40;
+    el.addEventListener('pointerdown', function (e) {
+      on = true;
+      var r = el.getBoundingClientRect();
+      cx = r.left + r.width / 2; cy = r.top + r.height / 2;
+      el.setPointerCapture(e.pointerId);
+      move(e);
+    });
+    el.addEventListener('pointermove', function (e) { if (on) move(e); });
+    el.addEventListener('pointerup', function () { on = false; stickVec.x = 0; stickVec.y = 0; knob.style.transform = 'translate(-50%,-50%)'; });
+    function move(e) {
+      var dx = e.clientX - cx, dy = e.clientY - cy;
+      var d = Math.hypot(dx, dy);
+      if (d > R) { dx = dx / d * R; dy = dy / d * R; }
+      stickVec.x = dx / R; stickVec.y = dy / R;
+      knob.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px))';
+    }
+  })();
+
+  /* ================= 尺寸 ================= */
+  var proj = new Float32Array(16), view = new Float32Array(16), model = new Float32Array(16), nrm = new Float32Array(9);
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.round(window.innerWidth * dpr);
+    cv.height = Math.round(window.innerHeight * dpr);
+    gl.viewport(0, 0, cv.width, cv.height);
+    mPerspective(proj, 62 * Math.PI / 180, cv.width / cv.height, 0.1, 260);
+  }
+  window.addEventListener('resize', resize);
+  gl.enable(gl.DEPTH_TEST);
+
+  function bindGeom(g) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, g.pos);
+    gl.enableVertexAttribArray(A.pos);
+    gl.vertexAttribPointer(A.pos, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, g.nrm);
+    gl.enableVertexAttribArray(A.nrm);
+    gl.vertexAttribPointer(A.nrm, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g.idx);
+  }
+
+  function drawGround() {
+    mIdent(model);                 // 地面在原点，不旋转
+    gl.uniformMatrix4fv(U.uModel, false, model);
+    nrm[0]=1;nrm[1]=0;nrm[2]=0; nrm[3]=0;nrm[4]=1;nrm[5]=0; nrm[6]=0;nrm[7]=0;nrm[8]=1;
+    gl.uniformMatrix3fv(U.uNrm, false, nrm);
+    gl.uniform3fv(U.uColor, GROUND_COLOR);
+    gl.uniform1f(U.uGrid, 1.0);
+    bindGeom(groundG);
+    gl.drawElements(gl.TRIANGLES, groundG.count, gl.UNSIGNED_SHORT, 0);
+  }
+
+  var last = performance.now();
+  function frame(now) {
+    var dt = Math.min((now - last) / 1000, 0.06); last = now;
+    var t = now / 1000;
+
+    /* --- 移动 --- */
+    var fx = Math.sin(yaw), fz = -Math.cos(yaw);
+    var rx = Math.cos(yaw), rz = Math.sin(yaw);
+    var mx = 0, mz = 0;
+    if (keys['KeyW'] || keys['ArrowUp'])    { mx += fx; mz += fz; }
+    if (keys['KeyS'] || keys['ArrowDown'])  { mx -= fx; mz -= fz; }
+    if (keys['KeyA'] || keys['ArrowLeft'])  { mx -= rx; mz -= rz; }
+    if (keys['KeyD'] || keys['ArrowRight']) { mx += rx; mz += rz; }
+    if (stickVec.y < -0.15) { mx += fx * -stickVec.y; mz += fz * -stickVec.y; }
+    if (Math.abs(stickVec.x) > 0.15) { mx += rx * stickVec.x; mz += rz * stickVec.x; }
+    var ml = Math.hypot(mx, mz);
+    if (ml > 1e-4) {
+      mx /= ml; mz /= ml;
+      var sp = 8 * dt;
+      px += mx * sp; pz += mz * sp;
+      var lim = 46;
+      px = Math.max(-lim, Math.min(lim, px));
+      pz = Math.max(-lim, Math.min(lim, pz));
+    }
+    // 走路的轻微起伏
+    var bob = ml > 1e-4 ? Math.sin(t * 9) * 0.045 : 0;
+    py = 1.75 + bob;
+
+    /* --- 相机 --- */
+    var cp = Math.cos(pitch);
+    var dx = cp * Math.sin(yaw), dy = Math.sin(pitch), dz = -cp * Math.cos(yaw);
+    mLookAt(view, px, py, pz, px + dx, py + dy, pz + dz);
+
+    /* --- 画 --- */
+    gl.clearColor(FOG[0], FOG[1], FOG[2], 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.uniformMatrix4fv(U.uProj, false, proj);
+    gl.uniformMatrix4fv(U.uView, false, view);
+    gl.uniform3fv(U.uCam, [px, py, pz]);
+    gl.uniform3fv(U.uFog, FOG);
+    gl.uniform3fv(U.uLight, LIGHT);
+    gl.uniform1f(U.uGrid, 0.0);
+
+    drawGround();
+    gl.uniform1f(U.uGrid, 0.0);   // 记得关掉，不然方块上也会画网格
+
+    for (var i = 0; i < boxes.length; i++) {
+      var b = boxes[i];
+      var y = b.y0 + Math.sin(t * 0.7 + b.ph) * b.amp;
+      mCompose(model, b.x, y, b.z, b.ry, b.rx, b.s);
+      gl.uniformMatrix4fv(U.uModel, false, model);
+      nrm[0]=model[0];nrm[1]=model[1];nrm[2]=model[2];
+      nrm[3]=model[4];nrm[4]=model[5];nrm[5]=model[6];
+      nrm[6]=model[8];nrm[7]=model[9];nrm[8]=model[10];
+      gl.uniformMatrix3fv(U.uNrm, false, nrm);
+      gl.uniform3fv(U.uColor, b.c);
+      bindGeom(cubeG);
+      gl.drawElements(gl.TRIANGLES, cubeG.count, gl.UNSIGNED_SHORT, 0);
+      b.ry += b.vr * dt;
+      b.rx += b.vx * dt;
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  frame(performance.now());   // 先同步画一帧，避免首帧空白
+})();
+</script>
+</body>
+</html>

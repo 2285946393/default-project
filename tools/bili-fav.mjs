@@ -57,12 +57,13 @@ function decryptCookie(hex, key) {
 function collectCandidates() {
   const tmp = path.join(os.tmpdir(), "bili-fav-snap");
   log("· 正在从浏览器快照里取登录态（需要管理员权限，几秒）");
-  const out = execFileSync(
+  execFileSync(
     "powershell",
     ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(HERE, "bili-fav-extract.ps1"), "-OutDir", tmp],
     { encoding: "utf8" },
   );
-  const manifestPath = out.trim().split(/\r?\n/).filter(Boolean).pop();
+  // 不要从 PowerShell 输出里取路径：中文用户名经 GBK/UTF8 一转就 ENOENT，直接拼已知路径
+  const manifestPath = path.join(tmp, "manifest.json");
   // PowerShell 5.1 的 UTF8 会带 BOM，先去掉
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8").replace(/^\uFEFF/, ""));
 

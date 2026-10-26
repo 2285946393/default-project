@@ -1,0 +1,26 @@
+{
+  "id": "FrostSpire",
+  "name": "凛冬尖塔 / FrostSpire",
+  "pck_name": "FrostSpire",
+  "author": "有花无实",
+  "description": "把《凛冬前线》的玩法搬进杀戮尖塔2：布防（单位/建筑卡）→ 敌潮按波进攻 → 撑过全部波次。卡牌还是卡牌。缝合实验工程，设计案见 notes/凛冬尖塔-玩法缝合设计案.md。",
+  "version": "0.1.0",
+  "has_pck": true,
+  "has_dll": true,
+  "affects_gameplay": true,
+  "min_game_version": "0.111.0",
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.6.6"
+    },
+    {
+      "id": "BaseLib",
+      "min_version": "v3.4.7"
+    },
+    {
+      "id": "MinionLib",
+      "min_version": "0.6.3"
+    }
+  ]
+}

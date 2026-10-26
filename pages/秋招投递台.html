@@ -118,11 +118,55 @@ tr:hover td{background:#fffafc}
 }
 .tipbar b{color:var(--rose-deep)}
 
+/* 启动面板（注册入口 / 话术） */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.panel-hd{display:flex;align-items:center;gap:9px;padding:11px 14px;cursor:pointer;user-select:none}
+.panel-hd:hover{background:#fffafc}
+.panel-hd .idx{
+  width:20px;height:20px;border-radius:6px;background:var(--rose);color:#fff;
+  font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+}
+.panel-hd h2{font-size:14px;font-weight:800;flex:0 0 auto}
+.panel-hd .cnt{font-size:11.5px;color:var(--sub);flex:1;min-width:0}
+.panel-hd .arrow{font-size:10px;color:var(--sub);transition:.2s}
+.panel.open .panel-hd .arrow{transform:rotate(180deg)}
+.panel-bd{display:none;padding:0 14px 14px}
+.panel.open .panel-bd{display:block}
+
+.plat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:9px}
+.plat{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fffdfe;transition:.15s}
+.plat:hover{border-color:var(--rose);background:#fff5f9}
+.plat-t{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.plat-t .tag{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:999px;background:var(--rose-deep);color:#fff}
+.plat-t .tag.g{background:var(--mint)}
+.plat-d{font-size:11.5px;color:var(--sub);line-height:1.45}
+.plat-u{font-size:11px;color:var(--rose-deep);margin-top:5px;font-weight:600}
+
+.talk{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:8px;background:#fffdfe}
+.talk-hd{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.talk-hd b{font-size:12.5px}
+.talk-hd .when{font-size:11px;color:var(--sub)}
+.talk pre{
+  white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:12.5px;
+  color:var(--ink);background:#fdf2f7;border-radius:8px;padding:9px 11px;line-height:1.55;margin:0;
+}
+.cp{
+  border:1px solid var(--line);background:var(--card);color:var(--sub);font-size:11.5px;font-weight:700;
+  padding:3px 10px;border-radius:7px;cursor:pointer;font-family:inherit;transition:.15s;margin-left:auto;flex:0 0 auto;
+}
+.cp:hover{border-color:var(--rose);color:var(--rose-deep);background:#fff5f9}
+.cp.done{background:var(--mint);border-color:var(--mint);color:#fff}
+
 @media (max-width:720px){
   body{padding:14px 10px 50px}
   .hd{flex-direction:column;align-items:flex-start;gap:8px}
   .hd h1{font-size:18px}
   .hd .today{text-align:left}
+  .panel-hd{padding:10px 12px;gap:7px}
+  .panel-hd .cnt{display:none}
+  .panel-bd{padding:0 12px 12px}
+  .plat-grid{grid-template-columns:1fr}
+  .talk-hd{flex-wrap:wrap}
   /* 5 张卡在窄屏排 2 列；minmax(0,1fr) 才能让格子真正收缩，否则内容会撑破屏幕 */
   .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .stat{min-width:0;padding:9px 6px}
@@ -161,6 +205,96 @@ tr:hover td{background:#fffafc}
     <div class="today">
       今天已投 <b id="todayCount">0</b> 家<br>
       <span id="todayHint">还没开始，去投第一份吧</span>
+    </div>
+  </div>
+
+  <div class="panel open" id="pReg">
+    <div class="panel-hd" data-toggle="pReg">
+      <div class="idx">1</div>
+      <h2>先注册这几个</h2>
+      <span class="cnt">点卡片直接打开 · 手机号 + 实名，简历传「毛烨-AI应用开发-简历.pdf」</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="panel-bd">
+      <div class="plat-grid">
+        <a class="plat" href="https://www.zhipin.com/" target="_blank" rel="noopener">
+          <div class="plat-t">BOSS 直聘 <span class="tag">主力</span></div>
+          <div class="plat-d">中小厂、AI 初创最多，看作品不看学历，回复最快。App 功能比网页全</div>
+          <div class="plat-u">zhipin.com</div>
+        </a>
+        <a class="plat" href="https://www.nowcoder.com/" target="_blank" rel="noopener">
+          <div class="plat-t">牛客网 <span class="tag">必注册</span></div>
+          <div class="plat-d">校招信息最全，有笔试系统和面经，顺便刷 Hot 100</div>
+          <div class="plat-u">nowcoder.com</div>
+        </a>
+        <a class="plat" href="https://www.shixiseng.com/" target="_blank" rel="noopener">
+          <div class="plat-t">实习僧</div>
+          <div class="plat-d">实习岗为主、可转正，门槛相对低，适合先拿一个保底</div>
+          <div class="plat-u">shixiseng.com</div>
+        </a>
+        <a class="plat" href="https://www.iguopin.com/" target="_blank" rel="noopener">
+          <div class="plat-t">国聘网 <span class="tag g">央国企</span></div>
+          <div class="plat-d">央企国企校招集中入口，10–11 月是主战场</div>
+          <div class="plat-u">iguopin.com</div>
+        </a>
+        <a class="plat" href="https://www.ncss.cn/" target="_blank" rel="noopener">
+          <div class="plat-t">国家大学生就业服务平台</div>
+          <div class="plat-d">教育部官方，国企 / 事业单位岗位多，全部免费</div>
+          <div class="plat-u">ncss.cn</div>
+        </a>
+        <a class="plat" href="https://www.yingjiesheng.com/" target="_blank" rel="noopener">
+          <div class="plat-t">应届生求职网</div>
+          <div class="plat-d">校招信息聚合、宣讲会日程全，用来查漏补缺</div>
+          <div class="plat-u">yingjiesheng.com</div>
+        </a>
+      </div>
+      <div class="tipbar" style="margin-top:10px">
+        <b>顺序</b>：先 BOSS + 牛客（这两个覆盖大部分机会），再实习僧和央国企。
+        别忘了学校就业网和宣讲会——<b>本地企业命中率最高</b>，也最容易被忽略。
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="pTalk">
+    <div class="panel-hd" data-toggle="pTalk">
+      <div class="idx">2</div>
+      <h2>打招呼话术</h2>
+      <span class="cnt">BOSS 上第一句话决定有没有回复 · 点「复制」直接用</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="panel-bd">
+      <div class="talk">
+        <div class="talk-hd">
+          <b>技术岗 · AI 应用 / 全栈</b>
+          <span class="when">把【】换成岗位名</span>
+          <button class="cp" data-copy="t1">复制</button>
+        </div>
+        <pre id="t1">您好，2027 届电子信息工程本科。独立做过 AI 模拟面试官（Next.js + RAG + 流式输出），另有 20+ 个可在线运行的 Web 作品（WebGL / WASM / 物理引擎）。
+作品集：https://ephemeralbloom.dpdns.org/portfolio
+看到【岗位名】在招，想投一份简历，请问还方便吗？</pre>
+      </div>
+      <div class="talk">
+        <div class="talk-hd">
+          <b>内容岗 · AIGC / 新媒体</b>
+          <span class="when">把【】换成岗位名</span>
+          <button class="cp" data-copy="t2">复制</button>
+        </div>
+        <pre id="t2">您好，2027 届本科。我独立跑通过 AIGC 内容全流程：AI 作词作曲 → 歌词 PV → 平台投稿，也做过 AIGC 内容作品集和一批可视化页面。
+作品集：https://ephemeralbloom.dpdns.org/portfolio
+看到【岗位名】在招，想投一份简历，请问方便吗？</pre>
+      </div>
+      <div class="talk">
+        <div class="talk-hd">
+          <b>跟进 · 投完 3 天没回音</b>
+          <span class="when">换个平台再投一次也行</span>
+          <button class="cp" data-copy="t3">复制</button>
+        </div>
+        <pre id="t3">您好，前几天投了【岗位名】的简历，想跟进一下进度。如果暂时不合适也麻烦说一声，我好调整方向。谢谢！</pre>
+      </div>
+      <div class="tipbar">
+        <b>要点</b>：别一次甩长文，第一条短一点、留个钩子；对方回了再展开讲项目。
+        投递时间挑工作日上午 9–11 点，HR 刚上班看得见。
+      </div>
     </div>
   </div>
 
@@ -504,6 +638,56 @@ tr:hover td{background:#fffafc}
       r.readAsText(f);
     });
     inp.click();
+  });
+
+  /* ---------- 折叠面板（记住开合状态） ---------- */
+  document.querySelectorAll('[data-toggle]').forEach(function(hd){
+    var id = hd.getAttribute('data-toggle');
+    var p = document.getElementById(id);
+    if(!p) return;
+    // 首次访问用 HTML 里的默认开合，之后跟随上次操作
+    try{
+      var saved = localStorage.getItem('jobtracker:panel:' + id);
+      if(saved !== null) p.classList.toggle('open', saved === '1');
+    }catch(e){}
+    hd.addEventListener('click', function(){
+      p.classList.toggle('open');
+      try{ localStorage.setItem('jobtracker:panel:' + id, p.classList.contains('open') ? '1' : '0'); }catch(e){}
+    });
+  });
+
+  /* ---------- 复制话术 ---------- */
+  // file:// 下 navigator.clipboard 常被禁用，必须有 execCommand 兜底
+  function copyText(txt, btn){
+    var ok = function(){
+      btn.textContent = '已复制 ✓';
+      btn.classList.add('done');
+      setTimeout(function(){ btn.textContent = '复制'; btn.classList.remove('done'); }, 1400);
+    };
+    var fallback = function(){
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try{ document.execCommand('copy'); ok(); }
+      catch(e){ alert('复制失败，请手动选中文字'); }
+      document.body.removeChild(ta);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(ok, fallback);
+    } else {
+      fallback();
+    }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.getElementById(this.getAttribute('data-copy'));
+      if(!el) return;
+      copyText(el.innerText.replace(/\s+$/,''), this);
+    });
   });
 
   /* ---------- 启动 ---------- */

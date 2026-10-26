@@ -1,0 +1,12 @@
+{
+  "OPTION_CLONE.name": "复制一张",
+  "OPTION_COOK.name": "做饭",
+  "OPTION_DIG.name": "挖挖",
+  "OPTION_HATCH.name": "孵蛋",
+  "OPTION_HEAL.name": "睡一觉",
+  "OPTION_KINDLE.name": "添柴",
+  "OPTION_LIFT.name": "撸铁",
+  "OPTION_MEND.name": "疗伤",
+  "OPTION_SMITH.name": "打铁",
+  "PROMPT": "选哪个呢？"
+}
